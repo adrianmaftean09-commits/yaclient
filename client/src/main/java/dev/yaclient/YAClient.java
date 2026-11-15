@@ -2,13 +2,13 @@ package dev.yaclient;
 
 import dev.yaclient.modules.*;
 import net.minecraft.client.Minecraft;
-import net.weavemc.loader.api.ModInitializer;
-import net.weavemc.loader.api.event.EventBus;
-import net.weavemc.loader.api.event.KeyboardEvent;
-import net.weavemc.loader.api.event.RenderGameOverlayEvent;
-import net.weavemc.loader.api.event.TickEvent;
+import net.weavemc.api.ModInitializer;
+import net.weavemc.api.event.EventBus;
+import net.weavemc.api.event.RenderGameOverlayEvent;
+import net.weavemc.api.event.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +21,10 @@ public class YAClient implements ModInitializer {
     public static final int MENU_KEY = Keyboard.KEY_RSHIFT;
 
     public static final List<Module> MODULES = new ArrayList<>();
+    private boolean menuKeyWasDown;
 
     @Override
-    public void preInit() {
+    public void init() {
         MODULES.add(new FpsModule());
         MODULES.add(new CpsModule());
         MODULES.add(new CoordsModule());
@@ -34,16 +35,23 @@ public class YAClient implements ModInitializer {
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
             for (Module m : MODULES) if (m.enabled) m.onTick();
+
+            Minecraft mc = Minecraft.getMinecraft();
+            boolean down = Keyboard.isKeyDown(MENU_KEY);
+            if (down && !menuKeyWasDown && mc.currentScreen == null) {
+                mc.displayGuiScreen(new MenuScreen());
+            }
+            menuKeyWasDown = down;
         });
+
         EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
             for (Module m : MODULES) if (m.enabled) m.onRender();
         });
-        EventBus.subscribe(KeyboardEvent.class, e -> {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (Keyboard.getEventKeyState() && Keyboard.getEventKey() == MENU_KEY && mc.currentScreen == null) {
-                mc.displayGuiScreen(new MenuScreen());
-            }
-        });
+
         System.out.println("[" + NAME + "] caricato. Premi RShift per il menu.");
     }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void preInit(Instrumentation instrumentation) {}
 }
