@@ -34,7 +34,10 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ZoomModule());
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
-            for (Module m : MODULES) if (m.enabled) m.onTick();
+            for (Module m : MODULES) {
+                m.bind();
+                if (m.enabled) m.onTick();
+            }
 
             Minecraft mc = Minecraft.getMinecraft();
             boolean down = Keyboard.isKeyDown(MENU_KEY);
@@ -45,7 +48,10 @@ public class YAClient implements ModInitializer {
         });
 
         EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
-            for (Module m : MODULES) if (m.enabled) m.onRender();
+            for (Module m : MODULES) {
+                m.bind();
+                if (m.enabled) m.onRender();
+            }
         });
 
         System.out.println("[" + NAME + "] caricato. Premi RShift per il menu.");
