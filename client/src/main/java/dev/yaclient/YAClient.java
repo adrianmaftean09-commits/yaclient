@@ -2,6 +2,7 @@ package dev.yaclient;
 
 import dev.yaclient.modules.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.weavemc.api.ModInitializer;
 import net.weavemc.api.event.EventBus;
 import net.weavemc.api.event.RenderGameOverlayEvent;
@@ -16,12 +17,10 @@ import java.util.List;
 public class YAClient implements ModInitializer {
     public static final String NAME = "YA CLIENT";
     public static final int RED = 0xFFE10600;
-    public static final int WHITE = 0xFFF5F5F5;
-    public static final int BLACK_BG = 0x99000000;
-    /** Tasto per aprire il menu (si chiude solo con ESC). */
+    /** Tasto per aprire il menu dei moduli (si chiude solo con ESC). */
     public static final int MENU_KEY = Keyboard.KEY_RSHIFT;
 
-    public static final List<Module> MODULES = new ArrayList<>();
+    public static final List<Module> MODULES = new ArrayList<Module>();
     private boolean menuKeyWasDown;
 
     @Override
@@ -38,15 +37,27 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ClockModule());
         MODULES.add(new SpeedModule());
         MODULES.add(new MemoryModule());
+        MODULES.add(new HealthModule());
         MODULES.add(new PotionModule());
+        MODULES.add(new ReachModule());
+        MODULES.add(new ToggleSneakModule());
+        MODULES.add(new FullbrightModule());
+        Config.load();
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
+            Minecraft mc = Minecraft.getMinecraft();
+
+            // menu principale di YA CLIENT al posto di quello di Minecraft
+            if (mc.currentScreen != null && mc.currentScreen.getClass() == GuiMainMenu.class) {
+                mc.displayGuiScreen(new MainMenuScreen());
+            }
+
             for (Module m : MODULES) {
                 m.bind();
+                m.onAlwaysTick();
                 if (m.enabled) m.onTick();
             }
 
-            Minecraft mc = Minecraft.getMinecraft();
             boolean down = Keyboard.isKeyDown(MENU_KEY);
             if (down && !menuKeyWasDown && mc.currentScreen == null) {
                 mc.displayGuiScreen(new MenuScreen());
@@ -55,10 +66,14 @@ public class YAClient implements ModInitializer {
         });
 
         EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
+            Minecraft mc = Minecraft.getMinecraft();
+            if (mc.gameSettings.hideGUI || mc.gameSettings.showDebugInfo) return;
+            Hud.begin();
             for (Module m : MODULES) {
                 m.bind();
                 if (m.enabled) m.onRender();
             }
+            Hud.end();
         });
 
         System.out.println("[" + NAME + "] caricato. Premi RShift per il menu.");

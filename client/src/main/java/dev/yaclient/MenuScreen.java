@@ -18,9 +18,9 @@ import java.util.Map;
  * Solo "CLIENT" e' rosso; il resto e' nero / grigio scuro / bianco. Si chiude solo con ESC.
  */
 public class MenuScreen extends GuiScreen {
-    private static final int PW = 640, PH = 370, SB = 150;
-    private static final int CW = 144, CH = 50, GAP = 9, GX = SB + 20, GY = 70;
-    private static final int TAB_Y = 130, TAB_H = 34;
+    private static final int PW = 584, PH = 340, SB = 124;
+    private static final int CW = 138, CH = 40, GAP = 8, VGAP = 6, GX = SB + 14, GY = 58;
+    private static final int TAB_Y = 116, TAB_H = 30;
 
     private static final int WHITE = 0xFFF5F5F5;
     private static final int MUTED = 0xFF8A8A8A;
@@ -30,7 +30,7 @@ public class MenuScreen extends GuiScreen {
     private static final int CARD = 0xFF171717;
     private static final int CARD_HOVER = 0xFF1F1F1F;
 
-    private static final String[] TABS = {"Tutti", "Info", "Combattimento", "Utilit\u00e0"};
+    private static final String[] TABS = {"Tutti", "Info", "PvP", "Utilit\u00e0"};
     private static final String[] TITLES = {"Tutti i moduli", "Informazioni", "Combattimento", "Utilit\u00e0"};
 
     private final Map<Module, Float> anim = new HashMap<Module, Float>();
@@ -46,9 +46,9 @@ public class MenuScreen extends GuiScreen {
     private static int category(String n) {
         switch (n) {
             case "FPS": case "Ping": case "Coordinate": case "Direzione":
-            case "Orologio": case "Velocit\u00e0": case "Memoria":
+            case "Orologio": case "Velocit\u00e0": case "Memoria": case "Salute":
                 return 1;
-            case "CPS": case "Keystrokes": case "Armatura": case "Pozioni":
+            case "CPS": case "Keystrokes": case "Armatura": case "Pozioni": case "Reach":
                 return 2;
             default:
                 return 3;
@@ -70,6 +70,10 @@ public class MenuScreen extends GuiScreen {
             case "Velocit\u00e0": return "Blocchi al secondo";
             case "Memoria": return "RAM usata";
             case "Pozioni": return "Effetti attivi";
+            case "Reach": return "Distanza dal bersaglio";
+            case "Salute": return "Punti vita";
+            case "Toggle Sneak": return "Accovacciati fisso";
+            case "Luce Sempre": return "Luminosit\u00e0 massima";
             default: return "";
         }
     }
@@ -83,7 +87,7 @@ public class MenuScreen extends GuiScreen {
     }
 
     private static int cardX(int i) { return GX + (i % 3) * (CW + GAP); }
-    private static int cardY(int i) { return GY + (i / 3) * (CH + GAP); }
+    private static int cardY(int i) { return GY + (i / 3) * (CH + VGAP); }
     private static int tabY(int i) { return TAB_Y + i * (TAB_H + 4); }
 
     private float lx(int mx) { return (mx - originX) / scale; }
@@ -142,35 +146,38 @@ public class MenuScreen extends GuiScreen {
         Gui.drawRect(SB, 1, SB + 14, PH - 1, c(PANEL));
         Gui.drawRect(SB, 1, SB + 1, PH - 1, c(BORDER));
 
-        // logo: YA bianco, CLIENT rosso
-        Gfx.text("YA", 22, 18, 40, true, WHITE);
-        Gfx.text("CLIENT", 22, 66, 22, true, YAClient.RED);
-        Gfx.text("Client PvP 1.8.9", 22, 98, 11, false, MUTED);
+        // logo: YA bianco, CLIENT rosso (la dimensione si adatta alla larghezza disponibile)
+        Gfx.text("YA", 16, 14, 36, true, WHITE);
+        int cs = 20;
+        while (cs > 10 && Gfx.width("CLIENT", cs, true) > SB - 30) cs--;
+        Gfx.text("CLIENT", 16, 62, cs, true, YAClient.RED);
+        Gfx.text("Client PvP 1.8.9", 16, 62 + Gfx.lineHeight(cs, true) + 2, 10, false, MUTED);
 
         // categorie
         for (int i = 0; i < TABS.length; i++) {
             int y = tabY(i);
             boolean sel = i == tab;
-            boolean over = mxl >= 12 && mxl < SB - 12 && myl >= y && myl < y + TAB_H;
+            boolean over = mxl >= 10 && mxl < SB - 10 && myl >= y && myl < y + TAB_H;
             if (sel) {
-                Gfx.rr(12, y, SB - 24, TAB_H, 8, 0xFF1E1E1E);
-                Gfx.rr(18, y + 10, 3, 14, 1, WHITE);
+                Gfx.rr(10, y, SB - 20, TAB_H, 7, 0xFF1E1E1E);
+                Gfx.rr(16, y + 8, 3, TAB_H - 16, 1, WHITE);
             } else if (over) {
-                Gfx.rr(12, y, SB - 24, TAB_H, 8, 0xFF141414);
+                Gfx.rr(10, y, SB - 20, TAB_H, 7, 0xFF141414);
             }
-            int lh = Gfx.lineHeight(14, sel);
-            Gfx.text(TABS[i], 30, y + (TAB_H - lh) / 2, 14, sel, sel ? WHITE : MUTED);
+            int lh = Gfx.lineHeight(12, sel);
+            String label = Gfx.trim(TABS[i], 12, sel, SB - 44);
+            Gfx.text(label, 28, y + (TAB_H - lh) / 2, 12, sel, sel ? WHITE : MUTED);
         }
 
-        Gfx.text("ESC per chiudere", 22, PH - 40, 11, false, MUTED);
-        Gfx.text("v1.0", 22, PH - 24, 11, false, 0xFF5A5A5A);
+        Gfx.text("ESC per chiudere", 16, PH - 36, 10, false, MUTED);
+        Gfx.text("v1.0", 16, PH - 22, 10, false, 0xFF5A5A5A);
 
         // intestazione contenuto
         List<Module> list = visible();
         int on = 0;
         for (Module m : list) if (m.enabled) on++;
-        Gfx.text(TITLES[tab], GX, 20, 22, true, WHITE);
-        Gfx.text(list.size() + " moduli, " + on + " attivi", GX, 48, 12, false, MUTED);
+        Gfx.text(TITLES[tab], GX, 14, 20, true, WHITE);
+        Gfx.text(list.size() + " moduli, " + on + " attivi", GX, 14 + Gfx.lineHeight(20, true) + 1, 10, false, MUTED);
 
         // schede
         for (int i = 0; i < list.size(); i++) {
@@ -186,16 +193,20 @@ public class MenuScreen extends GuiScreen {
             a = approach(a, m.enabled ? 1f : 0f, Math.min(1f, dt / 70f));
             anim.put(m, a);
 
-            Gfx.rrb(x, y, CW, CH, 8, lerp(CARD, CARD_HOVER, h), lerp(BORDER, 0xFF3A3A3A, h));
+            Gfx.rrb(x, y, CW, CH, 7, lerp(CARD, CARD_HOVER, h), lerp(BORDER, 0xFF3A3A3A, h));
 
-            Gfx.text(m.name, x + 14, y + 10, 13, true, WHITE);
-            Gfx.text(Gfx.trim(desc(m.name), 11, false, CW - 28), x + 14, y + 29, 11, false, MUTED);
+            int tw = 30, th = 16;
+            int tx = x + CW - 12 - tw, ty = y + 7;
 
-            int tw = 34, th = 18;
-            int tx = x + CW - 14 - tw, ty = y + 10;
-            Gfx.rr(tx, ty, tw, th, 9, lerp(0xFF343434, WHITE, a));
-            int kx = tx + 2 + Math.round((tw - 4 - 14) * a);
-            Gfx.rr(kx, ty + 2, 14, 14, 7, lerp(0xFF8A8A8A, 0xFF0F0F0F, a));
+            // testi: ognuno limitato alla propria area, cosi' non finiscono mai sopra l'interruttore
+            String name = Gfx.trim(m.name, 11, true, tx - (x + 12) - 6);
+            Gfx.text(name, x + 12, y + 6, 11, true, WHITE);
+            String d = Gfx.trim(desc(m.name), 10, false, CW - 24);
+            Gfx.text(d, x + 12, y + 6 + Gfx.lineHeight(11, true) + 1, 10, false, MUTED);
+
+            Gfx.rr(tx, ty, tw, th, 8, lerp(0xFF343434, WHITE, a));
+            int kx = tx + 2 + Math.round((tw - 4 - 12) * a);
+            Gfx.rr(kx, ty + 2, 12, 12, 6, lerp(0xFF8A8A8A, 0xFF0F0F0F, a));
         }
 
         GlStateManager.popMatrix();
@@ -209,7 +220,7 @@ public class MenuScreen extends GuiScreen {
 
         for (int i = 0; i < TABS.length; i++) {
             int y = tabY(i);
-            if (x0 >= 12 && x0 < SB - 12 && y0 >= y && y0 < y + TAB_H) {
+            if (x0 >= 10 && x0 < SB - 10 && y0 >= y && y0 < y + TAB_H) {
                 tab = i;
                 return;
             }
@@ -219,6 +230,7 @@ public class MenuScreen extends GuiScreen {
             int x = cardX(i), y = cardY(i);
             if (x0 >= x && x0 < x + CW && y0 >= y && y0 < y + CH) {
                 list.get(i).toggle();
+                Config.save();
                 return;
             }
         }

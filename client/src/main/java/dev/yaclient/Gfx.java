@@ -15,6 +15,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +29,18 @@ public final class Gfx {
         FontInfo(Font font, FontMetrics fm) { this.font = font; this.fm = fm; }
     }
 
-    private static final Map<String, DynamicTexture> TEX = new HashMap<String, DynamicTexture>();
+    private static final int MAX_TEX = 600;
+    /** Cache LRU: le texture meno usate vengono eliminate (utile per testi che cambiano, es. coordinate). */
+    private static final Map<String, DynamicTexture> TEX = new LinkedHashMap<String, DynamicTexture>(256, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, DynamicTexture> eldest) {
+            if (size() > MAX_TEX) {
+                eldest.getValue().deleteGlTexture();
+                return true;
+            }
+            return false;
+        }
+    };
     private static final Map<String, FontInfo> FONTS = new HashMap<String, FontInfo>();
     private static final String FAMILY = pickFamily();
     private static int ss = 2;
@@ -46,14 +58,9 @@ public final class Gfx {
         return Font.SANS_SERIF;
     }
 
-    /** Pixel reali per unita' GUI. Se cambia, le texture vengono rigenerate. */
+    /** Pixel reali per unita' GUI (le texture in cache hanno la scala nella chiave). */
     public static void setScale(int s) {
-        if (s < 1) s = 1;
-        if (s == ss) return;
-        for (DynamicTexture t : TEX.values()) t.deleteGlTexture();
-        TEX.clear();
-        FONTS.clear();
-        ss = s;
+        ss = Math.max(1, s);
     }
 
     private static void hints(Graphics2D g) {

@@ -1,5 +1,7 @@
 package dev.yaclient.modules;
 
+import dev.yaclient.Hud;
+
 public class MemoryModule extends Module {
     public MemoryModule() { super("Memoria", false); }
 
@@ -8,6 +10,6 @@ public class MemoryModule extends Module {
         Runtime rt = Runtime.getRuntime();
         long used = (rt.totalMemory() - rt.freeMemory()) / 1048576L;
         long max = rt.maxMemory() / 1048576L;
-        boxRight(68, "RAM " + used + "/" + max + " MB");
+        Hud.right("RAM " + used + "/" + max + " MB");
     }
 }
