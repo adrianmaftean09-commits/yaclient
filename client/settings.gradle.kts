@@ -1,9 +1,12 @@
-rootProject.name = "YAClient"
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenCentral()
-        maven("https://jitpack.io")
-        maven("https://repo.weavemc.dev/releases")
+        maven("https://gitlab.com/api/v4/projects/80566527/packages/maven")
     }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.+"
+}
+
+rootProject.name = "YAClient"
