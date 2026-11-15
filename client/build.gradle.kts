@@ -1,16 +1,10 @@
 plugins {
     java
-    id("net.weavemc.gradle") version "1.0.0-PRE3"
+    id("net.weavemc.gradle") version "1.3.3"
 }
 
 group = "dev.yaclient"
 version = "1.0.0"
-
-repositories {
-    mavenCentral()
-    maven("https://jitpack.io")
-    maven("https://repo.weavemc.dev/releases")
-}
 
 weave {
     configure {
@@ -22,13 +16,24 @@ weave {
     version("1.8.9")
 }
 
+repositories {
+    mavenCentral()
+    maven("https://repo.spongepowered.org/maven/")
+    maven("https://gitlab.com/api/v4/projects/80566527/packages/maven")
+}
+
 dependencies {
-    compileOnly("com.github.Weave-MC:Weave-Loader:v0.2.4")
+    implementation("net.weavemc:loader:1.3.3")
+    implementation("net.weavemc:internals:1.3.3")
+    implementation("net.weavemc.api:api:1.3.3")
+    implementation("net.weavemc.api:api-v1_8:1.3.3")
+    compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 tasks.jar {
