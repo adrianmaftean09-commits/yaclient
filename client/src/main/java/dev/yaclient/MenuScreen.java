@@ -23,7 +23,7 @@ public class MenuScreen extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton b) throws IOException {
+    protected void actionPerformed(GuiButton b) {
         Module m = YAClient.MODULES.get(b.id);
         m.toggle();
         b.displayString = label(m);
