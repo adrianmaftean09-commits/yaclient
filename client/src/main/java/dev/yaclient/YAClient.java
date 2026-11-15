@@ -18,6 +18,7 @@ public class YAClient implements ModInitializer {
     public static final int RED = 0xFFE10600;
     public static final int WHITE = 0xFFF5F5F5;
     public static final int BLACK_BG = 0x99000000;
+    /** Tasto per aprire il menu (si chiude solo con ESC). */
     public static final int MENU_KEY = Keyboard.KEY_RSHIFT;
 
     public static final List<Module> MODULES = new ArrayList<>();
@@ -32,6 +33,12 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ArmorModule());
         MODULES.add(new ToggleSprintModule());
         MODULES.add(new ZoomModule());
+        MODULES.add(new PingModule());
+        MODULES.add(new DirectionModule());
+        MODULES.add(new ClockModule());
+        MODULES.add(new SpeedModule());
+        MODULES.add(new MemoryModule());
+        MODULES.add(new PotionModule());
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
             for (Module m : MODULES) {
