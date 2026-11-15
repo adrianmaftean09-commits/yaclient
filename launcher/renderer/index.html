@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+<title>YA CLIENT</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="drag"></div>
+<div class="winbtns">
+  <button id="min" aria-label="Riduci a icona">&#8211;</button>
+  <button id="close" aria-label="Chiudi">&#10005;</button>
+</div>
+
+<aside>
+  <div class="logo"><span class="ya">YA</span><span class="cl">CLIENT</span></div>
+  <nav>
+    <button class="tab on" data-tab="play">Gioca</button>
+    <button class="tab" data-tab="settings">Impostazioni</button>
+  </nav>
+  <div class="acct" id="acct">
+    <div class="avatar" id="avatar">?</div>
+    <div>
+      <div class="an" id="an">Non connesso</div>
+      <button class="link" id="logout" hidden>Esci</button>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <section id="play" class="view on">
+    <div class="hero">
+      <h1>Minecraft<br>1.8.9</h1>
+      <p>FPS, CPS, Keystrokes, armatura, zoom e sprint automatico. Nessun cheat.</p>
+    </div>
+
+    <div id="login" class="login">
+      <button class="btn white" id="ms">Accedi con Microsoft</button>
+      <div class="off">
+        <input id="offname" maxlength="16" placeholder="Nome giocatore (offline)" spellcheck="false">
+        <button class="btn ghost" id="off">Entra offline</button>
+      </div>
+    </div>
+
+    <div id="launch" class="launch" hidden>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="row">
+        <span id="stat">Pronto</span>
+        <button class="btn red" id="playbtn">GIOCA</button>
+      </div>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+  </section>
+
+  <section id="settings" class="view">
+    <h2>Impostazioni</h2>
+    <label>Memoria RAM: <b id="ramv">2048</b> MB
+      <input type="range" id="ram" min="1024" max="8192" step="512" value="2048">
+    </label>
+    <label>Percorso Java 8
+      <input id="java" placeholder="java (predefinito)" spellcheck="false">
+    </label>
+    <button class="btn white" id="savebtn">Salva</button>
+    <p class="hint">In gioco premi Shift destro per aprire il menu dei moduli.</p>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
