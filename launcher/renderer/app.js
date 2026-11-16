@@ -37,13 +37,20 @@ const I18N = {
     need_login: 'Bitte zuerst anmelden.', launch_failed: 'Start fehlgeschlagen.', launch_error: 'Fehler', crashed: 'Das Spiel wurde unerwartet beendet. Siehe Konsole.', closed: 'Spiel beendet.', ingame: 'Im Spiel',
     updating: 'Client wird aktualisiert...', loader: 'Loader wird vorbereitet...', starting: 'Spiel startet...', download: 'Lade Spieldateien...', wings: 'Flügel', cape: 'Umhänge', pet: 'Haustiere', bandana: 'Bandanas', all: 'Alle', price: 'Preis', online: 'Online', javaHint: 'Java 8 erforderlich' }
 };
+Object.assign(I18N.en, { versions: 'Versions', latest: 'Latest', releases: 'Releases', snapshots: 'Snapshots', old: 'Old', search: 'Search version...', modsFor: 'Modules for Minecraft', avail: 'available on this version',
+  needs: 'Only on', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Soon', vanillaNote: 'This version starts without YA CLIENT mods. The mods below work on', java_missing: 'Java {n} is required for this version. Install it (Temurin {n}) and try again.', latestRelease: 'Latest release', change: 'Change version', noRes: 'No versions found.', offlineList: 'Offline: showing a short list of versions.' });
+Object.assign(I18N.it, { versions: 'Versioni', latest: 'Ultima', releases: 'Release', snapshots: 'Snapshot', old: 'Vecchie', search: 'Cerca versione...', modsFor: 'Mod per Minecraft', avail: 'disponibili in questa versione',
+  needs: 'Solo su', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Presto', vanillaNote: 'Questa versione parte senza le mod di YA CLIENT. Le mod qui sotto funzionano su', java_missing: 'Per questa versione serve Java {n}. Installalo (Temurin {n}) e riprova.', latestRelease: 'Ultima release', change: 'Cambia versione', noRes: 'Nessuna versione trovata.', offlineList: 'Offline: mostro un elenco ridotto di versioni.' });
+Object.assign(I18N.es, { versions: 'Versiones', latest: 'Última', releases: 'Releases', snapshots: 'Snapshots', old: 'Antiguas', search: 'Buscar versión...', modsFor: 'Mods para Minecraft', avail: 'disponibles en esta versión',
+  needs: 'Solo en', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Pronto', vanillaNote: 'Esta versión inicia sin los mods de YA CLIENT. Los mods de abajo funcionan en', java_missing: 'Esta versión necesita Java {n}. Instálalo (Temurin {n}) e inténtalo de nuevo.', latestRelease: 'Última release', change: 'Cambiar versión', noRes: 'No hay versiones.', offlineList: 'Sin conexión: lista reducida de versiones.' });
+Object.assign(I18N.de, { versions: 'Versionen', latest: 'Neueste', releases: 'Releases', snapshots: 'Snapshots', old: 'Alt', search: 'Version suchen...', modsFor: 'Mods für Minecraft', avail: 'in dieser Version verfügbar',
+  needs: 'Nur in', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Bald', vanillaNote: 'Diese Version startet ohne YA-CLIENT-Mods. Die Mods unten funktionieren in', java_missing: 'Für diese Version wird Java {n} benötigt. Installiere es (Temurin {n}) und versuche es erneut.', latestRelease: 'Neueste Release', change: 'Version ändern', noRes: 'Keine Versionen gefunden.', offlineList: 'Offline: gekürzte Versionsliste.' });
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
-const MODS = { armor: 'Armor HUD', clock: 'Clock', coords: 'Coordinates', cps: 'CPS', crosshair: 'Crosshair', direction: 'Direction', discord_rpc: 'Discord RPC', fps: 'FPS', fullbright: 'Fullbright', health: 'Health',
-  keystrokes: 'Keystrokes', memory: 'Memory', motion_blur: 'Motion Blur', ping: 'Ping', potions: 'Potion Status', reach: 'Reach Display', speed: 'Speed', spotify: 'Spotify', toggle_sneak: 'Toggle Sneak', toggle_sprint: 'Toggle Sprint', waypoints: 'Waypoints', zoom: 'Zoom' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet' };
 const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)' };
 const ICON = {
   home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  versions: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17.5l9 5 9-5"/>',
   mods: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   servers: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
   cosmetics: '<path d="M6 3h12l3 5-9 13L3 8z"/><path d="M3 8h18"/>',
@@ -53,12 +60,12 @@ const ICON = {
 const ic = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
 
 let S = { lang: 'en', account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false };
-let C = {}; let MODSTATE = {}; let page = 'home'; let busy = false; let cosTab = 'all';
+let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest: {}, online: true }; let vtab = 'release'; let vq = ''; let page = 'home'; let busy = false; let cosTab = 'all';
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
-const PAGES = ['home', 'mods', 'servers', 'cosmetics', 'settings'];
-const PKEY = { home: 'launchpad', mods: 'mods', servers: 'servers', cosmetics: 'cosmetics', settings: 'settings' };
+const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'settings'];
+const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', settings: 'settings' };
 
 function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''}" data-p="${p}" title="${esc(t(PKEY[p]))}">${ic(p)}</button>`).join('');
@@ -84,6 +91,7 @@ function viewHome() {
   const ads = C.ads || [];
   return `<div class="lp"><div>
     <div class="card hero"><div class="big">YA <b>CLIENT</b></div><p>${esc(t('welcome'))}</p>
+      <button class="chip" data-p="versions" title="${esc(t('change'))}">Minecraft ${esc(S.version)} · ${esc(isYa(S.version) ? t('ya') : t('vanilla'))} &#9662;</button>
       <div class="playrow"><button class="btn pri" id="play" ${busy ? 'disabled' : ''}>${esc(busy ? t('launching') : t('launch'))}</button></div>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
     ${newsHtml(C.news)}</div>
@@ -92,9 +100,54 @@ function viewHome() {
       <button class="btn sm" id="accBtn">${esc(S.account ? t('switchAcc') : t('signIn'))}</button></div>
     ${adHtml(ads[0])}${adHtml(ads[1])}</div></div>`;
 }
-function viewMods() {
-  return `<h1>${esc(t('mods'))}</h1><p class="sub">${esc(t('modsHint'))}</p><div class="mods">` +
-    Object.keys(MODS).map((id) => `<div class="card mod"><span>${esc(MODS[id])}</span><button class="sw ${MODSTATE[id] === false ? '' : 'on'}" data-mod="${id}" aria-label="${esc(MODS[id])}"></button></div>`).join('') + '</div>';
+function cmpV(a, b) {
+  const pa = String(a).split('.').map((n) => parseInt(n, 10) || 0), pb = String(b).split('.').map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) { const d = (pa[i] || 0) - (pb[i] || 0); if (d) return d; }
+  return 0;
+}
+function specOk(spec, v) {
+  spec = String(spec);
+  if (spec === '*') return true;
+  if (spec.indexOf('>=') === 0) return /^\d+\.\d+/.test(v) && cmpV(v, spec.slice(2)) >= 0;
+  if (/\.x$/.test(spec)) return v === spec.slice(0, -2) || v.indexOf(spec.slice(0, -1)) === 0;
+  return v === spec;
+}
+const modOk = (m, v) => !m.soon && (m.versions || []).some((sp) => specOk(sp, v));
+const isYa = (v) => v === (S.ya || '1.8.9');
+
+function versionRows() {
+  const q = vq.trim().toLowerCase();
+  let list = VERS.versions.filter((v) => (vtab === 'release' ? v.type === 'release' : vtab === 'snapshot' ? v.type === 'snapshot' : (v.type === 'old_beta' || v.type === 'old_alpha')));
+  if (q) list = list.filter((v) => v.id.toLowerCase().indexOf(q) >= 0);
+  const lat = VERS.latest && VERS.latest.release;
+  const rows = [];
+  const row = (v) => `<button class="vrow ${v.id === S.version ? 'on' : ''}" data-ver="${esc(v.id)}"><b>${esc(v.id)}</b>
+    ${v.id === lat ? `<span class="badge">${esc(t('latest'))}</span>` : ''}${isYa(v.id) ? `<span class="badge ya">${esc(t('ya'))}</span>` : ''}
+    <small>${esc((v.time || '').slice(0, 10))}</small></button>`;
+  list.slice(0, 250).forEach((v) => rows.push(row(v)));
+  return rows.join('') || `<div class="note" style="padding:14px">${esc(t('noRes'))}</div>`;
+}
+function modsGrid() {
+  const v = S.version;
+  const ok = MODS.filter((m) => modOk(m, v)).length;
+  const items = MODS.slice().sort((a, b) => (modOk(b, v) ? 1 : 0) - (modOk(a, v) ? 1 : 0));
+  return { ok, html: items.map((m) => {
+    const on = modOk(m, v);
+    const need = m.soon ? t('soon') : t('needs') + ' ' + (m.versions || []).join(', ');
+    return `<div class="card mod ${on ? '' : 'off'}"><div><span>${esc(m.name)}</span><small>${esc(on ? m.desc : need)}</small></div>
+      ${on ? `<button class="sw ${MODSTATE[m.id] === false ? '' : 'on'}" data-mod="${esc(m.id)}" aria-label="${esc(m.name)}"></button>` : '<span class="lockic">' + ic('lock') + '</span>'}</div>`;
+  }).join('') };
+}
+function viewVersions() {
+  const g = modsGrid();
+  const tabs = [['release', 'releases'], ['snapshot', 'snapshots'], ['old', 'old']];
+  return `<div class="vp"><div class="card vl"><input type="text" id="vq" placeholder="${esc(t('search'))}" value="${esc(vq)}">
+    <div class="tabs" id="vtabs" style="margin:10px 0">${tabs.map((x) => `<button class="tab ${vtab === x[0] ? 'on' : ''}" data-vt="${x[0]}">${esc(t(x[1]))}</button>`).join('')}</div>
+    ${VERS.online ? '' : `<div class="note">${esc(t('offlineList'))}</div>`}
+    <div class="vlist" id="vlist">${versionRows()}</div></div>
+    <div><h1>${esc(t('modsFor'))} ${esc(S.version)}</h1>
+    <p class="sub" id="vsub">${esc(g.ok + ' / ' + MODS.length + ' ' + t('avail'))}${isYa(S.version) ? '' : ' · ' + esc(t('vanillaNote')) + ' ' + esc(S.ya || '1.8.9')}</p>
+    <div class="mods" id="mgrid">${g.html}</div></div></div>`;
 }
 function viewServers() {
   const list = C.servers || [];
@@ -136,7 +189,7 @@ function viewSettings() {
 }
 function render() {
   const v = $('#view');
-  v.innerHTML = { home: viewHome, mods: viewMods, servers: viewServers, cosmetics: viewCosmetics, settings: viewSettings }[page]();
+  v.innerHTML = { home: viewHome, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
 }
 
@@ -160,7 +213,7 @@ async function launch(server) {
   busy = true; status = { text: '', pct: 2, show: true }; go('home');
   const r = await window.ya.play(server ? { server } : {});
   if (r && r.error) {
-    busy = false; status = { text: t(r.error) + (r.detail ? ': ' + r.detail : ''), pct: 0, show: false };
+    busy = false; status = { text: r.error === 'java_missing' ? t('java_missing').replace(/\{n\}/g, r.detail) : t(r.error) + (r.detail ? ': ' + r.detail : ''), pct: 0, show: false };
     if (r.error === 'need_login') showLogin();
     if (page === 'home') render();
   }
@@ -175,6 +228,13 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'play') return launch();
   if (el.dataset.srv != null) { const s = (C.servers || [])[+el.dataset.srv]; if (s) launch({ host: s.host, port: s.port || 25565 }); return; }
   if (el.dataset.url) return window.ya.openExternal(el.dataset.url);
+  if (el.dataset.ver) {
+    S.version = el.dataset.ver; window.ya.saveSettings({ version: S.version });
+    const g = modsGrid(); $('#vlist').innerHTML = versionRows(); $('#mgrid').innerHTML = g.html;
+    $('#vsub').textContent = g.ok + ' / ' + MODS.length + ' ' + t('avail') + (isYa(S.version) ? '' : ' · ' + t('vanillaNote') + ' ' + (S.ya || '1.8.9'));
+    $('#view h1').textContent = t('modsFor') + ' ' + S.version; return;
+  }
+  if (el.dataset.vt) { vtab = el.dataset.vt; document.querySelectorAll('#vtabs .tab').forEach((b) => b.classList.toggle('on', b.dataset.vt === vtab)); $('#vlist').innerHTML = versionRows(); return; }
   if (el.dataset.mod) {
     const id = el.dataset.mod; const on = MODSTATE[id] === false; MODSTATE[id] = on;
     el.classList.toggle('on', on); return window.ya.modsSet(id, on);
@@ -192,6 +252,7 @@ document.addEventListener('change', async (e) => {
   if (e.target.id === 'sRam') window.ya.saveSettings({ ram: S.ram });
 });
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'vq') { vq = e.target.value; $('#vlist').innerHTML = versionRows(); }
   if (e.target.id === 'sRam') { S.ram = +e.target.value; $('#ramv').textContent = S.ram + ' MB'; }
 });
 
@@ -214,6 +275,8 @@ window.ya.on('log', (m) => {
   if (!I18N[S.lang]) S.lang = 'en';
   try { C = await window.ya.content(); } catch (_) { C = {}; }
   try { MODSTATE = await window.ya.modsGet(); } catch (_) { MODSTATE = {}; }
-  $('#ver').textContent = 'Minecraft ' + (S.version || '1.8.9');
+  try { MODS = (await window.ya.mods()).mods || []; } catch (_) { MODS = []; }
+  try { VERS = await window.ya.versions(); } catch (_) { }
+  $('#ver').textContent = 'YA CLIENT';
   renderNav(); render();
 })();

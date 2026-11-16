@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('ya', {
   openFolder: () => ipcRenderer.invoke('open-folder'),
   openExternal: (u) => ipcRenderer.invoke('open-external', u),
   content: () => ipcRenderer.invoke('content'),
+  versions: () => ipcRenderer.invoke('versions'),
+  mods: () => ipcRenderer.invoke('mods'),
   catalog: () => ipcRenderer.invoke('catalog'),
   modsGet: () => ipcRenderer.invoke('mods-get'),
   modsSet: (id, on) => ipcRenderer.invoke('mods-set', id, on),

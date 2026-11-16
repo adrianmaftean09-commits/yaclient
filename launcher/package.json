@@ -37,6 +37,7 @@
       "preload.js",
       "config.json",
       "content.json",
+      "mods.json",
       "renderer/**/*",
       "assets/**/*"
     ]

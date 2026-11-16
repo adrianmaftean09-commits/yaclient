@@ -16,7 +16,7 @@ const propsFile = path.join(os.homedir(), '.yaclient', 'config.properties'); // 
 fs.mkdirSync(gameDir, { recursive: true });
 fs.mkdirSync(weaveModsDir, { recursive: true });
 
-let state = { account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false, lang: 'en' };
+let state = { account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false, lang: 'en', version: '' };
 try { state = { ...state, ...JSON.parse(fs.readFileSync(stateFile, 'utf8')) }; } catch (_) {}
 const save = () => fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
 
@@ -25,6 +25,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1120, height: 700, minWidth: 980, minHeight: 620, frame: false, backgroundColor: '#09090b',
     title: 'YA CLIENT',
+    icon: path.join(__dirname, 'assets', 'icon.png'),
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true }
   });
   win.removeMenu();
@@ -83,7 +84,7 @@ function getJson(url) {
       let b = ''; r.on('data', (c) => (b += c)); r.on('end', () => {
         try { resolve(JSON.parse(b)); } catch (e) { reject(e); }
       });
-    }).on('error', reject);
+    }).on('timeout', function () { this.destroy(new Error('timeout')); }).on('error', reject);
   });
 }
 let contentCache = null;
@@ -105,14 +106,49 @@ ipcMain.handle('open-external', (_e, url) => {
   if (/^https?:\/\//i.test(String(url || ''))) shell.openExternal(url);
 });
 
-// ---------- Java 8 ----------
-function findJava8() {
+// ---------- versions and mods ----------
+const FALLBACK_VERSIONS = ['1.21.4', '1.21.1', '1.20.6', '1.20.4', '1.20.1', '1.19.4', '1.19.2', '1.18.2', '1.17.1', '1.16.5', '1.15.2',
+  '1.14.4', '1.13.2', '1.12.2', '1.11.2', '1.10.2', '1.9.4', '1.8.9', '1.8', '1.7.10'];
+let versionsCache = null;
+ipcMain.handle('versions', async () => {
+  if (versionsCache) return versionsCache;
+  try {
+    const m = await getJson('https://piston-meta.mojang.com/mc/game/version_manifest_v2.json');
+    versionsCache = { online: true, latest: m.latest, versions: m.versions.map((v) => ({ id: v.id, type: v.type, time: v.releaseTime })) };
+  } catch (_) {
+    versionsCache = { online: false, latest: { release: FALLBACK_VERSIONS[0], snapshot: FALLBACK_VERSIONS[0] },
+      versions: FALLBACK_VERSIONS.map((id) => ({ id, type: 'release', time: '' })) };
+    setTimeout(() => { versionsCache = null; }, 30000);   // try again later
+  }
+  return versionsCache;
+});
+ipcMain.handle('mods', () => {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'mods.json'), 'utf8')); } catch (_) { return { mods: [] }; }
+});
+function versionType(id) {
+  const v = versionsCache && versionsCache.versions.find((x) => x.id === id);
+  return v ? v.type : 'release';
+}
+// Java major version a Minecraft version needs
+function javaMajorFor(v) {
+  const m = String(v).match(/^1\.(\d+)(?:\.(\d+))?/);
+  if (!m) return /^\d\dw/.test(String(v)) ? 21 : 8;
+  const minor = +m[1], patch = +(m[2] || 0);
+  if (minor <= 16) return 8;
+  if (minor <= 19 || (minor === 20 && patch < 5)) return 17;
+  return 21;
+}
+
+// ---------- Java ----------
+function findJava(major) {
   const roots = [
     process.env['ProgramFiles'], process.env['ProgramFiles(x86)'],
     process.env['LOCALAPPDATA'] && path.join(process.env['LOCALAPPDATA'], 'Programs')
   ].filter(Boolean);
-  const vendors = ['Eclipse Adoptium', 'Java', 'Zulu', 'Amazon Corretto', 'Microsoft', 'BellSoft', 'AdoptOpenJDK', 'Eclipse Foundation'];
-  const re = /(jdk|jre)[-_ ]?(1\.)?8([._-]|$)|zulu-?8|jdk8|jre8|1\.8\.0/i;
+  const vendors = ['Eclipse Adoptium', 'Java', 'Zulu', 'Amazon Corretto', 'Microsoft', 'BellSoft', 'AdoptOpenJDK', 'Eclipse Foundation', 'Semeru'];
+  const re = major === 8
+    ? /(jdk|jre)[-_ ]?(1\.)?8([._-]|$)|zulu-?8|jdk8|jre8|1\.8\.0/i
+    : new RegExp('(jdk|jre|zulu|java)[-_ ]?' + major + '([._-]|$)|(^|[-_ ])' + major + '([._]|$)', 'i');
   for (const r of roots) {
     for (const v of vendors) {
       const dir = path.join(r, v);
@@ -127,13 +163,17 @@ function findJava8() {
   }
   return null;
 }
-function resolveJava() {
-  if (state.javaPath && state.javaPath !== 'java' && fs.existsSync(state.javaPath)) return state.javaPath;
-  return findJava8() || 'java';
+const findJava8 = () => findJava(8);
+function resolveJava(major) {
+  if (major === 8) {
+    if (state.javaPath && state.javaPath !== 'java' && fs.existsSync(state.javaPath)) return state.javaPath;
+    return findJava(8) || 'java';
+  }
+  return findJava(major);
 }
 
 // ---------- state / account ----------
-ipcMain.handle('state', () => ({ ...state, version: cfg.minecraftVersion, gameDir }));
+ipcMain.handle('state', () => ({ ...state, version: state.version || cfg.minecraftVersion, ya: cfg.minecraftVersion, gameDir }));
 ipcMain.handle('settings', (_e, s) => { state = { ...state, ...s }; save(); return state; });
 ipcMain.handle('logout', () => { state.account = null; save(); return true; });
 ipcMain.handle('detect-java', () => findJava8());
@@ -228,20 +268,28 @@ ipcMain.handle('play', async (_e, opts) => {
       writeProps({ lang: state.lang || 'en', 'api.base': (content.apiBase || '').replace(/\/+$/, ''), 'store.url': content.storeUrl || '' });
     } catch (_) {}
 
-    send('status', { k: 'updating', pct: 2 });
-    const clientJar = path.join(weaveModsDir, 'YAClient.jar');
-    const tag = await fetchRelease(cfg.repo, (a) => a.name === cfg.jarAsset, clientJar);
-    send('log', `YA CLIENT ${tag} updated.`);
-
-    send('status', { k: 'loader', pct: 6 });
+    const version = state.version || cfg.minecraftVersion;
+    const yaMode = version === cfg.minecraftVersion;   // YA CLIENT (Weave + mods) only exists for this version
     const loaderJar = path.join(dataDir, 'weave-loader.jar');
-    if (!fs.existsSync(loaderJar)) {
-      await fetchRelease(cfg.weaveRepo,
-        (a) => /\.jar$/.test(a.name) && !/sources|javadoc/i.test(a.name), loaderJar);
+    if (yaMode) {
+      send('status', { k: 'updating', pct: 2 });
+      const clientJar = path.join(weaveModsDir, 'YAClient.jar');
+      const tag = await fetchRelease(cfg.repo, (a) => a.name === cfg.jarAsset, clientJar);
+      send('log', `YA CLIENT ${tag} updated.`);
+
+      send('status', { k: 'loader', pct: 6 });
+      if (!fs.existsSync(loaderJar)) {
+        await fetchRelease(cfg.weaveRepo,
+          (a) => /\.jar$/.test(a.name) && !/sources|javadoc/i.test(a.name), loaderJar);
+      }
+    } else {
+      send('log', `Minecraft ${version}: vanilla launch (YA CLIENT mods are available on ${cfg.minecraftVersion}).`);
     }
 
-    const javaPath = resolveJava();
-    send('log', `Java: ${javaPath}`);
+    const major = yaMode ? 8 : javaMajorFor(version);
+    const javaPath = resolveJava(major);
+    if (!javaPath) return { error: 'java_missing', detail: String(major) };
+    send('log', `Java ${major}: ${javaPath}`);
 
     const launcher = new Client();
     const startedAt = Date.now();
@@ -249,6 +297,7 @@ ipcMain.handle('play', async (_e, opts) => {
     launcher.on('debug', (m) => send('log', clean(m)));
     launcher.on('data', (m) => send('log', clean(m)));
     launcher.on('arguments', () => {
+      if (!yaMode) return;
       try { patchSplash(); } catch (e) { send('log', 'splash: ' + e.message); }
     });
     launcher.on('close', (code) => {
@@ -261,9 +310,9 @@ ipcMain.handle('play', async (_e, opts) => {
       authorization: state.account.auth,
       root: gameDir,
       javaPath,
-      version: { number: cfg.minecraftVersion, type: 'release' },
+      version: { number: version, type: versionType(version) },
       memory: { max: `${state.ram}M`, min: '1024M' },
-      customArgs: [`-javaagent:${loaderJar}`]
+      customArgs: yaMode ? [`-javaagent:${loaderJar}`] : []
     };
     if (opts && opts.server && opts.server.host) {
       launchOpts.server = { host: String(opts.server.host), port: String(opts.server.port || 25565) };

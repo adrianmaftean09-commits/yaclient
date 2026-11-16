@@ -49,6 +49,15 @@ public class YAClient implements ModInitializer {
         MODULES.add(new SpotifyModule());
         MODULES.add(new WaypointsModule());
         // utilities
+        MODULES.add(new DayCounterModule());
+        MODULES.add(new BiomeModule());
+        MODULES.add(new LightLevelModule());
+        MODULES.add(new ServerAddressModule());
+        MODULES.add(new SessionTimeModule());
+        MODULES.add(new RotationModule());
+        MODULES.add(new ItemInfoModule());
+        MODULES.add(new PlayerCountModule());
+        MODULES.add(new FoodModule());
         MODULES.add(new ToggleSprintModule());
         MODULES.add(new ToggleSneakModule());
         MODULES.add(new ZoomModule());
@@ -56,6 +65,14 @@ public class YAClient implements ModInitializer {
         MODULES.add(new MotionBlurModule());
         MODULES.add(new CrosshairModule());
         MODULES.add(new DiscordRpcModule());
+        MODULES.add(new TimeChangerModule());
+        MODULES.add(new ClearWeatherModule());
+        MODULES.add(new HitboxesModule());
+        MODULES.add(new FovModule());
+        MODULES.add(new CinematicCameraModule());
+        MODULES.add(new EntityCountModule());
+        MODULES.add(new FallDistanceModule());
+        MODULES.add(new XpLevelModule());
         // planned (need the Mixin phase, see docs/PHASE2.md)
         MODULES.add(new SoonModule("hit_color", Category.PVP));
         MODULES.add(new SoonModule("old_animations", Category.PVP));

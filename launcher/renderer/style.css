@@ -12,7 +12,7 @@ button{cursor:pointer;border:0;background:none}
 svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .app{display:flex;height:100vh}
 .rail{width:76px;background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:20px 0 16px}
-.mark{width:42px;height:42px;border-radius:12px;background:var(--text);color:#09090b;display:grid;place-items:center;font-weight:800;font-size:17px}
+.mark{width:46px;height:46px;object-fit:contain}
 .rail nav{display:flex;flex-direction:column;gap:8px;margin-top:30px;flex:1}
 .nav{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--mute);transition:.15s}
 .nav:hover,.nav.on{background:var(--surface2);color:var(--text)}
@@ -81,3 +81,20 @@ input[type=range]{accent-color:#fff;width:180px}
 .dlg{width:380px;background:var(--surface);border:1px solid var(--line2);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:12px}
 .dlg .mark{margin-bottom:6px}.dlg .btn{width:100%}.dlg .err{color:var(--red-hi);font-size:12px;min-height:16px}
 .con{font:12px/1.5 Consolas,monospace;color:var(--mute);background:#070709;border:1px solid var(--line);border-radius:12px;padding:12px;height:300px;overflow:auto;white-space:pre-wrap;user-select:text}
+
+.chip{display:inline-block;margin:0 0 16px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--mute)}
+.vp{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+.vl{padding:14px;position:sticky;top:0}
+.vl input{width:100%}
+.vlist{max-height:calc(100vh - 290px);overflow:auto;display:flex;flex-direction:column;gap:4px;padding-right:4px}
+.vlist::-webkit-scrollbar{width:6px}.vlist::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
+.vrow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:9px 12px;border-radius:10px;color:var(--mute);background:none}
+.vrow:hover{background:var(--surface2);color:var(--text)}
+.vrow.on{background:var(--surface2);color:var(--text);box-shadow:inset 3px 0 0 var(--red)}
+.vrow b{font-weight:600;min-width:64px}.vrow small{margin-left:auto;color:var(--dim)}
+.badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;background:var(--line2);color:var(--text);letter-spacing:.4px}
+.badge.ya{background:var(--red)}
+.mod small{display:block;color:var(--mute);font-size:11px;font-weight:400;max-width:200px}
+.mod.off{opacity:.5}.lockic{color:var(--dim)}.lockic svg{width:18px;height:18px}
+.chip{width:fit-content;display:block}
