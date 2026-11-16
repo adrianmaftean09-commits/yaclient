@@ -1,5 +1,6 @@
 package dev.yaclient;
 
+import dev.yaclient.cosmetics.CosmeticsInstaller;
 import dev.yaclient.modules.*;
 import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
@@ -66,6 +67,10 @@ public class YAClient implements ModInitializer {
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
             Minecraft mc = Minecraft.getMinecraft();
+
+            // cosmetics: add the render layer once the renderers exist, keep purchases in sync
+            CosmeticsInstaller.tryInstall();
+            CosmeticsApi.refreshAsync(false);
 
             // our title screen replaces the vanilla one
             if (mc.currentScreen != null && mc.currentScreen.getClass() == GuiMainMenu.class) {

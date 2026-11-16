@@ -116,5 +116,11 @@
  "mod.autogg.desc": "Escribe GG al terminar la partida",
  "mod.levelhead.desc": "Niveles de jugadores sobre el nombre",
  "mod.minimap.name": "Minimapa",
- "mod.minimap.desc": "Mapa en pantalla del lado del cliente"
+ "mod.minimap.desc": "Mapa en pantalla del lado del cliente",
+ "cos.dev_mode": "Modo desarrollo: sin tienda configurada, todos los cosm\u00e9ticos desbloqueados",
+ "cos.syncing": "Sincronizando con tu cuenta...",
+ "cos.status.ok": "Sincronizado con tu cuenta",
+ "cos.status.login": "Inicia sesi\u00f3n con una cuenta Microsoft para usar tus compras",
+ "cos.status.offline": "Tienda no disponible, datos guardados",
+ "cos.store": "Tienda"
 }

@@ -116,5 +116,11 @@
  "mod.autogg.desc": "Scrive GG a fine partita",
  "mod.levelhead.desc": "Livelli dei giocatori sopra il nome",
  "mod.minimap.name": "Minimappa",
- "mod.minimap.desc": "Mappa a schermo lato client"
+ "mod.minimap.desc": "Mappa a schermo lato client",
+ "cos.dev_mode": "Modalit\u00e0 sviluppo: nessuno store configurato, tutti i cosmetici sono sbloccati",
+ "cos.syncing": "Sincronizzazione con il tuo account...",
+ "cos.status.ok": "Sincronizzato con il tuo account",
+ "cos.status.login": "Accedi con un account Microsoft per usare i tuoi acquisti",
+ "cos.status.offline": "Store non raggiungibile, dati salvati",
+ "cos.store": "Negozio"
 }

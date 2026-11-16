@@ -85,6 +85,16 @@ final class Icons {
                 g.fill(new Ellipse2D.Float(11f, 6.5f, 2.4f, 2.4f));
                 g.fill(new Ellipse2D.Float(15f, 9f, 2.4f, 2.4f));
                 break;
+            case "lock":
+                g.draw(new RoundRectangle2D.Float(5f, 10.5f, 14f, 10f, 3f, 3f));
+                g.draw(new Arc2D.Float(7.5f, 3.5f, 9f, 11f, 0f, 180f, Arc2D.OPEN));
+                g.fill(new Ellipse2D.Float(11f, 14f, 2f, 2f));
+                break;
+            case "cart":
+                g.draw(poly(false, 3f, 4f, 6f, 4f, 8.5f, 15f, 18f, 15f, 20f, 7f, 7f, 7f));
+                g.fill(new Ellipse2D.Float(8.5f, 18f, 2.6f, 2.6f));
+                g.fill(new Ellipse2D.Float(15f, 18f, 2.6f, 2.6f));
+                break;
             case "reset":
                 g.draw(new Ellipse2D.Float(4f, 4f, 16f, 16f));
                 g.draw(poly(false, 4f, 4f, 4f, 9f, 9f, 9f));

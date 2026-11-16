@@ -126,5 +126,11 @@
  "mod.levelhead.name": "Levelhead",
  "mod.levelhead.desc": "Player levels above nametags",
  "mod.minimap.name": "Minimap",
- "mod.minimap.desc": "Client-side map overlay"
+ "mod.minimap.desc": "Client-side map overlay",
+ "cos.dev_mode": "Dev mode: no store configured, every cosmetic is unlocked",
+ "cos.syncing": "Syncing with your account...",
+ "cos.status.ok": "Synced with your account",
+ "cos.status.login": "Log in with a Microsoft account to use your purchases",
+ "cos.status.offline": "Store unreachable, showing saved data",
+ "cos.store": "Store"
 }

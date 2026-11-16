@@ -107,6 +107,7 @@ public class MenuScreen extends GuiScreen {
         pageFade = 0f;
         drawerModule = null;
         searchFocus = false;
+        if (i == 4) CosmeticsApi.refreshAsync(true);
     }
 
     private void saveAll() {
@@ -434,32 +435,60 @@ public class MenuScreen extends GuiScreen {
             GuiInventory.drawEntityOnScreen(px, py, 100, (float) (px - mxl), (float) (py - 120 - myl), mc.thePlayer);
         }
         int x0 = CX + bw + 24, wRight = VW - bw - 24;
-        int y = VY;
+
+        // status line + store button
+        String stKey;
+        if (!CosmeticsApi.enabled()) stKey = "cos.dev_mode";
+        else if (CosmeticsApi.status().isEmpty()) stKey = "cos.syncing";
+        else stKey = "cos.status." + CosmeticsApi.status();
+        String store = Lang.t("cos.store");
+        int sw = Gfx.width(store, 11, true) + 40;
+        Gfx.text(Gfx.trim(Lang.t(stKey), 10, false, wRight - sw - 12), x0, VY + 4, 10, false, Theme.MUTED);
+        if (CosmeticsApi.enabled()) {
+            int bx = x0 + wRight - sw, by = VY - 4;
+            boolean ov = overView(bx, by, sw, 26);
+            Gfx.rr(bx, by, sw, 26, 9, ov ? Ui.mix(Theme.accent(), 0xFFFFFFFF, 0.15f) : Theme.accent());
+            Gfx.icon("cart", bx + 11, by + 5, 16, Theme.onAccent());
+            Gfx.text(store, bx + 31, by + (26 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.onAccent());
+            hitView(bx, by, sw, 26, new Action() {
+                @Override public void run(float px, float py) { CosmeticsApi.openStore(); }
+            }, null, null);
+        }
+
+        int y = VY + 28;
         for (final String slot : Cosmetics.SLOTS) {
             Gfx.text(Lang.t("cos.slot." + slot), x0, y, 13, true, Theme.TEXT);
             y += 22;
             String[] items = Cosmetics.items(slot);
             int cx = x0;
-            String eq = Cosmetics.equipped(slot);
+            String sel = Cosmetics.selected(slot);
             for (int i = -1; i < items.length; i++) {
                 final String id = i < 0 ? "none" : items[i];
+                final boolean has = id.equals("none") || CosmeticsApi.owned(id);
                 String lab = Lang.t(i < 0 ? "cos.none" : "cos.item." + id);
-                int cwid = Math.max(70, Gfx.width(lab, 11, false) + 24);
-                if (cx + cwid > x0 + wRight) { cx = x0; y += 34; }
-                boolean sel = eq.equals(id);
-                boolean ov = overView(cx, y, cwid, 28);
-                Gfx.rr(cx, y, cwid, 28, 9, sel ? Ui.alpha(Theme.accent(), 0.22f) : (ov ? 0x1AFFFFFF : 0x10FFFFFF));
-                if (sel) Gfx.rrOutline(cx, y, cwid, 28, 9, 1, Theme.accent());
-                Gfx.text(lab, cx + (cwid - Gfx.width(lab, 11, false)) / 2, y + (28 - Gfx.lineHeight(11, false)) / 2, 11, false,
-                        sel ? Theme.TEXT : Theme.MUTED);
-                hitView(cx, y, cwid, 28, new Action() {
-                    @Override public void run(float px, float py) { Cosmetics.equip(slot, id); }
+                String price = has ? null : CosmeticsApi.price(id);
+                int extra = has ? 0 : 20 + (price == null ? 0 : Gfx.width(price, 10, false) + 6);
+                int cwid = Math.max(64, Gfx.width(lab, 11, false) + 22 + extra);
+                if (cx + cwid > x0 + wRight) { cx = x0; y += 32; }
+                boolean on = sel.equals(id) && has;
+                boolean ov = overView(cx, y, cwid, 26);
+                Gfx.rr(cx, y, cwid, 26, 9, on ? Ui.alpha(Theme.accent(), 0.22f) : (ov ? 0x1AFFFFFF : 0x10FFFFFF));
+                if (on) Gfx.rrOutline(cx, y, cwid, 26, 9, 1, Theme.accent());
+                int tx = cx + 11;
+                if (!has) { Gfx.icon("lock", tx, y + 6, 14, Theme.MUTED); tx += 18; }
+                Gfx.text(lab, tx, y + (26 - Gfx.lineHeight(11, false)) / 2, 11, false, has ? (on ? Theme.TEXT : Theme.MUTED) : Theme.DIM);
+                if (price != null) {
+                    Gfx.text(price, cx + cwid - 8 - Gfx.width(price, 10, false), y + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
+                }
+                hitView(cx, y, cwid, 26, new Action() {
+                    @Override public void run(float px, float py) {
+                        if (has) Cosmetics.equip(slot, id); else CosmeticsApi.openStore();
+                    }
                 }, null, null);
                 cx += cwid + 8;
             }
-            y += 34 + 14;
+            y += 26 + 14;
         }
-        Gfx.text(Gfx.trim(Lang.t("cos.notice"), 10, false, wRight), x0, VY + VH - 14, 10, false, Theme.DIM);
         return 0f;
     }
 

@@ -1,0 +1,18 @@
+{
+  "_help": "Edit this file to fill the launcher. Images can be https URLs. Leave a list empty to show placeholders.",
+  "apiBase": "",
+  "storeUrl": "",
+  "supportUrl": "",
+  "remote": "",
+  "news": [
+    {
+      "title": "Welcome to YA CLIENT",
+      "text": "New HUD editor, cosmetics, 4 languages and many new modules. Press Right Shift in game.",
+      "image": "",
+      "url": "",
+      "date": "2026-11-16"
+    }
+  ],
+  "servers": [],
+  "ads": []
+}

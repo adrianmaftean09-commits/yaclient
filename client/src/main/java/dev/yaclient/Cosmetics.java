@@ -1,9 +1,9 @@
 package dev.yaclient;
 
 /**
- * Cosmetics catalog and the player's selection. The selection is saved in the config; rendering
- * on the player model is done by the render layer of phase 2 (see docs/PHASE2.md), which reads
- * equipped(slot).
+ * Cosmetics catalog and the player's selection. Items are bought on the website; the selection is
+ * saved locally and synced to the store backend (see CosmeticsApi). Rendering is done by
+ * cosmetics/CosmeticLayer.
  */
 public final class Cosmetics {
     public static final String[] SLOTS = {"wings", "cape", "hat", "bandana"};
@@ -21,11 +21,18 @@ public final class Cosmetics {
         return new String[0];
     }
 
-    /** Equipped item id for the slot, or "none". */
-    public static String equipped(String slot) { return Config.get("cos." + slot, "none"); }
+    /** What the player chose for the slot ("none" if nothing). */
+    public static String selected(String slot) { return Config.get("cos." + slot, "none"); }
+
+    /** What is actually worn: the selection, but only if it is owned. */
+    public static String equipped(String slot) {
+        String s = selected(slot);
+        return (s.equals("none") || !CosmeticsApi.owned(s)) ? "none" : s;
+    }
 
     public static void equip(String slot, String item) {
         Config.set("cos." + slot, item);
         Config.save();
+        CosmeticsApi.pushEquip(slot, item);
     }
 }

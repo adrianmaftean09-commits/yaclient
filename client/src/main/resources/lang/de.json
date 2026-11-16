@@ -116,5 +116,11 @@
  "mod.autogg.desc": "Schreibt GG am Spielende",
  "mod.levelhead.desc": "Spielerlevel \u00fcber dem Namen",
  "mod.minimap.name": "Minimap",
- "mod.minimap.desc": "Clientseitige Karte"
+ "mod.minimap.desc": "Clientseitige Karte",
+ "cos.dev_mode": "Entwicklermodus: kein Shop eingerichtet, alle Kosmetik freigeschaltet",
+ "cos.syncing": "Synchronisiere mit deinem Konto...",
+ "cos.status.ok": "Mit deinem Konto synchronisiert",
+ "cos.status.login": "Melde dich mit einem Microsoft-Konto an, um deine K\u00e4ufe zu nutzen",
+ "cos.status.offline": "Shop nicht erreichbar, gespeicherte Daten",
+ "cos.store": "Shop"
 }
