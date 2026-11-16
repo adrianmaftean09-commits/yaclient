@@ -1,6 +1,7 @@
 package dev.yaclient;
 
 import dev.yaclient.cosmetics.CosmeticPreview;
+import dev.yaclient.cosmetics.Logo;
 import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -47,7 +48,7 @@ public class MenuScreen extends GuiScreen {
     private static final int CX = SB + 24, VY = 76, VW = PW - CX - 24, VH = PH - VY - 18;
     private static final int NAV_H = 34;
     private static final String[] TABS = {"all", "info", "pvp", "utility", "cosmetics", "settings"};
-    private static final String[] TAB_ICONS = {"grid", "info", "sword", "wrench", "star", "gear"};
+    private static final String[] TAB_ICONS = {"grid", "info", "sword", "wrench", "shirt", "gear"};
 
     private final List<Hit> hits = new ArrayList<Hit>();
     private final Map<String, Float> anim = new HashMap<String, Float>();
@@ -58,6 +59,10 @@ public class MenuScreen extends GuiScreen {
     private int originX, originY, gs = 2;
     private float mxl, myl;
     private int tab = 0;
+
+    public MenuScreen() {}
+
+    public MenuScreen(int startTab) { this.tab = startTab; if (startTab == 4) CosmeticsApi.refreshAsync(true); }
     private String query = "";
     private boolean searchFocus;
     private Module drawerModule, drawerLast;
@@ -186,15 +191,15 @@ public class MenuScreen extends GuiScreen {
         int ls = 22;
         while (ls > 12 && Gfx.width("YA CLIENT", ls, true) > SB - 44) ls--;
         int yaW = Gfx.width("YA ", ls, true);
-        Gfx.text("YA ", 24, 24, ls, true, Theme.TEXT);
-        Gfx.text("CLIENT", 24 + yaW, 24, ls, true, Theme.BRAND_RED);
-        Gfx.text("Minecraft 1.8.9", 24, 24 + Gfx.lineHeight(ls, true) + 1, 10, false, Theme.DIM);
+        Logo.draw(20, 18, 36, 36, fade);
+        Gfx.text("YA ", 64, 22, ls - 3, true, Theme.TEXT);
+        Gfx.text("CLIENT", 64 + Gfx.width("YA ", ls - 3, true), 22, ls - 3, true, Theme.BRAND_RED);
+        Gfx.text("Minecraft 1.8.9", 64, 22 + Gfx.lineHeight(ls - 3, true) + 1, 10, false, Theme.DIM);
 
         float target = navY(tab);
         indY = indY < 0f ? target : Ui.approach(indY, target, dt, 18f);
         int iy = Math.round(indY);
         Gfx.rr(10, iy, SB - 20, NAV_H, 9, Ui.alpha(Theme.accent(), 0.16f));
-        Gfx.rr(10, iy + 9, 3, NAV_H - 18, 1, Theme.accent());
 
         for (int i = 0; i < TABS.length; i++) {
             final int idx = i;
@@ -284,58 +289,55 @@ public class MenuScreen extends GuiScreen {
             Gfx.textCentered(Lang.t("ui.no_results"), CX + VW / 2, VY + 70, 13, false, Theme.MUTED);
             return 0f;
         }
-        int cw = (VW - 12) / 2, ch = 60, gap = 12;
+        int gap = 12, cw = (VW - 2 * gap) / 3, ch = 128;
         for (int i = 0; i < list.size(); i++) {
-            int x = CX + (i % 2) * (cw + gap), y = top + (i / 2) * (ch + gap);
+            int x = CX + (i % 3) * (cw + gap), y = top + (i / 3) * (ch + gap);
             if (y + ch < VY - 2 || y > VY + VH + 2) continue;
             drawCard(list.get(i), x, y, cw, ch, dt);
         }
-        return ((list.size() + 1) / 2) * (ch + gap);
+        return ((list.size() + 2) / 3) * (ch + gap);
     }
 
     private void drawCard(final Module m, int x, int y, int cw, int ch, float dt) {
         float h = anim("h" + m.id, overView(x, y, cw, ch) ? 1f : 0f, dt, 16f, 0f);
         float a = anim("e" + m.id, m.enabled ? 1f : 0f, dt, 14f, m.enabled ? 1f : 0f);
-        int accent = Theme.accent();
 
         Gfx.rr(x, y, cw, ch, 12, Ui.mix(Theme.CARD, Theme.CARD_HOVER, h));
-        Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x14FFFFFF, Ui.alpha(accent, 0.55f), a));
+        Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x14FFFFFF, 0x55FFFFFF, a * 0.6f + h * 0.4f));
 
-        int ib = 36, iy = y + (ch - ib) / 2;
-        Gfx.rr(x + 12, iy, ib, ib, 10, Ui.mix(0x10FFFFFF, Ui.alpha(accent, 0.22f), a));
-        Gfx.icon(m.category.icon, x + 12 + (ib - 18) / 2, iy + (ib - 18) / 2, 18, Ui.mix(Theme.MUTED, accent, a));
+        // big icon, centered
+        Gfx.icon(m.category.icon, x + (cw - 30) / 2, y + 12, 30, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
+        Gfx.textCentered(Gfx.trim(m.name(), 12, true, cw - 16), x + cw / 2, y + 48, 12, true, m.available ? Theme.TEXT : Theme.MUTED);
 
-        int tx = x + 12 + ib + 12;
         boolean gear = m.available && !m.settings.isEmpty();
-        int rightW = 46 + (gear ? 26 : 0);
-        int maxW = cw - (tx - x) - rightW - 6;
-        Gfx.text(Gfx.trim(m.name(), 12, true, maxW), tx, y + 12, 12, true, m.available ? Theme.TEXT : Theme.MUTED);
-        Gfx.text(Gfx.trim(m.desc(), 10, false, maxW), tx, y + 12 + Gfx.lineHeight(12, true) + 2, 10, false, Theme.MUTED);
+        int bx = x + 10, bw = cw - 20, oy = y + 70, oh = 20;
+        int ow = gear ? bw : bw;
+        boolean oo = gear && overView(bx, oy, ow, oh);
+        Gfx.rr(bx, oy, ow, oh, 7, gear ? (oo ? 0x2BFFFFFF : 0x17FFFFFF) : 0x0DFFFFFF);
+        String opt = Lang.t("ui.options");
+        Gfx.textCentered(opt, bx + ow / 2, oy + (oh - Gfx.lineHeight(9, true)) / 2, 9, true, gear ? Theme.TEXT : Theme.DIM);
+        if (gear) hitView(bx, oy, ow, oh, new Action() {
+            @Override public void run(float px, float py) { drawerModule = m; }
+        }, null, null);
 
-        int sx = x + cw - 12 - 34, sy = y + (ch - 18) / 2;
+        int ty = y + 95, th = 24;
         if (m.available) {
-            Gfx.rr(sx, sy, 34, 18, 9, Ui.mix(0x33FFFFFF, accent, a));
-            Gfx.rr(sx + 2 + Math.round(16 * a), sy + 2, 14, 14, 7, Ui.mix(0xFFB4B4BC, Theme.onAccent(), a));
+            boolean to = overView(bx, ty, bw, th);
+            int off = Ui.mix(0xFF26262C, 0xFF3A3A44, to ? 1f : 0f);
+            int on = Ui.mix(0xFFE9E9EC, 0xFFFFFFFF, to ? 1f : 0f);
+            Gfx.rr(bx, ty, bw, th, 8, Ui.mix(off, on, a));
+            String st = Lang.t(m.enabled ? "ui.enabled" : "ui.disabled");
+            Gfx.textCentered(st, bx + bw / 2, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, Ui.mix(Theme.MUTED, 0xFF101014, a));
+            hitView(bx, ty, bw, th, new Action() {
+                @Override public void run(float px, float py) { m.toggle(); }
+            }, null, null);
         } else {
-            String soon = Lang.t("ui.soon");
-            int bw = Gfx.width(soon, 9, true) + 14;
-            Gfx.rr(x + cw - 12 - bw, sy + 1, bw, 16, 8, 0x1FFFFFFF);
-            Gfx.text(soon, x + cw - 12 - bw + 7, sy + 1 + (16 - Gfx.lineHeight(9, true)) / 2, 9, true, Theme.MUTED);
+            Gfx.rr(bx, ty, bw, th, 8, 0x14FFFFFF);
+            Gfx.textCentered(Lang.t("ui.soon"), bx + bw / 2, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.DIM);
         }
-
-        hitView(x, y, cw, ch, new Action() {
-            @Override public void run(float px, float py) { m.toggle(); }
-        }, null, new Action() {
+        hitView(x, y, cw, ch, null, null, new Action() {
             @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available) drawerModule = m; }
         });
-        if (gear) {
-            int gx = sx - 26, gy = y + (ch - 22) / 2;
-            boolean go = overView(gx, gy, 22, 22);
-            Gfx.icon("gear", gx + 3, gy + 3, 16, go ? Theme.TEXT : Theme.MUTED);
-            hitView(gx, gy, 22, 22, new Action() {
-                @Override public void run(float px, float py) { drawerModule = m; }
-            }, null, null);
-        }
     }
 
     // ----- settings drawer -----

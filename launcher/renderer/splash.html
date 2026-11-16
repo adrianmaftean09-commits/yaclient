@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:#07070a;font-family:Inter,"Segoe UI",system-ui,sans-serif;color:#f4f4f5;-webkit-app-region:drag}
+.bg{position:absolute;inset:-20%;filter:blur(60px);opacity:.9}
+.bg i{position:absolute;border-radius:50%;animation:d 9s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:46%;height:60%;left:6%;top:12%;background:#1b1b24}
+.bg i:nth-child(2){width:40%;height:50%;right:6%;top:30%;background:#3a0a0c;animation-delay:-3s}
+.bg i:nth-child(3){width:36%;height:40%;left:34%;bottom:0;background:#14141a;animation-delay:-6s}
+@keyframes d{to{transform:translate(4%,-5%) scale(1.12)}}
+.c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.c img{width:116px;height:116px;object-fit:contain;filter:drop-shadow(0 6px 26px rgba(0,0,0,.6))}
+.w{font-weight:800;letter-spacing:.5px;font-size:20px}.w b{color:#e10600}
+.t{font-size:14px;color:#cfcfd6;font-weight:500;margin-top:6px}
+.bar{width:300px;height:8px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.bar i{display:block;height:100%;width:4%;background:#fff;border-radius:99px;transition:width .4s ease}
+</style></head><body><div class="bg"><i></i><i></i><i></i></div>
+<div class="c"><img src="../assets/logo.png"><div class="w">YA <b>CLIENT</b></div><div class="t" id="t">Starting Minecraft</div><div class="bar"><i id="b"></i></div></div></body></html>

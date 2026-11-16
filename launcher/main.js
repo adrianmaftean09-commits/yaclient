@@ -31,6 +31,23 @@ function createWindow() {
   win.removeMenu();
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
+let splash = null;
+function showSplash() {
+  try {
+    closeSplash();
+    splash = new BrowserWindow({ width: 640, height: 400, frame: false, resizable: false, show: false, backgroundColor: '#07070a',
+      title: 'YA CLIENT', icon: path.join(__dirname, 'assets', 'icon.png'), alwaysOnTop: false });
+    splash.removeMenu();
+    splash.loadFile(path.join(__dirname, 'renderer', 'splash.html'));
+    splash.once('ready-to-show', () => { if (splash) splash.show(); });
+    splash.on('closed', () => { splash = null; });
+  } catch (_) { splash = null; }
+}
+function splashSet(text, pct) {
+  if (!splash || splash.isDestroyed()) return;
+  splash.webContents.executeJavaScript(`document.getElementById('t').textContent=${JSON.stringify(String(text))};document.getElementById('b').style.width=${Math.max(2, Math.min(100, pct | 0))}+'%'`).catch(() => {});
+}
+function closeSplash() { if (splash && !splash.isDestroyed()) splash.close(); splash = null; }
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());
 
@@ -258,6 +275,48 @@ function patchSplash() {
   zip.writeZip(jar);
 }
 
+// ---------- Fabric (Minecraft 1.16+) ----------
+const vcmp = (a, b) => {
+  const pa = String(a).split('.').map((n) => parseInt(n, 10) || 0), pb = String(b).split('.').map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++) { const d = (pa[i] || 0) - (pb[i] || 0); if (d) return d; }
+  return 0;
+};
+const fabricSupported = (v) => /^\d+\.\d+(\.\d+)?$/.test(v) && vcmp(v, '1.16') >= 0;
+
+// Installs the Fabric profile for this Minecraft version and, when published, the YA CLIENT Fabric jar.
+async function setupFabric(mc) {
+  const loaders = await getJson(`https://meta.fabricmc.net/v2/versions/loader/${mc}`);
+  const pick = (Array.isArray(loaders) ? loaders : []).find((l) => l.loader && l.loader.stable) || (Array.isArray(loaders) ? loaders[0] : null);
+  if (!pick) throw new Error(`Fabric is not available for Minecraft ${mc}`);
+  const profile = await getJson(`https://meta.fabricmc.net/v2/versions/loader/${mc}/${pick.loader.version}/profile/json`);
+  const id = profile.id;
+  const dir = path.join(gameDir, 'versions', id);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, id + '.json'), JSON.stringify(profile));
+
+  const inst = path.join(gameDir, 'instances', mc);
+  const mods = path.join(inst, 'mods');
+  fs.mkdirSync(mods, { recursive: true });
+  let hasYa = false;
+  try {
+    const yaJar = path.join(mods, 'YAClient-fabric.jar');
+    const tag = await fetchRelease(cfg.repo, (a) => a.name === `yaclient-fabric-${mc}.jar`, yaJar);
+    send('log', `YA CLIENT (Fabric ${mc}) ${tag} updated.`);
+    hasYa = true;
+    // the mod needs Fabric API
+    const api = await getJson(`https://api.modrinth.com/v2/project/fabric-api/version?game_versions=${encodeURIComponent(JSON.stringify([mc]))}&loaders=${encodeURIComponent(JSON.stringify(['fabric']))}`);
+    const f = Array.isArray(api) && api[0] && api[0].files && (api[0].files.find((x) => x.primary) || api[0].files[0]);
+    if (f) {
+      fs.readdirSync(mods).filter((n) => /^fabric-api/i.test(n)).forEach((n) => fs.unlinkSync(path.join(mods, n)));
+      await download(f.url, path.join(mods, f.filename));
+    } else send('log', `Fabric API for ${mc} not found.`);
+  } catch (e) {
+    send('log', `YA CLIENT for ${mc} is not published yet (${e.message}). Starting Fabric without it.`);
+    try { fs.unlinkSync(path.join(mods, 'YAClient-fabric.jar')); } catch (_) {}
+  }
+  return { id, dir: inst, hasYa };
+}
+
 // ---------- launch ----------
 ipcMain.handle('play', async (_e, opts) => {
   if (!state.account) return { error: 'need_login' };
@@ -271,6 +330,7 @@ ipcMain.handle('play', async (_e, opts) => {
     const version = state.version || cfg.minecraftVersion;
     const yaMode = version === cfg.minecraftVersion;   // YA CLIENT (Weave + mods) only exists for this version
     const loaderJar = path.join(dataDir, 'weave-loader.jar');
+    let fabric = null;
     if (yaMode) {
       send('status', { k: 'updating', pct: 2 });
       const clientJar = path.join(weaveModsDir, 'YAClient.jar');
@@ -282,6 +342,9 @@ ipcMain.handle('play', async (_e, opts) => {
         await fetchRelease(cfg.weaveRepo,
           (a) => /\.jar$/.test(a.name) && !/sources|javadoc/i.test(a.name), loaderJar);
       }
+    } else if (fabricSupported(version)) {
+      send('status', { k: 'loader', pct: 6 });
+      fabric = await setupFabric(version);
     } else {
       send('log', `Minecraft ${version}: vanilla launch (YA CLIENT mods are available on ${cfg.minecraftVersion}).`);
     }
@@ -292,15 +355,22 @@ ipcMain.handle('play', async (_e, opts) => {
     send('log', `Java ${major}: ${javaPath}`);
 
     const launcher = new Client();
+    showSplash(); splashSet('Starting Minecraft', 8);
     const startedAt = Date.now();
-    launcher.on('progress', (p) => send('status', { k: 'download', arg: p.type, pct: 6 + Math.round((p.task / p.total) * 70) }));
+    launcher.on('progress', (p) => { splashSet(p.type === 'assets' ? 'Downloading assets' : 'Downloading Minecraft', 8 + Math.round((p.task / p.total) * 60)); send('status', { k: 'download', arg: p.type, pct: 6 + Math.round((p.task / p.total) * 70) }); });
     launcher.on('debug', (m) => send('log', clean(m)));
-    launcher.on('data', (m) => send('log', clean(m)));
+    launcher.on('data', (m) => {
+      const l = clean(m); send('log', l);
+      if (/Setting user|LWJGL|Loading/i.test(l)) splashSet('Starting Minecraft', 78);
+      if (/OpenAL initialized|textures-atlas|Sound engine started|Reloading ResourceManager/i.test(l)) { splashSet('Starting Minecraft', 96); setTimeout(closeSplash, 1800); }
+    });
+    setTimeout(closeSplash, 150000);
     launcher.on('arguments', () => {
       if (!yaMode) return;
       try { patchSplash(); } catch (e) { send('log', 'splash: ' + e.message); }
     });
     launcher.on('close', (code) => {
+      closeSplash();
       if (win && !win.isDestroyed() && win.isMinimized()) win.restore();
       const crashed = code !== 0 && Date.now() - startedAt < 60000;
       send('status', { k: crashed ? 'crashed' : 'closed', arg: code, pct: 0, done: true, crashed });
@@ -310,7 +380,8 @@ ipcMain.handle('play', async (_e, opts) => {
       authorization: state.account.auth,
       root: gameDir,
       javaPath,
-      version: { number: version, type: versionType(version) },
+      version: fabric ? { number: version, type: versionType(version), custom: fabric.id } : { number: version, type: versionType(version) },
+      overrides: fabric ? { gameDirectory: fabric.dir } : {},
       memory: { max: `${state.ram}M`, min: '1024M' },
       customArgs: yaMode ? [`-javaagent:${loaderJar}`] : []
     };
@@ -319,11 +390,12 @@ ipcMain.handle('play', async (_e, opts) => {
     }
     send('status', { k: 'starting', pct: 80 });
     const proc = await launcher.launch(launchOpts);
-    if (!proc) return { error: 'launch_failed' };
+    if (!proc) { closeSplash(); return { error: 'launch_failed' }; }
     send('status', { k: 'ingame', pct: 100, playing: true });
     if (state.minimizeOnLaunch && win) win.minimize();
     return { ok: true };
   } catch (e) {
+    closeSplash();
     return { error: 'launch_error', detail: e.message };
   }
 });

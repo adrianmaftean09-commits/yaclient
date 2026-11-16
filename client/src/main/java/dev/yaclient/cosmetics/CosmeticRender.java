@@ -184,7 +184,7 @@ final class CosmeticRender {
         double u = EM_U0 + (EM_U1 - EM_U0) * (a + du), v = EM_V0 + (EM_V1 - EM_V0) * b;
         u = Math.max(0.0, Math.min(1.0, u));
         double[] p = capePt(u, v, age, plus);
-        Poly.tex(p[0], p[1], p[2] + 0.004, (float) a, (float) b, r, g, bl, al);
+        Poly.tex(p[0], p[1], p[2] + 0.004, (float) (1.0 - a), (float) b, r, g, bl, al);
     }
 
     // =====================================================================================

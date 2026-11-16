@@ -37,13 +37,13 @@ const I18N = {
     need_login: 'Bitte zuerst anmelden.', launch_failed: 'Start fehlgeschlagen.', launch_error: 'Fehler', crashed: 'Das Spiel wurde unerwartet beendet. Siehe Konsole.', closed: 'Spiel beendet.', ingame: 'Im Spiel',
     updating: 'Client wird aktualisiert...', loader: 'Loader wird vorbereitet...', starting: 'Spiel startet...', download: 'Lade Spieldateien...', wings: 'Flügel', cape: 'Umhänge', pet: 'Haustiere', bandana: 'Bandanas', all: 'Alle', price: 'Preis', online: 'Online', javaHint: 'Java 8 erforderlich' }
 };
-Object.assign(I18N.en, { versions: 'Versions', latest: 'Latest', releases: 'Releases', snapshots: 'Snapshots', old: 'Old', search: 'Search version...', modsFor: 'Modules for Minecraft', avail: 'available on this version',
+Object.assign(I18N.en, { back: 'Welcome back', versions: 'Versions', latest: 'Latest', releases: 'Releases', snapshots: 'Snapshots', old: 'Old', search: 'Search version...', modsFor: 'Modules for Minecraft', avail: 'available on this version',
   needs: 'Only on', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Soon', vanillaNote: 'This version starts without YA CLIENT mods. The mods below work on', java_missing: 'Java {n} is required for this version. Install it (Temurin {n}) and try again.', latestRelease: 'Latest release', change: 'Change version', noRes: 'No versions found.', offlineList: 'Offline: showing a short list of versions.' });
-Object.assign(I18N.it, { versions: 'Versioni', latest: 'Ultima', releases: 'Release', snapshots: 'Snapshot', old: 'Vecchie', search: 'Cerca versione...', modsFor: 'Mod per Minecraft', avail: 'disponibili in questa versione',
+Object.assign(I18N.it, { back: 'Bentornato', versions: 'Versioni', latest: 'Ultima', releases: 'Release', snapshots: 'Snapshot', old: 'Vecchie', search: 'Cerca versione...', modsFor: 'Mod per Minecraft', avail: 'disponibili in questa versione',
   needs: 'Solo su', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Presto', vanillaNote: 'Questa versione parte senza le mod di YA CLIENT. Le mod qui sotto funzionano su', java_missing: 'Per questa versione serve Java {n}. Installalo (Temurin {n}) e riprova.', latestRelease: 'Ultima release', change: 'Cambia versione', noRes: 'Nessuna versione trovata.', offlineList: 'Offline: mostro un elenco ridotto di versioni.' });
-Object.assign(I18N.es, { versions: 'Versiones', latest: 'Última', releases: 'Releases', snapshots: 'Snapshots', old: 'Antiguas', search: 'Buscar versión...', modsFor: 'Mods para Minecraft', avail: 'disponibles en esta versión',
+Object.assign(I18N.es, { back: 'Bienvenido de nuevo', versions: 'Versiones', latest: 'Última', releases: 'Releases', snapshots: 'Snapshots', old: 'Antiguas', search: 'Buscar versión...', modsFor: 'Mods para Minecraft', avail: 'disponibles en esta versión',
   needs: 'Solo en', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Pronto', vanillaNote: 'Esta versión inicia sin los mods de YA CLIENT. Los mods de abajo funcionan en', java_missing: 'Esta versión necesita Java {n}. Instálalo (Temurin {n}) e inténtalo de nuevo.', latestRelease: 'Última release', change: 'Cambiar versión', noRes: 'No hay versiones.', offlineList: 'Sin conexión: lista reducida de versiones.' });
-Object.assign(I18N.de, { versions: 'Versionen', latest: 'Neueste', releases: 'Releases', snapshots: 'Snapshots', old: 'Alt', search: 'Version suchen...', modsFor: 'Mods für Minecraft', avail: 'in dieser Version verfügbar',
+Object.assign(I18N.de, { back: 'Willkommen zurück', versions: 'Versionen', latest: 'Neueste', releases: 'Releases', snapshots: 'Snapshots', old: 'Alt', search: 'Version suchen...', modsFor: 'Mods für Minecraft', avail: 'in dieser Version verfügbar',
   needs: 'Nur in', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Bald', vanillaNote: 'Diese Version startet ohne YA-CLIENT-Mods. Die Mods unten funktionieren in', java_missing: 'Für diese Version wird Java {n} benötigt. Installiere es (Temurin {n}) und versuche es erneut.', latestRelease: 'Neueste Release', change: 'Version ändern', noRes: 'Keine Versionen gefunden.', offlineList: 'Offline: gekürzte Versionsliste.' });
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet' };
@@ -53,7 +53,8 @@ const ICON = {
   versions: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17.5l9 5 9-5"/>',
   mods: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   servers: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
-  cosmetics: '<path d="M6 3h12l3 5-9 13L3 8z"/><path d="M3 8h18"/>',
+  cosmetics: '<path d="M8 3L3.5 5.5 2 10l3.5 1.5L7 10v11h10V10l1.5 1.5L22 10l-1.5-4.5L16 3"/><path d="M8 3c.5 2 2 3.5 4 3.5S15.5 5 16 3"/>',
+  console: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9l3 3-3 3M12 16h5"/>',
   settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'
 };
@@ -64,8 +65,8 @@ let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest:
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
-const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'settings'];
-const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', settings: 'settings' };
+const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'console', 'settings'];
+const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', console: 'console', settings: 'settings' };
 
 function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''}" data-p="${p}" title="${esc(t(PKEY[p]))}">${ic(p)}</button>`).join('');
@@ -89,10 +90,14 @@ function newsHtml(list) {
 
 function viewHome() {
   const ads = C.ads || [];
+  const nm = S.account ? S.account.name : '';
+  const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
   return `<div class="lp"><div>
-    <div class="card hero"><div class="big">YA <b>CLIENT</b></div><p>${esc(t('welcome'))}</p>
-      <button class="chip" data-p="versions" title="${esc(t('change'))}">Minecraft ${esc(S.version)} · ${esc(isYa(S.version) ? t('ya') : t('vanilla'))} &#9662;</button>
-      <div class="playrow"><button class="btn pri" id="play" ${busy ? 'disabled' : ''}>${esc(busy ? t('launching') : t('launch'))}</button></div>
+    <h1 class="wb">${esc(t('back'))}${nm ? ', <span>' + esc(nm) + '</span>' : ''}</h1>
+    <div class="card hero2"><img class="hlogo" src="../assets/logo.png" alt="">
+      <button class="launch" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b>
+        <span>${esc(tag)} ${esc(S.version)}</span></button>
+      <button class="gear" data-p="versions" title="${esc(t('change'))}">${ic('versions')}</button>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
     ${newsHtml(C.news)}</div>
     <div class="side"><div class="card acc"><div class="av">${esc(S.account ? S.account.name[0].toUpperCase() : '?')}</div>
@@ -185,11 +190,14 @@ function viewSettings() {
    <div class="card row"><label>${esc(t('minimize'))}</label><button class="sw ${S.minimizeOnLaunch ? 'on' : ''}" id="sMin"></button></div>
    <div class="card row"><label>${esc(t('folder'))}</label><button class="btn sm" id="sFolder">&#8594;</button></div>
    ${S.account ? `<div class="card row"><label>${esc(S.account.name)}</label><button class="btn sm" id="sOut">${esc(t('logout'))}</button></div>` : ''}
-   </div><h2>${esc(t('console'))}</h2><div class="con" id="con">${esc(logBuf.join('\n'))}</div>`;
+   </div>`;
+}
+function viewConsole() {
+  return `<h1>${esc(t('console'))}</h1><p class="sub"></p><div class="con conp" id="con">${esc(logBuf.join('\n'))}</div>`;
 }
 function render() {
   const v = $('#view');
-  v.innerHTML = { home: viewHome, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, settings: viewSettings }[page]();
+  v.innerHTML = { home: viewHome, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
 }
 

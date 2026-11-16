@@ -43,6 +43,10 @@ final class Icons {
                 g.draw(new Line2D.Float(11.5f, 11.5f, 20f, 20f));
                 g.draw(new Line2D.Float(5f, 5.5f, 7.5f, 8f));
                 break;
+            case "shirt":
+                g.draw(poly(true, 8f, 3f, 3.5f, 5.5f, 1.8f, 10f, 5.5f, 11.5f, 7f, 10f, 7f, 21f, 17f, 21f, 17f, 10f, 18.5f, 11.5f, 22.2f, 10f, 20.5f, 5.5f, 16f, 3f));
+                g.draw(poly(false, 8f, 3f, 12f, 6.5f, 16f, 3f));
+                break;
             case "star":
                 g.draw(poly(true, 12f, 3f, 14.6f, 9f, 21f, 9.4f, 16f, 13.6f, 17.7f, 20f, 12f, 16.5f, 6.3f, 20f, 8f, 13.6f, 3f, 9.4f, 9.4f, 9f));
                 break;

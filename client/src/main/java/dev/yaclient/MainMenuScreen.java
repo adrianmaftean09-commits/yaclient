@@ -1,112 +1,142 @@
 package dev.yaclient;
 
+import dev.yaclient.cosmetics.Logo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSelectWorld;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 
-/** YA CLIENT title screen: same glass style as the in-game menu. */
+/** YA CLIENT title screen: dark animated backdrop, centered logo, stacked buttons and a small icon dock. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int LW = 400, LH = 360;
-    private static final int BW = 250, BH = 36, BGAP = 10, BX = (LW - BW) / 2, BY = 160;
-    private static final String[] KEYS = {"menu.play", "menu.multiplayer", "menu.options", "menu.quit"};
-    private static final String[] ICONS = {"sword", "globe", "gear", "close"};
+    private static final int BW = 200, BH = 22, GAP = 6;
+    private static final String[] ICONS = {"shirt", "gear", "wrench", "close"};
+    private static final String[] TIPS = {"tab.cosmetics", "menu.options", "tab.settings", "menu.quit"};
 
-    private final float[] hover = new float[KEYS.length];
-    private float hoverMods;
+    private final float[] hover = new float[3];
+    private final float[] dock = new float[ICONS.length];
     private final long opened = System.currentTimeMillis();
     private long last = opened;
-    private float scale = 1f;
-    private int originX, originY;
+    private int bx, by0, dockX, dockY;
 
-    private static int by(int i) { return BY + i * (BH + BGAP); }
+    private int btnY(int i) { return by0 + i * (BH + GAP); }
 
     @Override
     public void drawScreen(int mx, int my, float pt) {
         long now = System.currentTimeMillis();
         float dt = Math.min(100, now - last);
         last = now;
-        Gfx.fade = 0.05f + 0.95f * Ui.ease((now - opened) / 300f);
-        scale = Math.min(1f, Math.min((height - 16f) / LH, (width - 16f) / LW));
+        float t = (now - opened) / 1000f;
+        float fadeIn = Ui.ease((now - opened) / 500f);
+
+        // backdrop: deep gradient + slow drifting soft glows (a cheap blurred-scene look)
+        drawGradientRect(0, 0, width, height, 0xFF0B0B0F, 0xFF050507);
+        for (int i = 0; i < 4; i++) {
+            float px = width * (0.2f + 0.2f * i) + (float) Math.sin(t * 0.25f + i * 1.7f) * width * 0.08f;
+            float py = height * (0.35f + 0.15f * (i % 2)) + (float) Math.cos(t * 0.2f + i) * height * 0.07f;
+            int r = Math.round(Math.min(width, height) * (0.30f + 0.04f * i));
+            for (int k = 6; k >= 1; k--) {
+                int a = i % 2 == 0 ? 0x0E0E1318 : 0x0A1A0608;
+                glow(px, py, r * k / 6f, (a >>> 24) == 0 ? 0 : a);
+            }
+        }
+        // vignette
+        drawGradientRect(0, 0, width, height / 4, 0x66000000, 0x00000000);
+        drawGradientRect(0, height * 3 / 4, width, height, 0x00000000, 0x88000000);
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
-        Gfx.setScale(Math.max(1, Math.round(gs * scale)));
+        Gfx.setScale(Math.max(1, gs));
+        Gfx.fade = fadeIn;
 
-        originX = Math.round(width / 2f - LW * scale / 2f);
-        originY = Math.round(height / 2f - LH * scale / 2f);
-        float mxl = (mx - originX) / scale, myl = (my - originY) / scale;
+        int logo = Math.min(96, height / 4);
+        int cx = width / 2;
+        int total = logo + 34 + 3 * BH + 2 * GAP;
+        int top = Math.max(16, (height - total) / 2 - 12);
+        float bob = (float) Math.sin(t * 1.4f) * 1.5f;
+        Logo.draw(cx - logo / 2f, top + bob, logo, logo, fadeIn);
+        int wy = top + logo + 6;
+        int yaw = Gfx.width("YA ", 14, true), clw = Gfx.width("CLIENT", 14, true);
+        Gfx.text("YA ", cx - (yaw + clw) / 2, wy, 14, true, Theme.TEXT);
+        Gfx.text("CLIENT", cx - (yaw + clw) / 2 + yaw, wy, 14, true, Theme.BRAND_RED);
 
-        drawGradientRect(0, 0, width, height, 0xFF141418, 0xFF000000);
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float) originX, (float) originY, 0f);
-        GlStateManager.scale(scale, scale, 1f);
-
-        // logo: "YA" white, "CLIENT" brand red
-        Gfx.textCentered("YA", LW / 2, 4, 64, true, Theme.TEXT);
-        Gfx.textCentered("CLIENT", LW / 2, 4 + Gfx.lineHeight(64, true) - 4, 28, true, Theme.BRAND_RED);
-
-        for (int i = 0; i < KEYS.length; i++) {
-            int y = by(i);
-            boolean over = mxl >= BX && mxl < BX + BW && myl >= y && myl < y + BH;
+        bx = cx - BW / 2;
+        by0 = wy + 26;
+        String[] labels = {Lang.t("menu.play"), Lang.t("menu.multiplayer"), Lang.t("menu.client_settings")};
+        String[] icons = {"sword", "globe", "star"};
+        for (int i = 0; i < 3; i++) {
+            int y = btnY(i);
+            boolean over = mx >= bx && mx < bx + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
-            boolean primary = i == 0;
-
-            int fill = primary ? Ui.mix(Theme.accent(), 0xFFFFFFFF, hover[i] * 0.18f) : Ui.mix(0x14FFFFFF, 0x26FFFFFF, hover[i]);
-            Gfx.rr(BX, y, BW, BH, 11, fill);
-            if (!primary) Gfx.rrOutline(BX, y, BW, BH, 11, 1, Ui.mix(0x1AFFFFFF, 0x40FFFFFF, hover[i]));
-            int fg = primary ? Theme.onAccent() : Theme.TEXT;
-            String label = Lang.t(KEYS[i]);
-            int lw = Gfx.width(label, 13, true);
-            int ix = BX + (BW - lw - 26) / 2;
-            Gfx.icon(ICONS[i], ix, y + (BH - 18) / 2, 18, fg);
-            Gfx.text(label, ix + 26, y + (BH - Gfx.lineHeight(13, true)) / 2, 13, true, fg);
+            boolean primary = i == 2;
+            Gfx.rr(bx, y, BW, BH, 6, primary ? Ui.mix(0xFFEDEDF0, 0xFFFFFFFF, hover[i]) : Ui.mix(0xE0101014, 0xF0202026, hover[i]));
+            if (!primary) Gfx.rrOutline(bx, y, BW, BH, 6, 1, Ui.mix(0x1AFFFFFF, 0x44FFFFFF, hover[i]));
+            int fg = primary ? 0xFF101014 : Theme.TEXT;
+            int lw = Gfx.width(labels[i], 11, true) + 20;
+            int ix = bx + (BW - lw) / 2;
+            Gfx.icon(icons[i], ix, y + (BH - 14) / 2, 14, fg);
+            Gfx.text(labels[i], ix + 20, y + (BH - Gfx.lineHeight(11, true)) / 2, 11, true, fg);
         }
 
-        // client settings (module menu)
-        int my2 = by(KEYS.length);
-        boolean overMods = mxl >= BX && mxl < BX + BW && myl >= my2 && myl < my2 + BH;
-        hoverMods = Ui.approach(hoverMods, overMods ? 1f : 0f, dt, 16f);
-        String modsLabel = Lang.t("menu.client_settings");
-        int mw = Gfx.width(modsLabel, 11, false);
-        Gfx.icon("star", BX + (BW - mw - 22) / 2, my2 + 9, 16, Ui.mix(Theme.MUTED, Theme.TEXT, hoverMods));
-        Gfx.text(modsLabel, BX + (BW - mw - 22) / 2 + 22, my2 + (BH - Gfx.lineHeight(11, false)) / 2, 11, false,
-                Ui.mix(Theme.MUTED, Theme.TEXT, hoverMods));
+        // icon dock
+        int dsz = 22, dg = 6;
+        dockX = cx - (ICONS.length * dsz + (ICONS.length - 1) * dg) / 2;
+        dockY = btnY(3) + 6;
+        for (int i = 0; i < ICONS.length; i++) {
+            int x = dockX + i * (dsz + dg);
+            boolean over = mx >= x && mx < x + dsz && my >= dockY && my < dockY + dsz;
+            dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
+            Gfx.rr(x, dockY, dsz, dsz, 6, Ui.mix(0xE0101014, 0xF0202026, dock[i]));
+            Gfx.rrOutline(x, dockY, dsz, dsz, 6, 1, Ui.mix(0x1AFFFFFF, 0x44FFFFFF, dock[i]));
+            Gfx.icon(ICONS[i], x + 4, dockY + 4, 14, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
+            if (over) Gfx.textCentered(Lang.t(TIPS[i]), cx, dockY + dsz + 6, 9, false, Theme.MUTED);
+        }
 
-        String foot = "YA CLIENT 1.1.0  |  Minecraft 1.8.9";
-        Gfx.textCentered(foot, LW / 2, LH - 22, 10, false, Theme.DIM);
-
-        GlStateManager.popMatrix();
-
-        Gfx.setScale(Math.max(1, gs));
+        Gfx.text("YA CLIENT 1.8.9", 8, height - 16, 10, false, Theme.DIM);
         String acc = Minecraft.getMinecraft().getSession().getUsername();
-        Gfx.text(acc, width - Gfx.width(acc, 10, false) - 10, height - 18, 10, false, Theme.MUTED);
+        Gfx.text(acc, width - Gfx.width(acc, 10, false) - 8, height - 16, 10, false, Theme.MUTED);
+        Gfx.fade = 1f;
+    }
+
+    /** Soft circle approximated with stacked translucent rectangles (cheap, no textures). */
+    private void glow(float cx, float cy, float r, int argb) {
+        if (argb == 0) return;
+        int steps = 14;
+        for (int i = 0; i < steps; i++) {
+            float yy = -r + 2 * r * i / steps, h = 2 * r / steps;
+            float half = (float) Math.sqrt(Math.max(0, r * r - (yy + h / 2) * (yy + h / 2)));
+            Gui.drawRect(Math.round(cx - half), Math.round(cy + yy), Math.round(cx + half), Math.round(cy + yy + h + 1), argb);
+        }
     }
 
     @Override
     protected void mouseClicked(int mx, int my, int button) {
         if (button != 0) return;
-        float x0 = (mx - originX) / scale, y0 = (my - originY) / scale;
         Minecraft mc = Minecraft.getMinecraft();
-        for (int i = 0; i <= KEYS.length; i++) {
-            int y = by(i);
-            if (x0 >= BX && x0 < BX + BW && y0 >= y && y0 < y + BH) {
-                switch (i) {
-                    case 0: mc.displayGuiScreen(new GuiSelectWorld(this)); break;
-                    case 1: mc.displayGuiScreen(new GuiMultiplayer(this)); break;
-                    case 2: mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)); break;
-                    case 3: mc.shutdown(); break;
-                    default: mc.displayGuiScreen(new MenuScreen()); break;
-                }
+        for (int i = 0; i < 3; i++) {
+            int y = btnY(i);
+            if (mx >= bx && mx < bx + BW && my >= y && my < y + BH) {
+                if (i == 0) mc.displayGuiScreen(new GuiSelectWorld(this));
+                else if (i == 1) mc.displayGuiScreen(new GuiMultiplayer(this));
+                else mc.displayGuiScreen(new MenuScreen());
+                return;
+            }
+        }
+        int dsz = 22, dg = 6;
+        for (int i = 0; i < ICONS.length; i++) {
+            int x = dockX + i * (dsz + dg);
+            if (mx >= x && mx < x + dsz && my >= dockY && my < dockY + dsz) {
+                if (i == 0) mc.displayGuiScreen(new MenuScreen(4));
+                else if (i == 1) mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
+                else if (i == 2) mc.displayGuiScreen(new MenuScreen(5));
+                else mc.shutdown();
                 return;
             }
         }
     }
 
-    /** ESC does nothing on the title screen. */
     @Override
     protected void keyTyped(char typed, int key) {}
 
