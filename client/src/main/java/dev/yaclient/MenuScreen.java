@@ -1,5 +1,6 @@
 package dev.yaclient;
 
+import dev.yaclient.cosmetics.CosmeticPreview;
 import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -479,6 +480,11 @@ public class MenuScreen extends GuiScreen {
         Gfx.rr(CX, VY, pw, VH, 14, 0x0FFFFFFF);
         Gfx.rrOutline(CX, VY, pw, VH, 14, 1, 0x14FFFFFF);
         Gfx.textCentered(Lang.t("cos.loadout"), CX + pw / 2, VY + 10, 11, true, Theme.MUTED);
+        boolean plusOn = CosmeticsApi.plus();
+        String plusLab = Lang.t(plusOn ? "cos.plus.on" : "cos.plus.off");
+        int plw = Gfx.width(plusLab, 9, true) + 18;
+        Gfx.rr(CX + (pw - plw) / 2, VY + 28, plw, 16, 8, plusOn ? Theme.accent() : 0x18FFFFFF);
+        Gfx.text(plusLab, CX + (pw - plw) / 2 + 9, VY + 28 + (16 - Gfx.lineHeight(9, true)) / 2, 9, true, plusOn ? Theme.onAccent() : Theme.MUTED);
         drawPlayerPreview(CX + pw / 2, VY + VH - 40, 92);
 
         int x0 = CX + pw + 16, wRight = VW - pw - 16;
@@ -527,8 +533,8 @@ public class MenuScreen extends GuiScreen {
             // thumbnail
             int th = 80;
             Gfx.rr(cx + 6, cy + 6, cw - 12, th, 9, 0x22000000);
-            int is = 40;
-            Gfx.icon(cosIcon(key), cx + (cw - is) / 2, cy + 6 + (th - is) / 2, is, has ? (on ? Theme.accent() : Theme.TEXT) : Theme.DIM);
+            float ps = key.equals("cape") ? 62f : key.equals("wings") ? 40f : key.equals("bandana") ? 100f : key.equals("pet") ? 100f : 36f;
+            CosmeticPreview.draw(key, cx + cw / 2f, cy + 6 + th / 2f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             if (!has) Gfx.icon("lock", cx + 12, cy + 12, 14, Theme.MUTED);
             if (bundle) {
                 String fr = Lang.t("cos.free");

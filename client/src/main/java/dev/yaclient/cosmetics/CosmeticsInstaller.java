@@ -3,6 +3,8 @@ package dev.yaclient.cosmetics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
+import net.minecraft.client.renderer.entity.layers.LayerCape;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
@@ -46,7 +48,11 @@ public final class CosmeticsInstaller {
             if (layers == null) { failed = true; return; }
             layers.setAccessible(true);
             for (RenderPlayer rp : players) {
-                ((List) layers.get(rp)).add(new CosmeticLayer(rp));
+                List list = (List) layers.get(rp);
+                for (int k = 0; k < list.size(); k++) {
+                    if (list.get(k) instanceof LayerCape) list.set(k, new CapeGuard((LayerRenderer) list.get(k)));
+                }
+                list.add(new CosmeticLayer(rp));
             }
             done = true;
         } catch (Throwable t) {

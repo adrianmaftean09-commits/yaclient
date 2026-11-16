@@ -1,14 +1,10 @@
 # Cosmetics (Beta Tester bundle)
 
-Items: ya_cape (animated cape), ya_wings (Ember Wings), ya_bandana, ya_pet (Ember). Bundle id: `beta`.
+Items: ya_cape (static cape, glitching logo), ya_wings, ya_bandana, ya_pet. Bundle id: `beta`.
+YA Plus = subscription: the cape cloth also waves and glows (without Plus the cape is still and only the logo glitches).
 
-## Your logo
-Replace `client/src/main/resources/assets/yaclient/logo.png` with your YA logo
-(square, transparent background, 256x256 or bigger). It is used on the cape emblem and next to your name in F5.
-Then publish a new tag.
+Your logo: client/src/main/resources/assets/yaclient/logo.png (square, transparent, 512x512).
+Nametag in F5: vanilla look + logo. Turn off with `nametag.self=false` in ~/.yaclient/config.properties.
+While a YA cape is worn the vanilla cape is hidden.
 
-## Nametag in F5
-Shown above your own head in third person. Turn it off with `nametag.self=false` in ~/.yaclient/config.properties.
-
-## Unlock for testers
-See the website README (/admin page, item `beta`).
+Unlock: website /admin -> item `beta` (bundle) or `plus` + days (subscription, default 30).

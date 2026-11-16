@@ -126,5 +126,7 @@
  "cos.item.ya_pet": "Ember (animaletto)",
  "cos.equipped": "Equipaggiato",
  "cos.click_equip": "Clicca per equipaggiare",
- "cos.locked": "Bloccato - Beta Tester"
+ "cos.locked": "Bloccato - Beta Tester",
+ "cos.plus.on": "YA PLUS ATTIVO",
+ "cos.plus.off": "YA PLUS: MOVIMENTO CAPE BLOCCATO"
 }

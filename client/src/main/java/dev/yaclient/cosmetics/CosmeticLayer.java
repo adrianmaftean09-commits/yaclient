@@ -46,7 +46,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         if (wings) drawWings(p, model, age);
-        if (cape) drawCape(p, partialTicks, age);
+        if (cape) drawCape(p, partialTicks, age, "1".equals(eq.get("plus")));
         if (bandana) {
             GlStateManager.pushMatrix();
             model.bipedHead.postRender(S);
@@ -65,6 +65,12 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.popMatrix();
     }
 
+    /** True if the player wears the YA cape (then the vanilla cape must be hidden). */
+    static boolean wearsYaCape(AbstractClientPlayer p) {
+        Map<String, String> eq = CosmeticsApi.equippedFor(p);
+        return eq != null && on(eq, "cape");
+    }
+
     private static boolean on(Map<String, String> eq, String slot) {
         String v = eq.get(slot);
         return v != null && !v.equals("none");
@@ -73,7 +79,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
     private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age) {
         boolean air = !p.onGround;
         float flap = (float) Math.sin(age * (air ? 0.32f : 0.10f)) * (air ? 22f : 7f);
-        float raise = 4f + flap;
+        float raise = -2f + flap;
         float spread = 26f + (air ? 8f : 0f);
         GlStateManager.pushMatrix();
         model.bipedBody.postRender(S);
@@ -91,7 +97,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.popMatrix();
     }
 
-    private void drawCape(AbstractClientPlayer p, float pt, float age) {
+    private void drawCape(AbstractClientPlayer p, float pt, float age, boolean plus) {
         double d0 = p.prevChasingPosX + (p.chasingPosX - p.prevChasingPosX) * pt - (p.prevPosX + (p.posX - p.prevPosX) * pt);
         double d1 = p.prevChasingPosY + (p.chasingPosY - p.prevChasingPosY) * pt - (p.prevPosY + (p.posY - p.prevPosY) * pt);
         double d2 = p.prevChasingPosZ + (p.chasingPosZ - p.prevChasingPosZ) * pt - (p.prevPosZ + (p.posZ - p.prevPosZ) * pt);
@@ -115,13 +121,13 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.rotate(f3 / 2f, 0f, 0f, 1f);
         GlStateManager.rotate(-f3 / 2f, 0f, 1f, 0f);
         Poly.begin();
-        CosmeticRender.capeBase(age);
+        CosmeticRender.capeBase(age, plus);
         Poly.end();
         // logo emblem (textured)
         GlStateManager.enableTexture2D();
         LogoTexture.bind();
         Poly.beginTex();
-        CosmeticRender.capeEmblem(age);
+        CosmeticRender.capeEmblem(age, plus);
         Poly.end();
         GlStateManager.disableTexture2D();
         GlStateManager.popMatrix();

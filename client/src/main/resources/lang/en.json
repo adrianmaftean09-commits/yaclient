@@ -136,5 +136,7 @@
  "cos.item.ya_pet": "Ember (pet)",
  "cos.equipped": "Equipped",
  "cos.click_equip": "Click to equip",
- "cos.locked": "Locked - Beta Testers"
+ "cos.locked": "Locked - Beta Testers",
+ "cos.plus.on": "YA PLUS ACTIVE",
+ "cos.plus.off": "YA PLUS: CAPE MOTION LOCKED"
 }

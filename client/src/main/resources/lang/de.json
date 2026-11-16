@@ -126,5 +126,7 @@
  "cos.item.ya_pet": "Ember (Haustier)",
  "cos.equipped": "Ausgerüstet",
  "cos.click_equip": "Klicken zum Ausrüsten",
- "cos.locked": "Gesperrt - Beta-Tester"
+ "cos.locked": "Gesperrt - Beta-Tester",
+ "cos.plus.on": "YA PLUS AKTIV",
+ "cos.plus.off": "YA PLUS: UMHANG-BEWEGUNG GESPERRT"
 }

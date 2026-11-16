@@ -32,6 +32,7 @@ public final class CosmeticsApi {
     private static volatile Set<String> owned = new HashSet<String>();
     private static volatile Map<String, String> catalog = new HashMap<String, String>();
     private static volatile String storeUrl = "";
+    private static volatile boolean plus;
     private static volatile String status = "";
     private static volatile boolean refreshing;
     private static long lastRefresh;
@@ -56,6 +57,9 @@ public final class CosmeticsApi {
 
     /** True if the item can be equipped (always true in dev mode). */
     public static boolean owned(String item) { return !enabled() || owned.contains(item); }
+
+    /** YA Plus subscription (animated cape movement). Always true in dev mode. */
+    public static boolean plus() { return !enabled() || plus; }
 
     public static String price(String item) { return catalog.get(item); }
 
@@ -155,6 +159,7 @@ public final class CosmeticsApi {
                         Map<String, String> me = Lang.parse(http("GET", base() + "/v1/me?token=" + enc(tok), null));
                         String list = me.get("owned");
                         owned = new HashSet<String>(Arrays.asList(list == null ? new String[0] : list.split(",")));
+                        plus = "1".equals(me.get("plus"));
                         for (String slot : Cosmetics.SLOTS) {
                             String v = me.get(slot);
                             if (v != null) Config.set("cos." + slot, v);
@@ -200,6 +205,7 @@ public final class CosmeticsApi {
         if (p == mc.thePlayer) {
             Map<String, String> m = new HashMap<String, String>();
             for (String slot : Cosmetics.SLOTS) m.put(slot, Cosmetics.equipped(slot));
+            m.put("plus", plus() ? "1" : "0");
             return m;
         }
         if (!enabled()) return null;

@@ -24,7 +24,7 @@ final class CosmeticRender {
 
     /** Arm of the wing (leading edge), cubic bezier in the wing plane: x outwards, y up. */
     private static double[] arm(double t) {
-        double[] p0 = {0.02, 0.0}, p1 = {0.04, 0.30}, p2 = {0.30, 0.46}, p3 = {0.62, 0.34};
+        double[] p0 = {0.02, 0.0}, p1 = {0.04, 0.26}, p2 = {0.30, 0.38}, p3 = {0.62, 0.28};
         double u = 1 - t;
         double x = u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0];
         double y = u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1];
@@ -92,64 +92,99 @@ final class CosmeticRender {
     }
 
     // =====================================================================================
-    // CAPE
+    // CAPE: static black cloth with scanlines and a red trim. The cloth only waves for YA Plus
+    // members; the logo emblem always glitches.
     // =====================================================================================
     static final double CAPE_W = 0.66, CAPE_H = 1.0;
+    static final int CAPE_C = 14, CAPE_R = 40;
 
-    static double[] capePt(double u, double v, float age) {
+    static double[] capePt(double u, double v, float age, boolean plus) {
         double x = (u - 0.5) * CAPE_W * (1 + 0.06 * v);
         double y = v * CAPE_H;
-        double z = 0.012 + 0.02 * v
-                + Math.sin(age * 0.10 + v * 5.5 + u * 2.2) * 0.026 * v
-                + Math.sin(age * 0.06 + u * 7.0 - v * 2.0) * 0.011 * v
-                + Math.sin(u * Math.PI * 5) * 0.010 * v;
+        double z = 0.012 + 0.02 * v;
+        if (plus) {
+            z += Math.sin(age * 0.10 + v * 5.5 + u * 2.2) * 0.026 * v
+                    + Math.sin(age * 0.06 + u * 7.0 - v * 2.0) * 0.011 * v
+                    + Math.sin(u * Math.PI * 5) * 0.010 * v;
+        }
         return Poly.p(x, y, z);
     }
 
-    private static float[] capeColor(double u, double v, float age) {
-        float[] base = Poly.mix(Poly.BLACK, Poly.DARK, (float) v);
-        base = Poly.mix(base, Poly.DEEP, (float) (v * v * 0.45));
-        double edge = Math.min(Math.min(u, 1 - u) * 0.66 / 0.035, (1 - v) / 0.04);
+    private static float[] capeColor(double u, double v, float age, boolean plus, int row) {
+        float[] base = Poly.mix(Poly.BLACK, Poly.DARK, (float) (v * 0.6));
+        base = Poly.mix(base, Poly.DEEP, (float) (v * v * 0.55));
+        if ((row & 1) == 1) { base[0] *= 0.82f; base[1] *= 0.82f; base[2] *= 0.82f; }   // scanlines
+        double edge = Math.min(Math.min(u, 1 - u) * 0.66 / 0.030, (1 - v) / 0.035);
         float trim = smooth((float) (1.0 - edge));
         float[] c = Poly.mix(base, Poly.RED, trim);
-        double s = Math.sin((u * 0.9 + v * 1.5) * 7.0 - age * 0.09);
-        float band = (float) Math.pow(Math.max(0.0, s), 10) * (float) (0.35 + 0.65 * v);
-        c = Poly.mix(c, Poly.HOT, band * 0.6f);
-        c[3] = Math.max(c[3], Math.max(trim * 0.9f, band * 0.9f));
+        float inner = smooth((float) (1.0 - Math.abs(Math.min(Math.min(u, 1 - u) * 0.66, (1 - v) * 1.0) - 0.055) / 0.008));
+        c = Poly.mix(c, Poly.DEEP, inner * 0.8f);
+        c[3] = Math.max(c[3], Math.max(trim * 0.9f, inner * 0.3f));
+        if (plus) {
+            double s = Math.sin((u * 0.9 + v * 1.5) * 7.0 - age * 0.09);
+            float band = (float) Math.pow(Math.max(0.0, s), 10) * (float) (0.35 + 0.65 * v);
+            c = Poly.mix(c, Poly.HOT, band * 0.5f);
+            c[3] = Math.max(c[3], band * 0.9f);
+        }
         return c;
     }
 
-    static void capeBase(float age) {
-        final int C = 14, R = 24;
-        for (int i = 0; i < C; i++) {
-            for (int j = 0; j < R; j++) {
-                double u0 = i / (double) C, u1 = (i + 1) / (double) C, v0 = j / (double) R, v1 = (j + 1) / (double) R;
-                Poly.quad(capePt(u0, v0, age), capePt(u1, v0, age), capePt(u1, v1, age), capePt(u0, v1, age),
-                        capeColor(u0, v0, age), capeColor(u1, v0, age), capeColor(u1, v1, age), capeColor(u0, v1, age), 1f);
+    static void capeBase(float age, boolean plus) {
+        for (int i = 0; i < CAPE_C; i++) {
+            for (int j = 0; j < CAPE_R; j++) {
+                double u0 = i / (double) CAPE_C, u1 = (i + 1) / (double) CAPE_C, v0 = j / (double) CAPE_R, v1 = (j + 1) / (double) CAPE_R;
+                Poly.quad(capePt(u0, v0, age, plus), capePt(u1, v0, age, plus), capePt(u1, v1, age, plus), capePt(u0, v1, age, plus),
+                        capeColor(u0, v0, age, plus, j), capeColor(u1, v0, age, plus, j), capeColor(u1, v1, age, plus, j), capeColor(u0, v1, age, plus, j), 1f);
             }
         }
     }
 
     // emblem placement on the cape (the logo is square)
-    static final double EM_U0 = 0.30, EM_U1 = 0.70, EM_V0 = 0.30;
+    static final double EM_U0 = 0.17, EM_U1 = 0.83, EM_V0 = 0.10;
     static final double EM_V1 = EM_V0 + (EM_U1 - EM_U0) * CAPE_W / CAPE_H;
 
-    static void capeEmblem(float age) {
-        final int N = 6;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                emb(i / (double) N, j / (double) N, age);
-                emb((i + 1) / (double) N, j / (double) N, age);
-                emb((i + 1) / (double) N, (j + 1) / (double) N, age);
-                emb(i / (double) N, (j + 1) / (double) N, age);
+    private static double hash(long a, long b) {
+        long x = a * 374761393L + b * 668265263L;
+        x = (x ^ (x >> 13)) * 1274126177L;
+        x ^= x >> 16;
+        return (x & 0xFFFF) / 65535.0;
+    }
+
+    /** The logo, drawn as a glitching hologram: bursts of sliced rows and red/white ghost copies. */
+    static void capeEmblem(float age, boolean plus) {
+        double t = age / 20.0;
+        long frame = (long) Math.floor(t * 16.0);
+        boolean burst = (t % 2.4) < 0.38 || hash(frame, 7) < 0.035;
+        final int S = 14;
+        double[] off = new double[S];
+        if (burst) for (int i = 0; i < S; i++) off[i] = hash(i, frame) > 0.45 ? (hash(i + 31, frame) - 0.5) * 0.20 : 0.0;
+        if (burst) {
+            emblemPass(age, plus, off, 0.045, 1f, 0.12f, 0.10f, 0.60f);
+            emblemPass(age, plus, off, -0.045, 1f, 0.92f, 0.92f, 0.45f);
+        }
+        float flicker = burst ? 0.85f + 0.15f * (float) hash(frame, 3) : 1f;
+        emblemPass(age, plus, off, 0.0, 1f, 1f, 1f, 0.97f * flicker);
+    }
+
+    private static void emblemPass(float age, boolean plus, double[] off, double shift, float r, float g, float b, float a) {
+        final int S = off.length, N = 4;
+        for (int s = 0; s < S; s++) {
+            double v0 = s / (double) S, v1 = (s + 1) / (double) S;
+            for (int i = 0; i < N; i++) {
+                double a0 = i / (double) N, a1 = (i + 1) / (double) N;
+                emb(a0, v0, off[s] + shift, age, plus, r, g, b, a);
+                emb(a1, v0, off[s] + shift, age, plus, r, g, b, a);
+                emb(a1, v1, off[s] + shift, age, plus, r, g, b, a);
+                emb(a0, v1, off[s] + shift, age, plus, r, g, b, a);
             }
         }
     }
 
-    private static void emb(double a, double b, float age) {
-        double u = EM_U0 + (EM_U1 - EM_U0) * a, v = EM_V0 + (EM_V1 - EM_V0) * b;
-        double[] p = capePt(u, v, age);
-        Poly.tex(p[0], p[1], p[2] + 0.004, (float) a, (float) b, 1f, 1f, 1f, 0.95f);
+    private static void emb(double a, double b, double du, float age, boolean plus, float r, float g, float bl, float al) {
+        double u = EM_U0 + (EM_U1 - EM_U0) * (a + du), v = EM_V0 + (EM_V1 - EM_V0) * b;
+        u = Math.max(0.0, Math.min(1.0, u));
+        double[] p = capePt(u, v, age, plus);
+        Poly.tex(p[0], p[1], p[2] + 0.004, (float) a, (float) b, r, g, bl, al);
     }
 
     // =====================================================================================
