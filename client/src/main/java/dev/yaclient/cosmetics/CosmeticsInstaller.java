@@ -5,7 +5,9 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 
 import java.lang.reflect.Field;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -23,8 +25,19 @@ public final class CosmeticsInstaller {
         try {
             Minecraft mc = Minecraft.getMinecraft();
             if (mc.getRenderManager() == null) return;
-            Map<String, RenderPlayer> skins = mc.getRenderManager().getSkinMap();
-            if (skins == null || skins.isEmpty()) return;
+            // RenderManager has no public getter for the player renderers: collect them by reflection
+            Set<RenderPlayer> players = new LinkedHashSet<RenderPlayer>();
+            Object rm = mc.getRenderManager();
+            for (Field f : rm.getClass().getDeclaredFields()) {
+                f.setAccessible(true);
+                Object v = f.get(rm);
+                if (v instanceof Map) {
+                    for (Object o : ((Map) v).values()) if (o instanceof RenderPlayer) players.add((RenderPlayer) o);
+                } else if (v instanceof RenderPlayer) {
+                    players.add((RenderPlayer) v);
+                }
+            }
+            if (players.isEmpty()) return;
 
             Field layers = null;
             for (Field f : RendererLivingEntity.class.getDeclaredFields()) {
@@ -32,7 +45,7 @@ public final class CosmeticsInstaller {
             }
             if (layers == null) { failed = true; return; }
             layers.setAccessible(true);
-            for (RenderPlayer rp : skins.values()) {
+            for (RenderPlayer rp : players) {
                 ((List) layers.get(rp)).add(new CosmeticLayer(rp));
             }
             done = true;
