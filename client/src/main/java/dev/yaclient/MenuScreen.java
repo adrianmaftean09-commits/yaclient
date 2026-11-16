@@ -7,6 +7,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -424,70 +428,152 @@ public class MenuScreen extends GuiScreen {
         Gfx.fade = fade;
     }
 
-    // ----- cosmetics -----
-    private float drawCosmetics() {
-        Minecraft mc = Minecraft.getMinecraft();
-        int bw = 210, bh = VH;
-        Gfx.rr(CX, VY, bw, bh, 14, 0x0FFFFFFF);
-        Gfx.rrOutline(CX, VY, bw, bh, 14, 1, 0x14FFFFFF);
-        if (mc.thePlayer != null) {
-            int px = CX + bw / 2, py = VY + bh - 44;
-            GuiInventory.drawEntityOnScreen(px, py, 100, (float) (px - mxl), (float) (py - 120 - myl), mc.thePlayer);
-        }
-        int x0 = CX + bw + 24, wRight = VW - bw - 24;
+    // ----- cosmetics (locker) -----
+    private static final String[] COS_CATS = {"all", "cape", "wings", "bandana", "pet", "bundle"};
+    private int cosCat = 0;
 
-        // status line + store button
+    private static String cosIcon(String slotOrBundle) {
+        if (slotOrBundle.equals("bundle")) return "gift";
+        return slotOrBundle;
+    }
+
+    /** Spinning preview of the player with the equipped cosmetics (the same render layer as in game). */
+    private void drawPlayerPreview(int cx, int baseY, int size) {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer ent = mc.thePlayer;
+        if (ent == null) return;
+        float spin = (System.currentTimeMillis() % 11000L) / 11000f * 360f;
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) cx, (float) baseY, 50.0F);
+        GlStateManager.scale((float) (-size), (float) size, (float) size);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float ro = ent.renderYawOffset, pro = ent.prevRenderYawOffset, ry = ent.rotationYaw, pry = ent.prevRotationYaw,
+                rp = ent.rotationPitch, prh = ent.prevRotationYawHead, rh = ent.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        ent.renderYawOffset = spin; ent.prevRenderYawOffset = spin;
+        ent.rotationYaw = spin; ent.prevRotationYaw = spin;
+        ent.rotationYawHead = spin; ent.prevRotationYawHead = spin;
+        ent.rotationPitch = 0f;
+        RenderManager rm = mc.getRenderManager();
+        rm.setPlayerViewY(180.0F);
+        rm.setRenderShadow(false);
+        rm.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+        rm.setRenderShadow(true);
+        ent.renderYawOffset = ro; ent.prevRenderYawOffset = pro;
+        ent.rotationYaw = ry; ent.prevRotationYaw = pry;
+        ent.rotationPitch = rp; ent.prevRotationYawHead = prh; ent.rotationYawHead = rh;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    private float drawCosmetics() {
+        int pw = 176;
+        // left: player preview
+        Gfx.rr(CX, VY, pw, VH, 14, 0x0FFFFFFF);
+        Gfx.rrOutline(CX, VY, pw, VH, 14, 1, 0x14FFFFFF);
+        Gfx.textCentered(Lang.t("cos.loadout"), CX + pw / 2, VY + 10, 11, true, Theme.MUTED);
+        drawPlayerPreview(CX + pw / 2, VY + VH - 40, 92);
+
+        int x0 = CX + pw + 16, wRight = VW - pw - 16;
+
+        // category pills
+        int px = x0;
+        for (int i = 0; i < COS_CATS.length; i++) {
+            final int idx = i;
+            String lab = Lang.t("cos.cat." + COS_CATS[i]);
+            int w = Gfx.width(lab, 10, true) + 22;
+            boolean on = cosCat == i, ov = over(px, VY, w, 24);
+            Gfx.rr(px, VY, w, 24, 8, on ? Ui.alpha(Theme.accent(), 0.25f) : (ov ? 0x1AFFFFFF : 0x10FFFFFF));
+            if (on) Gfx.rrOutline(px, VY, w, 24, 8, 1, Theme.accent());
+            Gfx.text(lab, px + 11, VY + (24 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? Theme.TEXT : Theme.MUTED);
+            hit(px, VY, w, 24, new Action() {
+                @Override public void run(float mx, float my) { cosCat = idx; }
+            }, null, null);
+            px += w + 6;
+        }
+
+        // cards
+        List<String> entries = new ArrayList<String>();
+        if (cosCat == 0 || cosCat == 5) entries.add("bundle");
+        if (cosCat != 5) {
+            for (String slot : Cosmetics.SLOTS) if (cosCat == 0 || COS_CATS[cosCat].equals(slot)) entries.add(slot);
+        }
+        int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 128;
+        int gy = VY + 36;
+        for (int n = 0; n < entries.size(); n++) {
+            final String key = entries.get(n);
+            int cx = x0 + (n % cols) * (cw + gap), cy = gy + (n / cols) * (ch + gap);
+            final boolean bundle = key.equals("bundle");
+            final String id = bundle ? Cosmetics.BUNDLE : Cosmetics.item(key);
+            boolean has, on;
+            if (bundle) {
+                has = Cosmetics.ownsBundle();
+                on = has;
+                for (String sl : Cosmetics.SLOTS) if (!Cosmetics.selected(sl).equals(Cosmetics.item(sl))) on = false;
+            } else {
+                has = CosmeticsApi.owned(id);
+                on = has && Cosmetics.selected(key).equals(id);
+            }
+            boolean ov = over(cx, cy, cw, ch);
+            Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x1AFFFFFF : 0x0FFFFFFF));
+            Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x16FFFFFF);
+            // thumbnail
+            int th = 80;
+            Gfx.rr(cx + 6, cy + 6, cw - 12, th, 9, 0x22000000);
+            int is = 40;
+            Gfx.icon(cosIcon(key), cx + (cw - is) / 2, cy + 6 + (th - is) / 2, is, has ? (on ? Theme.accent() : Theme.TEXT) : Theme.DIM);
+            if (!has) Gfx.icon("lock", cx + 12, cy + 12, 14, Theme.MUTED);
+            if (bundle) {
+                String fr = Lang.t("cos.free");
+                int fw = Gfx.width(fr, 9, true) + 12;
+                Gfx.rr(cx + cw - fw - 12, cy + 12, fw, 15, 7, Theme.accent());
+                Gfx.text(fr, cx + cw - fw - 6, cy + 12 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, Theme.onAccent());
+            }
+            String name = Lang.t(bundle ? "cos.bundle.beta" : "cos.item." + id);
+            Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, cy + th + 12, 11, true, Theme.TEXT);
+            String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.locked"));
+            if (on) {
+                Gfx.rr(cx + 6, cy + ch - 24, cw - 12, 18, 7, Ui.alpha(Theme.accent(), 0.30f));
+                Gfx.icon("check", cx + 10, cy + ch - 23, 16, Theme.TEXT);
+                Gfx.text(st, cx + 28, cy + ch - 24 + (18 - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.TEXT);
+            } else {
+                Gfx.text(Gfx.trim(st, 10, false, cw - 16), cx + 8, cy + ch - 24 + (18 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
+            }
+            final boolean fHas = has;
+            hit(cx, cy, cw, ch, new Action() {
+                @Override public void run(float mx, float my) {
+                    if (!fHas) { CosmeticsApi.openStore(); return; }
+                    if (bundle) Cosmetics.toggleBundle(); else Cosmetics.toggle(key);
+                }
+            }, null, null);
+        }
+
+        // footer: sync status + store button
+        Minecraft mc = Minecraft.getMinecraft();
+        int fy = VY + VH - 26;
         String stKey;
         if (!CosmeticsApi.enabled()) stKey = "cos.dev_mode";
         else if (CosmeticsApi.status().isEmpty()) stKey = "cos.syncing";
         else stKey = "cos.status." + CosmeticsApi.status();
         String store = Lang.t("cos.store");
         int sw = Gfx.width(store, 11, true) + 40;
-        Gfx.text(Gfx.trim(Lang.t(stKey), 10, false, wRight - sw - 12), x0, VY + 4, 10, false, Theme.MUTED);
+        Gfx.text(Gfx.trim(Lang.t(stKey), 10, false, wRight - sw - 12), x0, fy + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
         if (CosmeticsApi.enabled()) {
-            int bx = x0 + wRight - sw, by = VY - 4;
-            boolean ov = overView(bx, by, sw, 26);
-            Gfx.rr(bx, by, sw, 26, 9, ov ? Ui.mix(Theme.accent(), 0xFFFFFFFF, 0.15f) : Theme.accent());
-            Gfx.icon("cart", bx + 11, by + 5, 16, Theme.onAccent());
-            Gfx.text(store, bx + 31, by + (26 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.onAccent());
-            hitView(bx, by, sw, 26, new Action() {
-                @Override public void run(float px, float py) { CosmeticsApi.openStore(); }
+            int bx = x0 + wRight - sw;
+            boolean ov = over(bx, fy, sw, 26);
+            Gfx.rr(bx, fy, sw, 26, 9, ov ? Ui.mix(Theme.accent(), 0xFFFFFFFF, 0.15f) : Theme.accent());
+            Gfx.icon("cart", bx + 11, fy + 5, 16, Theme.onAccent());
+            Gfx.text(store, bx + 31, fy + (26 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.onAccent());
+            hit(bx, fy, sw, 26, new Action() {
+                @Override public void run(float mx, float my) { CosmeticsApi.openStore(); }
             }, null, null);
-        }
-
-        int y = VY + 28;
-        for (final String slot : Cosmetics.SLOTS) {
-            Gfx.text(Lang.t("cos.slot." + slot), x0, y, 13, true, Theme.TEXT);
-            y += 22;
-            String[] items = Cosmetics.items(slot);
-            int cx = x0;
-            String sel = Cosmetics.selected(slot);
-            for (int i = -1; i < items.length; i++) {
-                final String id = i < 0 ? "none" : items[i];
-                final boolean has = id.equals("none") || CosmeticsApi.owned(id);
-                String lab = Lang.t(i < 0 ? "cos.none" : "cos.item." + id);
-                String price = has ? null : CosmeticsApi.price(id);
-                int extra = has ? 0 : 20 + (price == null ? 0 : Gfx.width(price, 10, false) + 6);
-                int cwid = Math.max(64, Gfx.width(lab, 11, false) + 22 + extra);
-                if (cx + cwid > x0 + wRight) { cx = x0; y += 32; }
-                boolean on = sel.equals(id) && has;
-                boolean ov = overView(cx, y, cwid, 26);
-                Gfx.rr(cx, y, cwid, 26, 9, on ? Ui.alpha(Theme.accent(), 0.22f) : (ov ? 0x1AFFFFFF : 0x10FFFFFF));
-                if (on) Gfx.rrOutline(cx, y, cwid, 26, 9, 1, Theme.accent());
-                int tx = cx + 11;
-                if (!has) { Gfx.icon("lock", tx, y + 6, 14, Theme.MUTED); tx += 18; }
-                Gfx.text(lab, tx, y + (26 - Gfx.lineHeight(11, false)) / 2, 11, false, has ? (on ? Theme.TEXT : Theme.MUTED) : Theme.DIM);
-                if (price != null) {
-                    Gfx.text(price, cx + cwid - 8 - Gfx.width(price, 10, false), y + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
-                }
-                hitView(cx, y, cwid, 26, new Action() {
-                    @Override public void run(float px, float py) {
-                        if (has) Cosmetics.equip(slot, id); else CosmeticsApi.openStore();
-                    }
-                }, null, null);
-                cx += cwid + 8;
-            }
-            y += 26 + 14;
         }
         return 0f;
     }

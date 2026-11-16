@@ -64,6 +64,9 @@ public final class Gfx {
         ss = Math.max(1, s);
     }
 
+    /** Font family used for all client text (also for the in-world nametag). */
+    public static String family() { return FAMILY; }
+
     private static void hints(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

@@ -99,6 +99,54 @@ final class Icons {
                 g.draw(new Ellipse2D.Float(4f, 4f, 16f, 16f));
                 g.draw(poly(false, 4f, 4f, 4f, 9f, 9f, 9f));
                 break;
+            case "cape":
+                g.draw(poly(true, 8.5f, 3.5f, 15.5f, 3.5f, 19.5f, 20.5f, 12f, 18f, 4.5f, 20.5f));
+                g.draw(new Line2D.Float(8.5f, 3.5f, 12f, 7f));
+                g.draw(new Line2D.Float(15.5f, 3.5f, 12f, 7f));
+                break;
+            case "wings": {
+                Path2D.Float w = new Path2D.Float();
+                w.moveTo(11f, 12f);
+                w.curveTo(9.5f, 7f, 6f, 5f, 2f, 5.5f);
+                w.curveTo(2.6f, 11f, 5.5f, 16f, 11f, 19.5f);
+                g.draw(w);
+                Path2D.Float w2 = new Path2D.Float();
+                w2.moveTo(13f, 12f);
+                w2.curveTo(14.5f, 7f, 18f, 5f, 22f, 5.5f);
+                w2.curveTo(21.4f, 11f, 18.5f, 16f, 13f, 19.5f);
+                g.draw(w2);
+                g.draw(new Line2D.Float(10f, 13f, 5f, 10f));
+                g.draw(new Line2D.Float(10.5f, 15.5f, 5.5f, 14f));
+                g.draw(new Line2D.Float(14f, 13f, 19f, 10f));
+                g.draw(new Line2D.Float(13.5f, 15.5f, 18.5f, 14f));
+                break;
+            }
+            case "bandana": {
+                Path2D.Float b = new Path2D.Float();
+                b.moveTo(3.5f, 9.5f);
+                b.quadTo(12f, 5f, 20.5f, 9.5f);
+                b.lineTo(20.5f, 14.5f);
+                b.quadTo(12f, 10f, 3.5f, 14.5f);
+                b.closePath();
+                g.draw(b);
+                g.draw(poly(false, 20.5f, 12f, 22f, 19f));
+                g.draw(poly(false, 20f, 13f, 17.5f, 20f));
+                break;
+            }
+            case "pet":
+                g.draw(new Ellipse2D.Float(7f, 12f, 10f, 8f));
+                g.draw(new Ellipse2D.Float(2.5f, 7f, 4f, 5f));
+                g.draw(new Ellipse2D.Float(7.5f, 2.5f, 4f, 5f));
+                g.draw(new Ellipse2D.Float(12.5f, 2.5f, 4f, 5f));
+                g.draw(new Ellipse2D.Float(17.5f, 7f, 4f, 5f));
+                break;
+            case "gift":
+                g.draw(new RoundRectangle2D.Float(4f, 10f, 16f, 10.5f, 2f, 2f));
+                g.draw(new RoundRectangle2D.Float(3f, 7f, 18f, 3.5f, 1.5f, 1.5f));
+                g.draw(new Line2D.Float(12f, 7f, 12f, 20.5f));
+                g.draw(new Ellipse2D.Float(6.5f, 2.5f, 5.5f, 4.5f));
+                g.draw(new Ellipse2D.Float(12f, 2.5f, 5.5f, 4.5f));
+                break;
             default:
                 g.draw(new Ellipse2D.Float(4f, 4f, 16f, 16f));
         }
