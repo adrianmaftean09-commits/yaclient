@@ -3,11 +3,11 @@ package dev.yaclient.modules;
 import dev.yaclient.Hud;
 import net.minecraft.client.settings.KeyBinding;
 
-/** Premi una volta il tasto per accovacciarti, premi di nuovo per smettere. */
+/** Press the sneak key once to sneak, press again to stop. */
 public class ToggleSneakModule extends Module {
     private boolean toggled, was;
 
-    public ToggleSneakModule() { super("Toggle Sneak", false); }
+    public ToggleSneakModule() { super("toggle_sneak", Category.UTILITY, false); }
 
     @Override
     public void onTick() {

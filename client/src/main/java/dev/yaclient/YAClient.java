@@ -1,6 +1,7 @@
 package dev.yaclient;
 
 import dev.yaclient.modules.*;
+import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.weavemc.api.ModInitializer;
@@ -13,11 +14,11 @@ import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
-/** YA CLIENT - entrypoint (Weave, senza Forge). Solo funzioni lecite: nessun cheat. */
+/** YA CLIENT entry point (Weave loader, no Forge). Only legitimate features: no cheats. */
 public class YAClient implements ModInitializer {
     public static final String NAME = "YA CLIENT";
-    public static final int RED = 0xFFE10600;
-    /** Tasto per aprire il menu dei moduli (si chiude solo con ESC). */
+    public static final String VERSION = "1.1.0";
+    /** Key that opens the client menu (close it with ESC). */
     public static final int MENU_KEY = Keyboard.KEY_RSHIFT;
 
     public static final List<Module> MODULES = new ArrayList<Module>();
@@ -25,13 +26,17 @@ public class YAClient implements ModInitializer {
 
     @Override
     public void init() {
+        Config.load();
+        Lang.load(Config.get("lang", "en"));
+        Theme.load();
+        Hud.loadConfig();
+
+        // HUD elements
         MODULES.add(new FpsModule());
         MODULES.add(new CpsModule());
         MODULES.add(new CoordsModule());
         MODULES.add(new KeystrokesModule());
         MODULES.add(new ArmorModule());
-        MODULES.add(new ToggleSprintModule());
-        MODULES.add(new ZoomModule());
         MODULES.add(new PingModule());
         MODULES.add(new DirectionModule());
         MODULES.add(new ClockModule());
@@ -40,14 +45,29 @@ public class YAClient implements ModInitializer {
         MODULES.add(new HealthModule());
         MODULES.add(new PotionModule());
         MODULES.add(new ReachModule());
+        MODULES.add(new SpotifyModule());
+        MODULES.add(new WaypointsModule());
+        // utilities
+        MODULES.add(new ToggleSprintModule());
         MODULES.add(new ToggleSneakModule());
+        MODULES.add(new ZoomModule());
         MODULES.add(new FullbrightModule());
-        Config.load();
+        MODULES.add(new MotionBlurModule());
+        MODULES.add(new CrosshairModule());
+        MODULES.add(new DiscordRpcModule());
+        // planned (need the Mixin phase, see docs/PHASE2.md)
+        MODULES.add(new SoonModule("hit_color", Category.PVP));
+        MODULES.add(new SoonModule("old_animations", Category.PVP));
+        MODULES.add(new SoonModule("autogg", Category.UTILITY));
+        MODULES.add(new SoonModule("levelhead", Category.INFO));
+        MODULES.add(new SoonModule("minimap", Category.INFO));
+
+        for (Module m : MODULES) m.loadConfig();
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
             Minecraft mc = Minecraft.getMinecraft();
 
-            // menu principale di YA CLIENT al posto di quello di Minecraft
+            // our title screen replaces the vanilla one
             if (mc.currentScreen != null && mc.currentScreen.getClass() == GuiMainMenu.class) {
                 mc.displayGuiScreen(new MainMenuScreen());
             }
@@ -65,18 +85,9 @@ public class YAClient implements ModInitializer {
             menuKeyWasDown = down;
         });
 
-        EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (mc.gameSettings.hideGUI || mc.gameSettings.showDebugInfo) return;
-            Hud.begin();
-            for (Module m : MODULES) {
-                m.bind();
-                if (m.enabled) m.onRender();
-            }
-            Hud.end();
-        });
+        EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> Hud.render());
 
-        System.out.println("[" + NAME + "] caricato. Premi RShift per il menu.");
+        System.out.println("[" + NAME + "] " + VERSION + " loaded. Press Right Shift for the menu.");
     }
 
     @Override

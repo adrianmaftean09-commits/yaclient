@@ -1,15 +1,17 @@
 package dev.yaclient.modules;
 
-import dev.yaclient.Hud;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
-public class PingModule extends Module {
-    public PingModule() { super("Ping", false); }
+public class PingModule extends PillModule {
+    public PingModule() { super("ping", Category.INFO, false, 0.99f, 0.012f); }
 
     @Override
-    public void onRender() {
-        if (mc.thePlayer == null || mc.getNetHandler() == null) return;
+    protected String text() {
+        if (mc == null || mc.thePlayer == null || mc.getNetHandler() == null) return "";
         NetworkPlayerInfo info = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
-        Hud.right(info == null ? "Ping --" : info.getResponseTime() + " ms");
+        return info == null ? "-- ms" : info.getResponseTime() + " ms";
     }
+
+    @Override
+    protected String sample() { return "42 ms"; }
 }

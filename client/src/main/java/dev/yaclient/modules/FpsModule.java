@@ -1,13 +1,10 @@
 package dev.yaclient.modules;
 
-import dev.yaclient.Hud;
 import net.minecraft.client.Minecraft;
 
-public class FpsModule extends Module {
-    public FpsModule() { super("FPS", true); }
+public class FpsModule extends PillModule {
+    public FpsModule() { super("fps", Category.INFO, true, 0.008f, 0.012f); }
 
     @Override
-    public void onRender() {
-        Hud.left(Minecraft.getDebugFPS() + " FPS");
-    }
+    protected String text() { return Minecraft.getDebugFPS() + " FPS"; }
 }

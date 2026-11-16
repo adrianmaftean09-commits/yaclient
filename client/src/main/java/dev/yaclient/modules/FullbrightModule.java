@@ -1,11 +1,17 @@
 package dev.yaclient.modules;
 
-/** Luce sempre: luminosita' al massimo (solo lato client). Alcuni server possono vietarla. */
+import dev.yaclient.Setting;
+
+/**
+ * Fullbright / gamma control (client-side only, purely visual). Some servers do not allow it,
+ * so it is disabled by default.
+ */
 public class FullbrightModule extends Module {
+    private final Setting.Num gamma = add(new Setting.Num("gamma", 1f, 100f, 1f, 100f, ""));
     private float saved = 1f;
     private boolean active;
 
-    public FullbrightModule() { super("Luce Sempre", false); }
+    public FullbrightModule() { super("fullbright", Category.UTILITY, false); }
 
     @Override
     public void onTick() {
@@ -14,12 +20,12 @@ public class FullbrightModule extends Module {
             saved = mc.gameSettings.gammaSetting;
             active = true;
         }
-        mc.gameSettings.gammaSetting = 100f;
+        mc.gameSettings.gammaSetting = gamma.value;
     }
 
     @Override
     public void onAlwaysTick() {
-        // se il gioco e' stato chiuso con la luce attiva, il valore resterebbe salvato nelle opzioni
+        // if the game was closed while fullbright was on, the value would stay in options.txt
         if (!enabled && !active && mc.gameSettings != null && mc.gameSettings.gammaSetting > 1f) {
             mc.gameSettings.gammaSetting = 1f;
         }

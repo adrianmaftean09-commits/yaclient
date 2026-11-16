@@ -1,16 +1,15 @@
 package dev.yaclient.modules;
 
-import dev.yaclient.Hud;
 import net.minecraft.util.MovingObjectPosition;
 
 import java.util.Locale;
 
-/** Mostra la distanza dal giocatore/entita' che stai mirando (solo informazione). */
-public class ReachModule extends Module {
+/** Shows the distance to the entity under the crosshair (information only). */
+public class ReachModule extends PillModule {
     private double last;
     private long lastTime;
 
-    public ReachModule() { super("Reach", false); }
+    public ReachModule() { super("reach", Category.PVP, false, 0.99f, 0.22f); }
 
     @Override
     public void onRender() {
@@ -20,10 +19,11 @@ public class ReachModule extends Module {
             last = mop.hitVec.distanceTo(mc.thePlayer.getPositionEyes(1.0F));
             lastTime = System.currentTimeMillis();
         }
-        if (System.currentTimeMillis() - lastTime < 1500) {
-            Hud.right(String.format(Locale.US, "Reach %.2f", last));
-        } else {
-            Hud.right("Reach --");
-        }
+    }
+
+    @Override
+    protected String text() {
+        if (System.currentTimeMillis() - lastTime < 1500) return String.format(Locale.ROOT, "Reach %.2f", last);
+        return "Reach --";
     }
 }

@@ -1,7 +1,5 @@
 package dev.yaclient;
 
-import dev.yaclient.modules.Module;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,36 +9,58 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
-/** Salva quali moduli sono attivi, cosi' restano uguali al prossimo avvio. */
+/** Persistent key/value settings stored in ~/.yaclient/config.properties. */
 public final class Config {
+    private static final Properties P = new Properties();
+
     private Config() {}
 
     private static File file() {
-        return new File(System.getProperty("user.home"), ".yaclient" + File.separator + "modules.properties");
+        return new File(System.getProperty("user.home"), ".yaclient" + File.separator + "config.properties");
     }
 
-    public static void load() {
+    public static synchronized void load() {
         try {
             File f = file();
             if (!f.exists()) return;
-            Properties p = new Properties();
             Reader r = new InputStreamReader(new FileInputStream(f), "UTF-8");
-            try { p.load(r); } finally { r.close(); }
-            for (Module m : YAClient.MODULES) {
-                String v = p.getProperty(m.name);
-                if (v != null) m.enabled = Boolean.parseBoolean(v);
-            }
+            try { P.load(r); } finally { r.close(); }
         } catch (Exception ignored) { }
     }
 
-    public static void save() {
+    public static synchronized void save() {
         try {
             File f = file();
             f.getParentFile().mkdirs();
-            Properties p = new Properties();
-            for (Module m : YAClient.MODULES) p.setProperty(m.name, String.valueOf(m.enabled));
             Writer w = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
-            try { p.store(w, "YA CLIENT"); } finally { w.close(); }
+            try { P.store(w, "YA CLIENT"); } finally { w.close(); }
         } catch (Exception ignored) { }
     }
+
+    public static synchronized String get(String key, String def) {
+        return P.getProperty(key, def);
+    }
+
+    public static synchronized void set(String key, String value) {
+        P.setProperty(key, value);
+    }
+
+    public static boolean getBool(String key, boolean def) {
+        String v = get(key, null);
+        return v == null ? def : Boolean.parseBoolean(v);
+    }
+
+    public static void setBool(String key, boolean v) { set(key, String.valueOf(v)); }
+
+    public static float getFloat(String key, float def) {
+        try { return Float.parseFloat(get(key, String.valueOf(def))); } catch (Exception e) { return def; }
+    }
+
+    public static void setFloat(String key, float v) { set(key, String.valueOf(v)); }
+
+    public static int getInt(String key, int def) {
+        try { return Integer.parseInt(get(key, String.valueOf(def))); } catch (Exception e) { return def; }
+    }
+
+    public static void setInt(String key, int v) { set(key, String.valueOf(v)); }
 }

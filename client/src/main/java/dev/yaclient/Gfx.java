@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -172,5 +173,48 @@ public final class Gfx {
             t = upload(key, img);
         }
         draw(t, x - 1, y, pw / ss, ph / ss, color);
+    }
+
+    /** Rounded outline (stroke only) with the given thickness in GUI units. */
+    public static void rrOutline(int x, int y, int w, int h, int r, int thick, int color) {
+        if (w <= 0 || h <= 0) return;
+        String key = "o|" + w + "|" + h + "|" + r + "|" + thick + "|" + ss;
+        DynamicTexture t = TEX.get(key);
+        if (t == null) {
+            BufferedImage img = new BufferedImage(w * ss, h * ss, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            hints(g);
+            g.setColor(Color.WHITE);
+            float th = thick * ss;
+            g.setStroke(new BasicStroke(th));
+            g.draw(new RoundRectangle2D.Float(th / 2f, th / 2f, w * ss - th, h * ss - th, 2f * r * ss, 2f * r * ss));
+            g.dispose();
+            t = upload(key, img);
+        }
+        draw(t, x, y, w, h, color);
+    }
+
+    /** Vector icon from Icons (square, size in GUI units). */
+    public static void icon(String name, int x, int y, int size, int color) {
+        String key = "i|" + name + "|" + size + "|" + ss;
+        DynamicTexture t = TEX.get(key);
+        if (t == null) {
+            BufferedImage img = new BufferedImage(size * ss, size * ss, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            hints(g);
+            g.setColor(Color.WHITE);
+            double k = size * ss / 24.0;
+            g.scale(k, k);
+            g.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            Icons.draw(g, name);
+            g.dispose();
+            t = upload(key, img);
+        }
+        draw(t, x, y, size, size, color);
+    }
+
+    /** Text centered horizontally around cx. */
+    public static void textCentered(String s, int cx, int y, int size, boolean bold, int color) {
+        text(s, cx - width(s, size, bold) / 2, y, size, bold, color);
     }
 }

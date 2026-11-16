@@ -2,9 +2,9 @@ package dev.yaclient.modules;
 
 import net.minecraft.client.settings.KeyBinding;
 
-/** Corsa automatica: tiene premuto sprint mentre vai avanti. */
+/** Keeps sprint pressed while you walk forward. */
 public class ToggleSprintModule extends Module {
-    public ToggleSprintModule() { super("Toggle Sprint", true); }
+    public ToggleSprintModule() { super("toggle_sprint", Category.UTILITY, true); }
 
     @Override
     public void onTick() {

@@ -1,14 +1,12 @@
 package dev.yaclient.modules;
 
-import dev.yaclient.Hud;
-
 import java.util.Locale;
 
-public class SpeedModule extends Module {
+public class SpeedModule extends PillModule {
     private double lastX, lastZ, speed;
     private boolean has;
 
-    public SpeedModule() { super("Velocit\u00e0", false); }
+    public SpeedModule() { super("speed", Category.INFO, false, 0.008f, 0.168f); }
 
     @Override
     public void onTick() {
@@ -24,7 +22,5 @@ public class SpeedModule extends Module {
     }
 
     @Override
-    public void onRender() {
-        Hud.right(String.format(Locale.US, "%.1f b/s", speed));
-    }
+    protected String text() { return String.format(Locale.ROOT, "%.1f b/s", speed); }
 }

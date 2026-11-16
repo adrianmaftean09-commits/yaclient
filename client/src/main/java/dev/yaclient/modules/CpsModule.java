@@ -1,17 +1,16 @@
 package dev.yaclient.modules;
 
-import dev.yaclient.Hud;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class CpsModule extends Module {
+public class CpsModule extends PillModule {
     private final Deque<Long> left = new ArrayDeque<Long>();
     private final Deque<Long> right = new ArrayDeque<Long>();
     private boolean lastL, lastR;
 
-    public CpsModule() { super("CPS", true); }
+    public CpsModule() { super("cps", Category.PVP, true, 0.008f, 0.064f); }
 
     private static int count(Deque<Long> d) {
         long now = System.currentTimeMillis();
@@ -26,6 +25,8 @@ public class CpsModule extends Module {
         if (r && !lastR) right.addLast(System.currentTimeMillis());
         lastL = l;
         lastR = r;
-        Hud.left(count(left) + " | " + count(right) + " CPS");
     }
+
+    @Override
+    protected String text() { return count(left) + " | " + count(right) + " CPS"; }
 }
