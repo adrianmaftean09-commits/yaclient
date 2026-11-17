@@ -24,6 +24,7 @@ public class YaFabricClient implements ClientModInitializer {
         Modules.init();
         Hud.register();
         Hits.init();
+        dev.yaclient.fabric.cos.CosmeticsLayer.register();
         KeyMapping menuKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.yaclient.menu", GLFW.GLFW_KEY_RIGHT_SHIFT,
                 KeyMapping.Category.register(Identifier.fromNamespaceAndPath("yaclient", "main"))));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

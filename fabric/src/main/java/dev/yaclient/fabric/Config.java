@@ -20,8 +20,21 @@ public final class Config {
     public static synchronized void load() {
         try {
             File f = file();
-            if (!f.exists()) return;
-            try (Reader r = new InputStreamReader(new FileInputStream(f), "UTF-8")) { P.load(r); }
+            if (f.exists()) {
+                try (Reader r = new InputStreamReader(new FileInputStream(f), "UTF-8")) { P.load(r); }
+            }
+        } catch (Exception ignored) { }
+        // shared with the launcher and the 1.8.9 client: store backend, account secret, cosmetic selection
+        try {
+            File sf = new File(System.getProperty("user.home"), ".yaclient" + File.separator + "config.properties");
+            if (sf.exists()) {
+                Properties s = new Properties();
+                try (Reader r = new InputStreamReader(new FileInputStream(sf), "UTF-8")) { s.load(r); }
+                for (String k : s.stringPropertyNames()) {
+                    if (k.equals("api.base") || k.equals("store.url")) P.setProperty(k, s.getProperty(k));
+                    else if ((k.equals("api.secret") || k.startsWith("cos.")) && !P.containsKey(k)) P.setProperty(k, s.getProperty(k));
+                }
+            }
         } catch (Exception ignored) { }
     }
 
