@@ -22,7 +22,13 @@ jobs:
           gradle-version: "9.1.0"
       - name: Compila YAClient.jar
         working-directory: client
-        run: gradle build --no-daemon
+        run: |
+          for i in 1 2 3 4 5; do
+            gradle build --no-daemon && exit 0
+            echo "Build fallita (tentativo $i), probabile limite di rete di Maven. Riprovo tra 60s..."
+            sleep 60
+          done
+          exit 1
       - uses: actions/upload-artifact@v4
         with:
           name: YAClient-jar
