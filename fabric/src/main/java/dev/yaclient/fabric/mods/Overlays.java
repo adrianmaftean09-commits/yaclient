@@ -17,10 +17,10 @@ public final class Overlays {
 
         @Override
         public void draw(GuiGraphicsExtractor g, Minecraft mc) {
-            g.fill(6, 0, 7, 5, 0xFFFFFFFF);
-            g.fill(6, 8, 7, 13, 0xFFFFFFFF);
-            g.fill(0, 6, 5, 7, 0xFFFFFFFF);
-            g.fill(8, 6, 13, 7, 0xFFFFFFFF);
+            g.fill(6, 0, 7, 5, 0xFFF4F4F5);
+            g.fill(6, 8, 7, 13, 0xFFF4F4F5);
+            g.fill(0, 6, 5, 7, 0xFFF4F4F5);
+            g.fill(8, 6, 13, 7, 0xFFF4F4F5);
         }
     }
 

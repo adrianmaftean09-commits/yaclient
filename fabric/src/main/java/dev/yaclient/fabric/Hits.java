@@ -23,6 +23,25 @@ public final class Hits {
 
     public static int pops(Minecraft mc) { return pops; }
 
+    private static final java.util.ArrayDeque<Long> LEFT = new java.util.ArrayDeque<Long>(), RIGHT = new java.util.ArrayDeque<Long>();
+    private static boolean wasL, wasR;
+
+    private static int count(java.util.ArrayDeque<Long> q, long now) {
+        while (!q.isEmpty() && now - q.peekFirst() > 1000) q.pollFirst();
+        return q.size();
+    }
+
+    /** "left | right CPS", sampled every time the HUD asks for it. */
+    public static String cpsText(Minecraft mc) {
+        long now = System.currentTimeMillis();
+        boolean l = mc.options.keyAttack.isDown(), r = mc.options.keyUse.isDown();
+        if (l && !wasL) LEFT.addLast(now);
+        if (r && !wasR) RIGHT.addLast(now);
+        wasL = l;
+        wasR = r;
+        return count(LEFT, now) + " | " + count(RIGHT, now) + " CPS";
+    }
+
     public static void tick(Minecraft mc) {
         Player p = mc.player;
         if (p == null) { lastTotems = -1; return; }

@@ -25,11 +25,16 @@ public final class Modules {
         ALL.add(new TextHud(id, name, desc, c, false, x, y, f));
     }
 
+    private static void textOn(String id, String name, String desc, Category c, float x, float y, java.util.function.Function<Minecraft, String> f) {
+        ALL.add(new TextHud(id, name, desc, c, true, x, y, f));
+    }
+
     public static void init() {
-        ALL.add(new FpsModule());
-        ALL.add(new CpsModule());
+        textOn("fps", "FPS", "Shows your frames per second", Category.INFO, 0.008f, 0.012f, mc -> mc.getFps() + " FPS");
+        textOn("cps", "CPS", "Shows your clicks per second", Category.PVP, 0.008f, 0.064f, mc -> Hits.cpsText(mc));
         ALL.add(new KeystrokesModule());
-        ALL.add(new CoordsModule());
+        text("coords", "Coordinates", "Shows your XYZ position", Category.INFO, 0.008f, 0.116f, mc -> mc.player == null ? "" :
+            "XYZ " + (int) Math.floor(mc.player.getX()) + " " + (int) Math.floor(mc.player.getY()) + " " + (int) Math.floor(mc.player.getZ()));
         text("ping", "Ping", "Your latency to the server", Category.INFO, 0.008f, 0.17f, mc -> {
             if (mc.player == null || mc.getConnection() == null) return "Ping -";
             PlayerInfo pi = mc.getConnection().getPlayerInfo(mc.player.getUUID());

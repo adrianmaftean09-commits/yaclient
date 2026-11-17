@@ -1,33 +1,39 @@
 package dev.yaclient.fabric.mods;
 
+import dev.yaclient.fabric.Gfx;
 import dev.yaclient.fabric.HudModule;
-import net.minecraft.client.KeyMapping;
+import dev.yaclient.fabric.Theme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-/** WASD and jump keys on the HUD. */
+/** WASD, mouse buttons and space bar, same layout as the 1.8.9 client. */
 public class KeystrokesModule extends HudModule {
-    private static final int K = 18, GAP = 2;
+    private static final int K = 22, G = 3, W = 3 * K + 2 * G;
 
-    public KeystrokesModule() { super("keystrokes", "Keystrokes", "WASD and space bar overlay", Category.PVP, true, 0.008f, 0.3f); }
+    public KeystrokesModule() { super("keystrokes", "Keystrokes", "WASD, mouse buttons and space bar", Category.PVP, true, 0.008f, 0.3f); }
 
-    @Override public int width(Minecraft mc) { return K * 3 + GAP * 2; }
+    @Override public int width(Minecraft mc) { return W; }
 
-    @Override public int height(Minecraft mc) { return K * 3 + GAP * 2; }
+    @Override public int height(Minecraft mc) { return 2 * K + G + G + 20 + G + 16; }
 
-    private void key(GuiGraphicsExtractor g, Minecraft mc, KeyMapping k, String label, int x, int y, int w) {
-        boolean down = k.isDown();
-        g.fill(x, y, x + w, y + K, down ? 0xE0F4F4F5 : 0x90101014);
-        int tw = mc.font.width(label);
-        g.text(mc.font, label, x + (w - tw) / 2, y + (K - 8) / 2, down ? 0xFF0A0A0C : 0xFFFFFFFF, false);
+    private void key(String label, boolean down, int x, int y, int w, int h) {
+        Gfx.rr(x, y, w, h, 5, down ? 0xEBF5F5F5 : Theme.HUD_BG);
+        if (!down) Gfx.rrOutline(x, y, w, h, 5, 1, 0x1AFFFFFF);
+        int lh = Gfx.lineHeight(10, true);
+        Gfx.text(label, x + (w - Gfx.width(label, 10, true)) / 2, y + (h - lh) / 2, 10, true, down ? 0xFF101014 : Theme.TEXT);
     }
 
     @Override
     public void draw(GuiGraphicsExtractor g, Minecraft mc) {
-        key(g, mc, mc.options.keyUp, "W", K + GAP, 0, K);
-        key(g, mc, mc.options.keyLeft, "A", 0, K + GAP, K);
-        key(g, mc, mc.options.keyDown, "S", K + GAP, K + GAP, K);
-        key(g, mc, mc.options.keyRight, "D", (K + GAP) * 2, K + GAP, K);
-        key(g, mc, mc.options.keyJump, "SPACE", 0, (K + GAP) * 2, K * 3 + GAP * 2);
+        var o = mc.options;
+        key("W", o.keyUp.isDown(), K + G, 0, K, K);
+        key("A", o.keyLeft.isDown(), 0, K + G, K, K);
+        key("S", o.keyDown.isDown(), K + G, K + G, K, K);
+        key("D", o.keyRight.isDown(), 2 * (K + G), K + G, K, K);
+        int y = 2 * K + 2 * G, half = (W - G) / 2;
+        key("LMB", o.keyAttack.isDown(), 0, y, half, 20);
+        key("RMB", o.keyUse.isDown(), half + G, y, half, 20);
+        y += 20 + G;
+        key("SPACE", o.keyJump.isDown(), 0, y, W, 16);
     }
 }
