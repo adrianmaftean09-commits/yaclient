@@ -26,25 +26,23 @@ public final class PlusBadge {
         // glow (additive)
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-        GL11.glColor4f(1f, 0.80f, 0.22f, 0.20f * pulse);
+        GL11.glColor4f(1f, 0.80f, 0.22f, 0.16f * pulse);
         GL11.glVertex2f(cx, cy);
         GL11.glColor4f(1f, 0.62f, 0.05f, 0f);
         for (int i = 0; i <= 28; i++) {
             double a = Math.PI * 2 * i / 28;
-            GL11.glVertex2f(cx + (float) Math.cos(a) * s * 0.75f, cy + (float) Math.sin(a) * s * 0.75f);
+            GL11.glVertex2f(cx + (float) Math.cos(a) * s * 0.62f, cy + (float) Math.sin(a) * s * 0.62f);
         }
         GL11.glEnd();
         // the plus itself
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-        float a = s * 0.42f, b = s * 0.16f;
-        GL11.glColor4f(0.80f, 0.55f, 0.05f, 1f);   // dark gold edge
-        rect(cx - a - 0.25f, cy - b - 0.25f, cx + a + 0.25f, cy + b + 0.25f);
-        rect(cx - b - 0.25f, cy - a - 0.25f, cx + b + 0.25f, cy + a + 0.25f);
-        GL11.glColor4f(1f, 0.84f, 0.26f, 1f);       // gold
+        float a = s * 0.46f, b = Math.max(0.28f, s * 0.075f);   // thin arms
+        GL11.glColor4f(0.80f, 0.55f, 0.05f, 0.9f);   // dark gold edge (hairline)
+        rect(cx - a - 0.15f, cy - b - 0.15f, cx + a + 0.15f, cy + b + 0.15f);
+        rect(cx - b - 0.15f, cy - a - 0.15f, cx + b + 0.15f, cy + a + 0.15f);
+        GL11.glColor4f(1f, 0.86f, 0.30f, 1f);       // gold
         rect(cx - a, cy - b, cx + a, cy + b);
         rect(cx - b, cy - a, cx + b, cy + a);
-        GL11.glColor4f(1f, 0.96f, 0.72f, 1f);       // highlight
-        rect(cx - a * 0.55f, cy - b * 0.4f, cx + a * 0.55f, cy + b * 0.1f);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableTexture2D();
         if (cull) GlStateManager.enableCull();

@@ -676,7 +676,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.icon(cosIcon(COS_CATS[i]), px + 9, VY + 6, 14, on ? Theme.TEXT : Theme.MUTED);
             Gfx.text(lab, px + 28, VY + (26 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? Theme.TEXT : Theme.MUTED);
             hit(px, VY, w, 26, new Action() {
-                @Override public void run(float mx, float my) { cosCat = idx; }
+                @Override public void run(float mx, float my) { cosCat = idx; scrollTarget = 0f; scroll = 0f; }
             }, null, null);
             px += w + 6;
         }
@@ -693,11 +693,18 @@ public class MenuScreen extends GuiScreen {
         if (partnerTab) Gfx.text(Lang.t("cos.partner_hint"), x0, VY + 36, 10, false, Theme.MUTED);
         int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 150;
         int gy = VY + (partnerTab ? 54 : 40);
+        final int footY = VY + VH - 26;
+        final int gTop = gy - 2, gBot = footY - 8, gH = gBot - gTop;
+        int rows = (entries.size() + cols - 1) / cols;
+        int gridH = rows * (ch + gap) - gap;
+        int gScroll = Math.round(scroll);
+        clip(x0 - 2, gTop, wRight + 4, gH);
         for (int n = 0; n < entries.size(); n++) {
             final String[] kv = entries.get(n).split(":");
             final String key = kv[0];
             final int bi = Integer.parseInt(kv[1]);
-            int cx = x0 + (n % cols) * (cw + gap), cy = gy + (n / cols) * (ch + gap);
+            int cx = x0 + (n % cols) * (cw + gap), cy = gy - gScroll + (n / cols) * (ch + gap);
+            if (cy + ch < gTop || cy > gBot) continue;
             final boolean bundle = key.equals("bundle");
             final String id = bundle ? Cosmetics.BUNDLES[bi] : Cosmetics.item(bi, key);
             boolean has, on;
@@ -708,7 +715,7 @@ public class MenuScreen extends GuiScreen {
                 has = CosmeticsApi.owned(id);
                 on = has && Cosmetics.selected(key).equals(id);
             }
-            boolean ov = over(cx, cy, cw, ch);
+            boolean ov = over(cx, cy, cw, ch) && myl >= gTop && myl < gBot;
             Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x24FFFFFF : 0x1AFFFFFF));
             Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x30FFFFFF);
             // tag band (FREE / EXCLUSIVE / lock) above the thumbnail, so nothing is drawn over the preview
@@ -723,10 +730,13 @@ public class MenuScreen extends GuiScreen {
             // thumbnail (3D preview is clipped to its box)
             Gfx.rr(cx + 6, ty, cw - 12, th, 9, 0x22000000);
             float ps = key.equals("cape") ? 56f : key.equals("wings") ? 34f : key.equals("bandana") ? 90f : key.equals("pet") ? 90f : 30f;
-            clip(cx + 6, ty, cw - 12, th);
+            int cy0 = Math.max(ty, gTop), cy1 = Math.min(ty + th, gBot);
+            if (cy1 > cy0) {
+            clip(cx + 6, cy0, cw - 12, cy1 - cy0);
             CosmeticPreview.draw(key, Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            unclip();
+            clip(x0 - 2, gTop, wRight + 4, gH);
+            }
             String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);
             Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, ty + th + 7, 11, true, Theme.TEXT);
             String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.locked"));
@@ -738,7 +748,8 @@ public class MenuScreen extends GuiScreen {
                 Gfx.text(Gfx.trim(st, 10, false, cw - 16), cx + 8, cy + ch - 24 + (18 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
             }
             final boolean fHas = has;
-            hit(cx, cy, cw, ch, new Action() {
+            int hy0 = Math.max(cy, gTop), hy1 = Math.min(cy + ch, gBot);
+            if (hy1 > hy0) hit(cx, hy0, cw, hy1 - hy0, new Action() {
                 @Override public void run(float mx, float my) {
                     if (!fHas) { CosmeticsApi.openStore(); return; }
                     if (bundle) Cosmetics.toggleBundle(bi); else Cosmetics.toggle(bi, key);
@@ -746,9 +757,10 @@ public class MenuScreen extends GuiScreen {
             }, null, null);
         }
 
+        unclip();
         // footer: sync status + store button
         Minecraft mc = Minecraft.getMinecraft();
-        int fy = VY + VH - 26;
+        int fy = footY;
         String stKey;
         if (!CosmeticsApi.enabled()) stKey = "cos.dev_mode";
         else if (CosmeticsApi.status().isEmpty()) stKey = "cos.syncing";
@@ -766,7 +778,7 @@ public class MenuScreen extends GuiScreen {
                 @Override public void run(float mx, float my) { CosmeticsApi.openStore(); }
             }, null, null);
         }
-        return 0f;
+        return VH + Math.max(0, gridH - gH);
     }
 
     // ----- global settings -----

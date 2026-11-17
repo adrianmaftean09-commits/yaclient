@@ -1,7 +1,7 @@
 (function () {
   var Y = window.YA || {};
   document.querySelectorAll('[data-dc]').forEach(function (a) { a.href = Y.discord; a.target = '_blank'; a.rel = 'noopener'; });
-  document.querySelectorAll('[data-dl]').forEach(function (a) { a.href = (Y.github || '#') + '/releases/latest'; a.target = '_blank'; a.rel = 'noopener'; });
+  document.querySelectorAll('[data-dl]').forEach(function (a) { a.href = '/download'; a.removeAttribute('target'); });
   var eur = function (n) { return '€' + (Math.round(n * 100) / 100).toFixed(n % 1 ? 2 : 0); };
   window.YAeur = eur;
 
