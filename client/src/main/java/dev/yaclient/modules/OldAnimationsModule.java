@@ -1,5 +1,6 @@
 package dev.yaclient.modules;
 
+import dev.yaclient.Hud;
 import dev.yaclient.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -10,6 +11,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -56,6 +58,22 @@ public class OldAnimationsModule extends Module {
         } catch (Throwable ignored) { }
     }
 
+    /**
+     * 1.7: with the sword up you can keep swinging while you hit the ground or the air (hold left click, right click held).
+     * 1.8 only swings on the first click there. Swinging is rate limited by the game itself.
+     */
+    @Override
+    public void onTick() {
+        if (mc == null || mc.thePlayer == null || mc.currentScreen != null) return;
+        EntityPlayerSP p = mc.thePlayer;
+        ItemStack held = p.getHeldItem();
+        if (held == null || !(held.getItem() instanceof ItemSword)) return;
+        if (!Hud.down(mc.gameSettings.keyBindUseItem) || !Hud.down(mc.gameSettings.keyBindAttack)) return;
+        MovingObjectPosition mop = mc.objectMouseOver;
+        if (mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) return;   // hitting a player already swings
+        p.swingItem();
+    }
+
     private static final class OldItemRenderer extends ItemRenderer {
         OldItemRenderer(Minecraft mc) { super(mc); }
 
@@ -64,8 +82,11 @@ public class OldAnimationsModule extends Module {
             Minecraft mc = Minecraft.getMinecraft();
             EntityPlayerSP p = mc.thePlayer;
             ItemStack held = p == null ? null : p.getHeldItem();
-            boolean block = ACTIVE && held != null && held.getItem() instanceof ItemSword && p.isUsingItem()
-                    && held.getItemUseAction() == EnumAction.BLOCK && mc.gameSettings.thirdPersonView == 0;
+            // right click held counts as blocking too (the game stops "using" the sword while you hit a block)
+            boolean block = ACTIVE && held != null && held.getItem() instanceof ItemSword
+                    && held.getItemUseAction() == EnumAction.BLOCK
+                    && (p.isUsingItem() || Hud.down(mc.gameSettings.keyBindUseItem))
+                    && mc.gameSettings.thirdPersonView == 0 && mc.currentScreen == null;
             if (!block) { super.renderItemInFirstPerson(pt); return; }
             GlStateManager.pushMatrix();
             // everything below happens "inside" the item's own position, exactly where vanilla does its swing

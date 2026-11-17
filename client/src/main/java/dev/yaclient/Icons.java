@@ -84,6 +84,8 @@ final class Icons {
         DSL.put("minimap", "M 3 6 L 9 4 L 15 6 L 21 4 L 21 18 L 15 20 L 9 18 L 3 20 Z M 9 4 L 9 18 M 15 6 L 15 20");
         DSL.put("scoreboard", "R 4 3 16 18 2 M 8 8 L 16 8 M 8 12 L 16 12 M 8 16 L 13 16");
         DSL.put("fps_boost", "M 12 3 B 17 6 18 12 16 17 L 8 17 B 6 12 7 6 12 3 Z C 12 10 1.8 M 8 17 L 6 21 M 16 17 L 18 21");
+        DSL.put("no_clouds", "M 7 18 B 3 18 3 12 7.5 12 B 8 7 16 7 17 12 B 21 12 21 18 17 18 Z M 3 3 L 21 21");
+        DSL.put("block_outline", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");
         DSL.put("chat", "R 3 4 18 13 3 M 8 17 L 8 21 L 12.5 17 M 7.5 9 L 16.5 9 M 7.5 12.5 L 13 12.5");
     }
 
