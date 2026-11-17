@@ -121,7 +121,7 @@ function viewHome() {
   return `<div class="lp"><div>
     <div class="card hero3"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
       <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
-        <button class="chev" data-p="versions" title="${esc(t('change'))}">${ic('chev')}</button></div>
+</div>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
     ${newsHtml(C.news)}</div>
     <div class="side">${plusCard()}${adHtml(ads[0])}${adHtml(ads[1])}</div></div>`;
