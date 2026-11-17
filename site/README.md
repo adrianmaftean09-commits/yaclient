@@ -38,3 +38,9 @@ Friend requests and online status live in the same Function (`/v1/friends`, KV k
 Players appear as "online" for about 100 seconds after their last heartbeat. A player can only be added by name after
 they have launched YA CLIENT once. KV free plan allows 1000 writes/day; each online player writes about once a minute,
 so for many players use the Workers Paid plan ($5/month) or ask to move presence to D1.
+
+## Deploy as a Worker with static assets (new Cloudflare dashboard)
+`wrangler.jsonc` + `worker.js` make the same site + API work as a Worker (KV binding `DB` is declared in the config, so no
+dashboard binding is needed). Connect the repo under Settings > Builds, root directory `site`, deploy command
+`npx wrangler deploy`. Then add the secret `ADMIN_KEY` in Settings > Variables and Secrets.
+If the deploy complains about the KV namespace, copy the id of your `ya-client` namespace into `kv_namespaces` (`"id": "..."`).
