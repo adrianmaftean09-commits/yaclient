@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
 <div class="page-h"><div class="wrap"><span class="eyebrow">Store</span><h1 class="plain">Cosmetics</h1><p class="sub">Wings, capes, bandanas and pets. Rendered live from the game. Click any item to try it on.</p></div></div>
 <div class="wrap">
-<div class="plusbar"><div><b>YA Plus</b><span>Animated cape movement, a red launcher and more perks.</span></div><a class="btn" href="/plus">See YA Plus →</a></div>
+<div class="plusbar" id="plusbar2"><div><b>YA Plus members: -70% on the whole shop</b><span>Enter your Minecraft name under the 3D character to check your YA Plus discount.</span></div><a class="btn" href="/plus">See YA Plus →</a></div>
 <div class="store"><div><div class="chips" id="chips"></div><div class="pg" id="grid"></div></div>
 <aside class="side"><div class="stage" id="stage"><canvas id="v3d"></canvas><div class="cap">Drag to rotate</div></div>
 <div class="wear"><div class="t">Wearing</div><div class="wl" id="wl"></div><div class="tot"><span style="color:var(--mute)">Total</span><b id="tot">-</b></div><button class="btn pri block" id="getw" disabled>Select a cosmetic</button><button class="btn block" id="clr" style="margin-top:10px">Clear</button></div></aside></div></div>
@@ -21,15 +21,16 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle}};
 var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles']];
 var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
-var priceOf=function(id){return P[id].set==='beta'?0:PR.item};
-function total(list){var m=list.filter(function(i){return P[i].set==='mono'}).length;return (m===4?PR.monoBundle:m*PR.item)}
+var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
+var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
+function total(list){var m=list.filter(function(i){return P[i].set==='mono'}).length;return R((m===4?PR.monoBundle:m*PR.item)*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
 function card(key,isSet){
- var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:d.price):priceOf(key);
+ var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:R(d.price*K())):priceOf(key);
  var on=isSet?ids.every(function(i){return worn.indexOf(i)>=0}):worn.indexOf(key)>=0;
  var tag=isSet?(d.free?'Free':'Bundle'):(free?'Beta':'');
- var save=isSet&&!d.free?'<span class="tagb save">Save '+eur(4*PR.item-d.price)+'</span>':(tag?'<span class="tagb">'+tag+'</span>':'');
- var pr=free?'<span class="price free">Free</span>':(isSet?'<span class="price"><s>'+eur(4*PR.item)+'</s>'+eur(price)+'</span>':'<span class="price">'+eur(price)+'</span>');
+ var save=isSet&&!d.free?'<span class="tagb save">Save '+eur(R(4*PR.item-price))+'</span>':(tag?'<span class="tagb">'+tag+'</span>':'');
+ var pr=free?'<span class="price free">Free</span>':(isSet?'<span class="price"><s>'+eur(4*PR.item)+'</s>'+eur(price)+'</span>':(window.YAplusOn?'<span class="price"><s>'+eur(PR.item)+'</s>'+eur(price)+'</span>':'<span class="price">'+eur(price)+'</span>'));
  var im=thumbs[(isSet?'s:':'i:')+key];
  return '<div class="pc '+(on?'on':'')+'" data-k="'+key+'" data-s="'+(isSet?1:0)+'">'+save+'<div class="im">'+(im?'<img src="'+im+'" alt="">':'<i>'+(has3d?'Rendering...':'')+'</i>')+'</div><div class="bd"><h3>'+d.n+'</h3><p>'+d.d+'</p><div class="pr">'+pr+'<button class="btn sm '+(free?'':'pri')+'" data-buy="'+key+'" data-s="'+(isSet?1:0)+'">'+(free?'Get free':'Buy')+'</button></div></div></div>'}
 function render(){
@@ -49,7 +50,8 @@ function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1
 function orderFor(ids){
  var t=total(ids),m=ids.filter(function(i){return P[i].set==='mono'}).length,free=!t;
  var title=ids.length===4&&ids.every(function(i){return P[i].set===P[ids[0]].set})?SETS[P[ids[0]].set].n:(ids.length===1?P[ids[0]].n:'Custom cosmetics');
- return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[]),total:t,ids:ids.join(',')}}
+ return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -70% applied ('+window.YAplusName+')']:[]),total:t,ids:ids.join(',')}}
+document.addEventListener('yaplus',function(e){var b=document.getElementById('plusbar2');if(b){b.className='plusbar'+(e.detail&&e.detail.on?' on':'');b.querySelector('span').textContent=e.detail&&e.detail.on?'YA Plus active for '+e.detail.name+': -70% on everything, already applied below.':'Enter your Minecraft name under the 3D character to check your YA Plus discount.'}render()});
 document.addEventListener('click',function(e){
  var t=e.target.closest('[data-buy],[data-c],[data-rm],.pc,#getw,#clr');if(!t)return;
  if(t.dataset.c){cat=t.dataset.c;render();return}

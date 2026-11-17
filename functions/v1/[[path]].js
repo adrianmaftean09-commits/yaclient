@@ -221,6 +221,13 @@ export async function onRequest({ request, env }) {
       return send(200, out);
     }
 
+    if (route === 'GET /v1/plus') {   // public: does this player have YA Plus? (the site uses it for the Plus shop discount)
+      const nm = String(url.searchParams.get('name') || '').trim().toLowerCase();
+      if (!/^[a-z0-9_]{3,16}$/.test(nm)) return send(400, { error: 'bad name' });
+      const id = await env.DB.get('n:' + nm);
+      if (!id) return send(200, { plus: '0', known: '0' });
+      return send(200, { plus: plusActive(await loadPlayer(env, id)) ? '1' : '0', known: '1' });
+    }
     if (route === 'GET /v1/selftest') {   // can this server reach Mojang? (a join that was never made should answer 204)
       const out = {};
       const UA = { none: {}, ya: { 'user-agent': 'YA-CLIENT-Store' }, java: { 'user-agent': 'Java/1.8.0_321' }, browser: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36', accept: 'application/json' } };

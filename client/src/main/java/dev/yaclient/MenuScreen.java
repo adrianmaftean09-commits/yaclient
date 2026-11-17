@@ -633,10 +633,12 @@ public class MenuScreen extends GuiScreen {
             boolean sel = Theme.accentIndex() == i;
             boolean ov = overView(x, y, 36, 36);
             if (sel || ov) Gfx.rrOutline(x - 3, y - 3, 42, 42, 21, 2, sel ? 0xFFF5F5F5 : 0x66FFFFFF);
-            Gfx.rr(x, y, 36, 36, 18, Theme.accentOf(i));
+            boolean locked = Theme.plusOnly(i) && !CosmeticsApi.plus();
+            Gfx.rr(x, y, 36, 36, 18, locked ? Ui.mix(Theme.accentOf(i), 0xFF18181C, 0.7f) : Theme.accentOf(i));
+            if (locked) Gfx.text("PLUS", x + 18 - Gfx.width("PLUS", 8, true) / 2, y + (36 - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFFFFC21A);
             if (sel) Gfx.icon("check", x + 9, y + 9, 18, 0xFF101014);
             hitView(x - 3, y - 3, 42, 42, new Action() {
-                @Override public void run(float px, float py) { Theme.setAccent(idx); Config.save(); }
+                @Override public void run(float px, float py) { if (Theme.plusOnly(idx) && !CosmeticsApi.plus()) return; Theme.setAccent(idx); Config.save(); }
             }, null, null);
         }
         y += 36 + 26;

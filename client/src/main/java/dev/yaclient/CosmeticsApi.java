@@ -179,6 +179,7 @@ public final class CosmeticsApi {
                         String list = me.get("owned");
                         owned = new HashSet<String>(Arrays.asList(list == null ? new String[0] : list.split(",")));
                         plus = "1".equals(me.get("plus"));
+                        Theme.enforcePlus(plus);
                         for (String slot : Cosmetics.SLOTS) {
                             String v = me.get(slot);
                             if (v != null) Config.set("cos." + slot, v);
@@ -256,6 +257,15 @@ public final class CosmeticsApi {
         if (!enabled()) return false;
         Map<String, String> m = lookup(id.toString().replace("-", ""));
         return m != null && "1".equals(m.get("client"));
+    }
+
+    /** True if that player has YA Plus (always the real value for yourself; others come from the server). */
+    public static boolean isPlus(UUID id) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer != null && id.equals(mc.thePlayer.getUniqueID())) return plus();
+        if (!enabled()) return false;
+        Map<String, String> m = lookup(id.toString().replace("-", ""));
+        return m != null && "1".equals(m.get("plus"));
     }
 
     private static Map<String, String> lookup(final String uuid) {

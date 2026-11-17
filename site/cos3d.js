@@ -234,14 +234,23 @@
     box.innerHTML = '<input type="text" maxlength="16" placeholder="Your Minecraft name" spellcheck="false" aria-label="Minecraft name"><button class="btn" type="submit">Show my skin</button><span class="skmsg"></span>';
     stage.parentNode.insertBefore(box, stage.nextSibling);
     var inp = box.querySelector('input'), msg = box.querySelector('.skmsg'), btn = box.querySelector('button');
+    function plusCheck(name, then) {
+      try {
+        fetch('/v1/plus?name=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+          var on = j && j.plus === '1'; window.YAplusOn = on; window.YAplusName = on ? name : '';
+          document.dispatchEvent(new CustomEvent('yaplus', { detail: { on: on, name: name, known: j && j.known === '1' } })); then(on);
+        }).catch(function () { then(false); });
+      } catch (e) { then(false); }
+    }
     function go(name) {
       name = (name || '').trim();
-      if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) { scene.clearSkin(); msg.textContent = name ? 'Enter a valid Minecraft name.' : ''; try { localStorage.removeItem(key); } catch (e) {} return; }
+      if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) { scene.clearSkin(); window.YAplusOn = false; document.dispatchEvent(new CustomEvent('yaplus', { detail: { on: false } })); msg.textContent = name ? 'Enter a valid Minecraft name.' : ''; try { localStorage.removeItem(key); } catch (e) {} return; }
       msg.textContent = 'Loading skin...'; btn.disabled = true;
       loadSkin(name, function (im) {
         btn.disabled = false;
-        if (im && scene.setSkin(im)) { msg.textContent = 'Wearing the skin of ' + name; try { localStorage.setItem(key, name); } catch (e) {} }
-        else { scene.clearSkin(); msg.textContent = 'Skin not found for "' + name + '".'; }
+        var okSkin = !!(im && scene.setSkin(im));
+        if (okSkin) { try { localStorage.setItem(key, name); } catch (e) {} } else scene.clearSkin();
+        plusCheck(name, function (on) { msg.textContent = (okSkin ? 'Wearing the skin of ' + name : 'Skin not found for "' + name + '"') + (on ? ' · YA Plus active: -70% on the shop' : ''); });
       });
     }
     box.addEventListener('submit', function (e) { e.preventDefault(); go(inp.value); });

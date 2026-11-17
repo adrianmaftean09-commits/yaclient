@@ -1,6 +1,7 @@
 package dev.yaclient;
 
 import dev.yaclient.cosmetics.Logo;
+import dev.yaclient.cosmetics.PlusBadge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -47,7 +48,8 @@ final class TabBadge {
     }
 
     private static final class YaTabList extends GuiPlayerTabOverlay {
-        private static final String RESERVE = "   ";   // 3 spaces = 12px kept free in front of the name
+        private static final String RESERVE = "   ";        // 3 spaces = 12px kept free in front of the name
+        private static final String RESERVE_PLUS = "     ";  // 5 spaces = 20px: logo + gold plus
 
         YaTabList(Minecraft mc, GuiIngame gui) { super(mc, gui); }
 
@@ -59,7 +61,8 @@ final class TabBadge {
         @Override
         public String getPlayerName(NetworkPlayerInfo info) {
             String n = super.getPlayerName(info);
-            return badge(info) ? RESERVE + n : n;
+            if (!badge(info)) return n;
+            return CosmeticsApi.isPlus(info.getGameProfile().getId()) ? RESERVE_PLUS + n : RESERVE + n;
         }
 
         @Override
@@ -68,7 +71,9 @@ final class TabBadge {
             if (!badge(info)) return;
             Minecraft mc = Minecraft.getMinecraft();
             boolean head = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
-            Logo.draw(x + (head ? 9 : 0) + 1, y, 9, 9, 1f);
+            int bx = x + (head ? 9 : 0);
+            Logo.draw(bx + 1, y, 9, 9, 1f);
+            if (CosmeticsApi.isPlus(info.getGameProfile().getId())) PlusBadge.draw(bx + 11, y, 9);
         }
     }
 }

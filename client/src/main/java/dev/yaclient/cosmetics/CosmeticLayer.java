@@ -29,6 +29,9 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
                 && Config.getBool("nametag.self", true)) {
             Nametag.render(p, partialTicks);
         }
+        if (p != mc.thePlayer && Config.getBool("nametag.others", true) && CosmeticsApi.usesClient(p.getUniqueID())) {
+            Nametag.renderOther(p, partialTicks, CosmeticsApi.isPlus(p.getUniqueID()));
+        }
         if (p.isInvisible()) return;
         Map<String, String> eq = CosmeticsApi.equippedFor(p);
         if (eq == null) return;

@@ -13,15 +13,21 @@ public final class Theme {
     public static final int CARD_HOVER = 0x1AFFFFFF;
     public static final int HUD_BG = 0xB8121216;
 
-    public static final String[] ACCENT_IDS = {"crimson", "azure", "violet", "emerald", "amber", "mono"};
-    private static final int[] ACCENTS = {0xFFE10600, 0xFF3B82F6, 0xFF8B5CF6, 0xFF10B981, 0xFFF59E0B, 0xFFF5F5F5};
+    public static final String[] ACCENT_IDS = {"crimson", "azure", "violet", "emerald", "amber", "mono", "gold"};
+    private static final int[] ACCENTS = {0xFFE10600, 0xFF3B82F6, 0xFF8B5CF6, 0xFF10B981, 0xFFF59E0B, 0xFFF5F5F5, 0xFFFFC21A};
     private static int index = 0;
 
     private Theme() {}
 
     public static void load() { setAccent(Config.getInt("accent", 0)); }
 
+    /** Falls back to the default accent when Plus is not active. */
+    public static void enforcePlus(boolean plus) { if (!plus && plusOnly(index)) { index = 0; Config.setInt("accent", 0); } }
+
     public static int accentIndex() { return index; }
+
+    /** The last accent (gold) belongs to YA Plus. */
+    public static boolean plusOnly(int i) { return i == ACCENTS.length - 1; }
 
     public static void setAccent(int i) {
         index = Ui.clamp(i, 0, ACCENTS.length - 1);
