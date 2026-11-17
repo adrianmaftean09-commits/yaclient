@@ -45,6 +45,10 @@ Object.assign(I18N.es, { back: 'Bienvenido de nuevo', versions: 'Versiones', lat
   needs: 'Solo en', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Pronto', vanillaNote: 'Esta versión inicia sin los mods de YA CLIENT. Los mods de abajo funcionan en', java_missing: 'Esta versión necesita Java {n}. Instálalo (Temurin {n}) e inténtalo de nuevo.', latestRelease: 'Última release', change: 'Cambiar versión', noRes: 'No hay versiones.', offlineList: 'Sin conexión: lista reducida de versiones.' });
 Object.assign(I18N.de, { session_expired: 'Die Microsoft-Sitzung ist abgelaufen. Bitte neu anmelden.', back: 'Willkommen zurück', versions: 'Versionen', latest: 'Neueste', releases: 'Releases', snapshots: 'Snapshots', old: 'Alt', search: 'Version suchen...', modsFor: 'Mods für Minecraft', avail: 'in dieser Version verfügbar',
   needs: 'Nur in', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Bald', vanillaNote: 'Diese Version startet ohne YA-CLIENT-Mods. Die Mods unten funktionieren in', java_missing: 'Für diese Version wird Java {n} benötigt. Installiere es (Temurin {n}) und versuche es erneut.', latestRelease: 'Neueste Release', change: 'Version ändern', noRes: 'Keine Versionen gefunden.', offlineList: 'Offline: gekürzte Versionsliste.' });
+Object.assign(I18N.en, {"plus_nav": "YA Plus", "chip_on": "YA Plus active", "chip_off": "Get YA Plus", "online_s": "Online", "preview": "Preview", "p_title": "YA Plus", "p_promo_t": "Upgrade to YA Plus", "p_promo_d": "Turns the launcher red and animates your cape in game.", "p_buy": "Get YA Plus", "p_active_t": "YA Plus is active", "p_active_d": "Thanks for supporting YA CLIENT. Your perks are active.", "p_rerun": "Run setup again", "p_how": "Plus is added to your account from our store or Discord.", "perk_theme": "Red launcher theme", "perk_cape": "Animated cape movement", "perk_more": "More perks soon", "perk_setup": "Guided setup", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Welcome to", "wp_title_b": "Plus", "wp_sub": "Your YA Plus subscription is active on this launcher. Here is what you just unlocked.", "cont": "Continue", "skip": "Skip for now", "back_b": "Back", "finish": "Start playing", "st_title": "Set up your client", "st_sub": "Pick how YA CLIENT should start. You can change everything later in Settings and Modules.", "lbl_preset": "MOD PRESET", "pre_pvp": "PvP", "pre_pvp_d": "Combat mods and utilities on, extra info HUD off", "pre_all": "Everything", "pre_all_d": "Every available mod enabled", "pre_min": "Minimal", "pre_min_d": "Only performance and basic HUD", "lbl_perf": "PERFORMANCE", "ram_l": "Game memory", "ram_d": "Recommended for PvP: 3 GB", "done_t": "You are all set", "done_s": "Your launcher is red and your Plus perks are active in game. Join a server and see your cape move."});
+Object.assign(I18N.it, {"plus_nav": "YA Plus", "chip_on": "YA Plus attivo", "chip_off": "Ottieni YA Plus", "online_s": "Online", "preview": "Anteprima", "p_title": "YA Plus", "p_promo_t": "Passa a YA Plus", "p_promo_d": "Rende il launcher rosso e anima il tuo mantello in gioco.", "p_buy": "Ottieni YA Plus", "p_active_t": "YA Plus è attivo", "p_active_d": "Grazie per supportare YA CLIENT. I tuoi vantaggi sono attivi.", "p_rerun": "Rifai la configurazione", "p_how": "Plus viene aggiunto al tuo account dal nostro store o da Discord.", "perk_theme": "Launcher a tema rosso", "perk_cape": "Mantello animato", "perk_more": "Altri vantaggi in arrivo", "perk_setup": "Configurazione guidata", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Benvenuto in", "wp_title_b": "Plus", "wp_sub": "Il tuo abbonamento YA Plus è attivo su questo launcher. Ecco cosa hai appena sbloccato.", "cont": "Continua", "skip": "Salta per ora", "back_b": "Indietro", "finish": "Inizia a giocare", "st_title": "Configura il tuo client", "st_sub": "Scegli come deve partire YA CLIENT. Potrai cambiare tutto dopo in Impostazioni e Moduli.", "lbl_preset": "PRESET MOD", "pre_pvp": "PvP", "pre_pvp_d": "Mod di combattimento e utilità attive, HUD info spento", "pre_all": "Tutto", "pre_all_d": "Tutte le mod disponibili attive", "pre_min": "Minimo", "pre_min_d": "Solo prestazioni e HUD base", "lbl_perf": "PRESTAZIONI", "ram_l": "Memoria di gioco", "ram_d": "Consigliato per PvP: 3 GB", "done_t": "Tutto pronto", "done_s": "Il launcher è rosso e i tuoi vantaggi Plus sono attivi in gioco. Entra in un server e guarda il mantello muoversi."});
+Object.assign(I18N.es, {"plus_nav": "YA Plus", "chip_on": "YA Plus activo", "chip_off": "Consigue YA Plus", "online_s": "En línea", "preview": "Vista previa", "p_title": "YA Plus", "p_promo_t": "Pásate a YA Plus", "p_promo_d": "Pone el launcher en rojo y anima tu capa en el juego.", "p_buy": "Consigue YA Plus", "p_active_t": "YA Plus está activo", "p_active_d": "Gracias por apoyar YA CLIENT. Tus ventajas están activas.", "p_rerun": "Repetir configuración", "p_how": "Plus se añade a tu cuenta desde nuestra tienda o Discord.", "perk_theme": "Launcher en rojo", "perk_cape": "Capa animada", "perk_more": "Más ventajas pronto", "perk_setup": "Configuración guiada", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Bienvenido a", "wp_title_b": "Plus", "wp_sub": "Tu suscripción YA Plus está activa en este launcher. Esto es lo que acabas de desbloquear.", "cont": "Continuar", "skip": "Omitir por ahora", "back_b": "Atrás", "finish": "Empezar a jugar", "st_title": "Configura tu cliente", "st_sub": "Elige cómo debe iniciar YA CLIENT. Podrás cambiarlo luego en Ajustes y Módulos.", "lbl_preset": "PRESET DE MODS", "pre_pvp": "PvP", "pre_pvp_d": "Mods de combate y utilidades activos, HUD de info apagado", "pre_all": "Todo", "pre_all_d": "Todos los mods disponibles activos", "pre_min": "Mínimo", "pre_min_d": "Solo rendimiento y HUD básico", "lbl_perf": "RENDIMIENTO", "ram_l": "Memoria del juego", "ram_d": "Recomendado para PvP: 3 GB", "done_t": "Todo listo", "done_s": "Tu launcher es rojo y tus ventajas Plus están activas en el juego."});
+Object.assign(I18N.de, {"plus_nav": "YA Plus", "chip_on": "YA Plus aktiv", "chip_off": "YA Plus holen", "online_s": "Online", "preview": "Vorschau", "p_title": "YA Plus", "p_promo_t": "Auf YA Plus upgraden", "p_promo_d": "Färbt den Launcher rot und animiert deinen Umhang im Spiel.", "p_buy": "YA Plus holen", "p_active_t": "YA Plus ist aktiv", "p_active_d": "Danke für die Unterstützung von YA CLIENT. Deine Vorteile sind aktiv.", "p_rerun": "Einrichtung wiederholen", "p_how": "Plus wird deinem Konto über unseren Shop oder Discord hinzugefügt.", "perk_theme": "Roter Launcher", "perk_cape": "Animierter Umhang", "perk_more": "Bald mehr Vorteile", "perk_setup": "Geführte Einrichtung", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Willkommen bei", "wp_title_b": "Plus", "wp_sub": "Dein YA-Plus-Abo ist in diesem Launcher aktiv. Das hast du gerade freigeschaltet.", "cont": "Weiter", "skip": "Vorerst überspringen", "back_b": "Zurück", "finish": "Los geht's", "st_title": "Richte deinen Client ein", "st_sub": "Wähle, wie YA CLIENT starten soll. Du kannst alles später ändern.", "lbl_preset": "MOD-PRESET", "pre_pvp": "PvP", "pre_pvp_d": "Kampf-Mods und Hilfsmittel an, Info-HUD aus", "pre_all": "Alles", "pre_all_d": "Alle verfügbaren Mods aktiv", "pre_min": "Minimal", "pre_min_d": "Nur Leistung und Basis-HUD", "lbl_perf": "LEISTUNG", "ram_l": "Spielspeicher", "ram_d": "Empfohlen für PvP: 3 GB", "done_t": "Alles bereit", "done_s": "Dein Launcher ist rot und deine Plus-Vorteile sind im Spiel aktiv."});
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
 const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
@@ -56,6 +60,10 @@ const ICON = {
   cosmetics: '<path d="M8 3L3.5 5.5 2 10l3.5 1.5L7 10v11h10V10l1.5 1.5L22 10l-1.5-4.5L16 3"/><path d="M8 3c.5 2 2 3.5 4 3.5S15.5 5 16 3"/>',
   console: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9l3 3-3 3M12 16h5"/>',
   settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  plus: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  chev: '<path d="M6 9l6 6 6-6"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'
 };
 const ic = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
@@ -65,14 +73,20 @@ let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest:
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
-const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'console', 'settings'];
-const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', console: 'console', settings: 'settings' };
+const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'plus', 'console', 'settings'];
+const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
 function renderNav() {
-  $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''}" data-p="${p}" title="${esc(t(PKEY[p]))}">${ic(p)}</button>`).join('');
-  $('#btnAcc').title = S.account ? S.account.name : t('signIn');
+  $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em></button>`).join('');
   $('#accIcon').innerHTML = ic('user');
+  $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
+  $('#accPill').innerHTML = S.account ? `<i>${esc(S.account.name[0].toUpperCase())}</i>${esc(S.account.name)}` : esc(t('signIn'));
+  $('#plusChip').textContent = plusOn() ? t('chip_on') : t('chip_off');
+  $('#bsub').textContent = t('online_s');
+  $('#ver').textContent = (isYa(S.version) ? 'YA CLIENT ' : '') + (S.version || '');
+  document.body.classList.toggle('plus', plusOn());
 }
+const plusOn = () => !!(S.plus || S.plusPreview);
 function go(p) { page = p; renderNav(); render(); }
 
 function adHtml(a) {
@@ -88,22 +102,32 @@ function newsHtml(list) {
   }).join('') + '</div>';
 }
 
+function plusCard() {
+  if (plusOn()) return `<div class="card pcard"><span class="tag">PLUS</span><b>${esc(t('p_active_t'))}</b><p>${esc(t('p_active_d'))}</p><button class="btn sm" data-p="plus">${esc(t('plus_nav'))}</button></div>`;
+  return `<div class="card pcard"><span class="tag">PLUS</span><b>${esc(t('p_promo_t'))}</b><p>${esc(t('p_promo_d'))}</p><button class="btn sm hi" data-p="plus">${esc(t('p_buy'))}</button></div>`;
+}
 function viewHome() {
   const ads = C.ads || [];
   const nm = S.account ? S.account.name : '';
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
+  const av = nm ? `<img id="avatar" src="https://mc-heads.net/body/${encodeURIComponent(nm)}/190" alt="">` : `<img class="logo" src="../assets/logo.png" alt="">`;
   return `<div class="lp"><div>
-    <div class="welcome"><span class="wt">${esc(t('back'))}${nm ? ',' : ''}</span>${nm ? ' <b class="wn">' + esc(nm) + '</b>' : ''}</div>
-    <div class="card hero2"><img class="hlogo" src="../assets/logo.png" alt="">
-      <button class="launch" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b>
-        <span>${esc(tag)} ${esc(S.version)}</span></button>
-      <button class="gear" data-p="versions" title="${esc(t('change'))}">${ic('versions')}</button>
+    <div class="card hero3"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
+      <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
+        <button class="chev" data-p="versions" title="${esc(t('change'))}">${ic('chev')}</button></div>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
     ${newsHtml(C.news)}</div>
-    <div class="side"><div class="card acc"><div class="av">${esc(S.account ? S.account.name[0].toUpperCase() : '?')}</div>
-      <div style="flex:1"><b>${esc(S.account ? S.account.name : t('noAcc'))}</b><small>${esc(S.account ? S.account.type : '')}</small></div>
-      <button class="btn sm" id="accBtn">${esc(S.account ? t('switchAcc') : t('signIn'))}</button></div>
-    ${adHtml(ads[0])}${adHtml(ads[1])}</div></div>`;
+    <div class="side">${plusCard()}${adHtml(ads[0])}${adHtml(ads[1])}</div></div>`;
+}
+function viewPlus() {
+  const perks = ['perk_theme', 'perk_cape', 'perk_more', 'perk_setup'].map((k) => `<span class="perk">${ic('check')}${esc(t(k))}</span>`).join('');
+  const on = plusOn();
+  return `<h1>${esc(t('p_title'))}</h1><p class="sub">${esc(on ? t('p_active_d') : t('p_promo_d'))}</p>
+    <div class="card hero3" style="height:300px;justify-content:center;padding:0"><div style="position:relative;z-index:2;text-align:center;padding:0 24px">
+      <span class="tag">${on ? 'ACTIVE' : 'PLUS'}</span><h1 style="font-size:40px;letter-spacing:-1px;margin:6px 0">${esc(on ? t('p_active_t') : t('p_promo_t'))}</h1>
+      <div class="perks" style="justify-content:center">${perks}</div>
+      ${on ? `<button class="btn hi" id="rerun">${esc(t('p_rerun'))}</button>` : `<button class="btn hi" id="buyPlus">${esc(t('p_buy'))}</button><p class="note" style="margin:12px 0 0">${esc(t('p_how'))}</p>`}
+    </div></div>`;
 }
 function cmpV(a, b) {
   const pa = String(a).split('.').map((n) => parseInt(n, 10) || 0), pb = String(b).split('.').map((n) => parseInt(n, 10) || 0);
@@ -197,8 +221,65 @@ function viewConsole() {
 }
 function render() {
   const v = $('#view');
-  v.innerHTML = { home: viewHome, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
+  v.innerHTML = { home: viewHome, plus: viewPlus, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
+  const av = $('#avatar'); if (av) av.addEventListener('error', () => { av.src = '../assets/logo.png'; av.className = 'logo'; });
+}
+
+// ---------- YA Plus: detection, welcome + setup ----------
+async function refreshPlus() {
+  try {
+    const r = await window.ya.plus();
+    const was = plusOn();
+    S.plus = !!(r && r.plus);
+    if (was !== plusOn()) { renderNav(); render(); }
+    if (plusOn() && !S.plusSetupDone) showOnboarding();
+  } catch (_) { }
+}
+let obStep = 0, obPreset = 'pvp', obRam = 3072;
+const PRESETS = {
+  pvp: (m) => m.category === 'pvp' || m.category === 'utility',
+  all: () => true,
+  min: (m) => ['fps_boost', 'bg_fps', 'fps', 'cps', 'keystrokes', 'coords'].indexOf(m.id) >= 0
+};
+async function applyPreset() {
+  const pick = PRESETS[obPreset] || PRESETS.pvp;
+  for (const m of MODS) {
+    if (m.soon || !(m.versions || []).some((sp) => specOk(sp, S.ya || '1.8.9'))) continue;
+    const on = !!pick(m);
+    MODSTATE[m.id] = on; await window.ya.modsSet(m.id, on);
+  }
+}
+function showOnboarding(startAt) {
+  obStep = startAt || 0; obPreset = 'pvp'; obRam = Math.max(S.ram || 2048, 3072);
+  $('#ob').hidden = false; drawOb();
+}
+function drawOb() {
+  const o = $('#ob');
+  const dots = `<div class="dots">${[0, 1, 2].map((i) => `<i class="${i === obStep ? 'on' : ''}"></i>`).join('')}</div>`;
+  const perks = ['perk_theme', 'perk_cape', 'perk_more', 'perk_setup'].map((k) => `<span class="perk">${ic('check')}${esc(t(k))}</span>`).join('');
+  if (obStep === 0) {
+    o.innerHTML = `<div class="in"><div class="eyebrow">&#9733; ${esc(t('wp_eyebrow'))}</div>
+      <h1>${esc(t('wp_title_a'))} <b>${esc(t('wp_title_b'))}</b></h1><p>${esc(t('wp_sub'))}</p><div class="perks">${perks}</div>
+      <button class="go" data-ob="next">${esc(t('cont'))}</button><button class="ghost" data-ob="skip">${esc(t('skip'))}</button>${dots}</div>`;
+  } else if (obStep === 1) {
+    const op = (k) => `<button class="opt ${obPreset === k ? 'on' : ''}" data-preset="${k}"><b>${esc(t('pre_' + k))}</b><small>${esc(t('pre_' + k + '_d'))}</small></button>`;
+    o.innerHTML = `<div class="in"><div class="eyebrow">&#9733; ${esc(t('wp_eyebrow'))}</div><h1 style="font-size:40px">${esc(t('st_title'))}</h1><p>${esc(t('st_sub'))}</p>
+      <div class="lbl">${esc(t('lbl_preset'))}</div><div class="opts">${op('pvp')}${op('all')}${op('min')}</div>
+      <div class="lbl">${esc(t('lbl_perf'))}</div>
+      <div class="line"><div><b>${esc(t('ram_l'))}</b><small id="obRamV">${obRam} MB · ${esc(t('ram_d'))}</small></div><input type="range" id="obRam" min="1024" max="8192" step="256" value="${obRam}"></div>
+      <div class="line"><div><b>${esc(t('minimize'))}</b></div><button class="sw ${S.minimizeOnLaunch ? 'on' : ''}" data-ob="min"></button></div>
+      <button class="go" data-ob="next">${esc(t('cont'))}</button><button class="ghost" data-ob="back">${esc(t('back_b'))}</button>${dots}</div>`;
+  } else {
+    o.innerHTML = `<div class="in"><div class="eyebrow">&#9733; ${esc(t('wp_eyebrow'))}</div><h1 style="font-size:46px">${esc(t('done_t'))}</h1><p>${esc(t('done_s'))}</p>
+      <button class="go" data-ob="finish">${esc(t('finish'))}</button>${dots}</div>`;
+  }
+}
+async function finishOb() {
+  S.ram = obRam; S.plusSetupDone = true;
+  await window.ya.saveSettings({ ram: S.ram, plusSetupDone: true, minimizeOnLaunch: S.minimizeOnLaunch });
+  await applyPreset();
+  $('#ob').hidden = true; go('home');
 }
 
 function showLogin() {
@@ -208,7 +289,7 @@ function showLogin() {
     <button class="btn" id="lOff">${esc(t('offlineBtn'))}</button><div class="err" id="lErr"></div><button class="btn" id="lClose">${esc(t('cancel'))}</button></div>`;
   const done = (r) => {
     if (r && r.error) { $('#lErr').textContent = t(r.error); return; }
-    S.account = r; m.hidden = true; renderNav(); render();
+    S.account = r; m.hidden = true; renderNav(); render(); refreshPlus();
   };
   $('#lClose').onclick = () => (m.hidden = true);
   $('#lMs').onclick = async () => { $('#lErr').textContent = '...'; done(await window.ya.loginMicrosoft()); };
@@ -227,10 +308,32 @@ async function launch(server) {
   }
 }
 
+let brandClicks = 0, brandT = 0;
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#brand')) return;
+  const now = Date.now(); brandClicks = now - brandT < 900 ? brandClicks + 1 : 1; brandT = now;
+  if (brandClicks >= 5) {   // hidden: preview the Plus look without a subscription (look only, perks stay server-side)
+    brandClicks = 0; S.plusPreview = !S.plusPreview; window.ya.saveSettings({ plusPreview: S.plusPreview });
+    renderNav(); render(); if (S.plusPreview && !S.plusSetupDone) showOnboarding();
+  }
+});
 document.addEventListener('click', async (e) => {
   const el = e.target.closest('button, .nc, .ad');
   if (!el) return;
   if (el.dataset.w) return window.ya.win(el.dataset.w);
+  if (el.dataset.ob) {
+    const a = el.dataset.ob;
+    if (a === 'next') { obStep++; return drawOb(); }
+    if (a === 'back') { obStep--; return drawOb(); }
+    if (a === 'skip') { S.plusSetupDone = true; window.ya.saveSettings({ plusSetupDone: true }); $('#ob').hidden = true; return; }
+    if (a === 'min') { S.minimizeOnLaunch = !S.minimizeOnLaunch; el.classList.toggle('on', S.minimizeOnLaunch); return; }
+    if (a === 'finish') return finishOb();
+  }
+  if (el.dataset.preset) { obPreset = el.dataset.preset; return drawOb(); }
+  if (el.id === 'plusChip') return go('plus');
+  if (el.id === 'accPill') return showLogin();
+  if (el.id === 'rerun') return showOnboarding(0);
+  if (el.id === 'buyPlus') { const u = C.storeUrl; if (u) window.ya.openExternal(u); return; }
   if (el.dataset.p) return go(el.dataset.p);
   if (el.id === 'btnAcc' || el.id === 'accBtn') return showLogin();
   if (el.id === 'play') return launch();
@@ -252,7 +355,7 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'sMin') { S.minimizeOnLaunch = !S.minimizeOnLaunch; el.classList.toggle('on', S.minimizeOnLaunch); return window.ya.saveSettings({ minimizeOnLaunch: S.minimizeOnLaunch }); }
   if (el.id === 'sFolder') return window.ya.openFolder();
   if (el.id === 'sDet') { const p = await window.ya.detectJava(); if (p) { $('#sJava').value = p; S.javaPath = p; window.ya.saveSettings({ javaPath: p }); } return; }
-  if (el.id === 'sOut') { await window.ya.logout(); S.account = null; renderNav(); render(); }
+  if (el.id === 'sOut') { await window.ya.logout(); S.account = null; S.plus = false; window.ya.saveSettings({ plus: false }); renderNav(); render(); }
 });
 document.addEventListener('change', async (e) => {
   if (e.target.id === 'sLang') { S.lang = e.target.value; await window.ya.setLang(S.lang); renderNav(); render(); }
@@ -261,6 +364,7 @@ document.addEventListener('change', async (e) => {
 });
 document.addEventListener('input', (e) => {
   if (e.target.id === 'vq') { vq = e.target.value; $('#vlist').innerHTML = versionRows(); }
+  if (e.target.id === 'obRam') { obRam = +e.target.value; $('#obRamV').textContent = obRam + ' MB · ' + t('ram_d'); }
   if (e.target.id === 'sRam') { S.ram = +e.target.value; $('#ramv').textContent = S.ram + ' MB'; }
 });
 
@@ -285,6 +389,7 @@ window.ya.on('log', (m) => {
   try { MODSTATE = await window.ya.modsGet(); } catch (_) { MODSTATE = {}; }
   try { MODS = (await window.ya.mods()).mods || []; } catch (_) { MODS = []; }
   try { VERS = await window.ya.versions(); } catch (_) { }
-  $('#ver').textContent = '';
   renderNav(); render();
+  refreshPlus();
+  window.addEventListener('focus', () => { if (Date.now() - (S._pt || 0) > 60000) { S._pt = Date.now(); refreshPlus(); } });
 })();

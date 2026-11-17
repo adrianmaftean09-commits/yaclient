@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('ya', {
   catalog: () => ipcRenderer.invoke('catalog'),
   modsGet: () => ipcRenderer.invoke('mods-get'),
   modsSet: (id, on) => ipcRenderer.invoke('mods-set', id, on),
+  plus: () => ipcRenderer.invoke('plus'),
   play: (opts) => ipcRenderer.invoke('play', opts),
   win: (a) => ipcRenderer.send('win', a),
   on: (ch, fn) => ipcRenderer.on(ch, (_e, d) => fn(d))

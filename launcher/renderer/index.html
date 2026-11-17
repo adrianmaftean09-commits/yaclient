@@ -5,19 +5,20 @@
 <body>
 <div class="app">
   <aside class="rail">
-    <img class="mark" src="../assets/logo.png" alt="YA">
+    <div class="brandbox" id="brand"><img class="mark" src="../assets/logo.png" alt="YA"><div><div class="bn">YA <span>CLIENT</span></div><div class="bs" id="bsub"></div></div></div>
     <nav id="nav"></nav>
-    <div class="rail-end"><button class="nav" id="btnAcc" title=""><span id="accIcon"></span></button></div>
+    <div class="rail-end"><button class="nav" id="btnAcc"><span id="accIcon"></span><em id="accLbl"></em></button></div>
   </aside>
   <div class="main">
     <header class="top">
-      <div class="brand"></div>
-      <div class="top-r"><span class="ver" id="ver"></span>
+      <div class="brand" id="ver"></div>
+      <div class="top-r"><button class="pluschip" id="plusChip"></button><button class="accpill" id="accPill"></button>
         <button class="wb" data-w="min">&#8211;</button><button class="wb" data-w="max">&#9633;</button><button class="wb x" data-w="close">&#10005;</button></div>
     </header>
     <main id="view"></main>
   </div>
 </div>
 <div id="modal" class="modal" hidden></div>
+<div id="ob" class="ob" hidden></div>
 <script src="app.js"></script>
 </body></html>

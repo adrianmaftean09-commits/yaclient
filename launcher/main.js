@@ -23,7 +23,7 @@ const save = () => fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
 let win;
 function createWindow() {
   win = new BrowserWindow({
-    width: 1120, height: 700, minWidth: 980, minHeight: 620, frame: false, backgroundColor: '#09090b',
+    width: 1120, height: 700, minWidth: 980, minHeight: 620, frame: false, backgroundColor: '#0a0a0c',
     title: 'YA CLIENT',
     icon: path.join(__dirname, 'assets', 'icon.png'),
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true }
@@ -120,6 +120,17 @@ ipcMain.handle('catalog', async () => {
   if (!c.apiBase) return { error: 'not_configured' };
   try { return { data: await getJson(c.apiBase.replace(/\/+$/, '') + '/v1/catalog'), store: c.storeUrl || '' }; }
   catch (_) { return { error: 'offline' }; }
+});
+ipcMain.handle('plus', async () => {
+  const c = contentCache || (await loadContent());
+  const uuid = state.account && state.account.auth && String(state.account.auth.uuid || '').replace(/-/g, '');
+  if (!c.apiBase || !uuid) return { plus: !!state.plus, offline: true };
+  try {
+    const r = await getJson(c.apiBase.replace(/\/+$/, '') + '/v1/players/' + uuid);
+    state.plus = !!r && r.plus === '1';
+    save();
+    return { plus: state.plus };
+  } catch (_) { return { plus: !!state.plus, offline: true }; }
 });
 ipcMain.handle('open-external', (_e, url) => {
   if (/^https?:\/\//i.test(String(url || ''))) shell.openExternal(url);
