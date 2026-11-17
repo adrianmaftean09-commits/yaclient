@@ -44,6 +44,7 @@ final class MenuBackdrop {
         float uR = sa > AR ? 1f : sa / AR, vR = sa > AR ? AR / sa : 1f;
         double tau = Math.PI * 2;
 
+        GlStateManager.shadeModel(7425);
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
@@ -95,8 +96,8 @@ final class MenuBackdrop {
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         wr.pos(w, h * 0.55, 0).color(0, 0, 0, 0).endVertex();
         wr.pos(0, h * 0.55, 0).color(0, 0, 0, 0).endVertex();
-        wr.pos(0, h, 0).color(0, 0, 0, 150).endVertex();
-        wr.pos(w, h, 0).color(0, 0, 0, 150).endVertex();
+        wr.pos(0, h, 0).color(0, 0, 0, 105).endVertex();
+        wr.pos(w, h, 0).color(0, 0, 0, 105).endVertex();
         ts.draw();
 
         GlStateManager.enableTexture2D();

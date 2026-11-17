@@ -16,7 +16,7 @@ import org.lwjgl.util.glu.Project;
 
 /** YA CLIENT title screen: panorama backdrop, centered logo only (no title text), stacked buttons and a dock of labeled icon tiles. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 140, BH = 20, GAP = 5, TW = 40, TH = 28, DG = 10;
+    private static final int BW = 140, BH = 20, GAP = 5, TW = 31, TH = 24, DG = 5;
     private static final String[] ICONS = {"shirt", "friends", "gear", "close"};
 
     private static final ResourceLocation[] PANO = new ResourceLocation[6];
@@ -81,7 +81,7 @@ public class MainMenuScreen extends GuiScreen {
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
             Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0x90101014, 0xC0303036, dock[i]));
             Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
-            Gfx.icon(ICONS[i], x + (TW - 18) / 2, dockY + (TH - 18) / 2, 18, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + (TH - 16) / 2, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
         }
 
         // news card (bottom left): banner + title, opens the changelog sheet
