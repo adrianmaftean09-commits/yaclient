@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta name="robots" content="noindex"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - YA CLIENT</title><meta name="description" content="YA CLIENT - modern Minecraft 1.8.9 PvP client. No Forge. Free."><link rel="stylesheet" href="/style.css"></head><body><section><div class="wrap" style="max-width:520px"><h2>Unlock cosmetics</h2><p class="lead">After you verify a payment, grant the items to the player. Private page, needs your admin key.</p>
+<div class="box" style="margin-top:0;display:grid;gap:12px"><input id="key" type="password" placeholder="Admin key"><input id="u" placeholder="Minecraft username">
+<input id="it" placeholder="Items: beta or mono (whole bundle), ya_cape, ya_wings, ya_bandana, ya_pet, * or plus (YA Plus)">
+<input id="days" placeholder="Days (only for plus, default 30)" inputmode="numeric">
+<div style="display:flex;gap:10px"><button class="btn pri" id="g">Grant</button><button class="btn" id="r">Revoke</button></div><div class="msg" id="m"></div></div></div></section>
+<script>
+var k=document.getElementById("key");try{k.value=sessionStorage.getItem("k")||""}catch(e){}
+function go(rev){var m=document.getElementById("m");m.className="msg";m.textContent="...";
+ try{sessionStorage.setItem("k",k.value)}catch(e){}
+ var b=new URLSearchParams({username:document.getElementById("u").value.trim(),item:document.getElementById("it").value.trim().replace(/\s/g,"")});if(rev)b.set("revoke","1");var dd=document.getElementById("days").value.trim();if(dd)b.set("days",dd);
+ fetch("/v1/admin/grant",{method:"POST",headers:{"x-admin-key":k.value},body:b}).then(function(r){return r.json()}).then(function(d){
+  if(d.ok){m.className="msg ok";m.textContent=d.plus_until?"OK. YA Plus until "+d.plus_until:"OK. Owned now: "+(d.owned||"nothing")}else{m.className="msg err";m.textContent="Error: "+d.error}}).catch(function(){m.className="msg err";m.textContent="Network error"})}
+document.getElementById("g").onclick=function(){go(false)};document.getElementById("r").onclick=function(){go(true)};
+</script></body></html>
