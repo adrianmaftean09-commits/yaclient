@@ -58,3 +58,5 @@ background:radial-gradient(900px 500px at 0 0,#3a0a0a66,transparent 70%),radial-
 .bd-it{background:radial-gradient(75% 60% at 50% 38%,color-mix(in srgb,var(--c) 22%,transparent),#101014 82%);transition:.2s}.bd-it:hover{border-color:var(--line2);transform:translateY(-4px)}
 .bd-it .im{aspect-ratio:1/1;background:none}
 .bd-it .im img{-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
+
+.hback{font-size:26px;font-weight:700;letter-spacing:.02em;padding:10px 24px 10px 14px;gap:6px;border-width:1.5px}
