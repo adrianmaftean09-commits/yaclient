@@ -616,10 +616,14 @@ public class MenuScreen extends GuiScreen {
 
     /** Spinning preview of the player with the equipped cosmetics (the same render layer as in game). */
     private void drawPlayerPreview(int cx, int baseY, int size) {
+        drawPlayer(cx, baseY, size, (System.currentTimeMillis() % 11000L) / 11000f * 360f, null);
+    }
+
+    /** Draws the local player (own skin) at a fixed yaw, optionally wearing exactly the cosmetics in {@code override}. */
+    private void drawPlayer(int cx, int baseY, int size, float spin, java.util.Map<String, String> override) {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer ent = mc.thePlayer;
         if (ent == null) return;
-        float spin = (System.currentTimeMillis() % 11000L) / 11000f * 360f;
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) cx, (float) baseY, 50.0F);
@@ -637,7 +641,8 @@ public class MenuScreen extends GuiScreen {
         RenderManager rm = mc.getRenderManager();
         rm.setPlayerViewY(180.0F);
         rm.setRenderShadow(false);
-        rm.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+        CosmeticsApi.previewOverride = override;
+        try { rm.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F); } finally { CosmeticsApi.previewOverride = null; }
         rm.setRenderShadow(true);
         ent.renderYawOffset = ro; ent.prevRenderYawOffset = pro;
         ent.rotationYaw = ry; ent.prevRotationYaw = pry;
@@ -648,6 +653,22 @@ public class MenuScreen extends GuiScreen {
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    /** Accent colour of each bundle (same as the website cards). */
+    private static final int[] BCOL = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF};
+
+    /** One locker card picture: the player (own skin) wearing the item, or the whole bundle, swaying gently. */
+    private void drawWornCard(String key, int bi, boolean bundle, int cx, int baseY, int size) {
+        java.util.Map<String, String> ov = new java.util.HashMap<String, String>();
+        for (String sl : Cosmetics.SLOTS) ov.put(sl, "none");
+        if (bundle) { for (String sl : Cosmetics.SLOTS) ov.put(sl, Cosmetics.item(bi, sl)); }
+        else ov.put(key, Cosmetics.item(bi, key));
+        ov.put("plus", CosmeticsApi.plus() ? "1" : "0");
+        boolean front = key.equals("bandana") || key.equals("pet");
+        float base = front ? 335f : 150f;
+        float sway = (float) Math.sin(System.currentTimeMillis() / 1100.0) * 14f;
+        drawPlayer(cx, baseY, size, base + sway, ov);
     }
 
     private float drawCosmetics() {
@@ -691,7 +712,7 @@ public class MenuScreen extends GuiScreen {
             else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
         if (partnerTab) Gfx.text(Lang.t("cos.partner_hint"), x0, VY + 36, 10, false, Theme.MUTED);
-        int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 150;
+        int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 206;
         int gy = VY + (partnerTab ? 54 : 40);
         final int footY = VY + VH - 26;
         final int gTop = gy - 2, gBot = footY - 8, gH = gBot - gTop;
@@ -719,7 +740,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x24FFFFFF : 0x1AFFFFFF));
             Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x30FFFFFF);
             // tag band (FREE / EXCLUSIVE / lock) above the thumbnail, so nothing is drawn over the preview
-            int band = 18, th = 70, ty = cy + band + 4;
+            int band = 18, th = 130, ty = cy + band + 4;
             if (bundle) {
                 String fr = Cosmetics.isPartner(bi) ? Lang.t("cos.partner_tag") + " " + Cosmetics.PARTNER_NAME[bi] : Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");
                 int fw = Gfx.width(fr, 9, true) + 12;
@@ -729,17 +750,22 @@ public class MenuScreen extends GuiScreen {
             if (!has) Gfx.icon("lock", cx + cw - 24, cy + 6, 14, Theme.MUTED);
             // thumbnail (3D preview is clipped to its box)
             Gfx.rr(cx + 6, ty, cw - 12, th, 9, 0x22000000);
+            Gfx.rr(cx + 6, ty, cw - 12, th, 9, Ui.alpha(BCOL[bi], 0.16f));
             float ps = key.equals("cape") ? 56f : key.equals("wings") ? 34f : key.equals("bandana") ? 90f : key.equals("pet") ? 90f : 30f;
             int cy0 = Math.max(ty, gTop), cy1 = Math.min(ty + th, gBot);
             if (cy1 > cy0) {
             clip(cx + 6, cy0, cw - 12, cy1 - cy0);
-            CosmeticPreview.draw(key, Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            if (Minecraft.getMinecraft().thePlayer != null) {
+                drawWornCard(key, bi, bundle, cx + cw / 2, ty + th - 8, 56);
+            } else {   // no world yet (title screen): standalone preview of the item
+                CosmeticPreview.draw(key, Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            }
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             clip(x0 - 2, gTop, wRight + 4, gH);
             }
             String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);
             Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, ty + th + 7, 11, true, Theme.TEXT);
-            String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.locked"));
+            String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.get"));
             if (on) {
                 Gfx.rr(cx + 6, cy + ch - 24, cw - 12, 18, 7, Ui.alpha(Theme.accent(), 0.30f));
                 Gfx.icon("check", cx + 10, cy + ch - 23, 16, Theme.TEXT);
@@ -751,7 +777,7 @@ public class MenuScreen extends GuiScreen {
             int hy0 = Math.max(cy, gTop), hy1 = Math.min(cy + ch, gBot);
             if (hy1 > hy0) hit(cx, hy0, cw, hy1 - hy0, new Action() {
                 @Override public void run(float mx, float my) {
-                    if (!fHas) { CosmeticsApi.openStore(); return; }
+                    if (!fHas) { if (bundle) CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]); else CosmeticsApi.openItem(id); return; }
                     if (bundle) Cosmetics.toggleBundle(bi); else Cosmetics.toggle(bi, key);
                 }
             }, null, null);

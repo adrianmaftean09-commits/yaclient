@@ -231,6 +231,35 @@ public final class CosmeticsApi {
         });
     }
 
+    /** While set, the local player is drawn wearing exactly these cosmetics (used by the locker cards). */
+    public static volatile Map<String, String> previewOverride = null;
+
+    private static String siteBase() {
+        String url = storeUrl.isEmpty() ? Config.get("store.url", "") : storeUrl;
+        if (url == null) return "";
+        url = url.trim().replaceAll("/+$", "");
+        return url.replaceAll("/store$", "");
+    }
+
+    private static void browse(String url) {
+        if (url == null || url.isEmpty()) return;
+        try { java.awt.Desktop.getDesktop().browse(new java.net.URI(url)); } catch (Throwable ignored) { }
+    }
+
+    /** Opens the web page of one cosmetic (id like "sakura_cape"); falls back to the store. */
+    public static void openItem(String itemId) {
+        String b = siteBase();
+        if (b.isEmpty()) { openStore(); return; }
+        browse(b + "/item?i=" + itemId);
+    }
+
+    /** Opens the web page of a whole bundle (key like "sakura"); falls back to the store. */
+    public static void openBundle(String bundleKey) {
+        String b = siteBase();
+        if (b.isEmpty()) { openStore(); return; }
+        browse(b + "/bundle?b=" + bundleKey);
+    }
+
     public static void openStore() {
         String url = storeUrl.isEmpty() ? Config.get("store.url", "") : storeUrl;
         if (url.isEmpty()) return;
@@ -241,6 +270,8 @@ public final class CosmeticsApi {
     public static Map<String, String> equippedFor(AbstractClientPlayer p) {
         Minecraft mc = Minecraft.getMinecraft();
         if (p == mc.thePlayer) {
+            Map<String, String> ov = previewOverride;
+            if (ov != null) return ov;
             Map<String, String> m = new HashMap<String, String>();
             for (String slot : Cosmetics.SLOTS) m.put(slot, Cosmetics.equipped(slot));
             m.put("plus", plus() ? "1" : "0");
