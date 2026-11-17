@@ -62,7 +62,7 @@ document.addEventListener('click',function(e){
 render();
 if(!has3d){document.getElementById('stage').insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL.<br>You can still buy every item.</div>');return}
 YA3D.whenReady(function(){
- view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.6,target:[0,.95,0]});worn=['mono_wings','mono_cape','mono_bandana','mono_pet'];renderSide();
+ view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.6,target:[0,.95,0]});YA3D.skinBox(document.getElementById('stage'),view);worn=['mono_wings','mono_cape','mono_bandana','mono_pet'];renderSide();
  var jobs=[];Object.keys(SETS).forEach(function(k){jobs.push(['s:'+k,SETS[k].items,{yaw:.5,dist:6.2,target:[0,.98,0]}])});
  Object.keys(P).forEach(function(id){jobs.push(['i:'+id,[id],snapOpts(id)])});
  (function next(){var j=jobs.shift();if(!j){render();return}try{thumbs[j[0]]=YA3D.snapshot(j[1],j[2])}catch(e){}

@@ -2,7 +2,7 @@
 (function () {
   var D = Math.PI / 180;
   var VS = 'attribute vec3 p;attribute vec4 c;attribute vec2 t;uniform mat4 m;varying vec4 vc;varying vec2 vt;void main(){vc=c;vt=t;gl_Position=m*vec4(p,1.);}';
-  var FS = 'precision mediump float;varying vec4 vc;varying vec2 vt;uniform sampler2D s;uniform float ut;void main(){vec4 col=vc;if(ut>.5)col*=texture2D(s,vt);gl_FragColor=col;}';
+  var FS = 'precision mediump float;varying vec4 vc;varying vec2 vt;uniform sampler2D s;uniform float ut;void main(){vec4 col=vc;if(ut>.5)col*=texture2D(s,vt);if(col.a<.04)discard;gl_FragColor=col;}';
 
   // ---- tiny matrix library (column-major) ----
   function I() { return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]; }
@@ -129,7 +129,8 @@
     gl.useProgram(this.pr); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.tex); gl.uniform1i(this.loc.s, 0);
     this.drawMesh(this.shadow, VP, false);
     var base = mul(VP, mul(T(0, 1.5, 0), S(1, -1, 1)));   // model space (y down) -> world (y up), feet on the floor
-    this.drawMesh(this.man, base, false);
+    if (this.skinMan && this.skinTex) { gl.bindTexture(gl.TEXTURE_2D, this.skinTex); this.drawMesh(this.skinMan, base, true); gl.bindTexture(gl.TEXTURE_2D, this.tex); }
+    else this.drawMesh(this.man, base, false);
     var items = this.items, self = this, has = function (id) { return items.indexOf(id) >= 0; };
     items.forEach(function (id) {
       var d = ITEM[id]; if (!d) return; var kind = d[0], mono = d[1] === 'mono';
@@ -160,6 +161,93 @@
     (function loop(now) { if (!self.running) return; if (self.canvas.isConnected && (self.canvas.getBoundingClientRect().bottom > 0)) self.frame(now); requestAnimationFrame(loop); })(performance.now());
   };
 
+
+  // ---- textured player model (the visitor's own Minecraft skin) ----
+  function skinModel(slim, legacy) {
+    var out = [], aw = slim ? 3 : 4;
+    function quad(p, uv, tw, th, k, flipU) {   // p: 4 corners, uv: [u0,v0,u1,v1] in pixels
+      var u0 = uv[0] / tw, v0 = uv[1] / th, u1 = uv[2] / tw, v1 = uv[3] / th; if (flipU) { var t = u0; u0 = u1; u1 = t; }
+      var c = [[u0, v1], [u1, v1], [u1, v0], [u0, v0]], idx = [0, 1, 2, 0, 2, 3];
+      idx.forEach(function (i) { out.push(-p[i][0], p[i][1], p[i][2], k, k, k, 1, c[i][0], c[i][1]); });
+    }
+    function box(x0, y0, z0, x1, y1, z1, u, v, grow, mirror) {
+      var w = x1 - x0, h = y1 - y0, d = z1 - z0, g = grow || 0, tw = 64, th = 64;
+      x0 -= g; y0 -= g; z0 -= g; x1 += g; y1 += g; z1 += g;
+      var X0 = x0 / 16, X1 = x1 / 16, Y0 = y0 / 16, Y1 = y1 / 16, Z0 = z0 / 16, Z1 = z1 / 16, m = !!mirror;
+      // front (-z): texture left->right = +x ; back (+z) mirrored ; sides ; top ; bottom
+      quad([[X0, Y1, Z0], [X1, Y1, Z0], [X1, Y0, Z0], [X0, Y0, Z0]], [u + d, v + d, u + d + w, v + d + h], tw, th, .96, m);
+      quad([[X1, Y1, Z1], [X0, Y1, Z1], [X0, Y0, Z1], [X1, Y0, Z1]], [u + 2 * d + w, v + d, u + 2 * d + 2 * w, v + d + h], tw, th, .74, m);
+      quad([[X0, Y1, Z1], [X0, Y1, Z0], [X0, Y0, Z0], [X0, Y0, Z1]], m ? [u + d + w, v + d, u + 2 * d + w, v + d + h] : [u, v + d, u + d, v + d + h], tw, th, .84, m);
+      quad([[X1, Y1, Z0], [X1, Y1, Z1], [X1, Y0, Z1], [X1, Y0, Z0]], m ? [u, v + d, u + d, v + d + h] : [u + d + w, v + d, u + 2 * d + w, v + d + h], tw, th, .84, m);
+      quad([[X0, Y0, Z0], [X1, Y0, Z0], [X1, Y0, Z1], [X0, Y0, Z1]], [u + d, v + d, u + d + w, v], tw, th, 1, m);
+      quad([[X0, Y1, Z1], [X1, Y1, Z1], [X1, Y1, Z0], [X0, Y1, Z0]], [u + d + w, v, u + d + 2 * w, v + d], tw, th, .6, m);
+    }
+    // base layer (model y goes down: head on top = negative y, like the exported cosmetics)
+    box(-4, -8, -4, 4, 0, 4, 0, 0, 0);
+    box(-4, 0, -2, 4, 12, 2, 16, 16, 0);
+    box(-4 - aw, 0, -2, -4, 12, 2, 40, 16, 0);
+    box(4, 0, -2, 4 + aw, 12, 2, legacy ? 40 : 32, legacy ? 16 : 48, 0, legacy);
+    box(-4, 12, -2, 0, 24, 2, 0, 16, 0);
+    box(0, 12, -2, 4, 24, 2, legacy ? 0 : 16, legacy ? 16 : 48, 0, legacy);
+    // second layer (hat, jacket, sleeves, pants) a hair bigger
+    box(-4, -8, -4, 4, 0, 4, 32, 0, .5);
+    if (!legacy) {
+      box(-4, 0, -2, 4, 12, 2, 16, 32, .25);
+      box(-4 - aw, 0, -2, -4, 12, 2, 40, 32, .25);
+      box(4, 0, -2, 4 + aw, 12, 2, 48, 48, .25);
+      box(-4, 12, -2, 0, 24, 2, 0, 32, .25);
+      box(0, 12, -2, 4, 24, 2, 0, 48, .25);
+    }
+    return new Float32Array(out);
+  }
+  Scene.prototype.setSkin = function (img) {
+    var gl = this.gl; if (!gl) return;
+    var tw = img.naturalWidth || img.width, th = img.naturalHeight || img.height, legacy = th <= tw / 2 + 1, slim = false;
+    try {
+      var c = document.createElement('canvas'); c.width = tw; c.height = th; var x = c.getContext('2d'); x.drawImage(img, 0, 0);
+      var k = tw / 64; if (!legacy) slim = x.getImageData(Math.floor(55 * k), Math.floor(20 * k), 1, 1).data[3] === 0;
+      if (legacy) { var c2 = document.createElement('canvas'); c2.width = 64; c2.height = 64; var y = c2.getContext('2d'); y.imageSmoothingEnabled = false; y.drawImage(img, 0, 0, tw, th, 0, 0, 64, 64 * th / tw); c = c2; }
+      else if (tw !== 64) { var c3 = document.createElement('canvas'); c3.width = 64; c3.height = 64; var z = c3.getContext('2d'); z.imageSmoothingEnabled = false; z.drawImage(img, 0, 0, tw, th, 0, 0, 64, 64); c = c3; }
+      var tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      this.skinTex = tex; this.skinMan = this.mesh(skinModel(slim, legacy)); return true;
+    } catch (e) { return false; }
+  };
+  Scene.prototype.clearSkin = function () { this.skinTex = null; this.skinMan = null; };
+
+  var SKIN_URLS = [function (n) { return 'https://mc-heads.net/skin/' + n; }, function (n) { return 'https://minotar.net/skin/' + n; }, function (n) { return 'https://crafatar.com/skins/' + n; }];
+  function loadSkin(name, cb) {
+    var i = 0;
+    (function next() {
+      if (i >= SKIN_URLS.length) return cb(null);
+      var im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = function () { cb(im); }; im.onerror = function () { next(); };
+      im.src = SKIN_URLS[i++](encodeURIComponent(name));
+    })();
+  }
+  // "Your skin" box: type your Minecraft name and the 3D character wears your skin
+  function skinBox(stage, scene) {
+    var key = 'ya_skin_name', saved = ''; try { saved = localStorage.getItem(key) || ''; } catch (e) {}
+    var box = document.createElement('form'); box.className = 'skinbox'; box.autocomplete = 'off';
+    box.innerHTML = '<input type="text" maxlength="16" placeholder="Your Minecraft name" spellcheck="false" aria-label="Minecraft name"><button class="btn" type="submit">Show my skin</button><span class="skmsg"></span>';
+    stage.parentNode.insertBefore(box, stage.nextSibling);
+    var inp = box.querySelector('input'), msg = box.querySelector('.skmsg'), btn = box.querySelector('button');
+    function go(name) {
+      name = (name || '').trim();
+      if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) { scene.clearSkin(); msg.textContent = name ? 'Enter a valid Minecraft name.' : ''; try { localStorage.removeItem(key); } catch (e) {} return; }
+      msg.textContent = 'Loading skin...'; btn.disabled = true;
+      loadSkin(name, function (im) {
+        btn.disabled = false;
+        if (im && scene.setSkin(im)) { msg.textContent = 'Wearing the skin of ' + name; try { localStorage.setItem(key, name); } catch (e) {} }
+        else { scene.clearSkin(); msg.textContent = 'Skin not found for "' + name + '".'; }
+      });
+    }
+    box.addEventListener('submit', function (e) { e.preventDefault(); go(inp.value); });
+    if (saved) { inp.value = saved; go(saved); }
+  }
+
   // render one still image (used for the product cards)
   var snapScene = null, snapCanvas = null;
   function snapshot(items, o) {
@@ -175,6 +263,7 @@
     ok: function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch (e) { return false; } },
     viewer: function (canvas, opts) { var s = new Scene(canvas, opts); if (!s.failed) s.start(); return s; },
     snapshot: snapshot,
+    skinBox: skinBox,
     whenReady: function (cb) { loadLogo(function () { setTimeout(cb, 30); }); }
   };
 })();

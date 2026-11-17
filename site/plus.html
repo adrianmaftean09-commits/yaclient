@@ -16,7 +16,7 @@
 document.querySelectorAll('[data-pp]').forEach(function(n){n.textContent=window.YAeur(pr)});
 document.getElementById('buy').onclick=function(){YABuy({title:'YA Plus (30 days)',lines:['YA Plus · 30 days'],total:pr,ids:'plus',note:'Duration: 30 days'})};
 var c=document.getElementById('p3d'),on=true,v=null;
-if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){v=YA3D.viewer(c,{yaw:.2,dist:5.6,target:[0,.95,0]});v.set(['ya_cape'],true)})}else c.parentNode.insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL</div>');
+if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){v=YA3D.viewer(c,{yaw:.2,dist:5.6,target:[0,.95,0]});v.set(['ya_cape'],true);YA3D.skinBox(c.parentNode,v)})}else c.parentNode.insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL</div>');
 var t=document.getElementById('tg');t.onclick=function(){on=!on;t.textContent=on?'Animated cape: ON':'Animated cape: OFF';if(v)v.set(['ya_cape'],on)};
 })();
 </script></body></html>
