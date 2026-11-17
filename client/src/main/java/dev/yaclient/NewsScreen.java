@@ -9,13 +9,13 @@ import org.lwjgl.opengl.GL11;
 
 /** Changelog sheet: banner on top, then what is new / improved / fixed. Scrolls with the wheel; ESC or the X closes it. */
 public class NewsScreen extends GuiScreen {
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.3";
     public static final String DATE = "2026-11-17";
 
     private static final String[][] SECTIONS = {
-            {"new", "mods", "wings", "tab", "news"},
-            {"improved", "menus", "cosmetics", "anim", "updates"},
-            {"fixed", "hitboxes", "oldanim", "wingreset", "tabletters"}};
+            {"new", "fabric", "crystal", "mods189"},
+            {"improved", "fps", "zoom", "speed"},
+            {"fixed", "keys", "anim17", "launcher"}};
 
     private final GuiScreen parent;
     private final long opened = System.currentTimeMillis();

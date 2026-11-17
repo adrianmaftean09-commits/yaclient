@@ -6,6 +6,13 @@
   "remote": "",
   "news": [
     {
+      "title": "Update 1.3 - Minecraft 26.2",
+      "text": "The new Fabric client for Minecraft 26.2 with Crystal PvP mods, plus new 1.8.9 mods, more FPS and many fixes. Open the news card in the game for the full changelog.",
+      "image": "../assets/news/update13.png",
+      "url": "",
+      "date": "2026-11-17"
+    },
+    {
       "title": "Update 1.1 - What's new",
       "text": "14 new mods (Combo, Target HUD, Minimap, AutoGG, 1.7 Animations...), dragon wings, client logo in tab and many fixes. Open the news card in the game's main menu for the full changelog.",
       "image": "../assets/news/update.png",
