@@ -52,3 +52,9 @@ background:radial-gradient(900px 500px at 0 0,#3a0a0a66,transparent 70%),radial-
 .hf{left:80px;bottom:60px;font-weight:800;letter-spacing:3px;font-size:20px;color:#71717a}
 .r{height:820px;top:210px;-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
 .r0{left:640px}.r1{left:940px;height:900px;top:150px}.r2{left:1340px}
+
+.hback{left:80px;top:60px;display:flex;align-items:center;gap:12px;font-weight:800;font-size:28px;letter-spacing:.04em;color:#fff;border:2px solid #ffffff30;background:#ffffff0d;border-radius:99px;padding:14px 32px 14px 22px;text-decoration:none;z-index:6;transition:.2s}
+.hback:hover{background:#ffffff1c;border-color:#ffffff66}
+.bd-it{background:radial-gradient(75% 60% at 50% 38%,color-mix(in srgb,var(--c) 22%,transparent),#101014 82%);transition:.2s}.bd-it:hover{border-color:var(--line2);transform:translateY(-4px)}
+.bd-it .im{aspect-ratio:1/1;background:none}
+.bd-it .im img{-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}

@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=5"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
 <div class="page-h"><div class="wrap"><span class="eyebrow">Store</span><h1 class="plain">Cosmetics</h1><p class="sub">Wings, capes, bandanas and pets. Rendered live from the game. Click any item to try it on.</p></div></div>
 <div class="wrap">
 <div class="plusbar" id="plusbar2"><div><b>YA Plus members: -70% on the whole shop</b><span>Enter your Minecraft name under the 3D character to check your YA Plus discount.</span></div><a class="btn" href="/plus">See YA Plus →</a></div>
@@ -50,6 +50,7 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           santa:{n:'Santa Bundle',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',items:['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'],price:PR.animeBundle||10},
           frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10}};
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
+var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',mono:'#e4e4e8'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
 var PAGES=['sakura','shinobi','kitsune','santa','frost','mono'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
@@ -62,7 +63,7 @@ function card(key,isSet){
  var save=isSet&&!d.free?'<span class="tagb save">Save '+eur(R(4*PR.item-price))+'</span>':(tag?'<span class="tagb">'+tag+'</span>':'');
  var pr=free?'<span class="price free">Free</span>':(isSet?'<span class="price"><s>'+eur(4*PR.item)+'</s>'+eur(price)+'</span>':(window.YAplusOn?'<span class="price"><s>'+eur(PR.item)+'</s>'+eur(price)+'</span>':'<span class="price">'+eur(price)+'</span>'));
  var im=thumbs[(isSet?'s:':'i:')+key];
- return '<div class="pc '+(on?'on':'')+'" data-k="'+key+'" data-s="'+(isSet?1:0)+'">'+save+'<div class="im">'+(im?'<img src="'+im+'" alt="">':'<i>'+(has3d?'Rendering...':'')+'</i>')+'</div><div class="bd"><h3>'+d.n+'</h3><p>'+d.d+'</p><div class="pr">'+pr+'<button class="btn sm '+(free?'':'pri')+'" data-buy="'+key+'" data-s="'+(isSet?1:0)+'">'+(free?'Get free':'Buy')+'</button></div></div></div>'}
+ var pp=!isSet&&ph(key);return '<div class="pc '+(on?'on':'')+'" data-k="'+key+'" data-s="'+(isSet?1:0)+'">'+save+(pp?'<div class="im ph" style="--c:'+COL[P[key].set]+'"><img src="'+pp+'" alt="" loading="lazy"></div>':'<div class="im">'+(im?'<img src="'+im+'" alt="">':'<i>'+(has3d?'Rendering...':'')+'</i>')+'</div>')+'<div class="bd"><h3>'+d.n+'</h3><p>'+d.d+'</p><div class="pr">'+pr+'<button class="btn sm '+(free?'':'pri')+'" data-buy="'+key+'" data-s="'+(isSet?1:0)+'">'+(free?'Get free':'Buy')+'</button></div></div></div>'}
 function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
@@ -98,7 +99,7 @@ if(!has3d){document.getElementById('stage').insertAdjacentHTML('beforeend','<div
 YA3D.whenReady(function(){
  view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.6,target:[0,.95,0]});YA3D.skinBox(document.getElementById('stage'),view);worn=['mono_wings','mono_cape','mono_bandana','mono_pet'];renderSide();
  var jobs=[];Object.keys(SETS).forEach(function(k){jobs.push(['s:'+k,SETS[k].items,{yaw:.5,dist:6.2,target:[0,.98,0]}])});
- Object.keys(P).forEach(function(id){jobs.push(['i:'+id,[id],snapOpts(id)])});
+ Object.keys(P).forEach(function(id){if(!ph(id))jobs.push(['i:'+id,[id],snapOpts(id)])});
  (function next(){var j=jobs.shift();if(!j){render();return}try{thumbs[j[0]]=YA3D.snapshot(j[1],j[2])}catch(e){}
   var im=document.querySelector('.pc[data-k="'+j[0].slice(2)+'"][data-s="'+(j[0][0]==='s'?1:0)+'"] .im');if(im&&thumbs[j[0]])im.innerHTML='<img src="'+thumbs[j[0]]+'" alt="">';
   setTimeout(next,16)})();

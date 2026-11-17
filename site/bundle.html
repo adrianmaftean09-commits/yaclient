@@ -1,7 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"><link rel="stylesheet" href="/bundle.css?v=4"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=5"><link rel="stylesheet" href="/bundle.css?v=5"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
 
 <section class="hero" id="hero"><div class="hs" id="hs">
-<div class="hl"><img src="/logo.png" alt=""><div>YA <span>CLIENT</span></div></div><div class="hr">COSMETICS</div>
+<a class="hback" href="/store?c=bundle"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Back to store</a><div class="hr">COSMETICS</div>
 <div class="ht" id="nm"></div><div class="hw">Worn by <b>zSoyNick_</b></div>
 <ul class="hi" id="hi"></ul>
 <div class="hb"><div class="bd-pr" id="pr"></div><div class="bd-btns"><button class="btn" id="addb">Add bundle to cart</button><button class="btn pri" id="buyb">Buy now</button></div></div>
@@ -47,7 +47,7 @@ function drawCart(){var n=cart.length;document.getElementById('cn').textContent=
 function price(){var f=K(),tot=R(setPrice(key)*f);document.getElementById('pr').innerHTML=(f<1?'<s>'+eur(setPrice(key))+'</s>':'')+'<b>'+eur(tot)+'</b><span>Save '+eur(R(PR.item*4*f-tot))+'</span>'}
 /* items */
 var thumbs={};
-function items(){var f=K();document.getElementById('its').innerHTML=b.it.map(function(x){var im=thumbs[x[0]];return '<div class="bd-it"><div class="im">'+(im?'<img src="'+im+'" alt="">':'<i></i>')+'</div><div class="bt"><b>'+x[1]+'</b><span>'+x[2]+'</span><div class="pp">'+eur(R(PR.item*f))+'</div><div class="bb"><button class="btn sm" data-add="'+x[0]+'">Add to cart</button><button class="btn sm pri" data-now="'+x[0]+'">Buy now</button></div></div></div>'}).join('');drawCart()}
+function items(){var f=K();document.getElementById('its').innerHTML=b.it.map(function(x){return '<div class="bd-it" style="--c:'+b.c+'"><div class="im"><img src="/b/i/'+x[0]+'.jpg" alt="'+x[1]+'" loading="lazy"></div><div class="bt"><b>'+x[1]+'</b><span>'+x[2]+'</span><div class="pp">'+eur(R(PR.item*f))+'</div><div class="bb"><button class="btn sm" data-add="'+x[0]+'">Add to cart</button><button class="btn sm pri" data-now="'+x[0]+'">Buy now</button></div></div></div>'}).join('');drawCart()}
 var lb=document.getElementById('lb');lb.onclick=function(){lb.className='lb'};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){lb.className='lb';document.getElementById('cartdr').className='cartdr'}});
 /* other bundles */
@@ -67,8 +67,7 @@ document.addEventListener('yaplus',function(){price();items();drawCart()});
 price();items();
 /* 3D */
 if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){var v=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.2,target:[0,.98,0]});v.set(ids,false);YA3D.skinBox(document.getElementById('stage3'),v);
- var snap={cape:{yaw:.5,dist:3.7,target:[0,.95,0]},wings:{yaw:.35,dist:5.2,target:[0,1.15,0]},bandana:{yaw:.55,dist:2.3,target:[0,1.78,0]},pet:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}},q=ids.slice();
- (function next(){var i=q.shift();if(!i){return}try{thumbs[i]=YA3D.snapshot([i],snap[i.split('_')[1]])}catch(e){}var im=document.querySelector('[data-add="'+i+'"]');if(im){var h=im.closest('.bd-it').querySelector('.im');if(h&&thumbs[i])h.innerHTML='<img src="'+thumbs[i]+'" alt="">'}setTimeout(next,16)})()})}
+})}
 else document.getElementById('stage3').innerHTML='<div class="fall" style="padding:40px;text-align:center;color:var(--mute)">3D preview needs WebGL.</div>';
 })();
 </script></body></html>
