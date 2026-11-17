@@ -14,7 +14,7 @@ b,strong{font-weight:800}
 nav.top{position:sticky;top:0;z-index:50;background:rgba(9,9,11,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 nav.top .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:.2px}
-.brand img{width:34px;height:34px}
+.brand img{width:64px;height:64px;margin:-6px 0}
 .brand b{color:var(--red)}
 .nl{display:flex;align-items:center;gap:4px}
 .nl a{padding:8px 14px;border-radius:10px;color:var(--mute);font-weight:600;font-size:14.5px;transition:.15s}
