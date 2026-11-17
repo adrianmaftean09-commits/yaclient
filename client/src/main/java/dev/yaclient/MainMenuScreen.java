@@ -28,6 +28,8 @@ public class MainMenuScreen extends GuiScreen {
     private final long opened = System.currentTimeMillis();
     private long last = opened;
     private int bx, by0, dockX, dockY;
+    private int nx, ny, nw = 132, nh = 80;
+    private float newsHover;
 
     private int btnY(int i) { return by0 + i * (BH + GAP); }
 
@@ -81,6 +83,18 @@ public class MainMenuScreen extends GuiScreen {
             Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + 6, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
             Gfx.textCentered(Lang.t(TIPS[i]), x + TW / 2, dockY + TH - 12, 7, true, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
         }
+
+        // news card (bottom left): banner + title, opens the changelog sheet
+        nx = 10;
+        ny = height - 16 - 10 - nh;
+        boolean nOver = mx >= nx && mx < nx + nw && my >= ny && my < ny + nh;
+        newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
+        Gfx.rr(nx, ny, nw, nh, 8, Ui.mix(0xB0101014, 0xD0242429, newsHover));
+        int artH = Math.round((nw - 8) / NewsArt.ASPECT);
+        NewsArt.draw(nx + 4, ny + 4, nw - 8, artH, fadeIn);
+        Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
+        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
+        Gfx.text("Update " + NewsScreen.VERSION + "  ·  " + Lang.t("news.open"), nx + 8, ny + 4 + artH + 17, 7, false, Theme.MUTED);
 
         Gfx.text("YA CLIENT 1.8.9", 8, height - 16, 10, false, Theme.DIM);
         String acc = Minecraft.getMinecraft().getSession().getUsername();
@@ -149,6 +163,7 @@ public class MainMenuScreen extends GuiScreen {
     protected void mouseClicked(int mx, int my, int button) {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
+        if (mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
             if (mx >= bx && mx < bx + BW && my >= y && my < y + BH) {
