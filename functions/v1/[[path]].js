@@ -33,6 +33,27 @@ async function loadPlayer(env, uuid) {
   return v;
 }
 const savePlayer = (env, uuid, p) => env.DB.put('p:' + uuid, JSON.stringify(p));
+async function applyGrant(env, uuid, f) {
+      if (f.item === 'plus') {
+        const p0 = await loadPlayer(env, uuid);
+        const days = Math.max(1, Math.min(3650, parseInt(f.days || '30', 10) || 30));
+        if (f.revoke === '1') p0.plusUntil = 0;
+        else p0.plusUntil = Math.max(Date.now(), p0.plusUntil || 0) + days * 86400000;
+        await savePlayer(env, uuid, p0);
+        return { status: 200, body: { ok: 1, uuid, plus_until: new Date(p0.plusUntil).toISOString() } };
+      }
+      let items = f.item === '*' ? Object.keys(ITEMS) : String(f.item || '').split(',').filter(Boolean);
+      items = items.flatMap((i) => (BUNDLES[i] ? BUNDLES[i].items : [i]));
+      if (!items.length || items.some((i) => !ITEMS[i])) return { status: 400, body: { error: 'unknown item' } };
+      const p = await loadPlayer(env, uuid);
+      for (const i of items) {
+        if (f.revoke === '1') p.owned = p.owned.filter((x) => x !== i);
+        else if (!p.owned.includes(i)) p.owned.push(i);
+      }
+      await savePlayer(env, uuid, p);
+      return { status: 200, body: { ok: 1, uuid, owned: p.owned.join(',') } };
+}
+
 function plusActive(p) { return !!p.plusUntil && p.plusUntil > Date.now(); }
 function equippedMap(p) {
   const out = { plus: plusActive(p) ? '1' : '0' };   // YA Plus subscription: animated cape movement
@@ -149,6 +170,8 @@ export async function onRequest({ request, env }) {
         const fr = await getF(env, id);
         if (fr.name !== check.name) { fr.name = check.name; await env.DB.put('f:' + id, JSON.stringify(fr)); }
         if ((await env.DB.get('n:' + low)) !== id) await env.DB.put('n:' + low, id);
+        const pend = await env.DB.get('g:' + low, 'json');   // grants queued by name from /admin
+        if (pend && pend.length) { for (const g of pend) await applyGrant(env, id, g); await env.DB.delete('g:' + low); }
       }
       return send(200, { token, uuid: norm(check.id) });
     }
@@ -200,27 +223,17 @@ export async function onRequest({ request, env }) {
           const id = pdb && pdb.data && pdb.data.player && pdb.data.player.raw_id;
           if (id) uuid = norm(id);
         }
-        if (!uuid) return send(404, { error: 'unknown username' });
+        if (!uuid) {   // name not resolvable right now: keep the grant and apply it when this player next opens YA CLIENT
+          const key = 'g:' + nm.toLowerCase();
+          const q = (await env.DB.get(key, 'json')) || [];
+          q.push({ item: f.item, days: f.days, revoke: f.revoke });
+          await env.DB.put(key, JSON.stringify(q.slice(-20)));
+          return send(200, { ok: 1, pending: 1, note: 'saved, applies when ' + nm + ' next opens YA CLIENT' });
+        }
       }
       if (!uuid) return send(400, { error: 'uuid or username required' });
-      if (f.item === 'plus') {
-        const p0 = await loadPlayer(env, uuid);
-        const days = Math.max(1, Math.min(3650, parseInt(f.days || '30', 10) || 30));
-        if (f.revoke === '1') p0.plusUntil = 0;
-        else p0.plusUntil = Math.max(Date.now(), p0.plusUntil || 0) + days * 86400000;
-        await savePlayer(env, uuid, p0);
-        return send(200, { ok: 1, uuid, plus_until: new Date(p0.plusUntil).toISOString() });
-      }
-      let items = f.item === '*' ? Object.keys(ITEMS) : String(f.item || '').split(',').filter(Boolean);
-      items = items.flatMap((i) => (BUNDLES[i] ? BUNDLES[i].items : [i]));
-      if (!items.length || items.some((i) => !ITEMS[i])) return send(400, { error: 'unknown item' });
-      const p = await loadPlayer(env, uuid);
-      for (const i of items) {
-        if (f.revoke === '1') p.owned = p.owned.filter((x) => x !== i);
-        else if (!p.owned.includes(i)) p.owned.push(i);
-      }
-      await savePlayer(env, uuid, p);
-      return send(200, { ok: 1, uuid, owned: p.owned.join(',') });
+      const res = await applyGrant(env, uuid, f);
+      return send(res.status, res.body);
     }
     if (url.pathname.startsWith('/v1/friends')) { const r = await friendsRoute(env, request, url, route); if (r) return r; }
     return send(404, { error: 'not found' });
