@@ -4,12 +4,16 @@ const ITEMS = {
   ya_cape: { slot: 'cape', price: 'Beta' }, ya_wings: { slot: 'wings', price: 'Beta' },
   ya_bandana: { slot: 'bandana', price: 'Beta' }, ya_pet: { slot: 'pet', price: 'Beta' },
   mono_cape: { slot: 'cape', price: 'Exclusive' }, mono_wings: { slot: 'wings', price: 'Exclusive' },
-  mono_bandana: { slot: 'bandana', price: 'Exclusive' }, mono_pet: { slot: 'pet', price: 'Exclusive' }
+  mono_bandana: { slot: 'bandana', price: 'Exclusive' }, mono_pet: { slot: 'pet', price: 'Exclusive' },
+  qlux_cape: { slot: 'cape', price: 'Partner' }, qlux_wings: { slot: 'wings', price: 'Partner' },
+  qlux_bandana: { slot: 'bandana', price: 'Partner' }, qlux_pet: { slot: 'pet', price: 'Partner' }
 };
 // Bundles unlock several items at once. "beta" = Beta Tester bundle (free, granted by the admin to testers).
 const BUNDLES = {
   beta: { price: 'Free', items: ['ya_cape', 'ya_wings', 'ya_bandana', 'ya_pet'] },
-  mono: { price: 'Exclusive', items: ['mono_cape', 'mono_wings', 'mono_bandana', 'mono_pet'] }
+  mono: { price: 'Exclusive', items: ['mono_cape', 'mono_wings', 'mono_bandana', 'mono_pet'] },
+  // partner (streamer) bundles
+  qlux: { price: 'Partner', partner: 'Qlux', items: ['qlux_cape', 'qlux_wings', 'qlux_bandana', 'qlux_pet'] }
 };
 const SLOTS = ['cape', 'wings', 'bandana', 'pet'];
 const norm = (u) => String(u || '').replace(/-/g, '').toLowerCase();

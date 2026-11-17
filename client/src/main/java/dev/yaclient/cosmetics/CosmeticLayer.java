@@ -49,19 +49,22 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GL11.glShadeModel(GL11.GL_SMOOTH);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        if (wings) drawWings(p, model, age, mono(eq, "wings"));
-        if (cape) drawCape(p, partialTicks, age, "1".equals(eq.get("plus")), mono(eq, "cape"));
+        if (wings) drawWings(p, model, age, style(eq, "wings"));
+        if (cape) drawCape(p, partialTicks, age, "1".equals(eq.get("plus")), style(eq, "cape"));
         if (bandana) {
             GlStateManager.pushMatrix();
             model.bipedHead.postRender(S);
-            CosmeticRender.mono = mono(eq, "bandana");
+            String bs = style(eq, "bandana");
+            CosmeticRender.mono = bs.equals("mono");
+            CosmeticRender.qlux = bs.equals("qlux");
             Poly.begin();
             CosmeticRender.bandana(age, limbSwingAmount);
             Poly.end();
             CosmeticRender.mono = false;
+            CosmeticRender.qlux = false;
             GlStateManager.popMatrix();
         }
-        if (pet) drawPet(p, age, mono(eq, "pet"));
+        if (pet) drawPet(p, age, style(eq, "pet"));
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
@@ -94,9 +97,13 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         return eq != null && on(eq, "cape");
     }
 
-    private static boolean mono(Map<String, String> eq, String slot) {
+    /** Look of the worn item: "ya", "mono" or "qlux" (from the item id prefix). */
+    static String style(Map<String, String> eq, String slot) {
         String v = eq.get(slot);
-        return v != null && v.startsWith("mono_");
+        if (v == null) return "ya";
+        if (v.startsWith("mono_")) return "mono";
+        if (v.startsWith("qlux_")) return "qlux";
+        return "ya";
     }
 
     private static boolean on(Map<String, String> eq, String slot) {
@@ -104,7 +111,8 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         return v != null && !v.equals("none");
     }
 
-    private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age, boolean mono) {
+    private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age, String style) {
+        boolean mono = style.equals("mono");
         float air = airFactor(p);
         float flap = (float) Math.sin(age * 0.10f) * (mono ? 17f : 7f) * (1f - air)
                 + (float) Math.sin(age * 0.32f) * (mono ? 34f : 22f) * air;
@@ -119,14 +127,17 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             GlStateManager.rotate(-side * spread, 0f, 1f, 0f);    // fixed outward lean
             GlStateManager.scale((float) side, -1f, 1f);
             Poly.begin();
+            CosmeticRender.qlux = style.equals("qlux");
             if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
+            CosmeticRender.qlux = false;
             Poly.end();
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();
     }
 
-    private void drawCape(AbstractClientPlayer p, float pt, float age, boolean plus, boolean mono) {
+    private void drawCape(AbstractClientPlayer p, float pt, float age, boolean plus, String style) {
+        boolean mono = style.equals("mono");
         double d0 = p.prevChasingPosX + (p.chasingPosX - p.prevChasingPosX) * pt - (p.prevPosX + (p.posX - p.prevPosX) * pt);
         double d1 = p.prevChasingPosY + (p.chasingPosY - p.prevChasingPosY) * pt - (p.prevPosY + (p.posY - p.prevPosY) * pt);
         double d2 = p.prevChasingPosZ + (p.chasingPosZ - p.prevChasingPosZ) * pt - (p.prevPosZ + (p.posZ - p.prevPosZ) * pt);
@@ -149,7 +160,9 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.rotate(6f + f2 / 2f + f1, 1f, 0f, 0f);
         GlStateManager.rotate(f3 / 2f, 0f, 0f, 1f);
         GlStateManager.rotate(-f3 / 2f, 0f, 1f, 0f);
-        if (mono) {
+        if (style.equals("qlux")) {
+            CosmeticQlux.drawCape(age, plus);
+        } else if (mono) {
             Poly.begin();
             CosmeticMono.capeBase(age, plus);
             CosmeticMono.emblem(age, plus);
@@ -169,7 +182,8 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.popMatrix();
     }
 
-    private void drawPet(AbstractClientPlayer p, float age, boolean mono) {
+    private void drawPet(AbstractClientPlayer p, float age, String style) {
+        boolean mono = style.equals("mono"), qlux = style.equals("qlux");
         GlStateManager.pushMatrix();
         double bob = Math.sin(age * 0.10) * 0.035;
         double swayX = Math.sin(age * 0.05) * 0.04, swayZ = Math.cos(age * 0.04) * 0.05;
@@ -177,7 +191,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         if (mono) GlStateManager.rotate(age * 6f, 0f, 1f, 0f);
         else GlStateManager.rotate((float) (Math.sin(age * 0.05) * 12.0), 0f, 1f, 0f);
         Poly.begin();
-        if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+        if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
         Poly.end();
         GlStateManager.popMatrix();
     }

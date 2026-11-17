@@ -359,5 +359,13 @@
  "opt.cx_x": "X",
  "opt.cx_clear": "Borrar todo",
  "set.crosshair.hint": "Haz clic en un cuadrado para encenderlo o apagarlo. Mantén y arrastra para dibujar.",
- "set.crosshair.preview": "Vista previa"
+ "set.crosshair.preview": "Vista previa",
+ "cos.cat.partner": "Partner",
+ "cos.partner_tag": "PARTNER",
+ "cos.partner_hint": "Packs creados con nuestros streamers asociados.",
+ "cos.bundle.qlux": "Pack Qlux",
+ "cos.item.qlux_cape": "Capa Qlux",
+ "cos.item.qlux_wings": "Alas de ángel Qlux",
+ "cos.item.qlux_bandana": "Banda Qlux",
+ "cos.item.qlux_pet": "Lumi (mascota)"
 }

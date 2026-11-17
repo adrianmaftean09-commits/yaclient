@@ -9,8 +9,14 @@ public final class Cosmetics {
     /** One item per slot in every bundle. Order = order in the locker. */
     public static final String[] SLOTS = {"cape", "wings", "bandana", "pet"};
     /** Store ids of the bundles and the prefix of their items. */
-    public static final String[] BUNDLES = {"beta", "mono"};
-    public static final String[] PREFIX = {"ya", "mono"};
+    public static final String[] BUNDLES = {"beta", "mono", "qlux"};
+    public static final String[] PREFIX = {"ya", "mono", "qlux"};
+    /** Partner (streamer) bundles are listed in their own "Partner" section. */
+    public static final boolean[] PARTNER = {false, false, true};
+    /** Streamer name shown on a partner bundle. */
+    public static final String[] PARTNER_NAME = {"", "", "Qlux"};
+
+    public static boolean isPartner(int bundle) { return PARTNER[bundle]; }
 
     private Cosmetics() {}
 

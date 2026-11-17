@@ -605,11 +605,12 @@ public class MenuScreen extends GuiScreen {
     }
 
     // ----- cosmetics (locker) -----
-    private static final String[] COS_CATS = {"bundle", "cape", "wings", "bandana", "pet"};
+    private static final String[] COS_CATS = {"bundle", "cape", "wings", "bandana", "pet", "partner"};
     private int cosCat = 0;
 
     private static String cosIcon(String slotOrBundle) {
         if (slotOrBundle.equals("bundle")) return "gift";
+        if (slotOrBundle.equals("partner")) return "star";
         return slotOrBundle;
     }
 
@@ -682,12 +683,16 @@ public class MenuScreen extends GuiScreen {
 
         // cards: bundles first, or the items of one slot (from every bundle)
         List<String> entries = new ArrayList<String>();
+        boolean partnerTab = COS_CATS[cosCat].equals("partner");
         for (int bi = 0; bi < Cosmetics.BUNDLES.length; bi++) {
+            if (partnerTab) { if (Cosmetics.isPartner(bi)) entries.add("bundle:" + bi); continue; }
+            if (Cosmetics.isPartner(bi)) continue;          // partner bundles live in their own tab
             if (cosCat == 0) entries.add("bundle:" + bi);
             else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
+        if (partnerTab) Gfx.text(Lang.t("cos.partner_hint"), x0, VY + 36, 10, false, Theme.MUTED);
         int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 150;
-        int gy = VY + 40;
+        int gy = VY + (partnerTab ? 54 : 40);
         for (int n = 0; n < entries.size(); n++) {
             final String[] kv = entries.get(n).split(":");
             final String key = kv[0];
@@ -709,7 +714,7 @@ public class MenuScreen extends GuiScreen {
             // tag band (FREE / EXCLUSIVE / lock) above the thumbnail, so nothing is drawn over the preview
             int band = 18, th = 70, ty = cy + band + 4;
             if (bundle) {
-                String fr = Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");
+                String fr = Cosmetics.isPartner(bi) ? Lang.t("cos.partner_tag") + " " + Cosmetics.PARTNER_NAME[bi] : Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");
                 int fw = Gfx.width(fr, 9, true) + 12;
                 Gfx.rr(cx + 8, cy + 6, fw, 15, 7, bi == 0 ? Theme.accent() : 0xFFF4F4F5);
                 Gfx.text(fr, cx + 14, cy + 6 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, bi == 0 ? Theme.onAccent() : 0xFF101014);
@@ -719,7 +724,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.rr(cx + 6, ty, cw - 12, th, 9, 0x22000000);
             float ps = key.equals("cape") ? 56f : key.equals("wings") ? 34f : key.equals("bandana") ? 90f : key.equals("pet") ? 90f : 30f;
             clip(cx + 6, ty, cw - 12, th);
-            CosmeticPreview.draw(key, bi == 0 ? "ya" : "mono", cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            CosmeticPreview.draw(key, Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             unclip();
             String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);

@@ -359,5 +359,13 @@
  "opt.cx_x": "X",
  "opt.cx_clear": "Svuota tutto",
  "set.crosshair.hint": "Clicca un quadratino per accenderlo o spegnerlo. Tieni premuto e trascina per disegnare.",
- "set.crosshair.preview": "Anteprima"
+ "set.crosshair.preview": "Anteprima",
+ "cos.cat.partner": "Partner",
+ "cos.partner_tag": "PARTNER",
+ "cos.partner_hint": "Bundle creati con i nostri streamer partner.",
+ "cos.bundle.qlux": "Bundle Qlux",
+ "cos.item.qlux_cape": "Mantello Qlux",
+ "cos.item.qlux_wings": "Ali Angelo Qlux",
+ "cos.item.qlux_bandana": "Fascia Qlux",
+ "cos.item.qlux_pet": "Lumi (animaletto)"
 }

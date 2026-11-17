@@ -369,5 +369,13 @@
  "opt.cx_x": "X",
  "opt.cx_clear": "Clear all",
  "set.crosshair.hint": "Click a square to turn it on or off. Hold and drag to draw.",
- "set.crosshair.preview": "Preview"
+ "set.crosshair.preview": "Preview",
+ "cos.cat.partner": "Partner",
+ "cos.partner_tag": "PARTNER",
+ "cos.partner_hint": "Bundles made with our streamer partners.",
+ "cos.bundle.qlux": "Qlux Bundle",
+ "cos.item.qlux_cape": "Qlux Cape",
+ "cos.item.qlux_wings": "Qlux Angel Wings",
+ "cos.item.qlux_bandana": "Qlux Band",
+ "cos.item.qlux_pet": "Lumi (pet)"
 }

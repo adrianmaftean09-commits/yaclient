@@ -73,7 +73,18 @@ final class CosmeticRender {
         }
     }
 
+    /** True while the white Qlux bundle is being drawn (wing and bandana palette). */
+    static boolean qlux;
+
     private static float[] featherColor(int row, float s, float edge, float glow, float rowF) {
+        if (qlux) {
+            float[] w = row == 0 ? Poly.mix(Poly.SNOW, Poly.PEARL, smooth(s * 1.1f) * 0.9f)
+                    : row == 1 ? Poly.mix(Poly.SNOW, Poly.PEARL, s * 0.6f) : Poly.mix(Poly.SNOW, Poly.SNOW, 0f);
+            w = Poly.mix(w, Poly.ICE, Math.max(0f, (s - 0.80f) / 0.20f) * (row == 0 ? 0.85f : 0.5f) * glow);
+            float[] o = Poly.mix(w, Poly.SILVER, edge * edge * 0.55f);
+            o[3] = Math.max(o[3], row == 0 ? 0.30f : 0.18f);
+            return o;
+        }
         float[] c;
         if (row == 0) {
             c = Poly.mix(Poly.BLACK, Poly.DEEP, smooth(s * 1.25f));
@@ -201,6 +212,12 @@ final class CosmeticRender {
     private static float monoAge;
 
     private static float[] bandColor(double vv, double theta) {
+        if (qlux) {
+            float[] c = Poly.mix(Poly.SNOW, Poly.PEARL, (float) (0.25 + 0.25 * Math.sin(theta * 3.0)));
+            if (vv < 0.14 || vv > 0.86) return Poly.mix(Poly.SILVER, Poly.SNOW, 0.5f);
+            double st = Math.sin(theta * 3.0 - monoAge * 0.10 + vv * 2.0);
+            return Poly.mix(c, Poly.ICE, (float) Math.pow(Math.max(0.0, st), 8.0) * 0.8f);
+        }
         if (mono) {
             double st = Math.sin(theta * 4.0 - monoAge * 0.12 + vv * 3.0);
             float w = (float) Math.pow(Math.max(0.0, st), 6.0);
@@ -229,7 +246,7 @@ final class CosmeticRender {
             }
         }
         // knot
-        Poly.ellipsoid(0, -0.37, a + 0.015, 0.045, 0.05, 0.035, mono ? Poly.WHITE : Poly.RED, mono ? Poly.GREY : Poly.DEEP, 0.15f);
+        Poly.ellipsoid(0, -0.37, a + 0.015, 0.045, 0.05, 0.035, qlux ? Poly.ICE : (mono ? Poly.WHITE : Poly.RED), qlux ? Poly.SNOW : (mono ? Poly.GREY : Poly.DEEP), 0.15f);
         // two waving tails
         for (int side = -1; side <= 1; side += 2) {
             final int S = 9;
@@ -244,7 +261,7 @@ final class CosmeticRender {
                 double cz = a + 0.035 + 0.03 * v + Math.sin(age * 0.10 + v * 2.5) * 0.028 * v + 0.14 * v * Math.min(1f, limbSwing);
                 double cy = -0.36 + v * len;
                 double[] l = Poly.p(cx - w, cy, cz), r = Poly.p(cx + w, cy, cz);
-                float[] col = mono ? Poly.mix(Poly.WHITE, Poly.INK, (float) Math.min(1.0, v * 1.1 + 0.15 * Math.sin(age * 0.2 + v * 6.0))) : Poly.mix(Poly.RED, Poly.DEEP, (float) v);
+                float[] col = qlux ? Poly.mix(Poly.SNOW, Poly.ICE, (float) Math.min(1.0, v * 0.9)) : mono ? Poly.mix(Poly.WHITE, Poly.INK, (float) Math.min(1.0, v * 1.1 + 0.15 * Math.sin(age * 0.2 + v * 6.0))) : Poly.mix(Poly.RED, Poly.DEEP, (float) v);
                 if (v > 0.95) col = Poly.mix(col, Poly.BLACK, 0.7f);
                 if (prevL != null) Poly.quad(prevL, prevR, r, l, prevC, prevC, col, col, 1f);
                 prevL = l; prevR = r; prevC = col;

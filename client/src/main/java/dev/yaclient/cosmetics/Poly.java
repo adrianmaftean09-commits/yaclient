@@ -25,6 +25,11 @@ final class Poly {
     static final float[] INK = {0.015f, 0.015f, 0.020f, 0f};
     static final float[] CHAR = {0.17f, 0.17f, 0.20f, 0.15f};
     static final float[] WHITE = {0.96f, 0.96f, 0.98f, 0.75f};
+    // Qlux (white) bundle
+    static final float[] SNOW = {0.98f, 0.98f, 1.00f, 0.40f};
+    static final float[] PEARL = {0.80f, 0.83f, 0.92f, 0.10f};
+    static final float[] ICE = {0.52f, 0.80f, 1.00f, 0.85f};
+    static final float[] SILVER = {0.70f, 0.74f, 0.84f, 0.30f};
     static final float[] GREY = {0.52f, 0.52f, 0.56f, 0.4f};
 
     static float[] mix(float[] a, float[] b, float t) {

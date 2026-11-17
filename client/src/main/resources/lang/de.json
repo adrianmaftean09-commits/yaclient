@@ -359,5 +359,13 @@
  "opt.cx_x": "X",
  "opt.cx_clear": "Alles löschen",
  "set.crosshair.hint": "Klicke ein Feld an oder aus. Gedrückt halten und ziehen zum Zeichnen.",
- "set.crosshair.preview": "Vorschau"
+ "set.crosshair.preview": "Vorschau",
+ "cos.cat.partner": "Partner",
+ "cos.partner_tag": "PARTNER",
+ "cos.partner_hint": "Bundles mit unseren Streamer-Partnern.",
+ "cos.bundle.qlux": "Qlux-Bundle",
+ "cos.item.qlux_cape": "Qlux-Umhang",
+ "cos.item.qlux_wings": "Qlux-Engelsflügel",
+ "cos.item.qlux_bandana": "Qlux-Stirnband",
+ "cos.item.qlux_pet": "Lumi (Begleiter)"
 }

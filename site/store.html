@@ -19,7 +19,7 @@ var P={
  mono_pet:{n:'Yin Yang (pet)',cat:'pet',slot:'pet',d:'A spinning yin yang that floats next to you.',set:'mono'}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle}};
-var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles']];
+var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
 var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
@@ -36,8 +36,9 @@ function card(key,isSet){
 function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
+ if(cat==='partner'){h+='<div class="pc" style="cursor:default"><span class="tagb">Partner · Qlux</span><div class="im" style="display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a2c33,#0f1012)"><img src="/qlux-wordmark.png" alt="Qlux" style="width:78%;height:auto;object-fit:contain"></div><div class="bd"><h3>Qlux Bundle</h3><p>White satin cape with an animated Qlux wordmark, angel wings, light band and the Lumi spirit pet. Made with the streamer Qlux.</p><div class="pr"><span class="price">Partner bundle</span></div></div></div>'}
  if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('beta',true)}
- if(cat!=='bundle')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
+ if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
  document.getElementById('grid').innerHTML=h;
  renderSide()}
 function renderSide(){
