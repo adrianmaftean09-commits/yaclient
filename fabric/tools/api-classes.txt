@@ -7,3 +7,9 @@ net.minecraft.client.Minecraft
 net.minecraft.client.input.KeyEvent
 net.minecraft.client.input.MouseButtonEvent
 net.minecraft.resources.Identifier
+net.minecraft.client.KeyMapping
+net.minecraft.client.KeyMapping$Category
+com.mojang.blaze3d.platform.Window
+net.minecraft.client.player.LocalPlayer
+net.minecraft.world.entity.player.Inventory
+net.minecraft.network.chat.Component
