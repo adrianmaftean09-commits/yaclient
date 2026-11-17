@@ -85,8 +85,8 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
 
     private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age, boolean mono) {
         boolean air = !p.onGround;
-        float flap = (float) Math.sin(age * (air ? 0.32f : 0.10f)) * (air ? 22f : 7f);
-        float raise = -2f + flap;
+        float flap = (float) Math.sin(age * (air ? 0.32f : 0.10f)) * (air ? (mono ? 34f : 22f) : (mono ? 17f : 7f));
+        float raise = (mono ? -6f : -2f) + flap;
         float spread = 26f + (air ? 8f : 0f);
         GlStateManager.pushMatrix();
         model.bipedBody.postRender(S);

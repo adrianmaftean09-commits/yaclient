@@ -544,6 +544,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.rr(cx + 6, cy + 6, cw - 12, th, 9, 0x22000000);
             float ps = key.equals("cape") ? 62f : key.equals("wings") ? 40f : key.equals("bandana") ? 100f : key.equals("pet") ? 100f : 36f;
             CosmeticPreview.draw(key, bi == 0 ? "ya" : "mono", cx + cw / 2f, cy + 6 + th / 2f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            org.lwjgl.opengl.GL11.glClear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT);   // 3D preview must not hide the tag/lock
             if (!has) Gfx.icon("lock", cx + 12, cy + 12, 14, Theme.MUTED);
             if (bundle) {
                 String fr = Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");

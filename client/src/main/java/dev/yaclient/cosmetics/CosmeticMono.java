@@ -56,10 +56,10 @@ final class CosmeticMono {
         double fl = Math.sin(age * 0.10) * 0.02;
         double[] A = pt(0.02, 0.0, 0), J = pt(0.52, 0.32, 0);
         double[] K = pt(0.68 + fl, 0.90, 0);                       // spike tip
-        double[] F1 = pt(0.56 + fl, -0.20, 0), F2 = pt(0.31 + fl * 0.5, -0.17, 0), F3 = pt(0.08, -0.10, 0);
+        double[] F1 = pt(0.58 + fl, -0.46, 0), F2 = pt(0.33 + fl * 0.5, -0.44, 0), F3 = pt(0.08, -0.30, 0);
         double[] M1 = pt((F1[0] + F2[0]) / 2, (F1[1] + F2[1]) / 2 + 0.07, 0);
         double[] M2 = pt((F2[0] + F3[0]) / 2, (F2[1] + F3[1]) / 2 + 0.06, 0);
-        double[] Mo = pt(J[0] + 0.14, J[1] - 0.26, 0);              // outer edge between spike and first finger
+        double[] Mo = pt(J[0] + 0.14, J[1] - 0.44, 0);              // outer edge between spike and first finger
         scaled(J, F1, M1, 0); scaled(J, M1, F2, 1);
         scaled(J, F2, M2, 2); scaled(J, M2, F3, 3);
         scaled(J, F3, A, 0);
@@ -77,7 +77,7 @@ final class CosmeticMono {
     private static float[] capeColor(double u, double v) {
         float[] c = Poly.mix(Poly.INK, new float[]{0.055f, 0.055f, 0.07f, 0f}, (float) (v * 0.7));
         double edge = Math.min(Math.min(u, 1 - u) * CosmeticRender.CAPE_W / 0.022, (1 - v) / 0.026);
-        float trim = (float) Math.max(0.0, Math.min(1.0, 1.0 - edge));
+        float trim = 0f;   // cape stays fully black; only the infinity symbol is white
         trim = trim * trim * (3 - 2 * trim);
         float[] o = Poly.mix(c, Poly.WHITE, trim * 0.85f);
         o[3] = Math.max(o[3], trim * 0.7f);
