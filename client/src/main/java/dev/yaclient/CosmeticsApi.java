@@ -226,7 +226,8 @@ public final class CosmeticsApi {
     private static Map<String, String> lookup(final String uuid) {
         Map<String, String> cached = OTHERS.get(uuid);
         Long at = FETCHED.get(uuid);
-        boolean stale = at == null || System.currentTimeMillis() - at > 5L * 60L * 1000L;
+        long ttl = cached != null && "1".equals(cached.get("client")) ? 5L * 60L * 1000L : 45L * 1000L;   // re-check non-YA players quickly: they may have just joined
+        boolean stale = at == null || System.currentTimeMillis() - at > ttl;
         if (stale && PENDING.add(uuid)) {
             Thread t = new Thread(new Runnable() {
                 @Override public void run() {
