@@ -65,3 +65,11 @@ net.minecraft.client.model.HumanoidModel
 net.minecraft.client.renderer.entity.LivingEntityRenderer
 net.minecraft.client.renderer.entity.state.HumanoidRenderState
 net.minecraft.client.multiplayer.ClientLevel
+net.minecraft.network.chat.Style
+net.minecraft.network.chat.MutableComponent
+net.minecraft.network.chat.FontDescription
+net.minecraft.network.chat.FontDescription$Resource
+net.minecraft.client.renderer.GameRenderer
+net.minecraft.client.renderer.entity.EntityRenderDispatcher
+net.minecraft.client.renderer.state.level.CameraRenderState
+net.minecraft.client.gui.components.PlayerTabOverlay
