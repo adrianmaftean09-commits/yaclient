@@ -29,24 +29,28 @@ jobs:
             sleep 45
           done
           exit 1
-      - name: API dump (public signatures of the classes in tools/api-classes.txt)
+      - name: API dump (printed in the log)
         if: always()
         working-directory: fabric
         run: |
-          JAR=$(find ~/.gradle -name "*.jar" -path "*fabric-loom*" | grep -i "minecraft" | grep -v "sources" | head -20)
-          echo "$JAR"
-          mkdir -p ../api-dump
-          CP=$(echo "$JAR" | tr '\n' ':')
+          JARS=$(find ~/.gradle -name "*.jar" | grep -i "minecraft" | grep -vi "sources" | head -20)
+          echo "== jars =="; echo "$JARS"
+          CP=$(echo "$JARS" | tr '\n' ':')
+          echo "== class search =="
+          for j in $JARS; do
+            unzip -l "$j" 2>/dev/null | awk '{print $4}' | grep "\.class$" | sed 's#/#.#g; s#\.class$##' > /tmp/classes_$(basename $j).txt || true
+          done
+          cat /tmp/classes_*.txt > /tmp/all_classes.txt 2>/dev/null || true
+          wc -l /tmp/all_classes.txt
+          while read -r pat; do
+            [ -z "$pat" ] && continue
+            echo "--- $pat"; grep -E "$pat" /tmp/all_classes.txt | head -40
+          done < tools/class-patterns.txt
+          echo "== javap =="
           while read -r c; do
             [ -z "$c" ] && continue
-            javap -public -cp "$CP" "$c" > "../api-dump/$c.txt" 2>&1 || true
+            echo "##### $c"; javap -public -cp "$CP" "$c" 2>&1 | head -150
           done < tools/api-classes.txt
-          find ~/.gradle -name "*.jar" -path "*fabric-loom*" | head -30 > ../api-dump/_jars.txt
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: api-dump
-          path: api-dump
       - uses: actions/upload-artifact@v4
         with:
           name: YAClient-fabric-jar
