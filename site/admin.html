@@ -2,7 +2,7 @@
 <div class="box" style="margin-top:0;display:grid;gap:12px"><input id="key" type="password" placeholder="Admin key"><input id="u" placeholder="Minecraft username">
 <input id="it" placeholder="Items: beta, mono or qlux (whole bundle), ya_cape, ya_wings, ya_bandana, ya_pet, * or plus (YA Plus)">
 <input id="days" placeholder="Days (only for plus, default 30)" inputmode="numeric">
-<div style="display:flex;gap:10px"><button class="btn pri" id="g">Grant</button><button class="btn" id="r">Revoke</button></div><div class="msg" id="m"></div></div></div></section>
+<div style="display:flex;gap:10px"><button class="btn pri" id="g">Grant</button><button class="btn" id="r">Revoke</button><button class="btn" id="ul">Unlink device</button></div><div class="msg" id="m"></div></div></div></section>
 <script>
 var k=document.getElementById("key");try{k.value=sessionStorage.getItem("k")||""}catch(e){}
 function go(rev){var m=document.getElementById("m");m.className="msg";m.textContent="...";
@@ -10,5 +10,6 @@ function go(rev){var m=document.getElementById("m");m.className="msg";m.textCont
  var b=new URLSearchParams({username:document.getElementById("u").value.trim(),item:document.getElementById("it").value.trim().replace(/\s/g,"")});if(rev)b.set("revoke","1");var dd=document.getElementById("days").value.trim();if(dd)b.set("days",dd);
  fetch("/v1/admin/grant",{method:"POST",headers:{"x-admin-key":k.value},body:b}).then(function(r){return r.json()}).then(function(d){
   if(d.ok){m.className="msg ok";m.textContent=d.plus_until?"OK. YA Plus until "+d.plus_until:"OK. Owned now: "+(d.owned||"nothing")}else{m.className="msg err";m.textContent="Error: "+d.error}}).catch(function(){m.className="msg err";m.textContent="Network error"})}
+document.getElementById("ul").onclick=function(){var m=document.getElementById("m");m.className="msg";m.textContent="...";try{sessionStorage.setItem("k",k.value)}catch(e){}fetch("/v1/admin/unclaim",{method:"POST",headers:{"x-admin-key":k.value},body:new URLSearchParams({username:document.getElementById("u").value.trim()})}).then(function(r){return r.json()}).then(function(d){if(d.ok){m.className="msg ok";m.textContent="OK. Device unlinked: the player can log in again from any PC."}else{m.className="msg err";m.textContent="Error: "+d.error}}).catch(function(){m.className="msg err";m.textContent="Network error"})};
 document.getElementById("g").onclick=function(){go(false)};document.getElementById("r").onclick=function(){go(true)};
 </script></body></html>
