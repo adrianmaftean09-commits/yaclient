@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"><link rel="stylesheet" href="/bundle.css"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+
+<div class="wrap"><div class="bd-crumb"><a href="/store">Store</a> / <a href="/store?c=bundle">Bundles</a> / <span id="bc"></span></div>
+<div class="bd-wrap"><div><div class="bd-main" id="main"></div><div class="bd-th" id="th"></div></div>
+<div class="bd-info"><span class="eyebrow" id="tag">Bundle</span><h1 id="nm"></h1><p class="d" id="ds"></p><div class="bd-items" id="its"></div>
+<div class="bd-buy"><div class="row2"><div id="pr"></div><span class="sv" id="sv"></span></div><button class="btn pri block" id="buyb">Buy bundle</button><p style="font-size:13px;color:var(--mute);margin:12px 0 0">Delivered to your Minecraft account. YA Plus members get -70%.</p></div></div></div>
+<div class="bd-other"><h2>More bundles</h2><div class="bd-og" id="og"></div></div></div>
+<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/site.js"></script><script src="/geo.js"></script><script src="/cos3d.js"></script><script>
+(function(){
+var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math.round(x*100)/100},K=function(){return window.YAplusOn?.3:1};
+var B={
+sakura:{n:'Sakura Bundle',c:'#ff86b6',d:'Cherry-blossom pink: petal wings, blossom cape, ribbon band and the bunny Mochi.',it:[['sakura_cape','Sakura Cape','Soft pink satin cape with a blossoming cherry branch.'],['sakura_wings','Petal Wings','Wings of layered cherry-blossom petals.'],['sakura_bandana','Blossom Band','Pink band with a ribbon of petals.'],['sakura_pet','Mochi (pet)','A pixel bunny with a blossom on its ear.']]},
+shinobi:{n:'Shinobi Bundle',c:'#8c6cff',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',it:[['shinobi_cape','Moonlit Cloak','Night-blue cloak with a silver crescent moon.'],['shinobi_wings','Blade Wings','Long violet blade feathers.'],['shinobi_bandana','Shinobi Headband','A dark headband with a violet glow.'],['shinobi_pet','Kage (pet)','A pixel ninja cat with a headband and scarf.']]},
+kitsune:{n:'Kitsune Bundle',c:'#ff9b3d',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',it:[['kitsune_cape','Kitsune Cape','White cape with a red fox mask and a vermilion hem.'],['kitsune_wings','Flame Wings','Wings of orange and gold flames.'],['kitsune_bandana','Shrine Ribbon','A shrine ribbon in vermilion and gold.'],['kitsune_pet','Inari (pet)','A pixel two-tailed fox with a golden bell.']]},
+santa:{n:'Santa Bundle',c:'#ff4040',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',it:[['santa_cape','Santa Cape','Red pixel cape with white fur and a golden gift.'],['santa_wings','Candy Wings','Pixel wings with red and white candy-cane stripes.'],['santa_bandana','Santa Band','Red band with white fur and a pompom.'],['santa_pet','Rudy (pet)','A pixel reindeer with a red nose and a Santa hat.']]},
+frost:{n:'Frost Bundle',c:'#6ec6ff',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',it:[['frost_cape','Snowflake Cape','Icy pixel cape with a snowflake and icicle hem.'],['frost_wings','Ice Wings','Pixel wings of ice with glinting crystals.'],['frost_bandana','Frost Band','Icy band with a snowflake and scarf tails.'],['frost_pet','Frosty (pet)','A pixel snowman with a top hat and a carrot nose.']]},
+mono:{n:'Monochrome Bundle',c:'#e4e4e8',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',it:[['mono_cape','Infinity Cape','Pure black cape, a white infinity symbol draws itself on it.'],['mono_wings','Shadow Dragon Wings','All-black dragon wings with white spikes.'],['mono_bandana','Monochrome Bandana','Black bandana with a white stripe.'],['mono_pet','Yin Yang (pet)','A spinning yin yang that floats next to you.']]}};
+var BP=PR.animeBundle||10,key=(new URLSearchParams(location.search).get('b')||location.hash.slice(1)||'').toLowerCase();
+if(!B[key]){location.replace('/store?c=bundle');return}
+var b=B[key],ids=b.it.map(function(x){return x[0]}),view=null,cur=0;
+document.title=b.n+' - YA CLIENT';document.getElementById('bc').textContent=b.n;document.getElementById('nm').textContent=b.n;document.getElementById('ds').textContent=b.d;
+var price=key==='mono'?(PR.monoBundle||10):BP;
+function render(){var f=K(),tot=R(price*f),full=PR.item*4;
+ document.getElementById('pr').innerHTML='<span class="big">'+(f<1?'<s>'+eur(price)+'</s>':'')+eur(tot)+'</span>';
+ document.getElementById('sv').textContent='Save '+eur(R(full*f-tot));
+ document.getElementById('its').innerHTML=b.it.map(function(x){var p=R(PR.item*f);return '<div class="bd-it"><i class="dot" style="background:'+b.c+'"></i><div class="t"><b>'+x[1]+'</b><span>'+x[2]+'</span></div><span class="p">'+eur(p)+'</span><button class="btn sm" data-i="'+x[0]+'">Buy</button></div>'}).join('')}
+function order(list,title){var f=K(),all=list.length===4,t=all?R(price*f):R(list.length*PR.item*f);return {title:title,lines:list.map(function(i){var it=b.it.filter(function(x){return x[0]===i})[0];return it[1]+(all?'':' · '+eur(R(PR.item*f)))}).concat(all?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -70% applied ('+window.YAplusName+')']:[]),total:t,ids:list.join(',')}}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-i],#buyb');if(!t)return;if(t.id==='buyb')YABuy(order(ids,b.n));else YABuy(order([t.dataset.i],b.it.filter(function(x){return x[0]===t.dataset.i})[0][1]))});
+document.addEventListener('yaplus',render);
+var views=[['Poster','/b/'+key+'-poster.jpg'],['Front','/b/'+key+'-1.jpg'],['Side','/b/'+key+'-2.jpg'],['Back','/b/'+key+'-3.jpg']];
+var has3d=window.YA3D&&YA3D.ok();if(has3d)views.push(['3D live',null]);
+var main=document.getElementById('main'),th=document.getElementById('th');
+th.innerHTML=views.map(function(v,i){return '<button data-v="'+i+'" class="'+(i?'':'on')+'">'+(v[1]?'<img src="'+v[1]+'" alt="'+v[0]+'">':'<b>3D live</b>')+'</button>'}).join('');
+function show(i){cur=i;[].forEach.call(document.querySelectorAll('.skinbox'),function(x){x.remove()});[].forEach.call(th.children,function(c,j){c.className=j===i?'on':''});
+ if(views[i][1]){main.innerHTML='<img src="'+views[i][1]+'" alt="'+b.n+' '+views[i][0]+'"><span class="cap">'+views[i][0]+'</span>'}
+ else{main.innerHTML='<canvas id="v3d"></canvas><span class="cap">Drag to rotate · type your skin below</span>';
+  YA3D.whenReady(function(){view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.2,target:[0,.98,0]});view.set(ids,false);YA3D.skinBox(main,view)})}}
+th.addEventListener('click',function(e){var t=e.target.closest('[data-v]');if(t)show(+t.dataset.v)});
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight')show((cur+1)%views.length);if(e.key==='ArrowLeft')show((cur+views.length-1)%views.length)});
+document.getElementById('og').innerHTML=Object.keys(B).filter(function(k){return k!==key}).map(function(k){return '<a href="/bundle?b='+k+'"><img src="/b/'+k+'-poster.jpg" alt=""><span>'+B[k].n+'</span></a>'}).join('');
+render();show(0);
+})();
+</script></body></html>

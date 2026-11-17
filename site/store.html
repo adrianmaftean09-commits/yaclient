@@ -50,7 +50,7 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           santa:{n:'Santa Bundle',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',items:['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'],price:PR.animeBundle||10},
           frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10}};
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
-var cat='cape',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
+var PAGES=['sakura','shinobi','kitsune','santa','frost','mono'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
 function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
@@ -91,7 +91,7 @@ document.addEventListener('click',function(e){
  if(t.id==='clr'){worn=[];render();return}
  if(t.id==='getw'){if(worn.length)YABuy(orderFor(worn));return}
  if(t.dataset.buy){e.stopPropagation();var k=t.dataset.buy,ids=t.dataset.s==='1'?SETS[k].items:[k];YABuy(orderFor(ids));return}
- if(t.classList.contains('pc')){var k2=t.dataset.k;if(t.dataset.s==='1'){var its=SETS[k2].items,all=its.every(function(i){return worn.indexOf(i)>=0});worn=all?[]:its.slice()}else toggle(k2);render()}
+ if(t.classList.contains('pc')){var k2=t.dataset.k;if(t.dataset.s==='1'&&PAGES.indexOf(k2)>=0){location.href='/bundle?b='+k2;return}if(t.dataset.s==='1'){var its=SETS[k2].items,all=its.every(function(i){return worn.indexOf(i)>=0});worn=all?[]:its.slice()}else toggle(k2);render()}
 });
 render();
 if(!has3d){document.getElementById('stage').insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL.<br>You can still buy every item.</div>');return}
