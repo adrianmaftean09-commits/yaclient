@@ -216,3 +216,7 @@ footer a:hover{color:var(--text)}
 
 .pc .im.ph{aspect-ratio:1/1;background:radial-gradient(75% 60% at 50% 38%,color-mix(in srgb,var(--c) 24%,transparent),#101014 82%)}
 .pc .im.ph img{-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
+
+.pbf{display:flex;gap:8px;align-items:center;flex:0 1 330px}.pbf input{flex:1;min-width:0;background:#141418;border:1px solid var(--line);border-radius:12px;color:#fff;padding:11px 14px;font:inherit}
+.pbf .btn{background:var(--s2,#1b1b20);border-color:var(--line2,#333)}
+@media(max-width:900px){.plusbar{flex-wrap:wrap}.pbf{flex:1 1 100%}}

@@ -1,11 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=6"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
-<div class="page-h"><div class="wrap"><span class="eyebrow">Store</span><h1 class="plain">Cosmetics</h1><p class="sub">Wings, capes, bandanas and pets. Rendered live from the game. Click any item to try it on.</p></div></div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=7"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+<div class="page-h"><div class="wrap"><span class="eyebrow">Store</span><h1 class="plain">Cosmetics</h1><p class="sub">Wings, capes, bandanas and pets. Click any item to see it on its own page.</p></div></div>
 <div class="wrap">
-<div class="plusbar" id="plusbar2"><div><b>YA Plus members: -70% on the whole shop</b><span>Enter your Minecraft name under the 3D character to check your YA Plus discount.</span></div><a class="btn" href="/plus">See YA Plus →</a></div>
-<div class="store"><div><div class="chips" id="chips"></div><div class="pg" id="grid"></div></div>
-<aside class="side"><div class="stage" id="stage"><canvas id="v3d"></canvas><div class="cap">Drag to rotate</div></div>
-<div class="wear"><div class="t">Wearing</div><div class="wl" id="wl"></div><div class="tot"><span style="color:var(--mute)">Total</span><b id="tot">-</b></div><button class="btn pri block" id="getw" disabled>Select a cosmetic</button><button class="btn block" id="clr" style="margin-top:10px">Clear</button></div></aside></div></div>
-<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/site.js"></script><script src="/geo.js"></script><script src="/cos3d.js"></script><script>
+<div class="plusbar" id="plusbar2"></div>
+<div class="store" style="display:block"><div><div class="chips" id="chips"></div><div class="pg" id="grid"></div></div>
+</div></div>
+<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/site.js"></script><script src="/plusbar.js?v=1"></script><script>
 (function(){
 var Y=window.YA,PR=Y.prices||{item:3,monoBundle:10},eur=window.YAeur;
 var P={
@@ -72,13 +71,7 @@ function render(){
  if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(P[id].cat===cat)h+=card(id,false)});
  if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner)h+=card(id,false)});
  document.getElementById('grid').innerHTML=h;
- renderSide()}
-function renderSide(){
- var wl=document.getElementById('wl');
- wl.innerHTML=worn.length?worn.map(function(i){return '<span>'+P[i].n+'<button data-rm="'+i+'" aria-label="Remove">×</button></span>'}).join(''):'<em>Click a cosmetic to try it on.</em>';
- var t=total(worn);document.getElementById('tot').textContent=worn.length?(t?eur(t):'Free'):'-';
- var b=document.getElementById('getw');b.disabled=!worn.length;b.textContent=!worn.length?'Select a cosmetic':(t?'Buy '+eur(t):'Get free');
- if(view)view.set(worn,false)}
+ }
 function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1)}else{worn=worn.filter(function(x){return P[x].slot!==s});worn.push(id)}}
 function orderFor(ids){
  var t=total(ids),m=ids.length===4&&ids.every(function(i){return P[i].set!=='beta'&&P[i].set===P[ids[0]].set})?4:0,free=!t;
@@ -92,17 +85,8 @@ document.addEventListener('click',function(e){
  if(t.id==='clr'){worn=[];render();return}
  if(t.id==='getw'){if(worn.length)YABuy(orderFor(worn));return}
  if(t.dataset.buy){e.stopPropagation();var k=t.dataset.buy,ids=t.dataset.s==='1'?SETS[k].items:[k];YABuy(orderFor(ids));return}
- if(t.classList.contains('pc')){var k2=t.dataset.k;if(t.dataset.s==='1'&&PAGES.indexOf(k2)>=0){location.href='/bundle?b='+k2;return}if(t.dataset.s==='1'){var its=SETS[k2].items,all=its.every(function(i){return worn.indexOf(i)>=0});worn=all?[]:its.slice()}else toggle(k2);render()}
+ if(t.classList.contains('pc')){var k2=t.dataset.k;if(t.dataset.s!=='1'){location.href='/item?i='+k2;return}if(t.dataset.s==='1'&&PAGES.indexOf(k2)>=0){location.href='/bundle?b='+k2;return}if(t.dataset.s==='1'){var its=SETS[k2].items,all=its.every(function(i){return worn.indexOf(i)>=0});worn=all?[]:its.slice()}else toggle(k2);render()}
 });
 render();
-if(!has3d){document.getElementById('stage').insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL.<br>You can still buy every item.</div>');return}
-YA3D.whenReady(function(){
- view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.6,target:[0,.95,0]});YA3D.skinBox(document.getElementById('stage'),view);worn=['mono_wings','mono_cape','mono_bandana','mono_pet'];renderSide();
- var jobs=[];Object.keys(SETS).forEach(function(k){if(PAGES.indexOf(k)>=0)return;jobs.push(['s:'+k,SETS[k].items,{yaw:.5,dist:6.2,target:[0,.98,0]}])});
- Object.keys(P).forEach(function(id){if(!ph(id))jobs.push(['i:'+id,[id],snapOpts(id)])});
- (function next(){var j=jobs.shift();if(!j){render();return}try{thumbs[j[0]]=YA3D.snapshot(j[1],j[2])}catch(e){}
-  var im=document.querySelector('.pc[data-k="'+j[0].slice(2)+'"][data-s="'+(j[0][0]==='s'?1:0)+'"] .im');if(im&&thumbs[j[0]])im.innerHTML='<img src="'+thumbs[j[0]]+'" alt="">';
-  setTimeout(next,16)})();
-});
 })();
 </script></body></html>
