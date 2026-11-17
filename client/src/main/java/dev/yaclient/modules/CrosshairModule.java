@@ -20,6 +20,8 @@ public class CrosshairModule extends Module {
 
     public CrosshairModule() { super("crosshair", Category.PVP, false); instance = this; }
 
+    public int pixelSize() { return Math.max(1, Math.round(size.value)); }
+
     /** True while the vanilla crosshair must be hidden. */
     public static boolean hidesVanilla() { return instance != null && instance.enabled; }
 

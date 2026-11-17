@@ -357,5 +357,7 @@
  "opt.cx_ring": "Ring",
  "opt.cx_square": "Quadrat",
  "opt.cx_x": "X",
- "opt.cx_clear": "Alles löschen"
+ "opt.cx_clear": "Alles löschen",
+ "set.crosshair.hint": "Klicke ein Feld an oder aus. Gedrückt halten und ziehen zum Zeichnen.",
+ "set.crosshair.preview": "Vorschau"
 }

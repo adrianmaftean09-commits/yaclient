@@ -63,6 +63,7 @@ final class Icons {
         DSL.put("zoom", "C 10.5 10.5 6.5 M 15.5 15.5 L 21 21 M 8 10.5 L 13 10.5 M 10.5 8 L 10.5 13");
         DSL.put("fullbright", "C 12 12 4 M 12 2 L 12 5 M 12 19 L 12 22 M 2 12 L 5 12 M 19 12 L 22 12 M 4.9 4.9 L 7 7 M 17 17 L 19.1 19.1 M 4.9 19.1 L 7 17 M 17 7 L 19.1 4.9");
         DSL.put("motion_blur", "R 3 8 8 8 2 M 14 8 L 20 8 M 14 12 L 22 12 M 14 16 L 20 16");
+        DSL.put("arrow_right", "M 9 5 L 16 12 L 9 19");
         DSL.put("crosshair", "C 12 12 7 M 12 2 L 12 8 M 12 16 L 12 22 M 2 12 L 8 12 M 16 12 L 22 12");
         DSL.put("discord_rpc", "M 5 5 L 19 5 B 20.5 5 21 5.5 21 7 L 21 15 B 21 16.5 20.5 17 19 17 L 11 17 L 7 21 L 7 17 L 5 17 B 3.5 17 3 16.5 3 15 L 3 7 B 3 5.5 3.5 5 5 5 Z D 9 11 1.2 D 15 11 1.2");
         DSL.put("time_changer", "M 20 15 B 13 21 3 15 6 6 B 7 4 9 3 10.5 3 B 8 8 12 17 20 15 Z");

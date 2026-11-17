@@ -44,11 +44,13 @@ public class MenuScreen extends GuiScreen {
     }
 
     // ----- layout (GUI units) -----
-    private static final int PW = 780, PH = 450, SB = 196;
-    private static final int CX = SB + 24, VY = 76, VW = PW - CX - 24, VH = PH - VY - 18;
-    private static final int NAV_H = 34;
+    private static final int PW = 780, PH = 450;
+    private static final int CX = 24, VY = 124, VW = PW - 48, VH = PH - VY - 18;
     private static final String[] TABS = {"all", "info", "pvp", "utility", "cosmetics", "settings"};
     private static final String[] TAB_ICONS = {"grid", "info", "sword", "wrench", "shirt", "gear"};
+    // menu palette (same as the design previews): near-black panel, soft grey surfaces, white accents
+    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
+    private static final int ACC = 0xFFE8E8E8, ON_ACC = 0xFF101014, OFF = 0xFF3A3B42, GOLD = 0xFFFFC21A;
 
     private final List<Hit> hits = new ArrayList<Hit>();
     private final Map<String, Float> anim = new HashMap<String, Float>();
@@ -73,8 +75,6 @@ public class MenuScreen extends GuiScreen {
     private Action activeDrag;
 
     // ================= helpers =================
-    private static int navY(int i) { return i == 5 ? PH - 62 : (i == 4 ? 106 : 106 + i * 38); }
-
     private float anim(String key, float target, float dt, float speed, float initial) {
         Float cur = anim.get(key);
         float v = Ui.approach(cur == null ? initial : cur, target, dt, speed);
@@ -174,7 +174,7 @@ public class MenuScreen extends GuiScreen {
         Gfx.fade = fade;
 
         drawFrame();
-        drawSidebar(dt);
+        drawTabs(dt);
         drawHeader();
         drawBody(dt);
         drawDrawer(dt);
@@ -184,61 +184,48 @@ public class MenuScreen extends GuiScreen {
     }
 
     private void drawFrame() {
-        for (int i = 5; i >= 1; i--) Gfx.rr(-i * 3, -i * 3 + 10, PW + i * 6, PH + i * 6, 16 + i * 3, 0x12000000);
-        Gfx.rr(0, 0, PW, PH, 16, Theme.GLASS);
-        Gfx.rrOutline(0, 0, PW, PH, 16, 1, Theme.GLASS_LINE);
-        Gui.drawRect(SB, 18, SB + 1, PH - 18, Ui.alpha(0x1AFFFFFF, fade));
+        for (int i = 5; i >= 1; i--) Gfx.rr(-i * 3, -i * 3 + 10, PW + i * 6, PH + i * 6, 18 + i * 3, 0x12000000);
+        Gfx.rr(0, 0, PW, PH, 18, PANEL);
+        Gfx.rrOutline(0, 0, PW, PH, 18, 1, 0x24FFFFFF);
     }
 
-    // ================= sidebar =================
-    private void drawSidebar(float dt) {
-        int ls = 22;
-        while (ls > 12 && Gfx.width("YA CLIENT", ls, true) > SB - 44) ls--;
-        int yaW = Gfx.width("YA ", ls, true);
-        Logo.draw(20, 18, 36, 36, fade);
-        Gfx.text("YA ", 64, 22, ls - 3, true, Theme.TEXT);
-        Gfx.text("CLIENT", 64 + Gfx.width("YA ", ls - 3, true), 22, ls - 3, true, Theme.BRAND_RED);
-        Gfx.text("Minecraft 1.8.9", 64, 22 + Gfx.lineHeight(ls - 3, true) + 1, 10, false, Theme.DIM);
-
-        float target = navY(tab);
-        indY = indY < 0f ? target : Ui.approach(indY, target, dt, 18f);
-        int iy = Math.round(indY);
-        Gfx.rr(10, iy, SB - 20, NAV_H, 9, Ui.alpha(Theme.accent(), 0.16f));
-
+    // ================= top bar: segmented tabs =================
+    private void drawTabs(float dt) {
         final int[] nav = cosMode ? new int[]{4} : new int[]{0, 1, 2, 3, 5};
-        for (int ni = 0; ni < nav.length; ni++) {
-            final int i = nav[ni];
-            final int idx = i;
-            int y = navY(i);
-            boolean active = tab == i;
-            float h = anim("nav" + i, over(10, y, SB - 20, NAV_H) ? 1f : 0f, dt, 16f, 0f);
-            if (!active && h > 0.01f) Gfx.rr(10, y, SB - 20, NAV_H, 9, Ui.alpha(0x14FFFFFF, h));
-            Gfx.icon(TAB_ICONS[i], 26, y + (NAV_H - 18) / 2, 18, active ? Theme.accent() : Ui.mix(Theme.MUTED, Theme.TEXT, h));
-            Gfx.text(Lang.t("tab." + TABS[i]), 54, y + (NAV_H - Gfx.lineHeight(13, active)) / 2, 13, active,
-                    active ? Theme.TEXT : Ui.mix(Theme.MUTED, Theme.TEXT, h));
-            hit(10, y, SB - 20, NAV_H, new Action() {
-                @Override public void run(float x, float y2) { selectTab(idx); }
-            }, null, null);
+        int[] ws = new int[nav.length];
+        int total = 0;
+        for (int i = 0; i < nav.length; i++) { ws[i] = Gfx.width(Lang.t("tab." + TABS[nav[i]]), 12, true) + 46; total += ws[i]; }
+        int y = 70, x = CX;
+        Gfx.rr(x, y, total + 8, 38, 11, SURF);
+        int px = x + 4;
+        for (int i = 0; i < nav.length; i++) {
+            final int idx = nav[i];
+            boolean active = tab == idx;
+            float h = anim("nav" + idx, active ? 1f : (over(px, y + 4, ws[i], 30) ? 0.5f : 0f), dt, 16f, active ? 1f : 0f);
+            if (h > 0.01f) Gfx.rr(px, y + 4, ws[i], 30, 8, Ui.alpha(active ? SURF3 : SURF2, Math.min(1f, h)));
+            int fg = active ? Theme.TEXT : Ui.mix(Theme.MUTED, Theme.TEXT, h);
+            Gfx.icon(TAB_ICONS[idx], px + 13, y + 4 + 6, 18, fg);
+            Gfx.text(Lang.t("tab." + TABS[idx]), px + 36, y + 4 + (30 - Gfx.lineHeight(12, true)) / 2, 12, true, fg);
+            hit(px, y + 4, ws[i], 30, new Action() { @Override public void run(float a, float b) { selectTab(idx); } }, null, null);
+            px += ws[i];
         }
-
         if (!cosMode) {
-        // HUD editor entry
-        int ey = PH - 100;
-        float eh = anim("navEditor", over(10, ey, SB - 20, NAV_H) ? 1f : 0f, dt, 16f, 0f);
-        if (eh > 0.01f) Gfx.rr(10, ey, SB - 20, NAV_H, 9, Ui.alpha(0x14FFFFFF, eh));
-        Gfx.icon("move", 26, ey + (NAV_H - 18) / 2, 18, Ui.mix(Theme.MUTED, Theme.TEXT, eh));
-        Gfx.text(Lang.t("ui.hud_editor"), 54, ey + (NAV_H - Gfx.lineHeight(13, false)) / 2, 13, false, Ui.mix(Theme.MUTED, Theme.TEXT, eh));
-        hit(10, ey, SB - 20, NAV_H, new Action() {
-            @Override public void run(float x, float y) { Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); }
-        }, null, null);
+            String lab = Lang.t("ui.hud_editor");
+            int w = Gfx.width(lab, 11, false) + 48, bx = PW - 24 - w;
+            boolean ov = over(bx, y, w, 38);
+            Gfx.rr(bx, y, w, 38, 11, ov ? SURF2 : SURF);
+            Gfx.icon("move", bx + 14, y + 10, 18, ov ? Theme.TEXT : Theme.MUTED);
+            Gfx.text(lab, bx + 38, y + (38 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
+            hit(bx, y, w, 38, new Action() { @Override public void run(float a, float b) { Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); } }, null, null);
         }
-
-        Gfx.text(Lang.t("ui.esc_hint"), 24, PH - 26, 10, false, Theme.DIM);
     }
 
     // ================= header =================
     private void drawHeader() {
-        Gfx.text(Lang.t("tab." + TABS[tab]), CX, 20, 22, true, Theme.TEXT);
+        Logo.draw(24, 14, 38, 38, fade);
+        int ls = 18;
+        Gfx.text("YA ", 70, 16, ls, true, Theme.TEXT);
+        Gfx.text("CLIENT", 70 + Gfx.width("YA ", ls, true), 16, ls, true, Theme.BRAND_RED);
         String sub;
         if (moduleTab()) {
             int total = visibleModules().size(), on = 0;
@@ -247,13 +234,13 @@ public class MenuScreen extends GuiScreen {
         } else {
             sub = Lang.t("tab." + TABS[tab] + ".sub");
         }
-        Gfx.text(sub, CX, 20 + Gfx.lineHeight(22, true) + 1, 10, false, Theme.MUTED);
+        Gfx.text(sub, 70, 16 + Gfx.lineHeight(ls, true) + 2, 10, false, Theme.MUTED);
 
         if (!moduleTab()) return;
-        final int x = PW - 24 - 210, y = 20, w = 210, h = 34;
+        final int x = PW - 24 - 230, y = 18, w = 230, h = 34;
         boolean ov = over(x, y, w, h);
-        Gfx.rr(x, y, w, h, 11, searchFocus ? 0x1FFFFFFF : (ov ? 0x1AFFFFFF : 0x12FFFFFF));
-        Gfx.rrOutline(x, y, w, h, 11, 1, searchFocus ? Theme.accent() : 0x1AFFFFFF);
+        Gfx.rr(x, y, w, h, 10, searchFocus ? SURF3 : (ov ? SURF2 : SURF));
+        if (searchFocus) Gfx.rrOutline(x, y, w, h, 10, 1, 0x66FFFFFF);
         Gfx.icon("search", x + 11, y + (h - 16) / 2, 16, Theme.MUTED);
         int ty = y + (h - Gfx.lineHeight(12, false)) / 2;
         if (query.isEmpty()) {
@@ -265,9 +252,7 @@ public class MenuScreen extends GuiScreen {
             int cx = x + 34 + (query.isEmpty() ? 0 : Math.min(w - 46, Gfx.width(query, 12, false)));
             Gui.drawRect(cx + 1, ty, cx + 2, ty + Gfx.lineHeight(12, false), Ui.alpha(0xFFFFFFFF, fade));
         }
-        hit(x, y, w, h, new Action() {
-            @Override public void run(float a, float b) { searchFocus = true; }
-        }, null, null);
+        hit(x, y, w, h, new Action() { @Override public void run(float a, float b) { searchFocus = true; } }, null, null);
     }
 
     // ================= body =================
@@ -285,7 +270,7 @@ public class MenuScreen extends GuiScreen {
         if (contentH > VH) {
             float kh = Math.max(24f, VH * VH / contentH);
             float ky = VY + (scroll / (contentH - VH)) * (VH - kh);
-            Gfx.rr(PW - 14, Math.round(ky), 4, Math.round(kh), 2, 0x33FFFFFF);
+            Gfx.rr(PW - 12, Math.round(ky), 4, Math.round(kh), 2, 0x33FFFFFF);
         }
         Gfx.fade = fade;
     }
@@ -297,7 +282,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.textCentered(Lang.t("ui.no_results"), CX + VW / 2, VY + 70, 13, false, Theme.MUTED);
             return 0f;
         }
-        int gap = 12, cw = (VW - 2 * gap) / 3, ch = 128;
+        int gap = 12, cw = (VW - 2 * gap) / 3, ch = 108;
         for (int i = 0; i < list.size(); i++) {
             int x = CX + (i % 3) * (cw + gap), y = top + (i / 3) * (ch + gap);
             if (y + ch < VY - 2 || y > VY + VH + 2) continue;
@@ -309,43 +294,43 @@ public class MenuScreen extends GuiScreen {
     private void drawCard(final Module m, int x, int y, int cw, int ch, float dt) {
         float h = anim("h" + m.id, overView(x, y, cw, ch) ? 1f : 0f, dt, 16f, 0f);
         float a = anim("e" + m.id, m.enabled ? 1f : 0f, dt, 14f, m.enabled ? 1f : 0f);
+        boolean locked = m.locked();
 
-        Gfx.rr(x, y, cw, ch, 12, Ui.mix(0x1AFFFFFF, 0x26FFFFFF, h));
-        Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x30FFFFFF, 0x77FFFFFF, a * 0.6f + h * 0.4f));
+        Gfx.rr(x, y, cw, ch, 10, Ui.mix(SURF, SURF2, h));
+        Gfx.rrOutline(x, y, cw, ch, 10, 1, Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
 
-        // big icon, centered
-        Gfx.icon(m.icon(), x + (cw - 30) / 2, y + 12, 30, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
-        Gfx.textCentered(Gfx.trim(m.name(), 12, true, cw - 16), x + cw / 2, y + 48, 12, true, m.available ? Theme.TEXT : Theme.MUTED);
+        int fg = m.available && !locked ? Theme.TEXT : Theme.MUTED;
+        Gfx.text(Gfx.trim(m.name(), 14, true, cw - 62), x + 14, y + 14, 14, true, fg);
+        Gfx.icon(m.icon(), x + cw - 14 - 20, y + 13, 20, Ui.mix(Theme.DIM, Theme.TEXT, Math.max(a * 0.6f, h)));
+        Gfx.text(Gfx.trim(m.desc(), 10, false, cw - 28), x + 14, y + 14 + Gfx.lineHeight(14, true) + 4, 10, false, Theme.MUTED);
 
         hitView(x, y, cw, ch, null, null, new Action() {
-            @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available) drawerModule = m; }
+            @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available && !m.locked()) drawerModule = m; }
         });
-        boolean gear = m.available && !m.settings.isEmpty();
-        int bx = x + 10, bw = cw - 20, oy = y + 70, oh = 20;
-        int ow = gear ? bw : bw;
-        boolean oo = gear && overView(bx, oy, ow, oh);
-        Gfx.rr(bx, oy, ow, oh, 7, gear ? (oo ? 0x2BFFFFFF : 0x17FFFFFF) : 0x0DFFFFFF);
-        String opt = Lang.t("ui.options");
-        Gfx.textCentered(opt, bx + ow / 2, oy + (oh - Gfx.lineHeight(9, true)) / 2, 9, true, gear ? Theme.TEXT : Theme.DIM);
-        if (gear) hitView(bx, oy, ow, oh, new Action() {
-            @Override public void run(float px, float py) { drawerModule = m; }
-        }, null, null);
+        boolean gear = m.available && !locked && !m.settings.isEmpty();
+        int bx = x + 14, by = y + ch - 14 - 26, bw = Gfx.width(Lang.t("ui.options"), 10, true) + 30;
+        boolean oo = gear && overView(bx, by, bw, 26);
+        Gfx.rr(bx, by, bw, 26, 8, gear ? (oo ? SURF3 : 0xFF26272C) : 0xFF1F2024);
+        Gfx.textCentered(Lang.t("ui.options"), bx + bw / 2, by + (26 - Gfx.lineHeight(10, true)) / 2, 10, true, gear ? Theme.TEXT : Theme.DIM);
+        if (gear) hitView(bx, by, bw, 26, new Action() { @Override public void run(float px, float py) { drawerModule = m; } }, null, null);
 
-        int ty = y + 95, th = 24;
-        if (m.available) {
-            boolean to = overView(bx, ty, bw, th);
-            int off = Ui.mix(0xFF26262C, 0xFF3A3A44, to ? 1f : 0f);
-            int on = Ui.mix(0xFFE9E9EC, 0xFFFFFFFF, to ? 1f : 0f);
-            Gfx.rr(bx, ty, bw, th, 8, Ui.mix(off, on, a));
-            String st = Lang.t(m.enabled ? "ui.enabled" : "ui.disabled");
-            Gfx.textCentered(st, bx + bw / 2, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, Ui.mix(Theme.MUTED, 0xFF101014, a));
-            hitView(bx, ty, bw, th, new Action() {
-                @Override public void run(float px, float py) { m.toggle(); }
-            }, null, null);
+        if (!m.available) {
+            pill(Lang.t("ui.soon"), x + cw - 14, by + 3, 0xFF2D2E34, Theme.MUTED);
+        } else if (locked) {
+            pill("PLUS", x + cw - 14, by + 3, GOLD, 0xFF101014);
         } else {
-            Gfx.rr(bx, ty, bw, th, 8, 0x14FFFFFF);
-            Gfx.textCentered(Lang.t("ui.soon"), bx + bw / 2, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.DIM);
+            int sx = x + cw - 14 - 38, sy = by + 3;
+            Gfx.rr(sx, sy, 38, 20, 10, Ui.mix(OFF, ACC, a));
+            Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 8, Ui.mix(0xFF9A9BA3, ON_ACC, a));
+            hitView(sx - 8, sy - 6, 54, 32, new Action() { @Override public void run(float px, float py) { m.toggle(); } }, null, null);
         }
+    }
+
+    /** Small rounded label whose right edge is at rightX. */
+    private void pill(String text, int rightX, int y, int bg, int fg) {
+        int w = Gfx.width(text, 9, true) + 18;
+        Gfx.rr(rightX - w, y, w, 20, 10, bg);
+        Gfx.textCentered(text, rightX - w / 2, y + (20 - Gfx.lineHeight(9, true)) / 2, 9, true, fg);
     }
 
     // ----- module options page: group list on the left, one calm card of rows on the right -----
@@ -373,7 +358,7 @@ public class MenuScreen extends GuiScreen {
 
     private void ghostButton(int x, int y, int w, String icon, String label, boolean live, Action act) {
         boolean ov = over(x, y, w, 28);
-        Gfx.rr(x, y, w, 28, 9, ov ? 0x1FFFFFFF : 0x0DFFFFFF);
+        Gfx.rr(x, y, w, 28, 8, ov ? SURF3 : SURF2);
         Gfx.icon(icon, x + 11, y + 5, 18, ov ? Theme.TEXT : Theme.MUTED);
         Gfx.text(label, x + 36, y + (28 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
         if (live) hit(x, y, w, 28, act, null, null);
@@ -391,8 +376,8 @@ public class MenuScreen extends GuiScreen {
         Gfx.fade = fade * p;
 
         if (live) hits.add(new Hit(0, 0, PW, PH, null, null, null));   // the page swallows every click behind it
-        Gfx.rr(0, 0, PW, PH, 16, 0xFA0E0E12);
-        Gfx.rrOutline(0, 0, PW, PH, 16, 1, Theme.GLASS_LINE);
+        Gfx.rr(0, 0, PW, PH, 18, 0xFF0F1012);
+        Gfx.rrOutline(0, 0, PW, PH, 18, 1, 0x24FFFFFF);
 
         // ---- header: breadcrumb, title, enable switch
         boolean bo = over(24, 22, 70, 20);
@@ -404,14 +389,14 @@ public class MenuScreen extends GuiScreen {
         String es = Lang.t(m.enabled ? "ui.enabled" : "ui.disabled");
         int sx0 = PW - 24 - 38;
         Gfx.text(es, sx0 - 12 - Gfx.width(es, 11, false), 48, 11, false, Ui.mix(Theme.MUTED, Theme.TEXT, ea));
-        Gfx.rr(sx0, 46, 38, 20, 10, Ui.mix(0x33FFFFFF, Theme.accent(), ea));
-        Gfx.rr(sx0 + 2 + Math.round(18 * ea), 48, 16, 16, 8, Ui.mix(0xFFB4B4BC, Theme.onAccent(), ea));
+        Gfx.rr(sx0, 46, 38, 20, 10, Ui.mix(OFF, ACC, ea));
+        Gfx.rr(sx0 + 2 + Math.round(18 * ea), 48, 16, 16, 8, Ui.mix(0xFF9A9BA3, ON_ACC, ea));
         if (live) hit(sx0 - 90, 40, 130, 32, new Action() { @Override public void run(float x, float y) { m.toggle(); } }, null, null);
 
         // ---- left column: preview, group list, actions
         int lx0 = 24, lw = 236;
-        Gfx.rr(lx0, PG_Y, lw, 108, 14, 0x0FFFFFFF);
-        Gfx.rrOutline(lx0, PG_Y, lw, 108, 14, 1, 0x14FFFFFF);
+        Gfx.rr(lx0, PG_Y, lw, 108, 10, SURF);
+        Gfx.rrOutline(lx0, PG_Y, lw, 108, 10, 1, 0x14FFFFFF);
         if (m instanceof dev.yaclient.modules.HudModule) {
             dev.yaclient.modules.HudModule hm = (dev.yaclient.modules.HudModule) m;
             int ew0 = Math.max(1, hm.width()), eh0 = Math.max(1, hm.height());
@@ -427,9 +412,9 @@ public class MenuScreen extends GuiScreen {
             for (Setting st : m.settings) if (st.group.equals(g)) count++;
             boolean act = g.equals(pageGroup), go = over(lx0, gy, lw, 28);
             float ga = anim("pg_g" + g, act ? 1f : 0f, dt, 16f, act ? 1f : 0f);
-            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 28, 9, Ui.alpha(0x1AFFFFFF, ga));
-            else if (go) Gfx.rr(lx0, gy, lw, 28, 9, 0x0AFFFFFF);
-            if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 6, 3, 16, 2, Ui.alpha(Theme.accent(), ga));
+            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 28, 8, Ui.alpha(SURF3, ga));
+            else if (go) Gfx.rr(lx0, gy, lw, 28, 8, SURF);
+            if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 6, 3, 16, 2, Ui.alpha(ACC, ga));
             Gfx.text(Lang.t("grp." + g), lx0 + 16, gy + (28 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
             String cs = String.valueOf(count);
             Gfx.text(cs, lx0 + lw - 12 - Gfx.width(cs, 10, false), gy + (28 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.DIM);
@@ -444,15 +429,12 @@ public class MenuScreen extends GuiScreen {
         }
 
         // ---- right: one card with the options of the chosen group
-        Gfx.rr(PG_X, PG_Y, PG_W, PG_H, 14, 0x0CFFFFFF);
-        Gfx.rrOutline(PG_X, PG_Y, PG_W, PG_H, 14, 1, 0x14FFFFFF);
         clip(PG_X, PG_Y + 2, PG_W, PG_H - 4);
         int y = PG_Y + 6 - Math.round(pageScroll);
         int first = y;
         boolean firstRow = true;
         for (Setting st : m.settings) {
             if (!st.group.equals(pageGroup)) continue;
-            if (!firstRow) { Gui.drawRect(PG_X + PAD, y, PG_X + PG_W - PAD, y + 1, Ui.alpha(0x12FFFFFF, fade * p)); }
             firstRow = false;
             y = drawOptionRow(m, st, y, dt, live);
         }
@@ -467,31 +449,35 @@ public class MenuScreen extends GuiScreen {
         Gfx.fade = fade;
     }
 
+    private void rowBg(int y, int h) { Gfx.rr(PG_X + 4, y + 1, PG_W - 8, h - 5, 10, SURF); }
+
     private int drawOptionRow(final Module m, Setting st, int y, float dt, boolean live) {
         final int x = PG_X + PAD, w = PG_W - 2 * PAD;
         if (st instanceof Setting.Bool) {
             final Setting.Bool b = (Setting.Bool) st;
             float a = anim("pg" + m.id + st.id, b.value ? 1f : 0f, dt, 14f, b.value ? 1f : 0f);
             int rh = 46;
+            rowBg(y, rh);
             Gfx.text(Gfx.trim(st.label(), 12, false, w - 70), x, y + (rh - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
             int sx = x + w - 36;
-            Gfx.rr(sx, y + (rh - 20) / 2, 36, 20, 10, Ui.mix(0x2EFFFFFF, Theme.accent(), a));
-            Gfx.rr(sx + 2 + Math.round(16 * a), y + (rh - 20) / 2 + 2, 16, 16, 8, Ui.mix(0xFFB4B4BC, Theme.onAccent(), a));
+            Gfx.rr(sx, y + (rh - 20) / 2, 36, 20, 10, Ui.mix(OFF, ACC, a));
+            Gfx.rr(sx + 2 + Math.round(16 * a), y + (rh - 20) / 2 + 2, 16, 16, 8, Ui.mix(0xFF9A9BA3, ON_ACC, a));
             if (live) pageHit(x - 8, y, w + 16, rh, new Action() { @Override public void run(float px, float py) { b.value = !b.value; saveAll(); } }, null);
             return y + rh;
         }
         if (st instanceof Setting.Num) {
             final Setting.Num n = (Setting.Num) st;
             int rh = 62;
+            rowBg(y, rh);
             final int trackX = x, trackW = w, ty = y + 38;
             Gfx.text(Gfx.trim(st.label(), 12, false, w - 100), x, y + 12, 12, false, Theme.TEXT);
             String val = n.text();
             int vw = Gfx.width(val, 11, true) + 16;
-            Gfx.rr(x + w - vw, y + 8, vw, 22, 7, 0x14FFFFFF);
+            Gfx.rr(x + w - vw, y + 8, vw, 22, 7, SURF3);
             Gfx.textCentered(val, x + w - vw / 2, y + 8 + (22 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.TEXT);
-            Gfx.rr(trackX, ty, trackW, 4, 2, 0x26FFFFFF);
+            Gfx.rr(trackX, ty, trackW, 4, 2, OFF);
             int fw = Math.max(4, Math.round(trackW * n.fraction()));
-            Gfx.rr(trackX, ty, fw, 4, 2, Theme.accent());
+            Gfx.rr(trackX, ty, fw, 4, 2, ACC);
             Gfx.rr(trackX + fw - 7, ty - 5, 14, 14, 7, 0xFFF5F5F5);
             if (live) {
                 Action drag = new Action() { @Override public void run(float px, float py) { n.setFraction((px - trackX) / trackW); } };
@@ -507,17 +493,18 @@ public class MenuScreen extends GuiScreen {
             int lab = Gfx.width(st.label(), 12, false);
             boolean inline = total + 4 + lab + 24 <= w;
             int rh = inline ? 46 : 80;
+            { int cx0 = inline ? x + w - total - 4 : x, extra = 0; for (int i = 0; i < ws.length; i++) { if (cx0 + ws[i] > x + w + 2) { cx0 = x; extra += 32; } cx0 += ws[i]; } rowBg(y, rh + extra); }
             int sy = inline ? y + (rh - 28) / 2 : y + 38, sx = inline ? x + w - total - 4 : x;
             Gfx.text(Gfx.trim(st.label(), 12, false, w), x, inline ? y + (rh - Gfx.lineHeight(12, false)) / 2 : y + 12, 12, false, Theme.TEXT);
             // segmented control (wraps to a second line when it does not fit)
             int cx = sx, cy = sy;
-            Gfx.rr(sx - 2, sy - 2, Math.min(total, w) + 4, 32, 9, 0x10FFFFFF);
+            Gfx.rr(sx - 2, sy - 2, Math.min(total, w) + 4, 32, 9, SURF3);
             for (int i = 0; i < ws.length; i++) {
                 final int idx = i;
-                if (cx + ws[i] > x + w + 2) { cx = x; cy += 32; Gfx.rr(x - 2, cy - 2, Math.min(total, w) + 4, 32, 9, 0x10FFFFFF); rh += 32; }
+                if (cx + ws[i] > x + w + 2) { cx = x; cy += 32; Gfx.rr(x - 2, cy - 2, Math.min(total, w) + 4, 32, 9, SURF3); rh += 32; }
                 boolean sel = c.index == i, cov = pageOver(cx, cy, ws[i], 28);
-                if (sel) Gfx.rr(cx, cy, ws[i], 28, 7, 0x30FFFFFF);
-                else if (cov) Gfx.rr(cx, cy, ws[i], 28, 7, 0x12FFFFFF);
+                if (sel) Gfx.rr(cx, cy, ws[i], 28, 7, 0xFF4A4B53);
+                else if (cov) Gfx.rr(cx, cy, ws[i], 28, 7, 0xFF3A3B42);
                 Gfx.textCentered(Lang.t("opt." + c.options[i]), cx + ws[i] / 2, cy + (28 - Gfx.lineHeight(11, sel)) / 2, 11, sel, sel ? Theme.TEXT : Theme.MUTED);
                 if (live) pageHit(cx, cy, ws[i], 28, new Action() { @Override public void run(float px, float py) { c.index = idx; saveAll(); } }, null);
                 cx += ws[i];
@@ -526,58 +513,64 @@ public class MenuScreen extends GuiScreen {
         }
         if (st instanceof Setting.Pixels) {
             final Setting.Pixels pg = (Setting.Pixels) st;
-            final int n = pg.n, cell = 20, gx = x, gy = y + 34, gw = n * cell;
-            int rh = 34 + gw + 54;
+            final int n = pg.n, cell = 18, gw = n * cell, gx = x + 6, gy = y + 58;
+            int rh = 58 + gw + 24;
+            rowBg(y, rh);
             Gfx.text(Gfx.trim(st.label(), 12, false, w), x, y + 12, 12, false, Theme.TEXT);
-            Gfx.rr(gx - 6, gy - 6, gw + 12, gw + 12, 12, 0x10FFFFFF);
+            Gfx.text(Gfx.trim(Lang.t("set.crosshair.hint"), 10, false, w), x, y + 12 + Gfx.lineHeight(12, false) + 3, 10, false, Theme.MUTED);
+            Gfx.rr(gx - 6, gy - 6, gw + 12, gw + 12, 10, 0xFF0F1012);
             for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
                 int cx = gx + j * cell, cy = gy + i * cell;
-                boolean on = pg.cells[i * n + j], hv = pageOver(cx, cy, cell, cell);
-                boolean mid = i == n / 2 && j == n / 2;
-                Gfx.rr(cx + 1, cy + 1, cell - 2, cell - 2, 3, on ? 0xFFF4F4F5 : (hv ? 0x30FFFFFF : (mid ? 0x22FFFFFF : 0x14FFFFFF)));
+                boolean on = pg.cells[i * n + j], hv = pageOver(cx, cy, cell, cell), mid = i == n / 2 && j == n / 2;
+                Gfx.rr(cx + 1, cy + 1, cell - 2, cell - 2, 3, on ? 0xFFF4F4F5 : (hv ? 0xFF4A4B53 : (mid ? 0xFF3A3B42 : 0xFF26272C)));
+                if (mid && !on) Gfx.rr(cx + cell / 2 - 1, cy + cell / 2 - 1, 3, 3, 1, 0xFF6B6C75);
             }
             if (live) {
                 final int fgx = gx, fgy = gy;
                 Action click = new Action() { @Override public void run(float px, float py) {
-                    int j = (int) ((px - fgx) / cell), i = (int) ((py - fgy) / cell);
+                    int j = (int) Math.floor((px - fgx) / cell), i = (int) Math.floor((py - fgy) / cell);
                     if (i < 0 || j < 0 || i >= n || j >= n) return;
                     paint = !pg.cells[i * n + j];
                     pg.cells[i * n + j] = paint; saveAll();
                 } };
                 Action drag = new Action() { @Override public void run(float px, float py) {
-                    int j = (int) ((px - fgx) / cell), i = (int) ((py - fgy) / cell);
+                    int j = (int) Math.floor((px - fgx) / cell), i = (int) Math.floor((py - fgy) / cell);
                     if (i < 0 || j < 0 || i >= n || j >= n) return;
                     if (pg.cells[i * n + j] != paint) { pg.cells[i * n + j] = paint; saveAll(); }
                 } };
                 pageHit(gx, gy, gw, gw, click, drag);
             }
-            // quick presets + clear
-            String[] ids = {"cross", "plus", "dot", "ring", "square", "x", "clear"};
-            int bx = gx + gw + 18, by = gy;
-            int bw = Math.min(150, x + w - bx);
-            if (bw >= 90) {
-                Gfx.text(Lang.t("set.crosshair.presets"), bx, by - 4, 10, false, Theme.MUTED);
-                by += 14;
-                for (int k = 0; k < ids.length; k++) {
-                    final String id = ids[k];
-                    int yy = by + k * 30;
-                    boolean ov = pageOver(bx, yy, bw, 26);
-                    Gfx.rr(bx, yy, bw, 26, 8, ov ? 0x24FFFFFF : 0x12FFFFFF);
-                    Gfx.textCentered(Lang.t("opt.cx_" + id), bx + bw / 2, yy + (26 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
-                    if (live) pageHit(bx, yy, bw, 26, new Action() { @Override public void run(float px, float py) {
-                        pg.set(id.equals("clear") ? new String(new char[n * n]).replace('\0', '0') : dev.yaclient.modules.CrosshairModule.preset(id)); saveAll(); } }, null);
-                }
+            // live preview + quick shapes
+            int rx = gx + gw + 24, rw = x + w - rx;
+            Gfx.text(Lang.t("set.crosshair.preview"), rx, gy - 6, 10, false, Theme.MUTED);
+            Gfx.rr(rx, gy + 10, rw, 70, 10, 0xFF0F1012);
+            dev.yaclient.modules.CrosshairModule cm = dev.yaclient.modules.CrosshairModule.instance;
+            if (cm != null) cm.drawAt(rx + rw / 2, gy + 45, Math.min(3f, 62f / (dev.yaclient.modules.CrosshairModule.N * cm.pixelSize())));
+            Gfx.text(Lang.t("set.crosshair.presets"), rx, gy + 92, 10, false, Theme.MUTED);
+            String[] ids = {"cross", "plus", "dot", "ring", "square", "x"};
+            int bw2 = (rw - 6) / 2;
+            for (int k = 0; k < ids.length + 1; k++) {
+                final String id = k < ids.length ? ids[k] : "clear";
+                int bx = rx + (k % 2) * (bw2 + 6), by = gy + 108 + (k / 2) * 32;
+                int bwk = (k == ids.length) ? rw : bw2;
+                if (k == ids.length) bx = rx;
+                boolean ov = pageOver(bx, by, bwk, 26);
+                Gfx.rr(bx, by, bwk, 26, 8, ov ? SURF3 : SURF2);
+                Gfx.textCentered(Lang.t("opt.cx_" + id), bx + bwk / 2, by + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, ov ? Theme.TEXT : Theme.MUTED);
+                if (live) pageHit(bx, by, bwk, 26, new Action() { @Override public void run(float px, float py) {
+                    pg.set(id.equals("clear") ? new String(new char[n * n]).replace('\0', '0') : dev.yaclient.modules.CrosshairModule.preset(id)); saveAll(); } }, null);
             }
             return y + rh;
         }
         if (st instanceof Setting.Text) {
             final Setting.Text tx = (Setting.Text) st;
             int rh = 62;
+            rowBg(y, rh);
             boolean foc = focusText == tx;
             Gfx.text(Gfx.trim(st.label(), 12, false, w), x, y + 12, 12, false, Theme.TEXT);
             int bx = x, by = y + 32, bw = w, bh = 24;
             Gfx.rr(bx, by, bw, bh, 8, foc ? 0x22FFFFFF : 0x12FFFFFF);
-            Gfx.rrOutline(bx, by, bw, bh, 8, 1, foc ? Theme.accent() : 0x1AFFFFFF);
+            Gfx.rrOutline(bx, by, bw, bh, 8, 1, foc ? 0x88FFFFFF : 0x1AFFFFFF);
             String shown = tx.value;
             Gfx.text(Gfx.trim(shown, 12, false, bw - 24), bx + 10, by + (bh - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
             if (foc && (System.currentTimeMillis() / 500) % 2 == 0) {
@@ -590,6 +583,7 @@ public class MenuScreen extends GuiScreen {
         if (st instanceof Setting.Palette) {
             final Setting.Palette pal = (Setting.Palette) st;
             int rh = 78;
+            rowBg(y, rh);
             Gfx.text(Gfx.trim(st.label(), 12, false, w - 120), x, y + 12, 12, false, Theme.TEXT);
             String cn = Lang.t("opt." + Setting.Palette.IDS[pal.index]);
             Gfx.text(cn, x + w - Gfx.width(cn, 11, false), y + 13, 11, false, Theme.MUTED);
@@ -656,8 +650,8 @@ public class MenuScreen extends GuiScreen {
     private float drawCosmetics() {
         int pw = 176;
         // left: player preview
-        Gfx.rr(CX, VY, pw, VH, 14, 0x0FFFFFFF);
-        Gfx.rrOutline(CX, VY, pw, VH, 14, 1, 0x14FFFFFF);
+        Gfx.rr(CX, VY, pw, VH, 10, SURF);
+        Gfx.rrOutline(CX, VY, pw, VH, 10, 1, 0x14FFFFFF);
         Gfx.textCentered(Lang.t("cos.loadout"), CX + pw / 2, VY + 10, 11, true, Theme.MUTED);
         boolean plusOn = CosmeticsApi.plus();
         String plusLab = Lang.t(plusOn ? "cos.plus.on" : "cos.plus.off");

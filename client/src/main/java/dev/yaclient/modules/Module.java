@@ -18,6 +18,8 @@ public abstract class Module {
     /** False for planned features that are listed in the menu but cannot be enabled yet. */
     public final boolean available;
     public boolean enabled;
+    /** Only YA Plus members can use it. */
+    public boolean plusOnly;
     public final List<Setting> settings = new ArrayList<Setting>();
     protected Minecraft mc;
 
@@ -69,8 +71,11 @@ public abstract class Module {
     /** Refreshes the Minecraft reference (it does not exist yet when modules are created). */
     public final void bind() { mc = Minecraft.getMinecraft(); }
 
+    /** True when this is a Plus mod and the player has no Plus. */
+    public boolean locked() { return plusOnly && !dev.yaclient.CosmeticsApi.plus(); }
+
     public void toggle() {
-        if (!available) return;
+        if (!available || locked()) return;
         enabled = !enabled;
         onToggle();
         saveConfig();

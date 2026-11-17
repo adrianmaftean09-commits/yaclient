@@ -92,6 +92,10 @@ public class YAClient implements ModInitializer {
         MODULES.add(new InventoryHudModule());
         MODULES.add(new NearbyPlayersModule());
 
+        // Plus-only mods (free players see them locked)
+        java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
+                "minimap", "waypoints", "motion_blur", "cinematic", "time_changer", "nearby_players"));
+        for (Module m : MODULES) { if (plusMods.contains(m.id)) m.plusOnly = true; }
         for (Module m : MODULES) m.loadConfig();
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
@@ -114,6 +118,7 @@ public class YAClient implements ModInitializer {
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();
+                if (m.enabled && m.locked()) { m.enabled = false; m.onToggle(); }
                 if (m.enabled) m.onTick();
             }
 

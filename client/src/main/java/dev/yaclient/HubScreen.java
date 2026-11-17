@@ -1,24 +1,34 @@
 package dev.yaclient;
 
 import dev.yaclient.cosmetics.Logo;
+import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 
 /**
- * The small menu in the middle of the screen (Right Shift): logo, a MODS button and a cosmetics button,
- * plus a row with cosmetics, HUD editor and settings. Mods and cosmetics are separate screens.
+ * The small menu in the middle of the screen (Right Shift): one clean panel with the client header,
+ * a wide Mods tile and four tiles for cosmetics, friends, HUD editor and settings.
  */
 public class HubScreen extends GuiScreen {
-    private static final int BW = 108, BH = 22, RH = 22, GAP = 6, SW = (BW - 3 * GAP) / 4, ROWX = (BW - (4 * SW + 3 * GAP)) / 2;
+    private static final int PW = 320, PH = 196, PAD = 16, GAP = 8, R = 10;
+    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
+    private static final String[] ICONS = {"grid", "shirt", "friends", "move", "gear"};
+    private static final String[] LABELS = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
 
     private final float[] hover = new float[5];
     private final long opened = System.currentTimeMillis();
     private long last = opened;
-    private int x0, y0;
+    private int px, py;
     private int nx, ny;
     private static final int NW = 120, NH = 82;
     private float newsHover;
+
+    private int[] rect(int i) {
+        if (i == 0) return new int[]{px + PAD, py + 60, PW - 2 * PAD, 52};
+        int w = (PW - 2 * PAD - 3 * GAP) / 4;
+        return new int[]{px + PAD + (i - 1) * (w + GAP), py + 60 + 52 + GAP, w, 56};
+    }
 
     @Override
     public void drawScreen(int mx, int my, float pt) {
@@ -32,37 +42,51 @@ public class HubScreen extends GuiScreen {
         Gfx.setScale(Math.max(1, gs));
         Gfx.fade = fade;
 
-        int cx = width / 2;
-        int logo = 50;
-        int total = logo + 6 + 10 + BH + GAP + RH;
-        int top = (height - total) / 2;
-        Logo.draw(cx - logo / 2f, top, logo, logo, fade);
-        int wy = top + logo + 6;
+        px = (width - PW) / 2;
+        py = (height - PH) / 2 + Math.round((1f - fade) * 6f);
 
-        x0 = cx - BW / 2;
-        y0 = wy + 10;
-        // MODS, centered
-        button(0, x0, y0, BW, BH, mx, my, dt);
-        Gfx.textCentered(Lang.t("hub.mods"), cx, y0 + (BH - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.TEXT);
-        // second row: cosmetics, HUD editor, settings - same total width as MODS, evenly spaced
-        String[] icons = {"shirt", "friends", "move", "gear"};
-        for (int k = 0; k < 4; k++) {
-            int[] r = rect(k + 1);
-            button(k + 1, r[0], r[1], r[2], r[3], mx, my, dt);
-            Gfx.icon(icons[k], r[0] + (r[2] - 14) / 2, r[1] + (r[3] - 14) / 2, 14, Theme.TEXT);
+        Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 16, 0x22000000);
+        Gfx.rr(px, py, PW, PH, 14, PANEL);
+        Gfx.rrOutline(px, py, PW, PH, 14, 1, 0x24FFFFFF);
+
+        // header
+        Logo.draw(px + PAD, py + 14, 34, 34, fade);
+        Gfx.text("YA ", px + PAD + 42, py + 16, 14, true, Theme.TEXT);
+        Gfx.text("CLIENT", px + PAD + 42 + Gfx.width("YA ", 14, true), py + 16, 14, true, Theme.BRAND_RED);
+        Gfx.text("Minecraft 1.8.9", px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
+        if (CosmeticsApi.enabled() && CosmeticsApi.plus()) {
+            int w = Gfx.width("PLUS", 8, true) + 16;
+            Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 9, 0xFFFFC21A);
+            Gfx.textCentered("PLUS", px + PW - PAD - w / 2, py + 20 + (18 - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFF101014);
         }
-        int sy = y0 + BH + GAP;
 
-        int hv = -1;
-        for (int i = 0; i < 5; i++) if (hover[i] > 0.5f) hv = i;
-        String[] tips = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
-        if (hv >= 0) Gfx.textCentered(Lang.t(tips[hv]), cx, sy + RH + 6, 8, false, Theme.MUTED);
+        for (int i = 0; i < 5; i++) {
+            int[] r = rect(i);
+            boolean over = mx >= r[0] && mx < r[0] + r[2] && my >= r[1] && my < r[1] + r[3];
+            hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
+            Gfx.rr(r[0], r[1], r[2], r[3], R, Ui.mix(SURF, SURF3, hover[i] * 0.8f));
+            Gfx.rrOutline(r[0], r[1], r[2], r[3], R, 1, Ui.mix(0x14FFFFFF, 0x33FFFFFF, hover[i]));
+            int fg = Ui.mix(0xFFD8D8DC, Theme.TEXT, hover[i]);
+            if (i == 0) {
+                Gfx.icon(ICONS[0], r[0] + 16, r[1] + (r[3] - 22) / 2, 22, fg);
+                Gfx.text(Lang.t(LABELS[0]), r[0] + 50, r[1] + 11, 12, true, Theme.TEXT);
+                int total = 0, on = 0;
+                for (Module m : YAClient.MODULES) { total++; if (m.enabled) on++; }
+                Gfx.text(Lang.t("ui.count", total, on), r[0] + 50, r[1] + 11 + Gfx.lineHeight(12, true) + 3, 8, false, Theme.MUTED);
+                Gfx.icon("arrow_right", r[0] + r[2] - 28, r[1] + (r[3] - 14) / 2, 14, Ui.mix(Theme.DIM, Theme.TEXT, hover[i]));
+            } else {
+                Gfx.icon(ICONS[i], r[0] + (r[2] - 18) / 2, r[1] + 10, 18, fg);
+                Gfx.textCentered(Gfx.trim(Lang.t(LABELS[i]), 8, false, r[2] - 6), r[0] + r[2] / 2, r[1] + 34, 8, false, Ui.mix(Theme.MUTED, Theme.TEXT, hover[i]));
+            }
+        }
+        Gfx.textCentered(Lang.t("ui.esc_hint"), px + PW / 2, py + PH - 16, 7, false, Theme.DIM);
+
         // changelog card (bottom left), same as on the main menu
         nx = 10;
         ny = height - 20 - 8 - NH;
         boolean nOver = mx >= nx && mx < nx + NW && my >= ny && my < ny + NH;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
-        Gfx.rr(nx, ny, NW, NH, 8, Ui.mix(0xB0101014, 0xD0242429, newsHover));
+        Gfx.rr(nx, ny, NW, NH, 8, Ui.mix(0xE0101014, 0xF0242429, newsHover));
         int artH = Math.round((NW - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, NW - 8, artH, fade);
         Gfx.rrOutline(nx, ny, NW, NH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
@@ -71,18 +95,6 @@ public class HubScreen extends GuiScreen {
 
         Gfx.fade = 1f;
         FriendToast.render();
-    }
-
-    private int[] rect(int i) {
-        if (i == 0) return new int[]{x0, y0, BW, BH};
-        return new int[]{x0 + ROWX + (i - 1) * (SW + GAP), y0 + BH + GAP, SW, RH};
-    }
-
-    private void button(int i, int x, int y, int w, int h, int mx, int my, float dt) {
-        boolean over = mx >= x && mx < x + w && my >= y && my < y + h;
-        hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
-        Gfx.rr(x, y, w, h, 8, Ui.mix(0xB0141418, 0xD0292930, hover[i]));
-        Gfx.rrOutline(x, y, w, h, 8, 1, Ui.mix(0x30FFFFFF, 0x77FFFFFF, hover[i]));
     }
 
     @Override

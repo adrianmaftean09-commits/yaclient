@@ -357,5 +357,7 @@
  "opt.cx_ring": "Anillo",
  "opt.cx_square": "Cuadrado",
  "opt.cx_x": "X",
- "opt.cx_clear": "Borrar todo"
+ "opt.cx_clear": "Borrar todo",
+ "set.crosshair.hint": "Haz clic en un cuadrado para encenderlo o apagarlo. Mantén y arrastra para dibujar.",
+ "set.crosshair.preview": "Vista previa"
 }

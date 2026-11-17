@@ -357,5 +357,7 @@
  "opt.cx_ring": "Anello",
  "opt.cx_square": "Quadrato",
  "opt.cx_x": "X",
- "opt.cx_clear": "Svuota tutto"
+ "opt.cx_clear": "Svuota tutto",
+ "set.crosshair.hint": "Clicca un quadratino per accenderlo o spegnerlo. Tieni premuto e trascina per disegnare.",
+ "set.crosshair.preview": "Anteprima"
 }

@@ -367,5 +367,7 @@
  "opt.cx_ring": "Ring",
  "opt.cx_square": "Square",
  "opt.cx_x": "X",
- "opt.cx_clear": "Clear all"
+ "opt.cx_clear": "Clear all",
+ "set.crosshair.hint": "Click a square to turn it on or off. Hold and drag to draw.",
+ "set.crosshair.preview": "Preview"
 }
