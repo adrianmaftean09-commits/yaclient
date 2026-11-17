@@ -282,7 +282,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.textCentered(Lang.t("ui.no_results"), CX + VW / 2, VY + 70, 13, false, Theme.MUTED);
             return 0f;
         }
-        int gap = 12, cw = (VW - 2 * gap) / 3, ch = 108;
+        int gap = 12, cw = (VW - 2 * gap) / 3, ch = 120;
         for (int i = 0; i < list.size(); i++) {
             int x = CX + (i % 3) * (cw + gap), y = top + (i / 3) * (ch + gap);
             if (y + ch < VY - 2 || y > VY + VH + 2) continue;
@@ -300,9 +300,11 @@ public class MenuScreen extends GuiScreen {
         Gfx.rrOutline(x, y, cw, ch, 10, 1, Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
 
         int fg = m.available && !locked ? Theme.TEXT : Theme.MUTED;
-        Gfx.text(Gfx.trim(m.name(), 14, true, cw - 62), x + 14, y + 14, 14, true, fg);
-        Gfx.icon(m.icon(), x + cw - 14 - 20, y + 13, 20, Ui.mix(Theme.DIM, Theme.TEXT, Math.max(a * 0.6f, h)));
-        Gfx.text(Gfx.trim(m.desc(), 10, false, cw - 28), x + 14, y + 14 + Gfx.lineHeight(14, true) + 4, 10, false, Theme.MUTED);
+        // icon tile, name beside it, description under both
+        Gfx.rr(x + 14, y + 14, 36, 36, 10, Ui.mix(SURF3, 0xFF3A3B42, Math.max(a * 0.7f, h * 0.5f)));
+        Gfx.icon(m.icon(), x + 14 + 8, y + 14 + 8, 20, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
+        Gfx.text(Gfx.trim(m.name(), 14, true, cw - 74), x + 60, y + 14 + (36 - Gfx.lineHeight(14, true)) / 2, 14, true, fg);
+        Gfx.text(Gfx.trim(m.desc(), 10, false, cw - 28), x + 14, y + 58, 10, false, Theme.MUTED);
 
         hitView(x, y, cw, ch, null, null, new Action() {
             @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available && !m.locked()) drawerModule = m; }
@@ -383,8 +385,9 @@ public class MenuScreen extends GuiScreen {
         boolean bo = over(24, 22, 70, 20);
         Gfx.text("<  " + Lang.t("ui.back"), 24, 22, 11, false, bo ? Theme.TEXT : Theme.MUTED);
         if (live) hit(20, 18, 80, 28, new Action() { @Override public void run(float x, float y) { drawerModule = null; } }, null, null);
-        Gfx.icon(m.icon(), 24, 46, 28, Theme.TEXT);
-        Gfx.text(Gfx.trim(m.name(), 20, true, PW - 24 - 90 - 220), 62, 44, 20, true, Theme.TEXT);
+        Gfx.rr(24, 40, 40, 40, 11, SURF3);
+        Gfx.icon(m.icon(), 34, 50, 20, Theme.TEXT);
+        Gfx.text(Gfx.trim(m.name(), 20, true, PW - 24 - 90 - 220), 76, 50, 20, true, Theme.TEXT);
         float ea = anim("pg_en" + m.id, m.enabled ? 1f : 0f, dt, 14f, m.enabled ? 1f : 0f);
         String es = Lang.t(m.enabled ? "ui.enabled" : "ui.disabled");
         int sx0 = PW - 24 - 38;
