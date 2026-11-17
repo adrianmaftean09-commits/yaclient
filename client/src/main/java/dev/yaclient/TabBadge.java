@@ -72,7 +72,7 @@ final class TabBadge {
             boolean head = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
             int bx = x + (head ? 9 : 0);
             Logo.draw(bx + 1, y, 9, 9, 1f);
-            if (CosmeticsApi.isPlus(info.getGameProfile().getId())) PlusBadge.draw(bx + 5.6f, y - 1.6f, 4.4f);   // small gold plus sitting on the A like an exponent
+            if (CosmeticsApi.isPlus(info.getGameProfile().getId())) PlusBadge.draw(bx + 6.6f, y - 0.2f, 3.4f);   // small gold plus sitting on the A like an exponent
         }
     }
 }
