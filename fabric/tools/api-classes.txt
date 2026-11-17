@@ -40,3 +40,5 @@ net.minecraft.client.renderer.texture.AbstractTexture
 com.mojang.blaze3d.textures.GpuTexture
 net.minecraft.client.gui.screens.ChatScreen
 net.minecraft.client.gui.components.events.GuiEventListener
+net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback
+net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRenderEvents
