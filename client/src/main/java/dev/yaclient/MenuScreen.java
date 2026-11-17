@@ -148,7 +148,7 @@ public class MenuScreen extends GuiScreen {
         last = now;
         fade = 0.05f + 0.95f * Ui.ease((now - opened) / 200f);
         float open = Ui.ease((now - opened) / 240f);
-        scale = Math.min(0.74f, Math.min((height - 16f) / PH, (width - 16f) / PW));
+        scale = Math.min(0.62f, Math.min((height - 16f) / PH, (width - 16f) / PW));
         gs = new ScaledResolution(mc).getScaleFactor();
         Gfx.setScale(Math.max(1, Math.round(gs * scale)));
         originX = Math.round(width / 2f - PW * scale / 2f);
@@ -519,7 +519,7 @@ public class MenuScreen extends GuiScreen {
             if (cosCat == 0) entries.add("bundle:" + bi);
             else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
-        int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 136;
+        int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 150;
         int gy = VY + 36;
         for (int n = 0; n < entries.size(); n++) {
             final String[] kv = entries.get(n).split(":");
@@ -539,21 +539,24 @@ public class MenuScreen extends GuiScreen {
             boolean ov = over(cx, cy, cw, ch);
             Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x24FFFFFF : 0x1AFFFFFF));
             Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x30FFFFFF);
-            // thumbnail
-            int th = 70;
-            Gfx.rr(cx + 6, cy + 6, cw - 12, th, 9, 0x22000000);
-            float ps = key.equals("cape") ? 62f : key.equals("wings") ? 40f : key.equals("bandana") ? 100f : key.equals("pet") ? 100f : 36f;
-            CosmeticPreview.draw(key, bi == 0 ? "ya" : "mono", cx + cw / 2f, cy + 6 + th / 2f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
-            org.lwjgl.opengl.GL11.glClear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT);   // 3D preview must not hide the tag/lock
-            if (!has) Gfx.icon("lock", cx + 12, cy + 12, 14, Theme.MUTED);
+            // tag band (FREE / EXCLUSIVE / lock) above the thumbnail, so nothing is drawn over the preview
+            int band = 18, th = 70, ty = cy + band + 4;
             if (bundle) {
                 String fr = Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");
                 int fw = Gfx.width(fr, 9, true) + 12;
-                Gfx.rr(cx + cw - fw - 12, cy + 12, fw, 15, 7, bi == 0 ? Theme.accent() : 0xFFF4F4F5);
-                Gfx.text(fr, cx + cw - fw - 6, cy + 12 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, bi == 0 ? Theme.onAccent() : 0xFF101014);
+                Gfx.rr(cx + 8, cy + 6, fw, 15, 7, bi == 0 ? Theme.accent() : 0xFFF4F4F5);
+                Gfx.text(fr, cx + 14, cy + 6 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, bi == 0 ? Theme.onAccent() : 0xFF101014);
             }
+            if (!has) Gfx.icon("lock", cx + cw - 24, cy + 6, 14, Theme.MUTED);
+            // thumbnail (3D preview is clipped to its box)
+            Gfx.rr(cx + 6, ty, cw - 12, th, 9, 0x22000000);
+            float ps = key.equals("cape") ? 56f : key.equals("wings") ? 34f : key.equals("bandana") ? 90f : key.equals("pet") ? 90f : 30f;
+            clip(cx + 6, ty, cw - 12, th);
+            CosmeticPreview.draw(key, bi == 0 ? "ya" : "mono", cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+            unclip();
             String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);
-            Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, cy + th + 10, 11, true, Theme.TEXT);
+            Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, ty + th + 7, 11, true, Theme.TEXT);
             String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.locked"));
             if (on) {
                 Gfx.rr(cx + 6, cy + ch - 24, cw - 12, 18, 7, Ui.alpha(Theme.accent(), 0.30f));

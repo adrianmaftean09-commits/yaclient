@@ -1,36 +1,75 @@
 package dev.yaclient;
 
+import dev.yaclient.cosmetics.Logo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.util.ChatComponentText;
 
-/** Marks every YA CLIENT player in the tab list with a small "YA" logo (white Y, red A) next to the name. */
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+/**
+ * Shows the YA logo next to the name of every YA CLIENT player in the tab list.
+ * The vanilla tab overlay is swapped for a subclass (found by field type, so it works with any mapping) that
+ * reserves a little room after the name and draws the logo there, at the exact row position.
+ */
 final class TabBadge {
     private TabBadge() {}
 
-    private static final String PREFIX = "\u00a7f\u00a7lY\u00a7c\u00a7lA\u00a7r ";
-    private static int ticks;
+    private static boolean failed;
 
+    /** Called every tick: installs the custom tab overlay once. */
     static void tick() {
-        if (++ticks % 10 != 0) return;
+        if (failed) return;
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.theWorld == null || mc.thePlayer == null) return;
-        NetHandlerPlayClient net = mc.getNetHandler();
-        if (net == null) return;
-        boolean on = Config.getBool("tab.badge", true);
-        for (NetworkPlayerInfo info : net.getPlayerInfoMap()) {
-            if (info == null || info.getGameProfile() == null || info.getGameProfile().getId() == null) continue;
-            String cur = info.getDisplayName() != null ? info.getDisplayName().getFormattedText() : null;
-            boolean has = cur != null && cur.startsWith(PREFIX);
-            boolean want = on && CosmeticsApi.usesClient(info.getGameProfile().getId());
-            if (want && !has) {
-                String base = cur != null ? cur : ScorePlayerTeam.formatPlayerName(info.getPlayerTeam(), info.getGameProfile().getName());
-                info.setDisplayName(new ChatComponentText(PREFIX + base));
-            } else if (!want && has) {
-                info.setDisplayName(null);
+        GuiIngame gui = mc.ingameGUI;
+        if (gui == null) return;
+        try {
+            if (gui.getTabList() instanceof YaTabList) return;
+            Field slot = null;
+            for (Field f : GuiIngame.class.getDeclaredFields()) {
+                if (f.getType() == GuiPlayerTabOverlay.class && !Modifier.isStatic(f.getModifiers())) { slot = f; break; }
             }
+            if (slot == null) { failed = true; return; }
+            slot.setAccessible(true);
+            GuiPlayerTabOverlay old = (GuiPlayerTabOverlay) slot.get(gui);
+            YaTabList neu = new YaTabList(mc, gui);
+            for (Field f : GuiPlayerTabOverlay.class.getDeclaredFields()) {   // keep header, footer and timers
+                if (Modifier.isStatic(f.getModifiers())) continue;
+                f.setAccessible(true);
+                f.set(neu, f.get(old));
+            }
+            slot.set(gui, neu);
+        } catch (Throwable t) {
+            failed = true;   // never break the game because of a cosmetic detail
+        }
+    }
+
+    private static final class YaTabList extends GuiPlayerTabOverlay {
+        private static final String RESERVE = "   ";   // 3 spaces = 12px kept free after the name
+
+        YaTabList(Minecraft mc, GuiIngame gui) { super(mc, gui); }
+
+        private boolean badge(NetworkPlayerInfo info) {
+            return Config.getBool("tab.badge", true) && info != null && info.getGameProfile() != null
+                    && info.getGameProfile().getId() != null && CosmeticsApi.usesClient(info.getGameProfile().getId());
+        }
+
+        @Override
+        public String getPlayerName(NetworkPlayerInfo info) {
+            String n = super.getPlayerName(info);
+            return badge(info) ? n + RESERVE : n;
+        }
+
+        @Override
+        protected void drawPing(int width, int x, int y, NetworkPlayerInfo info) {
+            super.drawPing(width, x, y, info);
+            if (!badge(info)) return;
+            Minecraft mc = Minecraft.getMinecraft();
+            boolean head = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
+            int nameW = mc.fontRendererObj.getStringWidth(super.getPlayerName(info));
+            Logo.draw(x + (head ? 9 : 0) + nameW + 2, y, 9, 9, 1f);
         }
     }
 }
