@@ -1,0 +1,20 @@
+package dev.yaclient.fabric;
+
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+
+/** Draws every enabled HUD module on top of the game HUD. */
+public final class Hud {
+    private Hud() {}
+
+    public static void register() {
+        HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("yaclient", "hud"), (g, delta) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.options.hideGui) return;
+            for (Module m : Modules.ALL) {
+                if (m.enabled && m instanceof HudModule h) h.render(g, mc);
+            }
+        });
+    }
+}
