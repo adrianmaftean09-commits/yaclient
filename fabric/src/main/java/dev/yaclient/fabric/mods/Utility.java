@@ -1,6 +1,7 @@
 package dev.yaclient.fabric.mods;
 
 import dev.yaclient.fabric.Module;
+import dev.yaclient.fabric.Setting;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -50,6 +51,7 @@ public final class Utility {
     /** Hold the key to zoom in (FOV 30), release to restore. */
     public static class Zoom extends Module {
         private int saved = -1;
+        private final Setting.Num fov = add("general", new Setting.Num("zoom_fov", 10f, 60f, 1f, 30f, ""));
 
         public Zoom() { super("zoom", "Zoom", "Hold C to zoom in", Category.PVP, false); }
 
@@ -57,7 +59,7 @@ public final class Utility {
         public void onTick() {
             Minecraft mc = mc();
             boolean down = mc.mouseHandler.isMouseGrabbed() && org.lwjgl.glfw.GLFW.glfwGetKey(mc.getWindow().handle(), org.lwjgl.glfw.GLFW.GLFW_KEY_C) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-            if (down && saved < 0) { saved = mc.options.fov().get(); mc.options.fov().set(30); }
+            if (down && saved < 0) { saved = mc.options.fov().get(); mc.options.fov().set(Math.round(fov.value)); }
             else if (!down && saved >= 0) { mc.options.fov().set(saved); saved = -1; }
         }
 

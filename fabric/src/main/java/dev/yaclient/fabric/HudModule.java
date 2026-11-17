@@ -11,6 +11,8 @@ public abstract class HudModule extends Module {
     public static final float MIN_SCALE = 0.4f, MAX_SCALE = 3f, DEF_SCALE = 0.8f;
     public float px, py, scale = DEF_SCALE;
     private final float defX, defY;
+    /** Shared by every HUD element: how see-through the whole element is. */
+    public final Setting.Num opacity = add("style", new Setting.Num("opacity", 20f, 100f, 5f, 100f, "%"));
 
     protected HudModule(String id, String name, String description, Category category, boolean enabledByDefault, float defX, float defY) {
         super(id, name, description, category, enabledByDefault);
@@ -48,7 +50,7 @@ public abstract class HudModule extends Module {
     /** Sets the Gfx pixel scale for this element and returns its measured size on screen (GUI units). */
     private void prepare(GuiGraphicsExtractor g, Minecraft mc) {
         Gfx.g = g;
-        Gfx.fade = 1f;
+        Gfx.fade = opacity.value / 100f;
         Gfx.setScale(Math.max(1, Math.round(mc.getWindow().getGuiScale() * scale)));
     }
 
@@ -71,6 +73,7 @@ public abstract class HudModule extends Module {
         g.pose().scale(scale, scale);
         draw(g, mc);
         g.pose().popMatrix();
+        Gfx.fade = 1f;
     }
 
     /** Measures with the right pixel scale (menu hit testing). */

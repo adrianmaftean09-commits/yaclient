@@ -2,6 +2,9 @@ package dev.yaclient.fabric;
 
 import net.minecraft.client.Minecraft;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Base of every client feature. Ids are stable (used for the config). */
 public abstract class Module {
     public final String id;
@@ -9,6 +12,7 @@ public abstract class Module {
     public final String description;
     public final Category category;
     public boolean enabled;
+    public final List<Setting> settings = new ArrayList<Setting>();
 
     public enum Category { INFO, PVP, CRYSTAL, UTILITY }
 
@@ -18,6 +22,20 @@ public abstract class Module {
         this.description = description;
         this.category = category;
         this.enabled = enabledByDefault;
+    }
+
+    /** Registers a setting in an options group. */
+    public <T extends Setting> T add(String group, T s) {
+        s.owner = id;
+        s.group = group;
+        settings.add(s);
+        s.load();
+        return s;
+    }
+
+    public void resetSettings() {
+        for (Setting s : settings) { s.reset(); s.save(); }
+        Config.save();
     }
 
     protected static Minecraft mc() { return Minecraft.getInstance(); }
@@ -45,9 +63,15 @@ public abstract class Module {
         return Gfx.hasIcon(n) ? n : "grid";
     }
 
-    public void load() { enabled = Config.getBool("mod." + id + ".enabled", enabled); }
+    public void load() {
+        enabled = Config.getBool("mod." + id + ".enabled", enabled);
+        for (Setting s : settings) s.load();
+    }
 
-    public void save() { Config.setBool("mod." + id + ".enabled", enabled); }
+    public void save() {
+        Config.setBool("mod." + id + ".enabled", enabled);
+        for (Setting s : settings) s.save();
+    }
 
     public void toggle() {
         enabled = !enabled;

@@ -21,17 +21,33 @@ public final class Modules {
 
     private Modules() {}
 
-    private static void text(String id, String name, String desc, Category c, float x, float y, java.util.function.Function<Minecraft, String> f) {
-        ALL.add(new TextHud(id, name, desc, c, false, x, y, f));
+    private static TextHud text(String id, String name, String desc, Category c, float x, float y, java.util.function.Function<Minecraft, String> f) {
+        TextHud t = new TextHud(id, name, desc, c, false, x, y, f);
+        ALL.add(t);
+        return t;
     }
 
-    private static void textOn(String id, String name, String desc, Category c, float x, float y, java.util.function.Function<Minecraft, String> f) {
-        ALL.add(new TextHud(id, name, desc, c, true, x, y, f));
+    private static TextHud textOn(String id, String name, String desc, Category c, float x, float y, java.util.function.Function<Minecraft, String> f) {
+        TextHud t = new TextHud(id, name, desc, c, true, x, y, f);
+        ALL.add(t);
+        return t;
     }
 
     public static void init() {
-        textOn("fps", "FPS", "Shows your frames per second", Category.INFO, 0.008f, 0.012f, mc -> mc.getFps() + " FPS");
-        textOn("cps", "CPS", "Shows your clicks per second", Category.PVP, 0.008f, 0.064f, mc -> Hits.cpsText(mc));
+        final Setting.Bool[] fl = new Setting.Bool[1], fc = new Setting.Bool[1];
+        final Setting.Num[] fw = new Setting.Num[1];
+        TextHud fps = textOn("fps", "FPS", "Shows your frames per second", Category.INFO, 0.008f, 0.012f, mc -> mc.getFps() + (fl[0].value ? " FPS" : ""));
+        fl[0] = fps.add("general", new Setting.Bool("label", true));
+        fc[0] = fps.add("general", new Setting.Bool("colorize", false));
+        fw[0] = fps.add("general", new Setting.Num("warn", 20f, 144f, 5f, 60f, ""));
+        fps.autoColor = mc -> {
+            if (!fc[0].value) return 0;
+            int f = mc.getFps();
+            return f >= fw[0].value ? 0xFF22C55E : (f >= fw[0].value / 2f ? 0xFFFFC21A : 0xFFEF4444);
+        };
+        final Setting.Bool[] cl = new Setting.Bool[1];
+        TextHud cps = textOn("cps", "CPS", "Shows your clicks per second", Category.PVP, 0.008f, 0.064f, mc -> Hits.cpsText(mc, cl[0].value));
+        cl[0] = cps.add("general", new Setting.Bool("label", true));
         ALL.add(new KeystrokesModule());
         text("coords", "Coordinates", "Shows your XYZ position", Category.INFO, 0.008f, 0.116f, mc -> mc.player == null ? "" :
             "XYZ " + (int) Math.floor(mc.player.getX()) + " " + (int) Math.floor(mc.player.getY()) + " " + (int) Math.floor(mc.player.getZ()));
@@ -51,7 +67,9 @@ public final class Modules {
             String[] d = {"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
             return d[Math.round(yaw / 45f) % 8] + " (" + Math.round(yaw) + ")";
         });
-        text("clock", "Clock", "Real time", Category.INFO, 0.9f, 0.012f, mc -> String.format("%tR", Calendar.getInstance()));
+        final Setting.Bool[] h24 = new Setting.Bool[1];
+        TextHud clk = text("clock", "Clock", "Real time", Category.INFO, 0.9f, 0.012f, mc -> h24[0].value ? String.format("%tR", Calendar.getInstance()) : String.format("%tl:%tM %tp", Calendar.getInstance(), Calendar.getInstance(), Calendar.getInstance()));
+        h24[0] = clk.add("general", new Setting.Bool("h24", true));
         text("session", "Session Time", "How long you have been playing", Category.INFO, 0.9f, 0.06f, mc -> {
             long s = (System.currentTimeMillis() - START) / 1000;
             return String.format("%d:%02d:%02d", s / 3600, (s / 60) % 60, s % 60);

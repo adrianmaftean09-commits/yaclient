@@ -52,5 +52,11 @@ public final class Config {
         try { String v = get(key, null); return v == null ? def : Float.parseFloat(v); } catch (NumberFormatException e) { return def; }
     }
 
+    public static int getInt(String key, int def) {
+        try { String v = get(key, null); return v == null ? def : Integer.parseInt(v); } catch (NumberFormatException e) { return def; }
+    }
+
+    public static void setInt(String key, int v) { set(key, String.valueOf(v)); }
+
     public static void setFloat(String key, float v) { set(key, String.valueOf(v)); }
 }

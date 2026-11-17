@@ -32,14 +32,14 @@ public final class Hits {
     }
 
     /** "left | right CPS", sampled every time the HUD asks for it. */
-    public static String cpsText(Minecraft mc) {
+    public static String cpsText(Minecraft mc, boolean label) {
         long now = System.currentTimeMillis();
         boolean l = mc.options.keyAttack.isDown(), r = mc.options.keyUse.isDown();
         if (l && !wasL) LEFT.addLast(now);
         if (r && !wasR) RIGHT.addLast(now);
         wasL = l;
         wasR = r;
-        return count(LEFT, now) + " | " + count(RIGHT, now) + " CPS";
+        return count(LEFT, now) + " | " + count(RIGHT, now) + (label ? " CPS" : "");
     }
 
     public static void tick(Minecraft mc) {

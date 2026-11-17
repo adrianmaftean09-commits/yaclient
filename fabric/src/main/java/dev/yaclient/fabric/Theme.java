@@ -10,5 +10,7 @@ public final class Theme {
     public static final int GLASS_LINE = 0x24FFFFFF;
     public static final int HUD_BG = 0xB8121216;
 
+    public static int accent() { return 0xFFE8E8E8; }
+
     private Theme() {}
 }
