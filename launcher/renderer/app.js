@@ -86,7 +86,6 @@ function renderNav() {
   $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
   $('#accPill').innerHTML = S.account ? `<i>${esc(S.account.name[0].toUpperCase())}</i>${esc(S.account.name)}` : esc(t('signIn'));
   $('#plusChip').textContent = plusOn() ? t('chip_on') : t('chip_off');
-  $('#bsub').textContent = t('online_s');
   $('#ver').textContent = (isYa(S.version) ? 'YA CLIENT ' : '') + (S.version || '');
   document.body.classList.toggle('plus', plusOn());
 }
@@ -342,7 +341,7 @@ function drawOb() {
   const perks = ['perk_theme', 'perk_cape', 'perk_more', 'perk_setup'].map((k) => `<span class="perk">${ic('check')}${esc(t(k))}</span>`).join('');
   if (obStep === 0) {
     const row = (ico, k) => `<div class="frow"><span class="fic">${ic(ico)}</span><div><b>${esc(t(k + 't'))}</b><small>${esc(t(k + 'd'))}</small></div></div>`;
-    o.innerHTML = `<div class="split"><div class="vis"><div class="ring"></div><div class="ring r2"></div><div class="mc3d big" id="obPlayer"></div><span class="plusbadge">PLUS</span></div>
+    o.innerHTML = `<div class="split"><div class="vis"><div class="mc3d big" id="obPlayer"></div><span class="plusbadge">PLUS</span></div>
       <div class="txt"><div class="eyebrow">${esc(t('wp_eyebrow2'))}</div><h1>${esc(t('wp_h'))}</h1><p>${esc(t('wp_sub'))}</p>
         <div class="frows">${row('plus', 'f1')}${row('cosmetics', 'f2')}${row('check', 'f3')}</div>
         <div class="acts"><button class="go" data-ob="next">${esc(t('cont'))}</button><button class="ghost" data-ob="skip">${esc(t('skip'))}</button></div>${dots}</div></div>`;
