@@ -55,22 +55,22 @@ public class HudEditorScreen extends GuiScreen {
             }
         }
 
-        // toolbar: a light, see-through pill
+        // toolbar: a small, thin, see-through pill
         String title = Lang.t("editor.title");
         String hint = Lang.t("editor.hint");
-        btnW = 54; btnH = 20;
-        int tw = Gfx.width(title, 10, true) + Gfx.width(hint, 8, false) + 2 * btnW + 78;
-        int tx = (width - tw) / 2, ty = 8, th = 30;
-        Gfx.rr(tx, ty, tw, th, 15, 0x55FFFFFF);
-        Gfx.rrOutline(tx, ty, tw, th, 15, 1, 0x80FFFFFF);
-        Gfx.icon("move", tx + 12, ty + 8, 14, 0xFF1B1B22);
-        Gfx.text(title, tx + 32, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, 0xFF1B1B22);
-        Gfx.text(hint, tx + 32 + Gfx.width(title, 10, true) + 10, ty + (th - Gfx.lineHeight(8, false)) / 2, 8, false, 0xFF45454F);
+        btnW = 40; btnH = 14;
+        int tw = Gfx.width(title, 8, true) + 2 * btnW + 44;
+        int tx = (width - tw) / 2, ty = 6, th = 20;
+        Gfx.rr(tx, ty, tw, th, 10, 0x40FFFFFF);
+        Gfx.rrOutline(tx, ty, tw, th, 10, 1, 0x66FFFFFF);
+        Gfx.icon("move", tx + 8, ty + 5, 10, 0xFF1B1B22);
+        Gfx.text(title, tx + 22, ty + (th - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFF1B1B22);
         btnY = ty + (th - btnH) / 2;
-        btnDoneX = tx + tw - btnW - 6;
-        btnResetX = btnDoneX - btnW - 4;
+        btnDoneX = tx + tw - btnW - 3;
+        btnResetX = btnDoneX - btnW - 2;
         button(Lang.t("editor.reset"), btnResetX, mx, my, false);
         button(Lang.t("editor.done"), btnDoneX, mx, my, true);
+        Gfx.textCentered(hint, width / 2, ty + th + 4, 7, false, 0xCCFFFFFF);
 
         if (list.isEmpty()) {
             Gfx.textCentered(Lang.t("editor.empty"), width / 2, height / 2, 12, false, Theme.MUTED);
@@ -79,9 +79,9 @@ public class HudEditorScreen extends GuiScreen {
 
     private void button(String label, int x, int mx, int my, boolean primary) {
         boolean over = mx >= x && mx < x + btnW && my >= btnY && my < btnY + btnH;
-        int fill = primary ? (over ? 0xE0000000 : 0xC0101014) : (over ? 0x60FFFFFF : 0x30FFFFFF);
-        Gfx.rr(x, btnY, btnW, btnH, 10, fill);
-        Gfx.textCentered(label, x + btnW / 2, btnY + (btnH - Gfx.lineHeight(9, true)) / 2, 9, true,
+        int fill = primary ? (over ? 0xB0000000 : 0x80101014) : (over ? 0x60FFFFFF : 0x30FFFFFF);
+        Gfx.rr(x, btnY, btnW, btnH, 7, fill);
+        Gfx.textCentered(label, x + btnW / 2, btnY + (btnH - Gfx.lineHeight(7, true)) / 2, 7, true,
                 primary ? 0xFFFFFFFF : 0xFF1B1B22);
     }
 
