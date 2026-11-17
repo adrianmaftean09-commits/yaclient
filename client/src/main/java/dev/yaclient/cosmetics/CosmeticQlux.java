@@ -42,10 +42,11 @@ final class CosmeticQlux {
     }
 
     // wordmark placement on the cape
-    private static final double TU0 = 0.10, TU1 = 0.90, TV0 = 0.10;
-    private static final double TV1 = TV0 + (TU1 - TU0) * CosmeticRender.CAPE_W / CosmeticRender.CAPE_H * QluxText.H / (double) QluxText.W;
+    private static final double TU0 = 0.14, TU1 = 0.86;
+    private static final double TH = (TU1 - TU0) * CosmeticRender.CAPE_W / CosmeticRender.CAPE_H * QluxText.H / (double) QluxText.W;
+    private static final double TV0 = 0.5 - TH / 2, TV1 = 0.5 + TH / 2;   // centered on the cape
 
-    /** The wordmark: dark graphite letters that gently wave, with a bright ice-blue light sweeping through them. */
+    /** The wordmark: black letters that gently wave, with a soft grey sheen sweeping through them. */
     static void text(float age, boolean plus) {
         final int NX = 28, NY = 10;
         double sweep = ((age * 0.018) % 1.6) - 0.3;                 // light position in u-space, wraps around
@@ -67,9 +68,9 @@ final class CosmeticQlux {
         float d = (float) Math.abs(a - sweep);
         float lit = (float) Math.exp(-d * d * 60.0);                 // soft light band
         float pulse = 0.5f + 0.5f * (float) Math.sin(age * 0.05);
-        float r = 0.07f + (0.45f - 0.07f) * lit + 0.04f * pulse;
-        float g = 0.09f + (0.78f - 0.09f) * lit + 0.04f * pulse;
-        float bl = 0.14f + (1.00f - 0.14f) * lit + 0.05f * pulse;
+        float r = 0.01f + 0.20f * lit + 0.01f * pulse;
+        float g = 0.01f + 0.20f * lit + 0.01f * pulse;
+        float bl = 0.01f + 0.22f * lit + 0.01f * pulse;
         Poly.tex(p[0], p[1], p[2] + 0.005, (float) a, (float) b, r, g, bl, 1f);
     }
 
