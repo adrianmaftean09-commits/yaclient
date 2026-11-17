@@ -626,6 +626,12 @@ public class MenuScreen extends GuiScreen {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer ent = mc.thePlayer;
         if (ent == null) return;
+        // the menu drawing leaves a tint, blending and depth state behind: start from an opaque, untinted state
+        GlStateManager.color(1f, 1f, 1f, 1f);
+        GlStateManager.disableBlend();
+        GlStateManager.enableDepth();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableAlpha();
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) cx, (float) baseY, 50.0F);
