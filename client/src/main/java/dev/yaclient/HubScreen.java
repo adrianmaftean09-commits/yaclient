@@ -13,9 +13,6 @@ public class HubScreen extends GuiScreen {
     private static final int BW = 108, BH = 22, RH = 22, GAP = 6, SW = (BW - 2 * GAP) / 3;
 
     private final float[] hover = new float[4];
-    private static final int NW = 120, NH = 82;
-    private float newsHover;
-    private int nx, ny;
     private final long opened = System.currentTimeMillis();
     private long last = opened;
     private int x0, y0;
@@ -72,17 +69,6 @@ public class HubScreen extends GuiScreen {
         Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
-        // news card (bottom left), same as on the main menu: opens the changelog sheet
-        nx = 10;
-        ny = height - 10 - NH;
-        boolean nOver = mx >= nx && mx < nx + NW && my >= ny && my < ny + NH;
-        newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
-        Gfx.rr(nx, ny, NW, NH, 8, Ui.mix(0xB0101014, 0xD0242429, newsHover));
-        int artH = Math.round((NW - 8) / NewsArt.ASPECT);
-        NewsArt.draw(nx + 4, ny + 4, NW - 8, artH, fade);
-        Gfx.rrOutline(nx, ny, NW, NH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
-        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
-        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " \u00b7 " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
         Gfx.fade = 1f;
     }
 
