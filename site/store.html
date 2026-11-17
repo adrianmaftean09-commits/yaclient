@@ -1,78 +1,73 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT - modern Minecraft 1.8.9 PvP client. No Forge. Free."><link rel="stylesheet" href="/style.css"></head><body><nav><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="links">
-<a href="/#features">Features</a><a href="/store" class="on">Store</a><a href="/#install">How to play</a><a href="#" id="dc" target="_blank" rel="noopener">Discord</a></div></div></nav><section class="lk"><div class="wrap"><h2>Cosmetics</h2><p class="lead">Your locker. Items unlock on your Minecraft account and you equip them in game with Right Shift &gt; Cosmetics.</p>
-<div class="locker">
- <aside class="side card"><div class="sh">Categories</div><div id="cats"></div><div class="plus"><b>YA Plus</b><p>Subscription: animated cape movement and more perks soon. Ask on Discord.</p></div></aside>
- <div class="mid"><div class="grid3" id="grid"></div></div>
- <aside class="prev card"><div class="sh">Preview <span class="hint">click items to try them</span></div><div id="pv" class="pvbox"></div>
-  <div class="req"><div class="bt">Get a bundle</div><p>Beta Tester Bundle is free for beta testers. Monochrome Bundle is exclusive.</p>
-  <select id="bundle" style="width:100%;margin-bottom:8px"><option value="Beta Tester Bundle">Beta Tester Bundle (free)</option><option value="Monochrome Bundle">Monochrome Bundle (exclusive)</option></select>
-  <input id="user" placeholder="Minecraft username" maxlength="16" autocomplete="off"><button class="btn pri" id="ask" style="width:100%;margin-top:10px">Request access</button>
-  <div class="msg" id="msg"></div><div class="box hide" id="after"><p style="color:var(--mute);font-size:14px">Open a ticket on Discord and paste this text. We unlock the bundle on your account.</p><code id="ticket"></code><a class="btn" id="dc2" href="#" target="_blank" rel="noopener" style="width:100%">Open Discord</a></div></div></aside>
-</div></div></section>
-<footer><div class="wrap">© YA CLIENT · Not affiliated with Mojang or Microsoft.</div></footer><script src="/config.js"></script><script>document.querySelectorAll("#dc").forEach(function(a){a.href=window.YA.discord})</script>
-
-<script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Store - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Store - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+<div class="page-h"><div class="wrap"><span class="eyebrow">Store</span><h1 class="plain">Cosmetics</h1><p class="sub">Wings, capes, bandanas and pets. Rendered live from the game. Click any item to try it on.</p></div></div>
+<div class="wrap">
+<div class="plusbar"><div><b>YA Plus</b><span>Animated cape movement, a red launcher and more perks.</span></div><a class="btn" href="/plus">See YA Plus →</a></div>
+<div class="store"><div><div class="chips" id="chips"></div><div class="pg" id="grid"></div></div>
+<aside class="side"><div class="stage" id="stage"><canvas id="v3d"></canvas><div class="cap">Drag to rotate</div></div>
+<div class="wear"><div class="t">Wearing</div><div class="wl" id="wl"></div><div class="tot"><span style="color:var(--mute)">Total</span><b id="tot">-</b></div><button class="btn pri block" id="getw" disabled>Select a cosmetic</button><button class="btn block" id="clr" style="margin-top:10px">Clear</button></div></aside></div></div>
+<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/site.js"></script><script src="/geo.js"></script><script src="/cos3d.js"></script><script>
 (function(){
-var NS='http://www.w3.org/2000/svg';
-function leaf(x,y,ang,len,w,fill){var a=ang*Math.PI/180,dx=Math.cos(a),dy=Math.sin(a),nx=-dy,ny=dx;
- var ex=x+dx*len,ey=y+dy*len;return '<path d="M'+x+' '+y+' C'+(x+dx*len*.3+nx*w)+' '+(y+dy*len*.3+ny*w)+' '+(x+dx*len*.8+nx*w*.7)+' '+(y+dy*len*.8+ny*w*.7)+' '+ex+' '+ey+' C'+(x+dx*len*.8-nx*w*.7)+' '+(y+dy*len*.8-ny*w*.7)+' '+(x+dx*len*.3-nx*w)+' '+(y+dy*len*.3-ny*w)+' '+x+' '+y+'Z" fill="'+fill+'"/>'}
-function wings(){var o='';[-1,1].forEach(function(s){var g='';
- for(var r=0;r<3;r++){var n=[9,8,8][r],L=[[34,40],[26,20],[14,10]][r],W=[7,6.2,5.2][r],f=['url(#fw0)','url(#fw1)','url(#fw2)'][r];
-  for(var i=0;i<n;i++){var t=i/(n-1),px=120+s*(10+t*62*(1-.0)),py=78-(t*(r==0?26:22))+ (r==2?4:0);var ang=(s>0?(-84+70*t):(180+84-70*t));var len=L[0]+L[1]*Math.sin(Math.PI*t);
-   g=leaf(px,py,ang,len,W,f)+g}}
- o+=g});return o}
-function cape(){return '<path d="M98 76 L142 76 L150 196 Q142 204 134 198 Q126 206 120 198 Q112 206 106 198 Q98 204 90 196 Z" fill="url(#fc)" stroke="#e10600" stroke-width="2" stroke-linejoin="round"/><g><image href="/logo.png" x="103" y="86" width="34" height="34" opacity=".55"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;3 0;-2 0;0 0;0 0" keyTimes="0;.7;.74;.78;.82;1" dur="2.6s" repeatCount="indefinite"/></image><image href="/logo.png" x="103" y="86" width="34" height="34" style="filter:drop-shadow(0 0 3px #e10600)"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-2 0;3 0;0 0;0 0" keyTimes="0;.7;.74;.78;.82;1" dur="2.6s" repeatCount="indefinite"/></image></g>'}
-function bandana(){return '<rect x="98" y="40" width="44" height="13" rx="3" fill="url(#fb)" stroke="#16161a" stroke-width="2.5"/><circle cx="120" cy="47" r="5" fill="#b00800"/><path d="M118 50 Q112 62 114 70 L120 64 L126 70 Q128 62 122 50Z" fill="#e10600"/>'}
-function pet(){return '<g class="pet" transform="translate(40 92)"><path d="M-6 -4 L-34 -22 L-26 4 L-12 6Z" fill="#7a0300"/><path d="M6 -4 L34 -22 L26 4 L12 6Z" fill="#7a0300"/><ellipse cx="0" cy="6" rx="15" ry="13" fill="#17171c"/><circle cx="0" cy="-6" r="12" fill="#101014"/><path d="M-9 -14 L-12 -30 L-3 -17Z M9 -14 L12 -30 L3 -17Z" fill="#17171c"/><path d="M-9 -15 L-11 -26 L-5 -17Z M9 -15 L11 -26 L5 -17Z" fill="#e10600"/><circle cx="-5" cy="-6" r="2.6" fill="#ff3b2a"/><circle cx="5" cy="-6" r="2.6" fill="#ff3b2a"/><path d="M12 12 Q30 18 34 34 Q26 26 20 30Z" fill="#7a0300"/><circle cx="35" cy="36" r="5" fill="#ff3b2a"><animate attributeName="r" values="4;6.5;4" dur="1.1s" repeatCount="indefinite"/></circle><animateTransform attributeName="transform" type="translate" values="40 92;40 86;40 92" dur="2.4s" repeatCount="indefinite"/></g>'}
-
-function mwings(){var o='';[-1,1].forEach(function(s){var g='<path d="M124 80 Q150 40 188 52 L232 36 Q216 62 236 86 Q214 104 214 126 Q190 124 172 148 Q150 132 130 140 Z" fill="url(#mw)" stroke="#2c2c34" stroke-width="1.5" stroke-linejoin="round"/>'
- +'<g stroke="#4a4a54" stroke-linecap="round" fill="none"><path d="M124 80 Q150 40 188 52" stroke-width="5"/><path d="M188 52 L232 36 M188 52 L236 86 M188 52 L214 126 M188 52 L172 148" stroke-width="2.4"/></g>'
- +'<g fill="#f4f4f5"><path d="M232 36 L242 31 L236 42Z M236 86 L246 86 L238 92Z M214 126 L220 135 L211 132Z M172 148 L174 158 L166 152Z M188 52 L192 36 L196 52Z"/></g>';
- o+=s<0?'<g transform="translate(240 0) scale(-1 1)">'+g+'</g>':'<g>'+g+'</g>'});return o}
-function mcape(){var inf='M120 118 C126 106 140 106 140 118 C140 130 126 130 120 118 C114 106 100 106 100 118 C100 130 114 130 120 118';return '<path d="M98 76 L142 76 L150 196 Q142 204 134 198 Q126 206 120 198 Q112 206 106 198 Q98 204 90 196 Z" fill="#050507" stroke="#e9e9ee" stroke-width="1.6" stroke-linejoin="round"/><path d="'+inf+'" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="3.2" stroke-linecap="round"/><path d="'+inf+'" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" pathLength="100" stroke-dasharray="22 78" style="filter:drop-shadow(0 0 3px #fff)"><animate attributeName="stroke-dashoffset" values="0;-100" dur="2.6s" repeatCount="indefinite"/></path>'}
-function mbandana(){return '<rect x="98" y="40" width="44" height="13" rx="3" fill="#0b0b0e" stroke="#e9e9ee" stroke-width="1.6"/><line x1="100" y1="46.5" x2="140" y2="46.5" stroke="#fff" stroke-width="5" stroke-dasharray="5 9"><animate attributeName="stroke-dashoffset" values="0;-14" dur=".9s" repeatCount="indefinite"/></line><circle cx="120" cy="47" r="5" fill="#f4f4f5"/><path d="M118 50 Q112 62 114 70 L120 64 L126 70 Q128 62 122 50Z" fill="url(#mt)"/>'}
-function mpet(){return '<g transform="translate(40 92)"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -6;0 0" dur="2.4s" repeatCount="indefinite"/><g><animateTransform attributeName="transform" type="scale" values="1 1;0.04 1;-1 1;0.04 1;1 1" dur="3.2s" repeatCount="indefinite"/><circle r="18" fill="#f4f4f5" stroke="#fff" stroke-width="1.5"/><path d="M0 -18 A18 18 0 0 1 0 18 A9 9 0 0 1 0 0 A9 9 0 0 0 0 -18Z" fill="#0b0b0e"/><circle cy="-9" r="2.6" fill="#f4f4f5"/><circle cy="9" r="2.6" fill="#0b0b0e"/></g></g></g>'}
-var DEFS='<defs><linearGradient id="mw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#050507"/><stop offset="1" stop-color="#1b1b21"/></linearGradient><linearGradient id="mt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f5"/><stop offset="1" stop-color="#0b0b0e"/></linearGradient><linearGradient id="fw0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17171c"/><stop offset=".55" stop-color="#7a0300"/><stop offset="1" stop-color="#ff2a1f"/></linearGradient><linearGradient id="fw1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#111114"/><stop offset="1" stop-color="#5a0200"/></linearGradient><linearGradient id="fw2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0c0f"/><stop offset="1" stop-color="#2a0402"/></linearGradient><linearGradient id="fc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0b0e"/><stop offset="1" stop-color="#4a0300"/></linearGradient><linearGradient id="fb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a0300"/><stop offset=".5" stop-color="#e10600"/><stop offset="1" stop-color="#8a0300"/></linearGradient><linearGradient id="sweep" gradientUnits="userSpaceOnUse" x1="90" y1="76" x2="150" y2="136"><stop offset="0" stop-color="#ff3b2a" stop-opacity="0"/><stop offset=".5" stop-color="#ff3b2a" stop-opacity=".55"/><stop offset="1" stop-color="#ff3b2a" stop-opacity="0"/><animateTransform attributeName="gradientTransform" type="translate" values="-60 -40;60 80;-60 -40" dur="3.6s" repeatCount="indefinite"/></linearGradient></defs>';
-function doll(){return '<g fill="#2a2a31"><rect x="100" y="28" width="40" height="40" rx="6"/><rect x="96" y="72" width="48" height="72" rx="5"/><rect x="74" y="72" width="20" height="72" rx="5"/><rect x="146" y="72" width="20" height="72" rx="5"/><rect x="96" y="146" width="23" height="72" rx="5"/><rect x="121" y="146" width="23" height="72" rx="5"/></g>'}
-function scene(items,vb,withDoll){var o='<svg xmlns="'+NS+'" viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet">'+DEFS;
- if(withDoll)o+=doll();
- if(items.indexOf('ya_wings')>=0)o+='<g>'+wings()+'</g>';
- if(items.indexOf('mono_wings')>=0)o+=mwings();
- if(items.indexOf('ya_cape')>=0)o+=cape();
- if(items.indexOf('mono_cape')>=0)o+=mcape();
- if(items.indexOf('ya_bandana')>=0)o+=bandana();
- if(items.indexOf('mono_bandana')>=0)o+=mbandana();
- if(items.indexOf('ya_pet')>=0)o+=pet();
- if(items.indexOf('mono_pet')>=0)o+=mpet();
- return o+'</svg>'}
-var BUNDLES=[{id:'beta',n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet',tag:'FREE',items:['ya_cape','ya_wings','ya_bandana','ya_pet']},{id:'mono',n:'Monochrome Bundle',d:'Black dragon wings, infinity cape, bandana, yin yang',tag:'EXCLUSIVE',items:['mono_cape','mono_wings','mono_bandana','mono_pet']}];
-var DATA={ya_cape:{n:'YA Cape',cat:'cape',d:'Black and red cape with the YA logo glitching on it. Cloth motion with YA Plus.',vb:'60 60 120 160',tag:'BETA'},ya_wings:{n:'Ember Wings',cat:'wings',d:'Classic feathered wings, black fading to red.',vb:'10 0 220 150',tag:'BETA'},ya_bandana:{n:'YA Bandana',cat:'bandana',d:'Red and black bandana with waving tails.',vb:'70 20 100 70',tag:'BETA'},ya_pet:{n:'Ember (pet)',cat:'pet',d:'A tiny fox-dragon with a flame tail that follows you.',vb:'0 40 100 100',tag:'BETA'},
- mono_cape:{n:'Infinity Cape',cat:'cape',d:'Pure black cape, a white infinity symbol draws itself on it.',vb:'60 60 120 160',tag:'EXCLUSIVE'},mono_wings:{n:'Shadow Dragon Wings',cat:'wings',d:'All-black dragon wings with white claws.',vb:'10 0 230 170',tag:'EXCLUSIVE'},mono_bandana:{n:'Monochrome Bandana',cat:'bandana',d:'Black bandana with animated white stripes.',vb:'70 20 100 70',tag:'EXCLUSIVE'},mono_pet:{n:'Yin Yang (pet)',cat:'pet',d:'The symbol of opposites, spinning on itself.',vb:'0 50 100 90',tag:'EXCLUSIVE'}};
-var ALL=Object.keys(DATA);
+var Y=window.YA,PR=Y.prices||{item:3,monoBundle:10},eur=window.YAeur;
+var P={
+ ya_cape:{n:'YA Cape',cat:'cape',slot:'cape',d:'Black and red cape with the YA logo glitching on it.',set:'beta'},
+ ya_wings:{n:'Ember Wings',cat:'wings',slot:'wings',d:'Feathered wings, black fading to red.',set:'beta'},
+ ya_bandana:{n:'YA Bandana',cat:'bandana',slot:'bandana',d:'Red and black bandana with waving tails.',set:'beta'},
+ ya_pet:{n:'Ember (pet)',cat:'pet',slot:'pet',d:'A tiny fox-dragon with a flame tail that follows you.',set:'beta'},
+ mono_cape:{n:'Infinity Cape',cat:'cape',slot:'cape',d:'Pure black cape, a white infinity symbol draws itself on it.',set:'mono'},
+ mono_wings:{n:'Shadow Dragon Wings',cat:'wings',slot:'wings',d:'All-black dragon wings with white spikes.',set:'mono'},
+ mono_bandana:{n:'Monochrome Bandana',cat:'bandana',slot:'bandana',d:'Black bandana with a white stripe.',set:'mono'},
+ mono_pet:{n:'Yin Yang (pet)',cat:'pet',slot:'pet',d:'A spinning yin yang that floats next to you.',set:'mono'}};
+var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
+          mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle}};
 var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles']];
-var cat='all',sel={};
+var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
+var priceOf=function(id){return P[id].set==='beta'?0:PR.item};
+function total(list){var m=list.filter(function(i){return P[i].set==='mono'}).length;return (m===4?PR.monoBundle:m*PR.item)}
+function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
+function card(key,isSet){
+ var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:d.price):priceOf(key);
+ var on=isSet?ids.every(function(i){return worn.indexOf(i)>=0}):worn.indexOf(key)>=0;
+ var tag=isSet?(d.free?'Free':'Bundle'):(free?'Beta':'');
+ var save=isSet&&!d.free?'<span class="tagb save">Save '+eur(4*PR.item-d.price)+'</span>':(tag?'<span class="tagb">'+tag+'</span>':'');
+ var pr=free?'<span class="price free">Free</span>':(isSet?'<span class="price"><s>'+eur(4*PR.item)+'</s>'+eur(price)+'</span>':'<span class="price">'+eur(price)+'</span>');
+ var im=thumbs[(isSet?'s:':'i:')+key];
+ return '<div class="pc '+(on?'on':'')+'" data-k="'+key+'" data-s="'+(isSet?1:0)+'">'+save+'<div class="im">'+(im?'<img src="'+im+'" alt="">':'<i>'+(has3d?'Rendering...':'')+'</i>')+'</div><div class="bd"><h3>'+d.n+'</h3><p>'+d.d+'</p><div class="pr">'+pr+'<button class="btn sm '+(free?'':'pri')+'" data-buy="'+key+'" data-s="'+(isSet?1:0)+'">'+(free?'Get free':'Buy')+'</button></div></div></div>'}
 function render(){
- document.getElementById('cats').innerHTML=CATS.map(function(c){var n=c[0]==='all'?10:2;return '<button class="cat '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'<i>'+n+'</i></button>'}).join('');
- var cards='';
- if(cat==='all'||cat==='bundle')BUNDLES.forEach(function(b,bi){cards+='<div class="it '+(isAll(bi)?'sel':'')+'" data-b="'+bi+'"><span class="tag">'+b.tag+'</span><div class="th">'+scene(b.items,'0 10 240 220',true)+'</div><div class="nm"><b>'+b.n+'</b><small>'+b.d+'</small></div><div class="st">In preview</div></div>'});
- if(cat!=='bundle')ALL.forEach(function(id){var d=DATA[id];if(cat!=='all'&&cat!==d.cat)return;cards+='<div class="it '+(sel[id]?'sel':'')+'" data-i="'+id+'"><span class="tag">'+d.tag+'</span><div class="th">'+scene([id],d.vb,false)+'</div><div class="nm"><b>'+d.n+'</b><small>'+d.d+'</small></div><div class="st">In preview</div></div>'});
- document.getElementById('grid').innerHTML=cards;
- document.getElementById('pv').innerHTML=scene(ALL.filter(function(i){return sel[i]}),'0 10 240 230',true);
-}
-function isAll(bi){return BUNDLES[bi].items.every(function(i){return sel[i]})}
-function pick(id,on){ALL.forEach(function(o){if(DATA[o].cat===DATA[id].cat)sel[o]=false});sel[id]=on}
+ document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
+ var h='';
+ if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('beta',true)}
+ if(cat!=='bundle')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
+ document.getElementById('grid').innerHTML=h;
+ renderSide()}
+function renderSide(){
+ var wl=document.getElementById('wl');
+ wl.innerHTML=worn.length?worn.map(function(i){return '<span>'+P[i].n+'<button data-rm="'+i+'" aria-label="Remove">×</button></span>'}).join(''):'<em>Click a cosmetic to try it on.</em>';
+ var t=total(worn);document.getElementById('tot').textContent=worn.length?(t?eur(t):'Free'):'-';
+ var b=document.getElementById('getw');b.disabled=!worn.length;b.textContent=!worn.length?'Select a cosmetic':(t?'Buy '+eur(t):'Get free');
+ if(view)view.set(worn,false)}
+function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1)}else{worn=worn.filter(function(x){return P[x].slot!==s});worn.push(id)}}
+function orderFor(ids){
+ var t=total(ids),m=ids.filter(function(i){return P[i].set==='mono'}).length,free=!t;
+ var title=ids.length===4&&ids.every(function(i){return P[i].set===P[ids[0]].set})?SETS[P[ids[0]].set].n:(ids.length===1?P[ids[0]].n:'Custom cosmetics');
+ return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[]),total:t,ids:ids.join(',')}}
 document.addEventListener('click',function(e){
- var c=e.target.closest('.cat');if(c){cat=c.dataset.c;render();return}
- var b=e.target.closest('[data-b]');if(b){var bi=+b.dataset.b,v=!isAll(bi);BUNDLES[bi].items.forEach(function(i){pick(i,v)});render();return}
- var i=e.target.closest('[data-i]');if(i){pick(i.dataset.i,!sel[i.dataset.i]);render()}
+ var t=e.target.closest('[data-buy],[data-c],[data-rm],.pc,#getw,#clr');if(!t)return;
+ if(t.dataset.c){cat=t.dataset.c;render();return}
+ if(t.dataset.rm){worn=worn.filter(function(x){return x!==t.dataset.rm});render();return}
+ if(t.id==='clr'){worn=[];render();return}
+ if(t.id==='getw'){if(worn.length)YABuy(orderFor(worn));return}
+ if(t.dataset.buy){e.stopPropagation();var k=t.dataset.buy,ids=t.dataset.s==='1'?SETS[k].items:[k];YABuy(orderFor(ids));return}
+ if(t.classList.contains('pc')){var k2=t.dataset.k;if(t.dataset.s==='1'){var its=SETS[k2].items,all=its.every(function(i){return worn.indexOf(i)>=0});worn=all?[]:its.slice()}else toggle(k2);render()}
 });
-document.getElementById('ask').onclick=function(){
- var m=document.getElementById('msg'),u=document.getElementById('user').value.trim();m.className='msg';
- if(!/^[A-Za-z0-9_]{3,16}$/.test(u)){m.textContent='Enter your exact Minecraft username (3-16 characters).';m.className='msg err';return}
- m.textContent='';document.getElementById('ticket').textContent=document.getElementById('bundle').value+' request\nMinecraft username: '+u;
- document.getElementById('dc2').href=window.YA.discord;var a=document.getElementById('after');a.classList.remove('hide');
-};
-BUNDLES[1].items.forEach(function(i){sel[i]=true});render();
+render();
+if(!has3d){document.getElementById('stage').insertAdjacentHTML('beforeend','<div class="fall">3D preview needs WebGL.<br>You can still buy every item.</div>');return}
+YA3D.whenReady(function(){
+ view=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.6,target:[0,.95,0]});worn=['mono_wings','mono_cape','mono_bandana','mono_pet'];renderSide();
+ var jobs=[];Object.keys(SETS).forEach(function(k){jobs.push(['s:'+k,SETS[k].items,{yaw:.5,dist:6.2,target:[0,.98,0]}])});
+ Object.keys(P).forEach(function(id){jobs.push(['i:'+id,[id],snapOpts(id)])});
+ (function next(){var j=jobs.shift();if(!j){render();return}try{thumbs[j[0]]=YA3D.snapshot(j[1],j[2])}catch(e){}
+  var im=document.querySelector('.pc[data-k="'+j[0].slice(2)+'"][data-s="'+(j[0][0]==='s'?1:0)+'"] .im');if(im&&thumbs[j[0]])im.innerHTML='<img src="'+thumbs[j[0]]+'" alt="">';
+  setTimeout(next,16)})();
+});
 })();
-</script>
-</body></html>
+</script></body></html>
