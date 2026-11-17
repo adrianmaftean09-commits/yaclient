@@ -219,20 +219,3 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .split .go{margin-top:0}.split .ghost{margin-top:0}
 .split .dots{margin-top:12px}
 .ob .in{text-align:center}
-
-/* ---- animated photo background on the home hero (original 1920x1080 file, never downscaled) ---- */
-.hero3{background:#0b0b0e}
-.hero3::before{display:none}
-.hero3 .bgfx{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
-.hero3 .bgfx i{position:absolute;inset:-6%;background:url("../assets/home-bg.png") center 60%/cover no-repeat;will-change:transform}
-.hero3 .bgfx .a{animation:bgA 38s ease-in-out infinite alternate}
-.hero3 .bgfx .b{opacity:.38;mix-blend-mode:screen;filter:hue-rotate(-14deg) saturate(1.25) brightness(1.05);animation:bgB 26s ease-in-out infinite alternate}
-.hero3 .bgfx .sun{inset:0;background:radial-gradient(40% 55% at 50% 52%,rgba(255,236,170,.34),transparent 70%);mix-blend-mode:screen;animation:sun 9s ease-in-out infinite alternate}
-.hero3 .bgfx::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.30) 0,rgba(0,0,0,0) 30%,rgba(0,0,0,.10) 60%,rgba(0,0,0,.62) 100%)}
-@keyframes bgA{from{transform:scale(1.04) translate3d(-1.8%,0,0)}to{transform:scale(1.2) translate3d(1.8%,-1.2%,0)}}
-@keyframes bgB{from{transform:scale(1.22) translate3d(2.2%,.8%,0)}to{transform:scale(1.08) translate3d(-2.2%,-.6%,0)}}
-@keyframes sun{from{opacity:.55;transform:translate3d(-3%,0,0) scale(.95)}to{opacity:1;transform:translate3d(3%,-2%,0) scale(1.08)}}
-.hero3 .who,.hero3 .playwrap,.hero3 .bar,.hero3 .stat{position:relative;z-index:2}
-.hero3 .who{position:absolute}
-.hero3 .stat{text-shadow:0 1px 8px rgba(0,0,0,.7)}
-.hero3 .who b{text-shadow:0 2px 14px rgba(0,0,0,.65)}

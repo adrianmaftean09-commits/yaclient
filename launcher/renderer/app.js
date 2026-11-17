@@ -119,7 +119,7 @@ function viewHome() {
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
   const av = nm ? `<div class="mc3d" id="mc3d"></div>` : `<img class="logo" src="../assets/logo.png" alt="">`;
   return `<div class="lp"><div>
-    <div class="card hero3"><div class="bgfx"><i class="a"></i><i class="b"></i><i class="sun"></i></div><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
+    <div class="card hero3"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
       <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
 </div>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>

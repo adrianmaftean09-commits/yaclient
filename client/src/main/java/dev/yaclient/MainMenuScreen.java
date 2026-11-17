@@ -41,8 +41,10 @@ public class MainMenuScreen extends GuiScreen {
         float fadeIn = Ui.ease((now - opened) / 500f);
 
         // backdrop: the slowly rotating Minecraft panorama, lightly darkened (no black screen)
-        drawPanorama((now - opened) / 50f);
-        drawGradientRect(0, 0, width, height, 0x38000000, 0x70000000);
+        if (!MenuBackdrop.draw(width, height, (now - opened) / 1000f)) {
+            drawPanorama((now - opened) / 50f);
+            drawGradientRect(0, 0, width, height, 0x38000000, 0x70000000);
+        }
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
         Gfx.setScale(Math.max(1, gs));
