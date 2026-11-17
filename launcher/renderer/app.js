@@ -250,6 +250,7 @@ function loadSkin(name) {
   skinCache[name] = new Promise((res) => tryAt(0, res));
   return skinCache[name];
 }
+const SHADE = ['', 's-b', 's-s', 's-s', 's-t', 's-d'];
 function mkBox(K, sk, w, h, d, u, v, pad) {
   const el = document.createElement('div'); el.className = 'part';
   const W = w + pad * 2, H = h + pad * 2, D = d + pad * 2;
@@ -263,7 +264,7 @@ function mkBox(K, sk, w, h, d, u, v, pad) {
   ];
   faces.forEach((f) => {
     const sx = f[0], sy = f[1], fw = f[2], fh = f[3], pw = f[5], ph = f[6];
-    const e = document.createElement('div'); e.className = 'f';
+    const e = document.createElement('div'); e.className = 'f ' + SHADE[faces.indexOf(f)];
     e.style.cssText = 'width:' + pw * K + 'px;height:' + ph * K + 'px;margin:' + (-ph * K / 2) + 'px 0 0 ' + (-pw * K / 2) + 'px;transform:' + f[4] +
       ';background-image:url("' + sk.url + '");background-size:' + (64 * K * pw / fw) + 'px ' + (sk.h * K * ph / fh) + 'px;background-position:' + (-sx * K * pw / fw) + 'px ' + (-sy * K * ph / fh) + 'px';
     el.appendChild(e);
@@ -301,7 +302,7 @@ async function mountPlayer(host, name, K) {
     if (!host.isConnected) return;
     const t = (now - t0) / 1000;
     if (!drag) yaw += 0.35;
-    stage.style.transform = 'rotateX(-8deg) rotateY(' + yaw + 'deg)';
+    stage.style.transform = 'rotateX(-12deg) rotateY(' + yaw + 'deg)';
     const sw = Math.sin(t * 1.6) * 7;
     rArm.style.transform = 'translate3d(' + (-6 * K) + 'px,' + (-6 * K) + 'px,0) rotateX(' + sw + 'deg)';
     lArm.style.transform = 'translate3d(' + (6 * K) + 'px,' + (-6 * K) + 'px,0) rotateX(' + (-sw) + 'deg)';

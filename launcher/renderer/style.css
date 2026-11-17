@@ -187,7 +187,7 @@ body.plus .pluschip{background:var(--glow2);border-color:var(--accent);color:#ff
 body:not(.plus) .pluschip{background:linear-gradient(135deg,#e10600,#ff3b30);border-color:#ff3b30;color:#fff;box-shadow:0 0 18px rgba(225,6,0,.35)}
 body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 /* ---- 3D player ---- */
-.mc3d{position:relative;width:200px;height:225px;perspective:900px;cursor:grab;touch-action:none}
+.mc3d{position:relative;width:200px;height:225px;perspective:650px;cursor:grab;touch-action:none}
 .mc3d.grab{cursor:grabbing}
 .mc3d .stage{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
 .mc3d .limb,.mc3d .part{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
@@ -196,7 +196,8 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .mc3d.big{width:280px;height:340px}
 .hero3 .who{top:14px;gap:2px}
 .hero3 .who b{font-size:17px}
-.mc3d .stage{filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
+.mc3d{filter:drop-shadow(0 14px 16px rgba(0,0,0,.55))}  /* on the host, never on .stage: a filter flattens preserve-3d */
+.mc3d .f.s-b{filter:brightness(.7)}.mc3d .f.s-s{filter:brightness(.84)}.mc3d .f.s-t{filter:brightness(1.15)}.mc3d .f.s-d{filter:brightness(.55)}
 /* ---- plus welcome: split layout ---- */
 .ob{text-align:left}
 .split{display:grid;grid-template-columns:minmax(300px,1fr) minmax(340px,1.05fr);gap:40px;align-items:center;max-width:900px;width:100%}
