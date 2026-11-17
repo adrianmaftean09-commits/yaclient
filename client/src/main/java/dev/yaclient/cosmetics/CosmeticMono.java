@@ -29,7 +29,8 @@ final class CosmeticMono {
 
     private static double[] bary(double[] a, double[] b, double[] c, int i, int j, int n) {
         double u = i / (double) n, v = j / (double) n, w = 1 - u - v;
-        return pt(a[0] * w + b[0] * u + c[0] * v, a[1] * w + b[1] * u + c[1] * v, a[2] * w + b[2] * u + c[2] * v);
+        double billow = 0.045 * 27.0 * u * v * w;     // the membrane bows backwards between the bones (3D volume)
+        return pt(a[0] * w + b[0] * u + c[0] * v, a[1] * w + b[1] * u + c[1] * v, a[2] * w + b[2] * u + c[2] * v + billow);
     }
 
     private static float[] scale(int i, int j, int seed) {
@@ -37,16 +38,27 @@ final class CosmeticMono {
         return Poly.mix(Poly.INK, Poly.CHAR, 0.20f + 0.55f * k);
     }
 
-    /** A bone: a tapered strip from p to q, seen from both faces. */
+    private static double[] sub(double[] a, double[] b) { return new double[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]}; }
+    private static double[] cross(double[] a, double[] b) { return new double[]{a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]}; }
+    private static double[] norm(double[] a) { double l = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]); return new double[]{a[0] / l, a[1] / l, a[2] / l}; }
+    private static double[] off(double[] p, double[] n, double kn, double[] m, double km) {
+        return pt(p[0] + n[0] * kn + m[0] * km, p[1] + n[1] * kn + m[1] * km, p[2] + n[2] * kn + m[2] * km);
+    }
+
+    /** A bone: a tapered 4-sided prism from p to q (real thickness, so the wing reads as a 3D object). */
     private static void bone(double[] p, double[] q, double w0, double w1, float[] col, float[] edge) {
-        double dx = q[0] - p[0], dy = q[1] - p[1], l = Math.sqrt(dx * dx + dy * dy);
-        double nx = -dy / l, ny = dx / l;
-        double[] a = pt(p[0] + nx * w0, p[1] + ny * w0, 0.012), b = pt(p[0] - nx * w0, p[1] - ny * w0, 0.012);
-        double[] c = pt(q[0] - nx * w1, q[1] - ny * w1, 0.012), d = pt(q[0] + nx * w1, q[1] + ny * w1, 0.012);
-        Poly.quad(a, b, c, d, edge, edge, edge, edge, 1f);
-        double[] m0 = pt(p[0], p[1], 0.020), m1 = pt(q[0], q[1], 0.020);
-        Poly.quad(pt(a[0] * .5 + b[0] * .5 + nx * w0 * .4, a[1] * .5 + b[1] * .5 + ny * w0 * .4, 0.018), pt(a[0] * .5 + b[0] * .5 - nx * w0 * .4, a[1] * .5 + b[1] * .5 - ny * w0 * .4, 0.018),
-                pt(q[0] - nx * w1 * .4, q[1] - ny * w1 * .4, 0.018), pt(q[0] + nx * w1 * .4, q[1] + ny * w1 * .4, 0.018), col, col, col, col, 1f);
+        double[] d = sub(q, p);
+        double[] n = norm(cross(d, new double[]{0, 0, 1}));
+        double[] m = norm(cross(d, n));
+        double d0 = w0 * 0.8, d1 = w1 * 0.8;
+        double[][] P = {off(p, n, w0, m, d0), off(p, n, -w0, m, d0), off(p, n, -w0, m, -d0), off(p, n, w0, m, -d0)};
+        double[][] Q = {off(q, n, w1, m, d1), off(q, n, -w1, m, d1), off(q, n, -w1, m, -d1), off(q, n, w1, m, -d1)};
+        for (int i = 0; i < 4; i++) {
+            int k = (i + 1) % 4;
+            float[] c = (i == 0 || i == 2) ? edge : col;
+            Poly.quad(P[i], P[k], Q[k], Q[i], c, c, c, c, 1f);
+        }
+        Poly.quad(P[0], P[1], P[2], P[3], col, col, col, col, 1f);   // base cap (hides the joint seams)
     }
 
     /** One wing in its own plane (x out, y up). The caller mirrors it for the other side.
@@ -54,12 +66,12 @@ final class CosmeticMono {
      *  rising from the joint, and a membrane hanging below with three bone fingers and a scalloped edge. */
     static void wing(float age) {
         double fl = Math.sin(age * 0.10) * 0.02;
-        double[] A = pt(0.02, 0.0, 0), J = pt(0.52, 0.32, 0);
-        double[] K = pt(0.68 + fl, 0.90, 0);                       // spike tip
-        double[] F1 = pt(0.58 + fl, -0.46, 0), F2 = pt(0.33 + fl * 0.5, -0.44, 0), F3 = pt(0.08, -0.30, 0);
-        double[] M1 = pt((F1[0] + F2[0]) / 2, (F1[1] + F2[1]) / 2 + 0.07, 0);
-        double[] M2 = pt((F2[0] + F3[0]) / 2, (F2[1] + F3[1]) / 2 + 0.06, 0);
-        double[] Mo = pt(J[0] + 0.14, J[1] - 0.44, 0);              // outer edge between spike and first finger
+        double[] A = pt(0.02, 0.0, 0), J = pt(0.52, 0.32, 0.03);
+        double[] K = pt(0.68 + fl, 0.90, 0.12);                       // spike tip
+        double[] F1 = pt(0.58 + fl, -0.46, 0.09), F2 = pt(0.33 + fl * 0.5, -0.44, 0.07), F3 = pt(0.08, -0.30, 0.03);
+        double[] M1 = pt((F1[0] + F2[0]) / 2, (F1[1] + F2[1]) / 2 + 0.07, (F1[2] + F2[2]) / 2);
+        double[] M2 = pt((F2[0] + F3[0]) / 2, (F2[1] + F3[1]) / 2 + 0.06, (F2[2] + F3[2]) / 2);
+        double[] Mo = pt(J[0] + 0.14, J[1] - 0.44, 0.08);              // outer edge between spike and first finger
         scaled(J, F1, M1, 0); scaled(J, M1, F2, 1);
         scaled(J, F2, M2, 2); scaled(J, M2, F3, 3);
         scaled(J, F3, A, 0);

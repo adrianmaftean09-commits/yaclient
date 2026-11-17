@@ -24,6 +24,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
     public void doRenderLayer(AbstractClientPlayer p, float limbSwing, float limbSwingAmount, float partialTicks,
                               float age, float netHeadYaw, float headPitch, float scale) {
         Minecraft mc = Minecraft.getMinecraft();
+        age = clock();      // own continuous clock: walking, jumping or lag can never reset the animations
         if (p == mc.thePlayer && mc.gameSettings.thirdPersonView != 0 && mc.currentScreen == null
                 && Config.getBool("nametag.self", true)) {
             Nametag.render(p, partialTicks);
@@ -67,6 +68,23 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.popMatrix();
     }
 
+    /** Continuous animation time in ticks (20 per second), independent of the entity state. */
+    private static float clock() { return (float) ((System.nanoTime() / 1000000L) % 36000000L) / 50f; }
+
+    /** Smoothed "is in the air" factor per player, so the wing motion blends instead of jumping. */
+    private static final class AirState { float v; long t; }
+    private static final java.util.Map<Integer, AirState> AIR = new java.util.HashMap<Integer, AirState>();
+
+    private static float airFactor(AbstractClientPlayer p) {
+        AirState st = AIR.get(p.getEntityId());
+        long now = System.nanoTime();
+        if (st == null) { st = new AirState(); st.v = p.onGround ? 0f : 1f; st.t = now; AIR.put(p.getEntityId(), st); return st.v; }
+        float dt = Math.min(0.1f, (now - st.t) / 1e9f);
+        st.t = now;
+        st.v += ((p.onGround ? 0f : 1f) - st.v) * Math.min(1f, dt * 8f);
+        return st.v;
+    }
+
     /** True if the player wears the YA cape (then the vanilla cape must be hidden). */
     static boolean wearsYaCape(AbstractClientPlayer p) {
         Map<String, String> eq = CosmeticsApi.equippedFor(p);
@@ -84,10 +102,11 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
     }
 
     private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age, boolean mono) {
-        boolean air = !p.onGround;
-        float flap = (float) Math.sin(age * (air ? 0.32f : 0.10f)) * (air ? (mono ? 34f : 22f) : (mono ? 17f : 7f));
+        float air = airFactor(p);
+        float flap = (float) Math.sin(age * 0.10f) * (mono ? 17f : 7f) * (1f - air)
+                + (float) Math.sin(age * 0.32f) * (mono ? 34f : 22f) * air;
         float raise = (mono ? -6f : -2f) + flap;
-        float spread = 26f + (air ? 8f : 0f);
+        float spread = 26f + 8f * air;
         GlStateManager.pushMatrix();
         model.bipedBody.postRender(S);
         for (int side = -1; side <= 1; side += 2) {
