@@ -70,7 +70,7 @@ public final class CosmeticsApi {
     }
 
     // ---------- network ----------
-    private static String http(String method, String url, String body) throws Exception {
+    static String http(String method, String url, String body) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setConnectTimeout(5000);
         c.setReadTimeout(7000);
@@ -112,7 +112,7 @@ public final class CosmeticsApi {
     }
 
     /** Logs in to the store backend (needs a real Microsoft/Mojang account). Returns null if not possible. */
-    private static synchronized String token() {
+    static synchronized String token() {
         if (authToken != null && System.currentTimeMillis() < authExpiry) return authToken;
         try {
             Minecraft mc = Minecraft.getMinecraft();
@@ -135,6 +135,8 @@ public final class CosmeticsApi {
             return null;
         }
     }
+
+    static synchronized void resetToken() { authToken = null; authExpiry = 0; }
 
     // ---------- public actions ----------
     /** Reloads the catalog and the player's purchases in the background. */

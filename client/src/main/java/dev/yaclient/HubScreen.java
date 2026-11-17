@@ -10,9 +10,9 @@ import net.minecraft.client.gui.ScaledResolution;
  * plus a row with cosmetics, HUD editor and settings. Mods and cosmetics are separate screens.
  */
 public class HubScreen extends GuiScreen {
-    private static final int BW = 108, BH = 22, RH = 22, GAP = 6, SW = (BW - 2 * GAP) / 3;
+    private static final int BW = 108, BH = 22, RH = 22, GAP = 6, SW = (BW - 3 * GAP) / 4, ROWX = (BW - (4 * SW + 3 * GAP)) / 2;
 
-    private final float[] hover = new float[4];
+    private final float[] hover = new float[5];
     private final long opened = System.currentTimeMillis();
     private long last = opened;
     private int x0, y0;
@@ -45,8 +45,8 @@ public class HubScreen extends GuiScreen {
         button(0, x0, y0, BW, BH, mx, my, dt);
         Gfx.textCentered(Lang.t("hub.mods"), cx, y0 + (BH - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.TEXT);
         // second row: cosmetics, HUD editor, settings - same total width as MODS, evenly spaced
-        String[] icons = {"shirt", "move", "gear"};
-        for (int k = 0; k < 3; k++) {
+        String[] icons = {"shirt", "friends", "move", "gear"};
+        for (int k = 0; k < 4; k++) {
             int[] r = rect(k + 1);
             button(k + 1, r[0], r[1], r[2], r[3], mx, my, dt);
             Gfx.icon(icons[k], r[0] + (r[2] - 14) / 2, r[1] + (r[3] - 14) / 2, 14, Theme.TEXT);
@@ -54,8 +54,8 @@ public class HubScreen extends GuiScreen {
         int sy = y0 + BH + GAP;
 
         int hv = -1;
-        for (int i = 0; i < 4; i++) if (hover[i] > 0.5f) hv = i;
-        String[] tips = {"hub.mods", "hub.cosmetics", "hub.hud", "hub.settings"};
+        for (int i = 0; i < 5; i++) if (hover[i] > 0.5f) hv = i;
+        String[] tips = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
         if (hv >= 0) Gfx.textCentered(Lang.t(tips[hv]), cx, sy + RH + 6, 8, false, Theme.MUTED);
         // changelog card (bottom left), same as on the main menu
         nx = 10;
@@ -70,11 +70,12 @@ public class HubScreen extends GuiScreen {
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
         Gfx.fade = 1f;
+        FriendToast.render();
     }
 
     private int[] rect(int i) {
         if (i == 0) return new int[]{x0, y0, BW, BH};
-        return new int[]{x0 + (i - 1) * (SW + GAP), y0 + BH + GAP, SW, RH};
+        return new int[]{x0 + ROWX + (i - 1) * (SW + GAP), y0 + BH + GAP, SW, RH};
     }
 
     private void button(int i, int x, int y, int w, int h, int mx, int my, float dt) {
@@ -89,12 +90,13 @@ public class HubScreen extends GuiScreen {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (mx >= nx && mx < nx + NW && my >= ny && my < ny + NH) { mc.displayGuiScreen(new NewsScreen(this)); return; }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             int[] r = rect(i);
             if (mx >= r[0] && mx < r[0] + r[2] && my >= r[1] && my < r[1] + r[3]) {
                 if (i == 0) mc.displayGuiScreen(new MenuScreen(0));
                 else if (i == 1) mc.displayGuiScreen(new MenuScreen(4));
-                else if (i == 2) mc.displayGuiScreen(new HudEditorScreen());
+                else if (i == 2) mc.displayGuiScreen(new FriendsScreen(this));
+                else if (i == 3) mc.displayGuiScreen(new HudEditorScreen());
                 else mc.displayGuiScreen(new MenuScreen(5));
                 return;
             }

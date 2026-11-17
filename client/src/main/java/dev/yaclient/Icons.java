@@ -23,6 +23,7 @@ final class Icons {
     // M x y | L x y | B x1 y1 x2 y2 x y | Q x1 y1 x y | Z | C cx cy r | D cx cy r (filled) | E cx cy rx ry | R x y w h r | A cx cy r start extent
     private static final java.util.Map<String, String> DSL = new java.util.HashMap<String, String>();
     static {
+        DSL.put("friends", "C 9 8 3.5 M 2.5 20 B 2.5 14 6 13.5 9 13.5 B 12 13.5 15.5 14 15.5 20 M 16 4.5 B 19 4.8 19.5 8.5 17.2 10.4 M 18 13.8 B 20.8 14.2 21.8 16.5 21.8 19.5");
         DSL.put("combo", "M 13 3 L 6 13 L 11 13 L 10 21 L 18 10 L 13 10 Z");
         DSL.put("bow_charge", "M 8 3 B 18 7 18 17 8 21 M 8 3 L 8 21 M 3 12 L 17 12 M 14 9 L 17 12 L 14 15");
         DSL.put("block_info", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");

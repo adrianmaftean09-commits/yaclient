@@ -11,6 +11,11 @@
  *   GET  /v1/me?token=                    player   owned items + equipped items
  *   POST /v1/equip     token,slot,item    player   equip an owned item ("none" to unequip)
  *   GET  /v1/players/:uuid                public   what a player wears (other players see this)
+ *   GET  /v1/friends?token=&where=        player   friends (online first), incoming + outgoing requests; also a presence heartbeat
+ *   POST /v1/friends/add     token,name   player   send a request (or accept if they already asked you)
+ *   POST /v1/friends/accept  token,uuid   player
+ *   POST /v1/friends/decline token,uuid   player   decline an incoming request / cancel an outgoing one
+ *   POST /v1/friends/remove  token,uuid   player
  *   POST /v1/admin/grant  (x-admin-key)   website  uuid|username, item|"*" [, revoke=1]
  */
 const http = require('http');
@@ -38,7 +43,9 @@ function save() {
 }
 function player(uuid) {
   if (!db.players[uuid]) db.players[uuid] = { owned: [], equipped: {} };
-  return db.players[uuid];
+  const p = db.players[uuid];
+  if (!p.friends) { p.friends = []; p.incoming = []; p.outgoing = []; }
+  return p;
 }
 const norm = (u) => String(u || '').replace(/-/g, '').toLowerCase();
 
@@ -90,6 +97,38 @@ function equippedMap(p) {
   return out;
 }
 
+// ---------- friends ----------
+const presence = new Map(); // uuid -> { t, where }
+const ONLINE_MS = 75 * 1000;
+const MAX_FRIENDS = 200;
+function entry(uuid) {
+  const p = db.players[uuid];
+  const pr = presence.get(uuid);
+  const on = !!pr && Date.now() - pr.t < ONLINE_MS;
+  return { uuid, name: (p && p.name) || 'Player', on: on ? 1 : 0, where: on ? pr.where : '' };
+}
+function pack(uuids, sort) {
+  let list = uuids.map(entry);
+  if (sort) list.sort((a, b) => b.on - a.on || a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  return list.map((e) => [e.uuid, e.name, e.on, e.where].join(',')).join(';');
+}
+function unlink(a, b) {
+  const pa = player(a), pb = player(b);
+  pa.friends = pa.friends.filter((x) => x !== b); pb.friends = pb.friends.filter((x) => x !== a);
+  pa.incoming = pa.incoming.filter((x) => x !== b); pb.incoming = pb.incoming.filter((x) => x !== a);
+  pa.outgoing = pa.outgoing.filter((x) => x !== b); pb.outgoing = pb.outgoing.filter((x) => x !== a);
+}
+function befriend(a, b) {
+  unlink(a, b);
+  player(a).friends.push(b); player(b).friends.push(a);
+}
+function findByName(name) {
+  const q = String(name || '').trim().toLowerCase();
+  if (!/^[a-z0-9_]{3,16}$/.test(q)) return null;
+  for (const [uuid, p] of Object.entries(db.players)) if (p.name && p.name.toLowerCase() === q) return uuid;
+  return null;
+}
+
 // ---------- routes ----------
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
@@ -113,6 +152,7 @@ const server = http.createServer(async (req, res) => {
       if (!check || !check.id) return send(res, 401, { error: 'not verified' });
       const token = crypto.randomBytes(24).toString('hex');
       sessions.set(token, { uuid: norm(check.id), exp: Date.now() + 3600 * 1000 });
+      if (check.name) { player(norm(check.id)).name = String(check.name); save(); }
       return send(res, 200, { token, uuid: norm(check.id) });
     }
 
@@ -144,6 +184,49 @@ const server = http.createServer(async (req, res) => {
     const m = url.pathname.match(/^\/v1\/players\/([0-9a-fA-F-]{32,36})$/);
     if (req.method === 'GET' && m) {
       return send(res, 200, equippedMap(player(norm(m[1]))));
+    }
+
+    if (route === 'GET /v1/friends') {
+      const uuid = who(url.searchParams.get('token'));
+      if (!uuid) return send(res, 401, { error: 'bad token' });
+      const w = url.searchParams.get('where') === 'launcher' ? 'launcher' : 'game';
+      const prev = presence.get(uuid);
+      // being in the game wins over the launcher for a few seconds
+      if (!(prev && prev.where === 'game' && w === 'launcher' && Date.now() - prev.t < 40000)) presence.set(uuid, { t: Date.now(), where: w });
+      else presence.set(uuid, { t: Date.now(), where: 'game' });
+      const p = player(uuid);
+      return send(res, 200, { friends: pack(p.friends, true), incoming: pack(p.incoming, false), outgoing: pack(p.outgoing, false) });
+    }
+
+    if (route.startsWith('POST /v1/friends/')) {
+      const f = await body(req);
+      const me = who(f.token);
+      if (!me) return send(res, 401, { error: 'bad token' });
+      const act = url.pathname.slice('/v1/friends/'.length);
+      const mine = player(me);
+      if (act === 'add') {
+        const other = findByName(f.name);
+        if (!other) return send(res, 404, { error: 'not found' });
+        if (other === me) return send(res, 400, { error: 'self' });
+        if (mine.friends.includes(other)) return send(res, 409, { error: 'already' });
+        if (mine.incoming.includes(other)) { befriend(me, other); save(); return send(res, 200, { ok: 1, status: 'accepted' }); }
+        if (mine.outgoing.includes(other)) return send(res, 409, { error: 'pending' });
+        if (mine.friends.length >= MAX_FRIENDS) return send(res, 400, { error: 'full' });
+        mine.outgoing.push(other); player(other).incoming.push(me);
+        save();
+        return send(res, 200, { ok: 1, status: 'sent' });
+      }
+      const other = norm(f.uuid);
+      if (!db.players[other]) return send(res, 404, { error: 'not found' });
+      if (act === 'accept') {
+        if (!mine.incoming.includes(other)) return send(res, 400, { error: 'no request' });
+        if (mine.friends.length >= MAX_FRIENDS) return send(res, 400, { error: 'full' });
+        befriend(me, other);
+      } else if (act === 'decline' || act === 'remove') {
+        unlink(me, other);
+      } else return send(res, 404, { error: 'not found' });
+      save();
+      return send(res, 200, { ok: 1 });
     }
 
     if (route === 'POST /v1/admin/grant') {

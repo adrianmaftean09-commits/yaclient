@@ -108,6 +108,7 @@ public class YAClient implements ModInitializer {
 
             ScoreboardModule.afterOverlay();
             TabBadge.tick();
+            FriendsApi.tick();
             HitTracker.tick(mc);
             for (Module m : MODULES) {
                 m.bind();
@@ -126,6 +127,7 @@ public class YAClient implements ModInitializer {
         EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
             ScoreboardModule.afterOverlay();
             Hud.render();
+            FriendToast.render();
         });
 
         System.out.println("[" + NAME + "] " + VERSION + " loaded. Press Right Shift for the menu.");

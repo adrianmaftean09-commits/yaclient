@@ -219,3 +219,22 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .split .go{margin-top:0}.split .ghost{margin-top:0}
 .split .dots{margin-top:12px}
 .ob .in{text-align:center}
+
+/* ---- friends ---- */
+.nav .bdg{margin-left:auto;min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px}
+.dot{position:absolute;right:-2px;bottom:-2px;width:13px;height:13px;border-radius:50%;background:#22c55e;border:3px solid var(--surface);box-sizing:border-box}
+.dot.s{position:static;display:inline-block;width:8px;height:8px;border:0;margin-right:6px;box-shadow:0 0 8px #22c55e88}
+.frn{margin-left:10px;color:var(--text);font-weight:600;font-size:13px}
+.fradd{display:flex;gap:10px;padding:12px;align-items:center;margin-bottom:10px}
+.frin{flex:1;display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line2);color:var(--mute)}
+.frin:focus-within{border-color:var(--accent)}
+.frin svg{width:20px;height:20px;flex:none}
+.frin input{flex:1;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:14px}
+.frmsg{min-height:20px;font-size:13px;margin:0 4px 6px}.frmsg.ok{color:#22c55e}.frmsg.bad{color:#ff6b63}
+.frh{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);margin:14px 4px 8px}.frh em{font-style:normal;opacity:.7;margin-left:4px}
+.fr{display:flex;align-items:center;gap:14px;padding:10px 14px;margin-bottom:8px}
+.fr.off .fav{filter:grayscale(.7) brightness(.8)}.fr.off .ftx b{color:var(--mute)}
+.fav{position:relative;width:44px;height:44px;border-radius:12px;background:var(--surface2) center/cover;flex:none;display:grid;place-items:center;font-weight:800;color:var(--mute);image-rendering:pixelated}
+.fav span{position:absolute}.fav img{position:absolute;inset:0;width:100%;height:100%;border-radius:12px;object-fit:cover;image-rendering:pixelated}.fav .dot{z-index:2}
+.ftx{flex:1;min-width:0}.ftx b{display:block;font-size:15px}.ftx small{color:var(--mute);font-size:12.5px}.ftx small.live{color:#22c55e;font-weight:600}
+.fact{display:flex;gap:8px}.ghostb{opacity:0;transition:.15s}.fr:hover .ghostb{opacity:1}

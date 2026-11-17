@@ -288,6 +288,71 @@ ipcMain.handle('login-ms', async () => {
   }
 });
 
+// ---------- friends (backend /v1/friends; identity proven through Mojang's session server) ----------
+function request(method, url, body, type) {
+  return new Promise((resolve, reject) => {
+    const u = new URL(url);
+    const mod = u.protocol === 'https:' ? https : http;
+    const r = mod.request(u, { method, timeout: 9000, headers: { 'User-Agent': 'YA-CLIENT-Launcher', ...(body ? { 'Content-Type': type, 'Content-Length': Buffer.byteLength(body) } : {}) } }, (res) => {
+      let b = ''; res.on('data', (c) => (b += c)); res.on('end', () => {
+        let j = null; try { j = JSON.parse(b); } catch (_) {}
+        resolve({ status: res.statusCode, json: j });
+      });
+    });
+    r.on('timeout', () => r.destroy(new Error('timeout')));
+    r.on('error', reject);
+    if (body) r.write(body);
+    r.end();
+  });
+}
+let apiTok = null, apiTokExp = 0, apiTokFor = '';
+async function apiToken() {
+  const c = contentCache || (await loadContent());
+  const a = state.account;
+  if (!c.apiBase || !a || a.type !== 'microsoft' || !a.auth || !a.auth.access_token) return null;
+  if (apiTok && Date.now() < apiTokExp && apiTokFor === a.name) return apiTok;
+  const uuid = String(a.auth.uuid || '').replace(/-/g, '');
+  const serverId = require('crypto').randomBytes(16).toString('hex');
+  const j = await request('POST', 'https://sessionserver.mojang.com/session/minecraft/join',
+    JSON.stringify({ accessToken: a.auth.access_token, selectedProfile: uuid, serverId }), 'application/json');
+  if (j.status !== 204 && j.status !== 200) return null;
+  const r = await request('POST', c.apiBase.replace(/\/+$/, '') + '/v1/auth',
+    'username=' + encodeURIComponent(a.name) + '&serverId=' + serverId, 'application/x-www-form-urlencoded');
+  if (r.status !== 200 || !r.json || !r.json.token) return null;
+  apiTok = r.json.token; apiTokExp = Date.now() + 50 * 60 * 1000; apiTokFor = a.name;
+  return apiTok;
+}
+const parseFriends = (s) => String(s || '').split(';').filter(Boolean).map((x) => {
+  const p = x.split(','); return { uuid: p[0], name: p[1], online: p[2] === '1', where: p[3] || '' };
+});
+async function friendsCall(method, pathq, form) {
+  const c = contentCache || (await loadContent());
+  if (!c.apiBase) return { error: 'not_configured' };
+  if (!state.account || state.account.type !== 'microsoft') return { error: 'premium' };
+  try {
+    const tok = await apiToken();
+    if (!tok) return { error: 'login' };
+    const base = c.apiBase.replace(/\/+$/, '') + '/v1/friends';
+    const r = method === 'GET'
+      ? await request('GET', base + '?where=launcher&token=' + tok)
+      : await request('POST', base + '/' + pathq, 'token=' + tok + '&' + form, 'application/x-www-form-urlencoded');
+    if (r.status === 401) { apiTok = null; return { error: 'login' }; }
+    if (r.status === 404) return { error: 'not_found' };
+    if (r.status === 409) return { error: 'already' };
+    if (r.status >= 400 || !r.json) return { error: r.status === 400 ? 'self' : 'offline' };
+    if (method === 'GET') return { friends: parseFriends(r.json.friends), incoming: parseFriends(r.json.incoming), outgoing: parseFriends(r.json.outgoing) };
+    return { ok: true, status: r.json.status || 'ok' };
+  } catch (_) { return { error: 'offline' }; }
+}
+ipcMain.handle('friends-list', () => friendsCall('GET'));
+ipcMain.handle('friends-act', (_e, act, arg) => {
+  if (act === 'add') return friendsCall('POST', 'add', 'name=' + encodeURIComponent(String(arg || '')));
+  if (['accept', 'decline', 'remove'].includes(act)) return friendsCall('POST', act, 'uuid=' + encodeURIComponent(String(arg || '')));
+  return { error: 'bad' };
+});
+// stay "online" for friends while the launcher is open
+setInterval(() => { if (state.account && state.account.type === 'microsoft') friendsCall('GET').catch(() => {}); }, 40000);
+
 // ---------- downloads ----------
 function download(url, dest) {
   return new Promise((resolve, reject) => {

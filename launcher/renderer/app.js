@@ -57,6 +57,10 @@ Object.assign(I18N.en, { java_dl: 'Downloading Java (first launch only)...' });
 Object.assign(I18N.it, { java_dl: 'Scarico Java (solo al primo avvio)...' });
 Object.assign(I18N.es, { java_dl: 'Descargando Java (solo la primera vez)...' });
 Object.assign(I18N.de, { java_dl: 'Lade Java (nur beim ersten Start)...' });
+Object.assign(I18N.en, {"friends_nav": "Friends", "fr_title": "Friends", "fr_sub": "Add friends by their Minecraft name and see who is online.", "fr_ph": "Minecraft name", "fr_add": "Add friend", "fr_req": "Requests", "fr_on": "Online", "fr_off": "Offline", "fr_sent": "Sent", "fr_accept": "Accept", "fr_decline": "Decline", "fr_remove": "Remove", "fr_cancel": "Cancel", "fr_wants": "Wants to be your friend", "fr_pending": "Request sent", "fr_game": "Playing now", "fr_launcher": "In the launcher", "fr_offl": "Offline", "fr_empty": "No friends yet. Add someone with their Minecraft name above.", "fr_premium": "Friends need a Microsoft account. Sign in with Microsoft to use them.", "fr_login": "Could not sign in to the friends service. Try signing in again.", "fr_offline": "Friends are not available right now.", "fr_loading": "Loading...", "fr_sending": "Sending...", "fr_r_sent": "Request sent", "fr_r_accepted": "You are now friends", "fr_r_not_found": "Player not found. They must have used YA CLIENT.", "fr_r_self": "You can't add yourself.", "fr_r_already": "Already friends or request pending.", "fr_r_offline": "Could not reach the server.", "fr_n_online": "online"});
+Object.assign(I18N.it, {"friends_nav": "Amici", "fr_title": "Amici", "fr_sub": "Aggiungi amici col loro nome Minecraft e guarda chi è online.", "fr_ph": "Nome Minecraft", "fr_add": "Aggiungi amico", "fr_req": "Richieste", "fr_on": "Online", "fr_off": "Offline", "fr_sent": "Inviate", "fr_accept": "Accetta", "fr_decline": "Rifiuta", "fr_remove": "Rimuovi", "fr_cancel": "Annulla", "fr_wants": "Vuole essere tuo amico", "fr_pending": "Richiesta inviata", "fr_game": "In gioco", "fr_launcher": "Nel launcher", "fr_offl": "Offline", "fr_empty": "Ancora nessun amico. Aggiungi qualcuno col suo nome Minecraft qui sopra.", "fr_premium": "Gli amici richiedono un account Microsoft. Accedi con Microsoft per usarli.", "fr_login": "Impossibile accedere al servizio amici. Prova ad accedere di nuovo.", "fr_offline": "Gli amici non sono disponibili al momento.", "fr_loading": "Caricamento...", "fr_sending": "Invio...", "fr_r_sent": "Richiesta inviata", "fr_r_accepted": "Ora siete amici", "fr_r_not_found": "Giocatore non trovato. Deve aver usato YA CLIENT.", "fr_r_self": "Non puoi aggiungere te stesso.", "fr_r_already": "Siete già amici o c'è una richiesta in sospeso.", "fr_r_offline": "Impossibile contattare il server.", "fr_n_online": "online"});
+Object.assign(I18N.es, {"friends_nav": "Amigos", "fr_title": "Amigos", "fr_sub": "Añade amigos por su nombre de Minecraft y mira quién está en línea.", "fr_ph": "Nombre de Minecraft", "fr_add": "Añadir amigo", "fr_req": "Solicitudes", "fr_on": "En línea", "fr_off": "Desconectados", "fr_sent": "Enviadas", "fr_accept": "Aceptar", "fr_decline": "Rechazar", "fr_remove": "Eliminar", "fr_cancel": "Cancelar", "fr_wants": "Quiere ser tu amigo", "fr_pending": "Solicitud enviada", "fr_game": "Jugando", "fr_launcher": "En el launcher", "fr_offl": "Desconectado", "fr_empty": "Aún no tienes amigos. Añade a alguien con su nombre de Minecraft arriba.", "fr_premium": "Los amigos necesitan una cuenta Microsoft. Inicia sesión con Microsoft.", "fr_login": "No se pudo iniciar sesión en el servicio de amigos. Inténtalo de nuevo.", "fr_offline": "Los amigos no están disponibles ahora.", "fr_loading": "Cargando...", "fr_sending": "Enviando...", "fr_r_sent": "Solicitud enviada", "fr_r_accepted": "Ya sois amigos", "fr_r_not_found": "Jugador no encontrado. Debe haber usado YA CLIENT.", "fr_r_self": "No puedes añadirte a ti mismo.", "fr_r_already": "Ya sois amigos o hay una solicitud pendiente.", "fr_r_offline": "No se pudo contactar con el servidor.", "fr_n_online": "en línea"});
+Object.assign(I18N.de, {"friends_nav": "Freunde", "fr_title": "Freunde", "fr_sub": "Füge Freunde per Minecraft-Namen hinzu und sieh, wer online ist.", "fr_ph": "Minecraft-Name", "fr_add": "Freund hinzufügen", "fr_req": "Anfragen", "fr_on": "Online", "fr_off": "Offline", "fr_sent": "Gesendet", "fr_accept": "Annehmen", "fr_decline": "Ablehnen", "fr_remove": "Entfernen", "fr_cancel": "Abbrechen", "fr_wants": "Möchte dein Freund sein", "fr_pending": "Anfrage gesendet", "fr_game": "Spielt gerade", "fr_launcher": "Im Launcher", "fr_offl": "Offline", "fr_empty": "Noch keine Freunde. Füge oben jemanden per Minecraft-Namen hinzu.", "fr_premium": "Freunde brauchen ein Microsoft-Konto. Melde dich mit Microsoft an.", "fr_login": "Anmeldung beim Freunde-Dienst fehlgeschlagen. Melde dich erneut an.", "fr_offline": "Freunde sind gerade nicht verfügbar.", "fr_loading": "Laden...", "fr_sending": "Sende...", "fr_r_sent": "Anfrage gesendet", "fr_r_accepted": "Ihr seid jetzt Freunde", "fr_r_not_found": "Spieler nicht gefunden. Er muss YA CLIENT benutzt haben.", "fr_r_self": "Du kannst dich nicht selbst hinzufügen.", "fr_r_already": "Bereits befreundet oder Anfrage offen.", "fr_r_offline": "Server nicht erreichbar.", "fr_n_online": "online"});
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
 const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
@@ -72,6 +76,7 @@ const ICON = {
   plus: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   chev: '<path d="M6 9l6 6 6-6"/>',
+  friends: '<circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-4 3-6 6.5-6s6.5 2 6.5 6"/><path d="M16 4.6a3.6 3.6 0 0 1 1.4 6.4M18 14.2c2.4.6 3.8 2.5 3.8 5.6"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'
 };
 const ic = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
@@ -81,11 +86,11 @@ let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest:
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
-const PAGES = ['home', 'versions', 'servers', 'cosmetics', 'plus', 'console', 'settings'];
-const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
+const PAGES = ['home', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
+const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
 function renderNav() {
-  $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em></button>`).join('');
+  $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em>${p === 'friends' && FR.data && FR.data.incoming.length ? `<b class="bdg">${FR.data.incoming.length}</b>` : ''}</button>`).join('');
   $('#accIcon').innerHTML = ic('user');
   $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
   $('#accPill').innerHTML = S.account ? `<i>${esc(S.account.name[0].toUpperCase())}</i>${esc(S.account.name)}` : esc(t('signIn'));
@@ -197,6 +202,58 @@ function viewServers() {
   });
   return h + '</div>';
 }
+let FR = { data: null, err: '', msg: '', ok: true };
+function frRows(list, kind) {
+  return list.map((f) => {
+    const on = kind === 'friend' && f.online;
+    const sub = kind === 'req' ? t('fr_wants') : kind === 'sent' ? t('fr_pending') : on ? (f.where === 'game' ? t('fr_game') : t('fr_launcher')) : t('fr_offl');
+    const acts = kind === 'req'
+      ? `<button class="btn sm hi" data-fa="accept" data-fu="${esc(f.uuid)}">${esc(t('fr_accept'))}</button><button class="btn sm" data-fa="decline" data-fu="${esc(f.uuid)}">${esc(t('fr_decline'))}</button>`
+      : kind === 'sent' ? `<button class="btn sm" data-fa="decline" data-fu="${esc(f.uuid)}">${esc(t('fr_cancel'))}</button>`
+      : `<button class="btn sm ghostb" data-fa="remove" data-fu="${esc(f.uuid)}">${esc(t('fr_remove'))}</button>`;
+    return `<div class="card fr ${kind === 'friend' && !f.online ? 'off' : ''}"><div class="fav"><span>${esc(f.name[0].toUpperCase())}</span><img alt="" src="https://mc-heads.net/avatar/${encodeURIComponent(f.name)}/64">${on ? '<i class="dot"></i>' : ''}</div>
+      <div class="ftx"><b>${esc(f.name)}</b><small class="${on ? 'live' : ''}">${esc(sub)}</small></div><div class="fact">${acts}</div></div>`;
+  }).join('');
+}
+function frList() {
+  if (FR.err) return `<div class="card sv ph">${esc(t('fr_' + FR.err))}</div>`;
+  if (!FR.data) return `<div class="card sv ph">${esc(t('fr_loading'))}</div>`;
+  const d = FR.data; let h = '';
+  const sec = (key, n, body) => body ? `<div class="frh">${esc(t(key))} <em>${n}</em></div>${body}` : '';
+  h += sec('fr_req', d.incoming.length, frRows(d.incoming, 'req'));
+  const on = d.friends.filter((f) => f.online), off = d.friends.filter((f) => !f.online);
+  h += sec('fr_on', on.length, frRows(on, 'friend'));
+  h += sec('fr_off', off.length, frRows(off, 'friend'));
+  h += sec('fr_sent', d.outgoing.length, frRows(d.outgoing, 'sent'));
+  return h || `<div class="card sv ph">${esc(t('fr_empty'))}</div>`;
+}
+function frSub() {
+  const n = FR.data ? FR.data.friends.filter((f) => f.online).length : 0;
+  return esc(t('fr_sub')) + (FR.data ? ` <span class="frn"><i class="dot s"></i>${n} ${esc(t('fr_n_online'))}</span>` : '');
+}
+function viewFriends() {
+  return `<h1>${esc(t('fr_title'))}</h1><p class="sub" id="frSub">${frSub()}</p>
+    <div class="card fradd"><div class="frin">${ic('friends')}<input id="frName" placeholder="${esc(t('fr_ph'))}" maxlength="16" autocomplete="off" spellcheck="false"></div><button class="btn hi" id="frAdd">${esc(t('fr_add'))}</button></div>
+    <div class="frmsg ${FR.ok ? 'ok' : 'bad'}" id="frMsg">${esc(FR.msg)}</div><div class="frl" id="frList">${frList()}</div>`;
+}
+async function loadFriends() {
+  if (!S.account) { FR.data = null; FR.err = 'premium'; return; }
+  const r = await window.ya.friends();
+  if (r.error) { FR.err = r.error === 'not_configured' ? 'offline' : r.error; if (!FR.data) FR.data = null; }
+  else { FR.err = ''; FR.data = r; }
+  renderNav();
+  if (page === 'friends') { const l = $('#frList'); if (l) l.innerHTML = frList(); const s = $('#frSub'); if (s) s.innerHTML = frSub(); }
+}
+setInterval(() => { if (S.account && S.account.type === 'microsoft') loadFriends(); }, 15000);
+async function friendAct(a, v) {
+  const r = await window.ya.friendAct(a, v);
+  if (a === 'add') {
+    FR.ok = !r.error; FR.msg = r.error ? t('fr_r_' + r.error) : r.status === 'accepted' ? t('fr_r_accepted') : t('fr_r_sent');
+    const m = $('#frMsg'); if (m) { m.className = 'frmsg ' + (FR.ok ? 'ok' : 'bad'); m.textContent = FR.msg; }
+    if (FR.ok) { const i = $('#frName'); if (i) i.value = ''; }
+  }
+  await loadFriends();
+}
 function viewCosmetics() {
   return `<h1>${esc(t('cosmetics'))}</h1><p class="sub">${esc(t('storeHint'))}</p>
     <div class="playrow" style="margin-bottom:18px"><button class="btn" id="openStore">${esc(t('store'))}</button></div>
@@ -228,8 +285,9 @@ function viewConsole() {
 }
 function render() {
   const v = $('#view');
-  v.innerHTML = { home: viewHome, plus: viewPlus, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
+  v.innerHTML = { home: viewHome, plus: viewPlus, versions: viewVersions, servers: viewServers, friends: viewFriends, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
+  if (page === 'friends') loadFriends();
   if (page === 'home' && S.account) mountPlayer($('#mc3d'), S.account.name, 5.8);
 }
 
@@ -420,6 +478,8 @@ document.addEventListener('click', async (e) => {
   }
   if (el.dataset.preset) { obPreset = el.dataset.preset; return drawOb(); }
   if (el.id === 'plusChip') return go('plus');
+  if (el.id === 'frAdd') { const v = ($('#frName').value || '').trim(); if (v.length < 3) return; FR.ok = true; FR.msg = t('fr_sending'); $('#frMsg').textContent = FR.msg; $('#frMsg').className = 'frmsg ok'; return friendAct('add', v); }
+  if (el.dataset.fa) return friendAct(el.dataset.fa, el.dataset.fu);
   if (el.id === 'accPill') return showLogin();
   if (el.id === 'rerun') return showOnboarding(0);
   if (el.id === 'buyPlus') { const u = C.storeUrl; if (u) window.ya.openExternal(u); return; }
@@ -451,6 +511,7 @@ document.addEventListener('change', async (e) => {
   if (e.target.id === 'sJava') { S.javaPath = e.target.value || 'java'; window.ya.saveSettings({ javaPath: S.javaPath }); }
   if (e.target.id === 'sRam') window.ya.saveSettings({ ram: S.ram });
 });
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'frName') $('#frAdd').click(); });
 document.addEventListener('input', (e) => {
   if (e.target.id === 'vq') { vq = e.target.value; $('#vlist').innerHTML = versionRows(); }
   if (e.target.id === 'obRam') { obRam = +e.target.value; $('#obRamV').textContent = obRam + ' MB · ' + t('ram_d'); }
