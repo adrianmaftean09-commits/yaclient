@@ -31,3 +31,12 @@ net.minecraft.client.gui.Font
 net.minecraft.client.gui.GuiGraphicsExtractor
 net.minecraft.world.phys.HitResult
 net.minecraft.client.multiplayer.MultiPlayerGameMode
+net.minecraft.client.renderer.texture.DynamicTexture
+com.mojang.blaze3d.platform.NativeImage
+net.minecraft.client.renderer.texture.TextureManager
+com.mojang.blaze3d.pipeline.RenderPipeline
+net.minecraft.client.renderer.RenderPipelines
+net.minecraft.client.renderer.texture.AbstractTexture
+com.mojang.blaze3d.textures.GpuTexture
+net.minecraft.client.gui.screens.ChatScreen
+net.minecraft.client.gui.components.events.GuiEventListener
