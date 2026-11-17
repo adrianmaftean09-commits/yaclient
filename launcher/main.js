@@ -312,12 +312,10 @@ async function apiToken() {
   if (!c.apiBase || !a || a.type !== 'microsoft' || !a.auth || !a.auth.access_token) return null;
   if (apiTok && Date.now() < apiTokExp && apiTokFor === a.name) return apiTok;
   const uuid = String(a.auth.uuid || '').replace(/-/g, '');
-  const serverId = require('crypto').randomBytes(16).toString('hex');
-  const j = await request('POST', 'https://sessionserver.mojang.com/session/minecraft/join',
-    JSON.stringify({ accessToken: a.auth.access_token, selectedProfile: uuid, serverId }), 'application/json');
-  if (j.status !== 204 && j.status !== 200) return null;
+  let secret = readProps()['api.secret'] || '';
+  if (!/^[0-9a-f]{32}$/.test(secret)) { secret = require('crypto').randomBytes(16).toString('hex'); try { writeProps({ 'api.secret': secret }); } catch (_) {} }
   const r = await request('POST', c.apiBase.replace(/\/+$/, '') + '/v1/auth',
-    'username=' + encodeURIComponent(a.name) + '&serverId=' + serverId, 'application/x-www-form-urlencoded');
+    'username=' + encodeURIComponent(a.name) + '&uuid=' + uuid + '&secret=' + secret, 'application/x-www-form-urlencoded');
   if (r.status !== 200 || !r.json || !r.json.token) return null;
   apiTok = r.json.token; apiTokExp = Date.now() + 50 * 60 * 1000; apiTokFor = a.name;
   return apiTok;

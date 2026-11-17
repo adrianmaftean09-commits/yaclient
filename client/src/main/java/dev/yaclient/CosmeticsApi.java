@@ -130,15 +130,18 @@ public final class CosmeticsApi {
             Session s = mc.getSession();
             String[] parts = s.getSessionID().split(":");
             if (parts.length < 3 || s.getPlayerID() == null || s.getPlayerID().length() < 32) { detail = "no MS session (" + parts.length + ")"; return null; }
-            String serverId = Long.toHexString(new SecureRandom().nextLong()) + Long.toHexString(new SecureRandom().nextLong());
-
-            Object svc = sessionService(mc);
-            Class<?> gp = Class.forName("com.mojang.authlib.GameProfile");
-            Object profile = gp.getConstructor(UUID.class, String.class).newInstance(parseUuid(s.getPlayerID()), s.getUsername());
-            svc.getClass().getMethod("joinServer", gp, String.class, String.class).invoke(svc, profile, parts[1], serverId);
-
+            String secret = Config.get("api.secret", "");
+            if (!secret.matches("[0-9a-f]{32}")) {
+                byte[] rb = new byte[16];
+                new SecureRandom().nextBytes(rb);
+                StringBuilder sb = new StringBuilder();
+                for (byte x : rb) sb.append(String.format("%02x", x));
+                secret = sb.toString();
+                Config.set("api.secret", secret);
+                Config.save();
+            }
             Map<String, String> r = Lang.parse(http("POST", base() + "/v1/auth",
-                    "username=" + enc(s.getUsername()) + "&serverId=" + enc(serverId)));
+                    "username=" + enc(s.getUsername()) + "&uuid=" + enc(s.getPlayerID().replace("-", "")) + "&secret=" + enc(secret)));
             authToken = r.get("token");
             authExpiry = System.currentTimeMillis() + 50L * 60L * 1000L;
             return authToken;

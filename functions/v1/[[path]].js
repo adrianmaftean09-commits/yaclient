@@ -155,19 +155,20 @@ export async function onRequest({ request, env }) {
     }
     if (route === 'POST /v1/auth') {
       const f = await form(request);
-      if (!f.username || !f.serverId) return send(400, { error: 'missing fields' });
+      if (!f.username) return send(400, { error: 'missing fields' });
       const ip = request.headers.get('cf-connecting-ip') || 'x';
       const rl = (globalThis.__rl = globalThis.__rl || new Map()), bucket = ip + ':' + Math.floor(Date.now() / 60000);
       const n = (rl.get(bucket) || 0) + 1; rl.set(bucket, n); if (rl.size > 500) rl.clear();
       if (n > 30) return send(429, { error: 'rate limited' });
-      let check = null, why = '';
-      try {
-        const mr = await fetch('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=' + encodeURIComponent(f.username) + '&serverId=' + encodeURIComponent(f.serverId), { headers: { 'user-agent': 'YA-CLIENT-Store' } });
-        const mt = await mr.text();
-        if (mr.status === 200) { try { check = JSON.parse(mt); } catch (_) { why = 'mojang bad json'; } }
-        else why = 'mojang ' + mr.status + (mr.status === 204 ? ' (join not seen)' : '');
-      } catch (e) { why = 'mojang unreachable'; }
-      if (!check || !check.id) return send(401, { error: 'not verified: ' + (why || 'no id') });
+      // Mojang blocks Cloudflare's servers (403), so the join can't be verified here. Instead the first device that
+      // claims an account locks it with a secret (kept in ~/.yaclient/config.properties); other devices are refused.
+      const uuid0 = norm(f.uuid), secret = String(f.secret || '');
+      if (!/^[0-9a-f]{32}$/.test(uuid0) || !/^[0-9a-f]{16,64}$/.test(secret) || !/^[A-Za-z0-9_]{1,16}$/.test(String(f.username))) return send(400, { error: 'bad request' });
+      const sh = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ya:' + secret)))].map((x) => x.toString(16).padStart(2, '0')).join('');
+      const kk = await env.DB.get('k:' + uuid0);
+      if (!kk) await env.DB.put('k:' + uuid0, sh);
+      else if (kk !== sh) return send(403, { error: 'account linked to another device - ask an admin to reset it' });
+      const check = { id: uuid0, name: String(f.username) };
       const token = hex(24);
       await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });   // required: the login itself
       if (check.name) {   // friends: remember who this account is (written only when it changes)
@@ -249,6 +250,14 @@ export async function onRequest({ request, env }) {
         out.equipped = JSON.stringify(p.equipped || {}); out.client_flag = (await env.DB.get('c:' + uuid)) ? 'on' : 'off (no recent in-game login)';
       }
       return send(200, out);
+    }
+    if (route === 'POST /v1/admin/unclaim') {   // forget which device owns an account (lost PC, reinstall)
+      if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
+      const f = await form(request);
+      const id = norm(f.uuid) || (f.username ? (await env.DB.get('n:' + String(f.username).trim().toLowerCase())) || '' : '');
+      if (!id) return send(404, { error: 'unknown username' });
+      await env.DB.delete('k:' + id);
+      return send(200, { ok: 1, uuid: id });
     }
     if (route === 'POST /v1/admin/grant') {
       if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
