@@ -216,13 +216,18 @@ export async function onRequest({ request, env }) {
       return send(200, out);
     }
 
-    if (route === 'GET /v1/selftest') {   // can this server reach Mojang's session server? (expected: 204 for an unknown join)
+    if (route === 'GET /v1/selftest') {   // can this server reach Mojang? (a join that was never made should answer 204)
       const out = {};
-      for (const [k, u] of [['hasJoined', 'https://sessionserver.mojang.com/session/minecraft/hasJoined?username=Notch&serverId=ya-selftest'], ['profile', 'https://api.mojang.com/users/profiles/minecraft/Notch'], ['playerdb', 'https://playerdb.co/api/player/minecraft/Notch']]) {
-        try { const r = await fetch(u, { headers: { 'user-agent': 'YA-CLIENT-Store' } }); out[k] = String(r.status); } catch (e) { out[k] = 'unreachable'; }
+      const UA = { none: {}, ya: { 'user-agent': 'YA-CLIENT-Store' }, java: { 'user-agent': 'Java/1.8.0_321' }, browser: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36', accept: 'application/json' } };
+      const T = [['hasJoined', 'https://sessionserver.mojang.com/session/minecraft/hasJoined?username=Notch&serverId=ya-selftest'],
+        ['sessionProfile', 'https://sessionserver.mojang.com/session/minecraft/profile/069a79f444e94726a5befca90e38aaf5'],
+        ['apiProfile', 'https://api.mojang.com/users/profiles/minecraft/Notch'],
+        ['msProfile', 'https://api.minecraftservices.com/minecraft/profile']];
+      for (const [k, u] of T) for (const [un, h] of Object.entries(UA)) {
+        try { const r = await fetch(u, { headers: h }); out[k + '_' + un] = String(r.status); } catch (e) { out[k + '_' + un] = 'unreachable'; }
       }
       try { await env.DB.get('selftest'); out.kv_read = 'ok'; } catch (e) { out.kv_read = 'fail'; }
-      try { await env.DB.put('selftest', String(Date.now()), { expirationTtl: 60 }); out.kv_write = 'ok'; } catch (e) { out.kv_write = 'FAIL: ' + String(e && e.message || e).slice(0, 80); }
+      try { await env.DB.put('selftest', String(Date.now()), { expirationTtl: 60 }); out.kv_write = 'ok'; } catch (e) { out.kv_write = 'FAIL'; }
       return send(200, out);
     }
     if (route === 'GET /v1/admin/status') {
