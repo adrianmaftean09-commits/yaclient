@@ -39,8 +39,8 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           sakura:{n:'Sakura Bundle',d:'Cherry-blossom pink: petal wings, blossom cape, ribbon band and the bunny Mochi.',items:['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'],price:PR.animeBundle||10},
           shinobi:{n:'Shinobi Bundle',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',items:['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'],price:PR.animeBundle||10},
           kitsune:{n:'Kitsune Bundle',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',items:['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'],price:PR.animeBundle||10}};
-var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
-var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
+var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
+var cat='cape',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
 function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
@@ -57,8 +57,8 @@ function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
  if(cat==='partner'){h+=card('qlux',true)}
- if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('beta',true)}
- if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
+ if(cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('beta',true)}
+ if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(P[id].cat===cat)h+=card(id,false)});
  if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner)h+=card(id,false)});
  document.getElementById('grid').innerHTML=h;
  renderSide()}
