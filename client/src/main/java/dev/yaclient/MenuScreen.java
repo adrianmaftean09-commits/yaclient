@@ -68,6 +68,7 @@ public class MenuScreen extends GuiScreen {
     private String query = "";
     private boolean searchFocus;
     private Setting.Text focusText;
+    private boolean paint;
     private Module drawerModule, drawerLast;
     private Action activeDrag;
 
@@ -417,7 +418,7 @@ public class MenuScreen extends GuiScreen {
             float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 80f / eh0));
             hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((108 - eh0 * ps) / 2f), ps);
         } else {
-            if (m instanceof dev.yaclient.modules.CrosshairModule) ((dev.yaclient.modules.CrosshairModule) m).drawAt(lx0 + lw / 2, PG_Y + 54, 1.6f, false);
+            if (m instanceof dev.yaclient.modules.CrosshairModule) ((dev.yaclient.modules.CrosshairModule) m).drawAt(lx0 + lw / 2, PG_Y + 54, 2f);
             else Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 30, 48, Theme.DIM);
         }
         int gy = PG_Y + 108 + 12;
@@ -520,6 +521,52 @@ public class MenuScreen extends GuiScreen {
                 Gfx.textCentered(Lang.t("opt." + c.options[i]), cx + ws[i] / 2, cy + (28 - Gfx.lineHeight(11, sel)) / 2, 11, sel, sel ? Theme.TEXT : Theme.MUTED);
                 if (live) pageHit(cx, cy, ws[i], 28, new Action() { @Override public void run(float px, float py) { c.index = idx; saveAll(); } }, null);
                 cx += ws[i];
+            }
+            return y + rh;
+        }
+        if (st instanceof Setting.Pixels) {
+            final Setting.Pixels pg = (Setting.Pixels) st;
+            final int n = pg.n, cell = 20, gx = x, gy = y + 34, gw = n * cell;
+            int rh = 34 + gw + 54;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w), x, y + 12, 12, false, Theme.TEXT);
+            Gfx.rr(gx - 6, gy - 6, gw + 12, gw + 12, 12, 0x10FFFFFF);
+            for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) {
+                int cx = gx + j * cell, cy = gy + i * cell;
+                boolean on = pg.cells[i * n + j], hv = pageOver(cx, cy, cell, cell);
+                boolean mid = i == n / 2 && j == n / 2;
+                Gfx.rr(cx + 1, cy + 1, cell - 2, cell - 2, 3, on ? 0xFFF4F4F5 : (hv ? 0x30FFFFFF : (mid ? 0x22FFFFFF : 0x14FFFFFF)));
+            }
+            if (live) {
+                final int fgx = gx, fgy = gy;
+                Action click = new Action() { @Override public void run(float px, float py) {
+                    int j = (int) ((px - fgx) / cell), i = (int) ((py - fgy) / cell);
+                    if (i < 0 || j < 0 || i >= n || j >= n) return;
+                    paint = !pg.cells[i * n + j];
+                    pg.cells[i * n + j] = paint; saveAll();
+                } };
+                Action drag = new Action() { @Override public void run(float px, float py) {
+                    int j = (int) ((px - fgx) / cell), i = (int) ((py - fgy) / cell);
+                    if (i < 0 || j < 0 || i >= n || j >= n) return;
+                    if (pg.cells[i * n + j] != paint) { pg.cells[i * n + j] = paint; saveAll(); }
+                } };
+                pageHit(gx, gy, gw, gw, click, drag);
+            }
+            // quick presets + clear
+            String[] ids = {"cross", "plus", "dot", "ring", "square", "x", "clear"};
+            int bx = gx + gw + 18, by = gy;
+            int bw = Math.min(150, x + w - bx);
+            if (bw >= 90) {
+                Gfx.text(Lang.t("set.crosshair.presets"), bx, by - 4, 10, false, Theme.MUTED);
+                by += 14;
+                for (int k = 0; k < ids.length; k++) {
+                    final String id = ids[k];
+                    int yy = by + k * 30;
+                    boolean ov = pageOver(bx, yy, bw, 26);
+                    Gfx.rr(bx, yy, bw, 26, 8, ov ? 0x24FFFFFF : 0x12FFFFFF);
+                    Gfx.textCentered(Lang.t("opt.cx_" + id), bx + bw / 2, yy + (26 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
+                    if (live) pageHit(bx, yy, bw, 26, new Action() { @Override public void run(float px, float py) {
+                        pg.set(id.equals("clear") ? new String(new char[n * n]).replace('\0', '0') : dev.yaclient.modules.CrosshairModule.preset(id)); saveAll(); } }, null);
+                }
             }
             return y + rh;
         }

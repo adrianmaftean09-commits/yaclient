@@ -356,5 +356,16 @@
  "set.crosshair.shape": "Shape or text (cross, plus, dot, ring, square, diamond, or any text)",
  "set.crosshair.gap": "Center gap",
  "set.crosshair.outline": "Dark outline",
- "set.crosshair.dynamic": "Widen while sprinting or jumping"
+ "set.crosshair.dynamic": "Widen while sprinting or jumping",
+ "grp.draw": "Draw",
+ "set.crosshair.grid": "Draw your crosshair (click or drag)",
+ "set.crosshair.pixel": "Pixel size",
+ "set.crosshair.presets": "Quick shapes",
+ "opt.cx_cross": "Cross",
+ "opt.cx_plus": "Plus",
+ "opt.cx_dot": "Dot",
+ "opt.cx_ring": "Ring",
+ "opt.cx_square": "Square",
+ "opt.cx_x": "X",
+ "opt.cx_clear": "Clear all"
 }

@@ -346,5 +346,16 @@
  "set.crosshair.shape": "Form oder Text (cross, plus, dot, ring, square, diamond oder beliebiger Text)",
  "set.crosshair.gap": "Mittelabstand",
  "set.crosshair.outline": "Dunkle Kontur",
- "set.crosshair.dynamic": "Weitet sich beim Sprinten/Springen"
+ "set.crosshair.dynamic": "Weitet sich beim Sprinten/Springen",
+ "grp.draw": "Zeichnen",
+ "set.crosshair.grid": "Zeichne dein Fadenkreuz (Klick oder ziehen)",
+ "set.crosshair.pixel": "Pixelgröße",
+ "set.crosshair.presets": "Schnellformen",
+ "opt.cx_cross": "Kreuz",
+ "opt.cx_plus": "Plus",
+ "opt.cx_dot": "Punkt",
+ "opt.cx_ring": "Ring",
+ "opt.cx_square": "Quadrat",
+ "opt.cx_x": "X",
+ "opt.cx_clear": "Alles löschen"
 }

@@ -346,5 +346,16 @@
  "set.crosshair.shape": "Forma o testo (croce, plus, punto, cerchio, quadrato, rombo, oppure scrivi quello che vuoi)",
  "set.crosshair.gap": "Spazio al centro",
  "set.crosshair.outline": "Contorno scuro",
- "set.crosshair.dynamic": "Si allarga quando corri o salti"
+ "set.crosshair.dynamic": "Si allarga quando corri o salti",
+ "grp.draw": "Disegna",
+ "set.crosshair.grid": "Disegna il tuo mirino (clic o trascina)",
+ "set.crosshair.pixel": "Dimensione pixel",
+ "set.crosshair.presets": "Forme rapide",
+ "opt.cx_cross": "Croce",
+ "opt.cx_plus": "Plus",
+ "opt.cx_dot": "Punto",
+ "opt.cx_ring": "Anello",
+ "opt.cx_square": "Quadrato",
+ "opt.cx_x": "X",
+ "opt.cx_clear": "Svuota tutto"
 }

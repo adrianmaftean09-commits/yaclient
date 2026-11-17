@@ -130,4 +130,33 @@ public abstract class Setting {
 
         @Override public void save() { Config.set(key(), value); }
     }
+
+    /** A small bitmap the player draws (the crosshair): n x n cells, true = lit. */
+    public static final class Pixels extends Setting {
+        public final int n;
+        public boolean[] cells;
+        private final String def;
+
+        public Pixels(String id, int n, String def) { super(id); this.n = n; this.def = def; this.cells = parse(def); }
+
+        private boolean[] parse(String s) {
+            boolean[] c = new boolean[n * n];
+            if (s != null && s.length() == n * n) for (int i = 0; i < c.length; i++) c[i] = s.charAt(i) == '1';
+            return c;
+        }
+
+        public String encode() {
+            StringBuilder b = new StringBuilder();
+            for (boolean c : cells) b.append(c ? '1' : '0');
+            return b.toString();
+        }
+
+        public void set(String pattern) { cells = parse(pattern); }
+
+        @Override public void load() { cells = parse(Config.get(key(), def)); }
+
+        @Override public void reset() { cells = parse(def); }
+
+        @Override public void save() { Config.set(key(), encode()); }
+    }
 }

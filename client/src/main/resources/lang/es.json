@@ -346,5 +346,16 @@
  "set.crosshair.shape": "Forma o texto (cruz, plus, punto, círculo, cuadrado, rombo o cualquier texto)",
  "set.crosshair.gap": "Espacio central",
  "set.crosshair.outline": "Contorno oscuro",
- "set.crosshair.dynamic": "Se ensancha al correr o saltar"
+ "set.crosshair.dynamic": "Se ensancha al correr o saltar",
+ "grp.draw": "Dibujar",
+ "set.crosshair.grid": "Dibuja tu mira (clic o arrastra)",
+ "set.crosshair.pixel": "Tamaño del píxel",
+ "set.crosshair.presets": "Formas rápidas",
+ "opt.cx_cross": "Cruz",
+ "opt.cx_plus": "Plus",
+ "opt.cx_dot": "Punto",
+ "opt.cx_ring": "Anillo",
+ "opt.cx_square": "Cuadrado",
+ "opt.cx_x": "X",
+ "opt.cx_clear": "Borrar todo"
 }
