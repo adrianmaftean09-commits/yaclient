@@ -20,7 +20,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: "9.5.1"
-      - name: Build the Fabric jar (retries: the Maven mirrors sometimes fail)
+      - name: Build the Fabric jar (with retries)
         working-directory: fabric
         run: |
           for i in 1 2 3; do
