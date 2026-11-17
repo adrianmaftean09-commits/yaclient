@@ -22,8 +22,9 @@ public class MenuScreen extends Screen {
     private static final int CX = 24, VY = 124, VW = PW - 48, VH = PH - VY - 18;
     private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
     private static final int ACC = 0xFFE8E8E8, ON_ACC = 0xFF101014, OFF = 0xFF3A3B42;
-    private static final String[] TABS = {"All", "Info", "PvP", "Crystal", "Utility"};
-    private static final String[] TAB_ICONS = {"grid", "info", "sword", "target_hud", "wrench"};
+    private static final String[] TABS = {"All", "Info", "PvP", "Crystal", "Utility", "Cosmetics"};
+    private static final int COS = 5;
+    private static final String[] TAB_ICONS = {"grid", "info", "sword", "target_hud", "wrench", "shirt"};
     private static final Identifier LOGO = Identifier.fromNamespaceAndPath("yaclient", "textures/gui/logo.png");
 
     private final long opened = System.currentTimeMillis();
@@ -75,6 +76,7 @@ public class MenuScreen extends Screen {
         List<Module> out = new ArrayList<Module>();
         String q = query.trim().toLowerCase(Locale.ROOT);
         for (Module m : Modules.ALL) {
+            if (tab == COS) continue;
             if (tab > 0 && m.category.ordinal() != tab - 1) continue;
             if (!q.isEmpty() && !m.name.toLowerCase(Locale.ROOT).contains(q) && !m.description.toLowerCase(Locale.ROOT).contains(q)) continue;
             out.add(m);
@@ -120,7 +122,7 @@ public class MenuScreen extends Screen {
         } else {
             drawTabs();
             drawHeader(g);
-            drawBody(g, fade);
+            if (tab == COS) drawCosmetics(g); else drawBody(g, fade);
         }
 
         Gfx.fade = 1f;
@@ -157,8 +159,10 @@ public class MenuScreen extends Screen {
         Gfx.text("CLIENT", 70, 16, ls, true, Theme.BRAND_RED);
         int total = visible().size(), on = 0;
         for (Module m : visible()) if (m.enabled) on++;
-        Gfx.text(total + " mods  -  " + on + " on", 70, 16 + Gfx.lineHeight(ls, true) + 2, 10, false, Theme.MUTED);
+        String sub = tab == COS ? "Your cosmetics" : total + " mods  -  " + on + " on";
+        Gfx.text(sub, 70, 16 + Gfx.lineHeight(ls, true) + 2, 10, false, Theme.MUTED);
 
+        if (tab == COS) return;
         final int x = PW - 24 - 230, y = 18, w = 230, h = 34;
         boolean ov = over(x, y, w, h);
         Gfx.rr(x, y, w, h, 10, searchFocus ? SURF3 : (ov ? SURF2 : SURF));
@@ -401,6 +405,74 @@ public class MenuScreen extends Screen {
         return y;
     }
 
+
+    // ---------- cosmetics ----------
+    private static final String[] SLOT_NAMES = {"Cape", "Wings", "Bandana", "Pet"};
+    private static final int[] BUNDLE_ACC = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF};
+
+    private void bodyHit(int x, int y, int w, int h, Act click) {
+        int y0 = Math.max(y, VY), y1 = Math.min(y + h, VY + VH);
+        if (y1 > y0) hits.add(new Hit(x, y0, w, y1 - y0, click, null));
+    }
+
+    private void drawCosmetics(GuiGraphicsExtractor g) {
+        int gap = 12, cols = 4, cw = (VW - (cols - 1) * gap) / cols, ch = 168;
+        int rows = (Cosmetics.BUNDLES.length + cols - 1) / cols;
+        contentH = 34 + rows * (ch + gap);
+        scrollTarget = Ui.clamp(scrollTarget, 0f, Math.max(0f, contentH - VH));
+        g.enableScissor(CX - 6, VY - 2, CX + VW + 6, VY + VH + 2);
+        int top = VY - Math.round(scroll);
+        boolean plus = CosmeticsApi.plus();
+        String st = CosmeticsApi.status();
+        String line = (CosmeticsApi.enabled() ? (st.equals("ok") ? "Synced with your account" : st.equals("login") ? "Sign in with Microsoft in the launcher to unlock your items" : st.equals("offline") ? "Store offline" : "Loading...") : "Dev mode: everything is unlocked")
+                + (plus ? "   -   YA Plus active" : "");
+        Gfx.text(line, CX, top + 4, 11, false, Theme.MUTED);
+        for (int b = 0; b < Cosmetics.BUNDLES.length; b++) {
+            final int bi = b;
+            int x = CX + (b % cols) * (cw + gap), y = top + 30 + (b / cols) * (ch + gap);
+            if (y + ch < VY - 2 || y > VY + VH + 2) continue;
+            boolean owned = Cosmetics.ownsBundle(b), wearing = Cosmetics.wearsBundle(b);
+            boolean inView = myl >= VY && myl < VY + VH;
+            float h = anim("cb" + b, inView && over(x, y, cw, ch) ? 1f : 0f, 16f);
+            Gfx.rr(x, y, cw, ch, 10, Ui.mix(SURF, SURF2, h));
+            Gfx.rrOutline(x, y, cw, ch, 10, 1, wearing ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
+            Gfx.rr(x + 14, y + 14, 8, 8, 4, BUNDLE_ACC[b]);
+            Gfx.text(Gfx.trim(Cosmetics.NAMES[b], 13, true, cw - 90), x + 28, y + 11, 13, true, Theme.TEXT);
+            String tag = Cosmetics.PARTNER[b] ? "PARTNER" : owned ? "OWNED" : "LOCKED";
+            int tw = Gfx.width(tag, 8, true) + 14;
+            Gfx.rr(x + cw - 14 - tw, y + 12, tw, 16, 8, owned ? 0xFFE8E8E8 : 0xFF2D2E34);
+            Gfx.textCentered(tag, x + cw - 14 - tw / 2, y + 12 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, owned ? ON_ACC : Theme.MUTED);
+            int bw = (cw - 28 - 8) / 2;
+            for (int sIdx = 0; sIdx < 4; sIdx++) {
+                final String slot = Cosmetics.SLOTS[sIdx];
+                final String item = Cosmetics.item(b, slot);
+                int bx = x + 14 + (sIdx % 2) * (bw + 8), by = y + 42 + (sIdx / 2) * 34;
+                boolean has = CosmeticsApi.owned(item), on = Cosmetics.selected(slot).equals(item);
+                boolean ov = inView && over(bx, by, bw, 28);
+                Gfx.rr(bx, by, bw, 28, 8, on ? 0xFFE8E8E8 : (ov ? SURF3 : SURF2));
+                Gfx.text(SLOT_NAMES[sIdx], bx + 10, by + (28 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? ON_ACC : (has ? Theme.TEXT : Theme.DIM));
+                if (!has) Gfx.icon("lock", bx + bw - 22, by + 7, 14, Theme.DIM);
+                bodyHit(bx, by, bw, 28, (px, py) -> {
+                    if (CosmeticsApi.owned(item)) Cosmetics.toggle(bi, slot); else CosmeticsApi.openItem(item);
+                });
+            }
+            int fy = y + ch - 14 - 30;
+            boolean fo = inView && over(x + 14, fy, cw - 28, 30);
+            String fl = owned ? (wearing ? "Remove all" : "Equip all") : "Get in store";
+            Gfx.rr(x + 14, fy, cw - 28, 30, 9, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
+            Gfx.textCentered(fl, x + cw / 2, fy + (30 - Gfx.lineHeight(11, true)) / 2, 11, true, owned ? ON_ACC : Theme.TEXT);
+            bodyHit(x + 14, fy, cw - 28, 30, (px, py) -> {
+                if (Cosmetics.ownsBundle(bi)) Cosmetics.toggleBundle(bi); else CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]);
+            });
+        }
+        g.disableScissor();
+        if (contentH > VH) {
+            float kh = Math.max(24f, VH * VH / contentH);
+            float ky = VY + (scroll / (contentH - VH)) * (VH - kh);
+            Gfx.rr(PW - 12, Math.round(ky), 4, Math.round(kh), 2, 0x33FFFFFF);
+        }
+    }
+
     // ---------- HUD editor ----------
     private void renderEditor(GuiGraphicsExtractor g, Minecraft mc, int mx, int my, int gs) {
         g.fill(0, 0, width, height, 0x66000000);
@@ -476,18 +548,25 @@ public class MenuScreen extends Screen {
             }
             return true;
         }
+        if (tab == COS) {
+            toLocal(e.x(), e.y());
+            for (int i = hits.size() - 1; i >= 0; i--) {
+                Hit h = hits.get(i);
+                if (mxl >= h.x && mxl < h.x + h.w && myl >= h.y && myl < h.y + h.h) { if (h.click != null) h.click.run(mxl, myl); return true; }
+            }
+        }
         searchFocus = false;
-        if (over(PW - 24 - 230, 18, 230, 34)) { searchFocus = true; return true; }
+        if (tab != COS && over(PW - 24 - 230, 18, 230, 34)) { searchFocus = true; return true; }
         int[] ws = new int[TABS.length];
         for (int i = 0; i < TABS.length; i++) ws[i] = Gfx.width(TABS[i], 12, true) + 46;
         int px = CX + 4;
         for (int i = 0; i < TABS.length; i++) {
-            if (over(px, 74, ws[i], 30)) { tab = i; scroll = scrollTarget = 0; return true; }
+            if (over(px, 74, ws[i], 30)) { tab = i; scroll = scrollTarget = 0; if (i == COS) CosmeticsApi.refreshAsync(false); return true; }
             px += ws[i];
         }
         int w = Gfx.width("HUD editor", 11, false) + 48;
         if (over(PW - 24 - w, 70, w, 38)) { editing = true; return true; }
-        if (myl >= VY && myl < VY + VH) {
+        if (tab != COS && myl >= VY && myl < VY + VH) {
             List<Module> list = visible();
             int gap = 12, cw = (VW - 2 * gap) / 3, ch = 120, top = VY - Math.round(scroll);
             for (int i = 0; i < list.size(); i++) {
