@@ -27,7 +27,7 @@ To give EVERYONE the cosmetics during an open beta, add the variable `BETA_OPEN`
 `beta` = bundle (cape, wings, bandana, pet). Single items: ya_cape, ya_wings, ya_bandana, ya_pet.
 
 ## Add or change items
-Items live in `functions/v1/[[path]].js` (ITEMS, BUNDLES) and in `store.html`. New models also need code in the client.
+Items live in `functions/v1/[[path]].js` (repo root) (ITEMS, BUNDLES) and in `store.html`. New models also need code in the client.
 
 ## YA Plus
 In /admin use item `plus` and the number of days (default 30) to give or extend a subscription.
