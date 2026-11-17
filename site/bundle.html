@@ -1,9 +1,14 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css"><link rel="stylesheet" href="/bundle.css"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
 
-<div class="wrap"><div class="bd-crumb"><a href="/store">Store</a> / <a href="/store?c=bundle">Bundles</a> / <span id="bc"></span></div>
-<div class="bd-hero" id="hero"><img id="heroimg" alt=""></div>
-<div class="bd-bar"><div><span class="eyebrow">Bundle</span><h1 id="nm"></h1><p id="ds"></p></div><div class="bd-act"><div class="bd-pr" id="pr"></div><div class="bd-btns"><button class="btn" id="addb">Add bundle to cart</button><button class="btn pri" id="buyb">Buy now</button></div></div></div>
-<h2 class="bd-h">Photos</h2><div class="bd-ph" id="ph"></div>
+<section class="hero" id="hero"><div class="hs" id="hs">
+<div class="hl"><img src="/logo.png" alt=""><div>YA <span>CLIENT</span></div></div><div class="hr">COSMETICS</div>
+<div class="ht" id="nm"></div><div class="hw">Worn by <b>zSoyNick_</b></div>
+<ul class="hi" id="hi"></ul>
+<div class="hb"><div class="bd-pr" id="pr"></div><div class="bd-btns"><button class="btn" id="addb">Add bundle to cart</button><button class="btn pri" id="buyb">Buy now</button></div></div>
+<div class="hf">AVAILABLE IN THE YA CLIENT STORE</div>
+<img class="r r0" id="r0" alt=""><img class="r r1" id="r1" alt=""><img class="r r2" id="r2" alt="">
+</div></section>
+<div class="wrap">
 <h2 class="bd-h">What's inside</h2><div class="bd-items" id="its"></div>
 <h2 class="bd-h">3D view</h2><div class="bd-3d" id="stage3"><canvas id="v3d"></canvas><span class="cap">Drag to rotate</span></div>
 <h2 class="bd-h">More bundles</h2><div class="bd-og" id="og"></div><div style="height:110px"></div></div>
@@ -25,8 +30,8 @@ if(!B[key]){location.replace('/store?c=bundle');return}
 var b=B[key],ids=b.it.map(function(x){return x[0]});
 function setPrice(k){return k==='mono'?(PR.monoBundle||10):(PR.animeBundle||10)}
 var ITEM={},SETOF={};Object.keys(B).forEach(function(k){B[k].it.forEach(function(x){ITEM[x[0]]={n:x[1],s:k};SETOF[x[0]]=k})});
-document.title=b.n+' - YA CLIENT';document.getElementById('bc').textContent=b.n;document.getElementById('nm').textContent=b.n;document.getElementById('ds').textContent=b.d;
-var hi=document.getElementById('heroimg');hi.src='/b/'+key+'-poster.jpg';hi.alt=b.n;
+document.title=b.n+' - YA CLIENT';document.getElementById('nm').textContent=b.n.toUpperCase();document.getElementById('hi').innerHTML=b.it.map(function(x){return '<li><i style="background:'+b.c+'"></i>'+x[1]+'</li>'}).join('');[0,1,2].forEach(function(n){document.getElementById('r'+n).src='/b/'+key+'-'+(n+1)+'.jpg'});function fit(){var h=document.getElementById('hero'),w=h.clientWidth,k=w/1920;document.getElementById('hs').style.transform='scale('+k+')';h.style.height=(1080*k)+'px'}fit();addEventListener('resize',fit);
+
 /* cart */
 var cart=[];try{cart=JSON.parse(localStorage.getItem('ya_cart')||'[]').filter(function(i){return ITEM[i]})}catch(e){}
 function save(){try{localStorage.setItem('ya_cart',JSON.stringify(cart))}catch(e){}}
@@ -43,18 +48,14 @@ function price(){var f=K(),tot=R(setPrice(key)*f);document.getElementById('pr').
 /* items */
 var thumbs={};
 function items(){var f=K();document.getElementById('its').innerHTML=b.it.map(function(x){var im=thumbs[x[0]];return '<div class="bd-it"><div class="im">'+(im?'<img src="'+im+'" alt="">':'<i></i>')+'</div><div class="bt"><b>'+x[1]+'</b><span>'+x[2]+'</span><div class="pp">'+eur(R(PR.item*f))+'</div><div class="bb"><button class="btn sm" data-add="'+x[0]+'">Add to cart</button><button class="btn sm pri" data-now="'+x[0]+'">Buy now</button></div></div></div>'}).join('');drawCart()}
-/* photos */
-var shots=[['Photo 1','/b/'+key+'-1.jpg'],['Photo 2','/b/'+key+'-2.jpg'],['Photo 3','/b/'+key+'-3.jpg']];
-document.getElementById('ph').innerHTML=shots.map(function(v){return '<button data-lb="'+v[1]+'"><img src="'+v[1]+'" alt="'+b.n+' '+v[0]+'" loading="lazy"><span>'+v[0]+'</span></button>'}).join('');
 var lb=document.getElementById('lb');lb.onclick=function(){lb.className='lb'};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){lb.className='lb';document.getElementById('cartdr').className='cartdr'}});
 /* other bundles */
 document.getElementById('og').innerHTML=Object.keys(B).filter(function(k){return k!==key}).map(function(k){var o=B[k],ix={sakura:1,shinobi:1,kitsune:1,santa:1,frost:1,mono:1};return '<a class="ob" href="/bundle?b='+k+'" style="--c:'+o.c+'"><img src="/b/'+k+'-1.jpg" alt=""><b>'+o.n.replace(' Bundle','')+'</b><span>BUNDLE</span><em>'+eur(setPrice(k))+'</em></a>'}).join('');
-document.addEventListener('click',function(e){var t=e.target.closest('[data-add],[data-now],[data-rm],[data-lb],#addb,#buyb,#cartfab,#cx,#cbuy,#cclr');if(!t)return;
+document.addEventListener('click',function(e){var t=e.target.closest('[data-add],[data-now],[data-rm],#addb,#buyb,#cartfab,#cx,#cbuy,#cclr');if(!t)return;
  if(t.dataset.add){var i=t.dataset.add;var j=cart.indexOf(i);if(j>=0)cart.splice(j,1);else cart.push(i);save();drawCart();return}
  if(t.dataset.now){YABuy(orderFor([t.dataset.now]));return}
  if(t.dataset.rm){cart=cart.filter(function(x){return x!==t.dataset.rm});save();drawCart();return}
- if(t.dataset.lb){lb.querySelector('img').src=t.dataset.lb;lb.className='lb show';return}
  if(t.id==='addb'){var all=ids.every(function(i){return cart.indexOf(i)>=0});if(all)cart=cart.filter(function(x){return ids.indexOf(x)<0});else add(ids);save();drawCart();return}
  if(t.id==='buyb'){YABuy(orderFor(ids,b.n));return}
  if(t.id==='cartfab'){document.getElementById('cartdr').className='cartdr show';return}
