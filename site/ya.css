@@ -177,3 +177,37 @@ footer a:hover{color:var(--text)}
 .buy small.n{display:block;color:var(--dim);margin-top:14px;font-size:13px}
 
 .skinbox{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}.skinbox input{flex:1 1 150px;min-width:0;background:#141418;border:1px solid var(--line);border-radius:12px;color:#fff;font:inherit;font-size:14px;padding:11px 14px;outline:0}.skinbox input:focus{border-color:#55555f}.skinbox .btn{padding:11px 16px;font-size:13.5px}.skinbox .skmsg{flex:1 0 100%;font-size:12.5px;color:var(--dim);min-height:1em}
+
+.hero .wrap{text-align:center;justify-items:center}.hero h1{font-size:clamp(56px,10vw,120px)}.hero .sub{margin-left:auto;margin-right:auto}.hero .row{justify-content:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:46px auto 0;max-width:720px}
+.stats div{border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:18px;padding:18px 10px}
+.stats b{display:block;font-size:30px;font-weight:800;letter-spacing:-1px}.stats span{font-size:12.5px;color:var(--dim);font-weight:600}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- YA Plus page ---- */
+.px-hero{position:relative;overflow:hidden;padding:84px 0 56px}
+.px-hero::before{content:"";position:absolute;inset:-10% -10% auto;height:760px;background:radial-gradient(46% 55% at 74% 42%,rgba(225,6,0,.30),transparent 70%),radial-gradient(35% 40% at 12% 0,rgba(225,6,0,.10),transparent 70%);pointer-events:none}
+.px-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.px-copy h1{font-size:clamp(46px,6.4vw,84px);line-height:1;letter-spacing:-3px;margin:14px 0 18px}.px-copy h1 span{color:#e10600}
+.px-copy .sub{margin:0 0 26px;max-width:520px}
+.px-price{display:flex;align-items:baseline;gap:10px;margin-bottom:22px}.px-price span{font-size:52px;font-weight:800;letter-spacing:-2px}.px-price small{color:var(--dim);font-weight:600;font-size:15px}
+.btn.big{padding:15px 26px;font-size:15.5px}
+.px-vis .stage{max-width:none}.px-tag{position:absolute;top:18px;right:18px;padding:6px 14px;border-radius:99px;background:#e10600;color:#fff;font-weight:800;font-size:11px;letter-spacing:2px;box-shadow:0 0 26px rgba(225,6,0,.55)}
+.px-ctl{display:flex;justify-content:center;margin-top:14px}
+.px-sec{padding:44px 0}
+.px-feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.px-h{text-align:center;margin-bottom:28px}.px-h h2{font-size:clamp(30px,4vw,44px);letter-spacing:-1.5px;margin:0 0 8px}.px-h p{color:var(--dim);margin:0}
+.px-tbl{max-width:760px;margin:0 auto;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:rgba(255,255,255,.02)}
+.px-tbl .r{display:grid;grid-template-columns:1fr 90px 90px;align-items:center;padding:16px 22px;border-top:1px solid var(--line);font-weight:600;font-size:15px}
+.px-tbl .r.h{border-top:0;color:var(--dim);font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;padding-top:20px}
+.px-tbl .r b{text-align:center;font-weight:800}.px-tbl .pl{color:#ff5148}
+.px-tbl i{display:grid;place-items:center}.px-tbl i svg{width:20px;height:20px}.px-tbl i.y{color:#3ddc84}.px-tbl i.y.pl{color:#ff5148}.px-tbl i.n{color:#4a4a54}
+.px-tbl .r>.pl:not(.h *){background:none}
+.px-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:980px;margin:0 auto}
+.px-steps>div{border:1px solid var(--line);border-radius:22px;padding:26px;background:rgba(255,255,255,.02)}
+.px-steps em{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(225,6,0,.14);border:1px solid rgba(225,6,0,.4);color:#ff6b63;font-style:normal;font-weight:800;margin-bottom:16px}
+.px-steps h3{margin:0 0 8px;font-size:18px}.px-steps p{margin:0;color:var(--dim);font-size:14.5px;line-height:1.55}
+.px-cta{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:980px;margin:0 auto 30px;padding:34px 38px;border-radius:28px;border:1px solid rgba(225,6,0,.4);background:radial-gradient(70% 140% at 85% 50%,rgba(225,6,0,.22),transparent 70%),#130a0b}
+.px-cta h2{margin:0 0 6px;font-size:30px;letter-spacing:-1px}.px-cta p{margin:0;color:var(--dim)}
+@media(max-width:900px){.px-grid{grid-template-columns:1fr;gap:34px}.px-feat,.px-steps{grid-template-columns:1fr}.px-cta{flex-direction:column;align-items:flex-start}.px-hero{padding-top:56px}}
+.hero .wrap{display:block!important}.hero .wrap>div{max-width:820px;margin:0 auto}.hero .hint{text-align:center}
