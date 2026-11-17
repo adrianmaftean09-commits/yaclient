@@ -27,7 +27,7 @@ public class MainMenuScreen extends GuiScreen {
     private final long opened = System.currentTimeMillis();
     private long last = opened;
     private int bx, by0, dockX, dockY;
-    private int nx, ny, nw = 190, nh = 130;
+    private int nx, ny, nw = 120, nh = 82;
     private float newsHover;
 
     private int btnY(int i) { return by0 + i * (BH + GAP); }
@@ -93,8 +93,8 @@ public class MainMenuScreen extends GuiScreen {
         int artH = Math.round((nw - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, nw - 8, artH, fadeIn);
         Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
-        Gfx.text(Lang.t("news.card"), nx + 10, ny + 4 + artH + 7, 13, true, Theme.TEXT);
-        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 10, false, nw - 20), nx + 10, ny + 4 + artH + 9 + Gfx.lineHeight(13, true), 10, false, Theme.MUTED);
+        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
+        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
         Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, Theme.DIM);
         String acc = Minecraft.getMinecraft().getSession().getUsername();

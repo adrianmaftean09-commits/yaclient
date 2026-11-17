@@ -21,7 +21,7 @@ public class HubScreen extends GuiScreen {
     private long last = opened;
     private int px, py;
     private int nx, ny;
-    private static final int NW = 120, NH = 82;
+    private static final int NW = 165, NH = 110;
     private float newsHover;
     private float sc = 1f;
 
@@ -99,8 +99,8 @@ public class HubScreen extends GuiScreen {
         int artH = Math.round((NW - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, NW - 8, artH, fade);
         Gfx.rrOutline(nx, ny, NW, NH, 4, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
-        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
-        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
+        Gfx.text(Lang.t("news.card"), nx + 9, ny + 4 + artH + 6, 11, true, Theme.TEXT);
+        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 9, false, NW - 18), nx + 9, ny + 4 + artH + 8 + Gfx.lineHeight(11, true), 9, false, Theme.MUTED);
 
         Gfx.fade = 1f;
         net.minecraft.client.renderer.GlStateManager.popMatrix();

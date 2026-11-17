@@ -133,6 +133,7 @@
  "cos.syncing": "Sincronizando con tu cuenta...",
  "cos.status.ok": "Sincronizado con tu cuenta",
  "cos.status.login": "Inicia sesión con una cuenta Microsoft para usar tus compras",
+ "cos.status.linked": "This account is linked to another PC - ask an admin to unlink it",
  "cos.status.offline": "Tienda no disponible, datos guardados",
  "cos.store": "Tienda",
  "cos.loadout": "Tu equipamiento",

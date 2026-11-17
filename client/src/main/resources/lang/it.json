@@ -133,6 +133,7 @@
  "cos.syncing": "Sincronizzazione con il tuo account...",
  "cos.status.ok": "Sincronizzato con il tuo account",
  "cos.status.login": "Accedi con un account Microsoft per usare i tuoi acquisti",
+ "cos.status.linked": "This account is linked to another PC - ask an admin to unlink it",
  "cos.status.offline": "Store non raggiungibile, dati salvati",
  "cos.store": "Negozio",
  "cos.loadout": "Il tuo equipaggiamento",

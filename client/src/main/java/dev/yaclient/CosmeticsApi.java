@@ -172,7 +172,7 @@ public final class CosmeticsApi {
 
                     String tok = token();
                     if (tok == null) {
-                        status = "login";
+                        status = detail != null && detail.contains("linked to another") ? "linked" : "login";
                     } else {
                         detail = "";
                         Map<String, String> me = Lang.parse(http("GET", base() + "/v1/me?token=" + enc(tok), null));
