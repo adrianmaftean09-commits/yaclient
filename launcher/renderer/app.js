@@ -160,7 +160,7 @@ function specOk(spec, v) {
   return v === spec;
 }
 const modOk = (m, v) => !m.soon && (m.versions || []).some((sp) => specOk(sp, v));
-const isYa = (v) => v === (S.ya || '1.8.9');
+const isYa = (v) => v === (S.ya || '1.8.9') || (S.yaFabric || []).includes(v);
 
 function versionRows() {
   const q = vq.trim().toLowerCase();
