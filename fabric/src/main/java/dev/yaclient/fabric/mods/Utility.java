@@ -42,7 +42,7 @@ public final class Utility {
         @Override
         public void onTick() {
             Minecraft mc = mc();
-            if (mc.player == null || mc.screen != null) return;
+            if (mc.player == null || !mc.mouseHandler.isMouseGrabbed()) return;
             if (mc.options.keyUp.isDown() && !mc.player.isShiftKeyDown() && !mc.player.isUsingItem()) mc.player.setSprinting(true);
         }
     }
@@ -56,7 +56,7 @@ public final class Utility {
         @Override
         public void onTick() {
             Minecraft mc = mc();
-            boolean down = mc.screen == null && org.lwjgl.glfw.GLFW.glfwGetKey(mc.getWindow().handle(), org.lwjgl.glfw.GLFW.GLFW_KEY_C) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+            boolean down = mc.mouseHandler.isMouseGrabbed() && org.lwjgl.glfw.GLFW.glfwGetKey(mc.getWindow().handle(), org.lwjgl.glfw.GLFW.GLFW_KEY_C) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
             if (down && saved < 0) { saved = mc.options.fov().get(); mc.options.fov().set(30); }
             else if (!down && saved >= 0) { mc.options.fov().set(saved); saved = -1; }
         }
