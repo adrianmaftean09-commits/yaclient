@@ -218,6 +218,14 @@ export async function onRequest({ request, env }) {
 
     if (route === 'GET /v1/admin/status') {
       if (!env.ADMIN_KEY || url.searchParams.get('key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
+      if (url.searchParams.get('probe')) {   // can this server reach Mojang at all?
+        const out = {};
+        for (const [k, u] of [['sessionserver_hasJoined', 'https://sessionserver.mojang.com/session/minecraft/hasJoined?username=Notch&serverId=probe'], ['api_profile', 'https://api.mojang.com/users/profiles/minecraft/Notch'], ['playerdb', 'https://playerdb.co/api/player/minecraft/Notch']]) {
+          try { const r = await fetch(u, { headers: { 'user-agent': 'YA-CLIENT-Store' } }); out[k] = 'HTTP ' + r.status + ' ' + (await r.text()).slice(0, 60).replace(/[\r\n{}"]/g, ' '); } catch (e) { out[k] = 'unreachable: ' + e.message; }
+        }
+        out.expected = 'sessionserver_hasJoined should be HTTP 204; api_profile and playerdb HTTP 200';
+        return send(200, out);
+      }
       const nm = String(url.searchParams.get('name') || '').trim().toLowerCase();
       let uuid = norm(url.searchParams.get('uuid')) || (nm ? (await env.DB.get('n:' + nm)) || '' : '');
       const out = { name: nm, registered: uuid ? 'yes' : 'no (this player never logged in from YA CLIENT/launcher)', pending_grants: nm ? String((await env.DB.get('g:' + nm)) || 'none') : '' };
