@@ -39,10 +39,10 @@ final class Nametag {
         if (cam == null) return;
         Matrix3f rot = new Matrix3f().set(ps.last().pose());
         Matrix3f inv = new Matrix3f(rot).invert();
-        org.joml.Quaternionf q = cam.rotation();
-        ex = inv.transform(q.transform(new Vector3f(1, 0, 0)), new Vector3f());
-        ey = inv.transform(q.transform(new Vector3f(0, 1, 0)), new Vector3f());
-        ez = inv.transform(q.transform(new Vector3f(0, 0, 1)), new Vector3f());
+        // the pose already includes the view rotation: the screen axes are simply x, y, z in view space
+        ex = inv.transform(new Vector3f(1, 0, 0), new Vector3f());
+        ey = inv.transform(new Vector3f(0, 1, 0), new Vector3f());
+        ez = inv.transform(new Vector3f(0, 0, 1), new Vector3f());
         float h = s.boundingBoxHeight + (p == mc.player ? 0.55f : 0.95f);
         // the layer space is upside down and shifted: world up = 1.501 - y
         origin = inv.transform(new Vector3f(0, 0, 0), new Vector3f());

@@ -59,6 +59,13 @@ public class MenuScreen extends Screen {
 
     public MenuScreen() { super(Component.literal("YA CLIENT")); }
 
+    public MenuScreen(int startTab, boolean editor) {
+        this();
+        this.tab = startTab;
+        this.editing = editor;
+        if (startTab == COS) CosmeticsApi.refreshAsync(false);
+    }
+
     @Override public boolean isPauseScreen() { return false; }
 
     @Override public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float delta) { }
