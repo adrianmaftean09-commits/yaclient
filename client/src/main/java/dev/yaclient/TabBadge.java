@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 /**
  * Shows the YA logo next to the name of every YA CLIENT player in the tab list.
  * The vanilla tab overlay is swapped for a subclass (found by field type, so it works with any mapping) that
- * reserves a little room after the name and draws the logo there, at the exact row position.
+ * reserves a little room in front of the name and draws the logo there, at the exact row position.
  */
 final class TabBadge {
     private TabBadge() {}
@@ -47,7 +47,7 @@ final class TabBadge {
     }
 
     private static final class YaTabList extends GuiPlayerTabOverlay {
-        private static final String RESERVE = "   ";   // 3 spaces = 12px kept free after the name
+        private static final String RESERVE = "   ";   // 3 spaces = 12px kept free in front of the name
 
         YaTabList(Minecraft mc, GuiIngame gui) { super(mc, gui); }
 
@@ -59,7 +59,7 @@ final class TabBadge {
         @Override
         public String getPlayerName(NetworkPlayerInfo info) {
             String n = super.getPlayerName(info);
-            return badge(info) ? n + RESERVE : n;
+            return badge(info) ? RESERVE + n : n;
         }
 
         @Override
@@ -68,8 +68,7 @@ final class TabBadge {
             if (!badge(info)) return;
             Minecraft mc = Minecraft.getMinecraft();
             boolean head = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
-            int nameW = mc.fontRendererObj.getStringWidth(super.getPlayerName(info));
-            Logo.draw(x + (head ? 9 : 0) + nameW + 2, y, 9, 9, 1f);
+            Logo.draw(x + (head ? 9 : 0) + 1, y, 9, 9, 1f);
         }
     }
 }
