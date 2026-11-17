@@ -163,8 +163,12 @@ function versionType(id) {
 }
 // Java major version a Minecraft version needs
 function javaMajorFor(v) {
+  const nv = String(v).match(/^(\d+)\.\d+/);
+  if (nv && +nv[1] >= 26) return 25;   // new year-based versions (26.x) need Java 25
+  const sn = String(v).match(/^(\d\d)w/);
+  if (sn && +sn[1] >= 26) return 25;
   const m = String(v).match(/^1\.(\d+)(?:\.(\d+))?/);
-  if (!m) return /^\d\dw/.test(String(v)) ? 21 : 8;
+  if (!m) return sn ? 21 : 8;
   const minor = +m[1], patch = +(m[2] || 0);
   if (minor <= 16) return 8;
   if (minor <= 19 || (minor === 20 && patch < 5)) return 17;
