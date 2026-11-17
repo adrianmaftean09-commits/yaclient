@@ -12,7 +12,7 @@ public class FovModule extends Module {
 
     @Override
     public void onTick() {
-        if (mc.gameSettings == null) return;
+        if (mc.gameSettings == null || ZoomModule.active) return;
         if (!active) {
             saved = mc.gameSettings.fovSetting;
             active = true;
