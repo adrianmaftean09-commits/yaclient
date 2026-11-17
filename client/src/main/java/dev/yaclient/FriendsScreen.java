@@ -102,8 +102,8 @@ public class FriendsScreen extends GuiScreen {
         ix = px + 14;
         iw = PW - 28;
 
-        Gfx.rr(px, py, PW, ph, 12, 0x66101015);
-        Gfx.rrOutline(px, py, PW, ph, 12, 1, Theme.GLASS_LINE);
+        Gfx.rr(px, py, PW, ph, 7, 0x66101015);
+        Gfx.rrOutline(px, py, PW, ph, 7, 1, Theme.GLASS_LINE);
 
         Gfx.icon("friends", ix, py + 11, 14, Theme.TEXT);
         Gfx.text(Lang.t("friends.title"), ix + 20, py + 11, 11, true, Theme.TEXT);
@@ -178,7 +178,7 @@ public class FriendsScreen extends GuiScreen {
         r.hover = Ui.approach(r.hover, over ? 1f : 0f, dt, 16f);
         FriendsApi.Friend f = r.f;
         boolean dim = r.type == 1 && !f.online;
-        Gfx.rr(ix, y, iw, RH, 8, Ui.mix(0x14FFFFFF, 0x26FFFFFF, r.hover));
+        Gfx.rr(ix, y, iw, RH, 4, Ui.mix(0x14FFFFFF, 0x26FFFFFF, r.hover));
         // avatar (initial in a circle)
         int ax = ix + 6, ay = y + 4, as = 16;
         Gfx.rr(ax, ay, as, as, as / 2, dim ? 0x30FFFFFF : 0x55FFFFFF);

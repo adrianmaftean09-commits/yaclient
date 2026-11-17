@@ -11,8 +11,8 @@ import net.minecraft.client.gui.ScaledResolution;
  * a wide Mods tile and four tiles for cosmetics, friends, HUD editor and settings.
  */
 public class HubScreen extends GuiScreen {
-    private static final int PW = 320, PH = 202, PAD = 16, GAP = 8, R = 10;
-    private static final int PANEL = 0x900F1012, SURF = 0x701A1B1F, SURF2 = 0x80222328, SURF3 = 0x902D2E34;
+    private static final int PW = 320, PH = 202, PAD = 16, GAP = 8, R = 6;
+    private static final int PANEL = 0x700F1012, SURF = 0x701A1B1F, SURF2 = 0x80222328, SURF3 = 0x902D2E34;
     private static final String[] ICONS = {"grid", "shirt", "friends", "move", "gear"};
     private static final String[] LABELS = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
 
@@ -53,9 +53,9 @@ public class HubScreen extends GuiScreen {
         px = (vw - PW) / 2;
         py = (vh - PH) / 2 + Math.round((1f - fade) * 6f);
 
-        Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 16, 0x22000000);
-        Gfx.rr(px, py, PW, PH, 14, PANEL);
-        Gfx.rrOutline(px, py, PW, PH, 14, 1, 0x24FFFFFF);
+        Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 9, 0x22000000);
+        Gfx.rr(px, py, PW, PH, 8, PANEL);
+        Gfx.rrOutline(px, py, PW, PH, 8, 1, 0x24FFFFFF);
 
         // header
         Logo.draw(px + PAD, py + 14, 34, 34, fade);
@@ -63,7 +63,7 @@ public class HubScreen extends GuiScreen {
         Gfx.text("Minecraft 1.8.9", px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
         if (CosmeticsApi.enabled() && CosmeticsApi.plus()) {
             int w = Gfx.width("PLUS", 8, true) + 16;
-            Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 9, 0xFFFFC21A);
+            Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 5, 0xFFFFC21A);
             Gfx.textCentered("PLUS", px + PW - PAD - w / 2, py + 20 + (18 - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFF101014);
         }
 
@@ -75,7 +75,7 @@ public class HubScreen extends GuiScreen {
             Gfx.rrOutline(r[0], r[1], r[2], r[3], R, 1, Ui.mix(0x14FFFFFF, 0x33FFFFFF, hover[i]));
             int fg = Ui.mix(0xFFD8D8DC, Theme.TEXT, hover[i]);
             if (i == 0) {
-                Gfx.rr(r[0] + 10, r[1] + 8, 36, 36, 10, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.rr(r[0] + 10, r[1] + 8, 36, 36, 6, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
                 Gfx.icon(ICONS[0], r[0] + 18, r[1] + 16, 20, fg);
                 Gfx.text(Lang.t(LABELS[0]), r[0] + 56, r[1] + 11, 12, true, Theme.TEXT);
                 int total = 0, on = 0;
@@ -83,7 +83,7 @@ public class HubScreen extends GuiScreen {
                 Gfx.text(Lang.t("ui.count", total, on), r[0] + 56, r[1] + 11 + Gfx.lineHeight(12, true) + 3, 8, false, Theme.MUTED);
                 Gfx.icon("arrow_right", r[0] + r[2] - 28, r[1] + (r[3] - 14) / 2, 14, Ui.mix(Theme.DIM, Theme.TEXT, hover[i]));
             } else {
-                Gfx.rr(r[0] + (r[2] - 28) / 2, r[1] + 6, 28, 28, 8, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.rr(r[0] + (r[2] - 28) / 2, r[1] + 6, 28, 28, 4, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
                 Gfx.icon(ICONS[i], r[0] + (r[2] - 16) / 2, r[1] + 12, 16, fg);
                 Gfx.textCentered(Gfx.trim(Lang.t(LABELS[i]), 8, false, r[2] - 6), r[0] + r[2] / 2, r[1] + 40, 8, false, Ui.mix(Theme.MUTED, Theme.TEXT, hover[i]));
             }
@@ -95,10 +95,10 @@ public class HubScreen extends GuiScreen {
         ny = vh - 20 - 8 - NH;
         boolean nOver = mx >= nx && mx < nx + NW && my >= ny && my < ny + NH;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
-        Gfx.rr(nx, ny, NW, NH, 8, Ui.mix(0xE0101014, 0xF0242429, newsHover));
+        Gfx.rr(nx, ny, NW, NH, 4, Ui.mix(0xE0101014, 0xF0242429, newsHover));
         int artH = Math.round((NW - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, NW - 8, artH, fade);
-        Gfx.rrOutline(nx, ny, NW, NH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
+        Gfx.rrOutline(nx, ny, NW, NH, 4, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
         Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
