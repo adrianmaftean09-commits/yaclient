@@ -286,6 +286,41 @@ export async function onRequest({ request, env }) {
       }
       return send(200, out);
     }
+    if (route.startsWith('GET /v1/admin/') && ['overview', 'players', 'online', 'player'].includes(url.pathname.split('/').pop())) {   // dashboard data (read only)
+      if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
+      const J = (o) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      const what = url.pathname.split('/').pop();
+      const count = async (prefix) => { let n = 0, cur, pages = 0; do { const r = await env.DB.list({ prefix, cursor: cur, limit: 1000 }); n += r.keys.length; cur = r.list_complete ? null : r.cursor; pages++; } while (cur && pages < 5); return { n, more: !!cur }; };
+      if (what === 'overview') {
+        const [reg, linked, online] = await Promise.all([count('n:'), count('k:'), count('o:')]);
+        let kv = 'ok';
+        try { await env.DB.put('selftest', String(Date.now()), { expirationTtl: 60 }); await env.DB.get('selftest'); } catch (e) { kv = 'FAIL'; }
+        return J({ registered: reg, linked, online, kv, beta_open: env.BETA_OPEN === '1', items: Object.keys(ITEMS).length, bundles: Object.keys(BUNDLES), time: new Date().toISOString() });
+      }
+      if (what === 'players') {
+        const q = String(url.searchParams.get('q') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+        const r = await env.DB.list({ prefix: 'n:' + q, cursor: url.searchParams.get('cursor') || undefined, limit: 50 });
+        return J({ players: r.keys.map((k) => k.name.slice(2)), cursor: r.list_complete ? '' : r.cursor });
+      }
+      if (what === 'online') {
+        const r = await env.DB.list({ prefix: 'o:', limit: 40 });
+        const out = [];
+        for (const k of r.keys) {
+          const id = k.name.slice(2), pr = await presenceOf(env, id);
+          if (!pr) continue;
+          const f = await getF(env, id);
+          out.push({ uuid: id, name: f.name || id.slice(0, 8), where: pr });
+        }
+        return J({ online: out });
+      }
+      const nm = String(url.searchParams.get('name') || '').trim().toLowerCase();
+      const uuid = norm(url.searchParams.get('uuid')) || (nm ? (await env.DB.get('n:' + nm)) || '' : '');
+      if (!uuid) return J({ found: false });
+      const p = await loadPlayer(env, uuid), f = await getF(env, uuid);
+      const pr = await presenceOf(env, uuid);
+      return J({ found: true, uuid, name: f.name || nm, owned: p.owned, equipped: p.equipped || {}, plus: plusActive(p), plus_until: p.plusUntil ? new Date(p.plusUntil).toISOString() : '',
+        linked: !!(await env.DB.get('k:' + uuid)), online: !!pr, where: pr || '', friends: f.friends.length, pending_grants: (await env.DB.get('g:' + (f.name || nm).toLowerCase())) ? 'yes' : 'no' });
+    }
     if (route === 'POST /v1/admin/unclaim') {   // forget which device owns an account (lost PC, reinstall)
       if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
       const f = await form(request);
