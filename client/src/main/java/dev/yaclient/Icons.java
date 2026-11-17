@@ -86,6 +86,7 @@ final class Icons {
         DSL.put("fps_boost", "M 12 3 B 17 6 18 12 16 17 L 8 17 B 6 12 7 6 12 3 Z C 12 10 1.8 M 8 17 L 6 21 M 16 17 L 18 21");
         DSL.put("no_clouds", "M 7 18 B 3 18 3 12 7.5 12 B 8 7 16 7 17 12 B 21 12 21 18 17 18 Z M 3 3 L 21 21");
         DSL.put("block_outline", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");
+        DSL.put("smooth_shift", "M 5 4 L 19 4 M 12 8 L 12 19 M 8 15 L 12 19 L 16 15");
         DSL.put("chat", "R 3 4 18 13 3 M 8 17 L 8 21 L 12.5 17 M 7.5 9 L 16.5 9 M 7.5 12.5 L 13 12.5");
     }
 
