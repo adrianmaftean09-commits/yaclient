@@ -1,6 +1,8 @@
 package dev.yaclient.fabric;
 
+import dev.yaclient.fabric.mods.CoordsModule;
 import dev.yaclient.fabric.mods.CpsModule;
+import dev.yaclient.fabric.mods.CrystalCounterModule;
 import dev.yaclient.fabric.mods.FpsModule;
 import dev.yaclient.fabric.mods.KeystrokesModule;
 
@@ -17,6 +19,8 @@ public final class Modules {
         ALL.add(new FpsModule());
         ALL.add(new CpsModule());
         ALL.add(new KeystrokesModule());
+        ALL.add(new CoordsModule());
+        ALL.add(new CrystalCounterModule());
         for (Module m : ALL) m.load();
     }
 

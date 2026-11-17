@@ -2,6 +2,11 @@ package dev.yaclient.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 /** YA CLIENT for the latest Minecraft (Fabric). */
 public class YaFabricClient implements ClientModInitializer {
@@ -18,7 +23,12 @@ public class YaFabricClient implements ClientModInitializer {
         }
         Modules.init();
         Hud.register();
-        ClientTickEvents.END_CLIENT_TICK.register(client -> Modules.tick());
+        KeyMapping menuKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.yaclient.menu", GLFW.GLFW_KEY_RIGHT_SHIFT,
+                KeyMapping.Category.register(Identifier.fromNamespaceAndPath("yaclient", "main"))));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            Modules.tick();
+            while (menuKey.consumeClick()) client.setScreenAndShow(new MenuScreen());
+        });
         System.out.println("[" + NAME + "] " + VERSION + " loaded (Fabric), " + Modules.ALL.size() + " modules.");
     }
 }
