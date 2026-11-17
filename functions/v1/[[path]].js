@@ -11,8 +11,6 @@ const ITEMS = {
   sakura_bandana: { slot: 'bandana', price: 'Exclusive' }, sakura_pet: { slot: 'pet', price: 'Exclusive' },
   shinobi_cape: { slot: 'cape', price: 'Exclusive' }, shinobi_wings: { slot: 'wings', price: 'Exclusive' },
   shinobi_bandana: { slot: 'bandana', price: 'Exclusive' }, shinobi_pet: { slot: 'pet', price: 'Exclusive' },
-  neon_cape: { slot: 'cape', price: 'Exclusive' }, neon_wings: { slot: 'wings', price: 'Exclusive' },
-  neon_bandana: { slot: 'bandana', price: 'Exclusive' }, neon_pet: { slot: 'pet', price: 'Exclusive' },
   kitsune_cape: { slot: 'cape', price: 'Exclusive' }, kitsune_wings: { slot: 'wings', price: 'Exclusive' },
   kitsune_bandana: { slot: 'bandana', price: 'Exclusive' }, kitsune_pet: { slot: 'pet', price: 'Exclusive' }
 };
@@ -24,7 +22,6 @@ const BUNDLES = {
   qlux: { price: 'Partner', partner: 'Qlux', items: ['qlux_cape', 'qlux_wings', 'qlux_bandana', 'qlux_pet'] },
   sakura: { price: 'Exclusive', items: ['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'] },
   shinobi: { price: 'Exclusive', items: ['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'] },
-  neon: { price: 'Exclusive', items: ['neon_cape', 'neon_wings', 'neon_bandana', 'neon_pet'] },
   kitsune: { price: 'Exclusive', items: ['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'] }
 };
 const SLOTS = ['cape', 'wings', 'bandana', 'pet'];

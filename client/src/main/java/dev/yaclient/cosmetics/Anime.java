@@ -53,7 +53,7 @@ final class Anime {
     static final Th KITSUNE = new Th("kitsune", 3,
             new float[]{0.98f, 0.95f, 0.91f, 0.30f}, new float[]{1.00f, 1.00f, 1.00f, 0.40f}, new float[]{0.88f, 0.17f, 0.10f, 0.35f},
             new float[]{1.00f, 0.78f, 0.25f, 0.70f}, new float[]{0.58f, 0.08f, 0.05f, 0.00f}, FLAME);
-    static final Th[] ALL = {SAKURA, SHINOBI, NEON, KITSUNE};
+    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE};
 
     static Th byStyle(String id) { for (Th t : ALL) if (t.id.equals(id)) return t; return null; }
 
