@@ -23,6 +23,16 @@ final class Icons {
     // M x y | L x y | B x1 y1 x2 y2 x y | Q x1 y1 x y | Z | C cx cy r | D cx cy r (filled) | E cx cy rx ry | R x y w h r | A cx cy r start extent
     private static final java.util.Map<String, String> DSL = new java.util.HashMap<String, String>();
     static {
+        DSL.put("combo", "M 13 3 L 6 13 L 11 13 L 10 21 L 18 10 L 13 10 Z");
+        DSL.put("bow_charge", "M 8 3 B 18 7 18 17 8 21 M 8 3 L 8 21 M 3 12 L 17 12 M 14 9 L 17 12 L 14 15");
+        DSL.put("block_info", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");
+        DSL.put("no_hurt_cam", "R 3 7 18 12 3 C 12 13 3 M 4 20 L 20 4");
+        DSL.put("bg_fps", "R 3 4 18 13 2 M 8 21 L 16 21 M 12 17 L 12 21 M 10 8 L 10 13 M 14 8 L 14 13");
+        DSL.put("low_health", "M 12 20 B 4 14 3 9 3 7 B 3 4.5 5 3 7.2 3 B 9.2 3 11 4.3 12 6 B 13 4.3 14.8 3 16.8 3 B 19 3 21 4.5 21 7 B 21 9 20 14 12 20 Z M 12 8.5 L 12 12.5 D 12 15.3 0.9");
+        DSL.put("target_hud", "C 12 12 7.5 C 12 12 3 M 12 2 L 12 5 M 12 19 L 12 22 M 2 12 L 5 12 M 19 12 L 22 12");
+        DSL.put("item_counter", "R 3 4 7 7 2 R 3 13 7 7 2 M 13 7.5 L 21 7.5 M 13 16.5 L 21 16.5");
+        DSL.put("inventory_hud", "R 3 4 18 16 2 M 9 4 L 9 20 M 15 4 L 15 20 M 3 9.3 L 21 9.3 M 3 14.7 L 21 14.7");
+        DSL.put("nearby_players", "C 12 12 9 C 12 12 4.5 D 12 12 1.5 M 12 12 L 18.5 5.5");
         DSL.put("fps", "A 12 15 8 -20 220 M 12 15 L 16.5 9 D 12 15 1.5");
         DSL.put("cps", "R 7 3 10 18 5 M 12 3 L 12 10 M 7 10 L 17 10");
         DSL.put("coords", "M 12 21 B 6 15 5 12 5 9 B 5 5.5 8 3 12 3 B 16 3 19 5.5 19 9 B 19 12 18 15 12 21 Z C 12 9 2.5");

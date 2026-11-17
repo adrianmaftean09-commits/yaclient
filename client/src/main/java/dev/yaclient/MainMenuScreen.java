@@ -16,8 +16,8 @@ import org.lwjgl.util.glu.Project;
 
 /** YA CLIENT title screen: panorama backdrop, centered logo only (no title text), stacked buttons and a dock of labeled icon tiles. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 140, BH = 20, GAP = 5, TW = 32, TH = 28, DG = 4;
-    private static final String[] ICONS = {"shirt", "gear", "sliders", "close"};
+    private static final int BW = 140, BH = 20, GAP = 5, TW = 40, TH = 28, DG = 10;
+    private static final String[] ICONS = {"shirt", "gear", "close"};
 
     private static final ResourceLocation[] PANO = new ResourceLocation[6];
     static { for (int i = 0; i < 6; i++) PANO[i] = new ResourceLocation("textures/gui/title/background/panorama_" + i + ".png"); }
@@ -176,7 +176,6 @@ public class MainMenuScreen extends GuiScreen {
             if (mx >= x && mx < x + TW && my >= dockY && my < dockY + TH) {
                 if (i == 0) mc.displayGuiScreen(new MenuScreen(4));
                 else if (i == 1) mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-                else if (i == 2) mc.displayGuiScreen(new MenuScreen(5));
                 else mc.shutdown();
                 return;
             }
