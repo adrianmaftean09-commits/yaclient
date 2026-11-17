@@ -64,6 +64,7 @@ public class CosmeticsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
         Entity e = mc.level.getEntity(s.id);
         if (!(e instanceof Player p)) return;
         if (p != mc.player && s.distanceToCameraSq > 1600.0) return;
+        Nametag.draw(ps, c, s, p);
         Map<String, String> eq = CosmeticsApi.equippedFor(p);
         if (eq == null) return;
         boolean cape = on(eq, "cape"), wings = on(eq, "wings"), bandana = on(eq, "bandana"), pet = on(eq, "pet");

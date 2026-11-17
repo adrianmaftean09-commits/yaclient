@@ -30,6 +30,7 @@ public class YaFabricClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null) CosmeticsApi.refreshAsync(false);
             Modules.tick();
+            TabBadge.tick(client);
             while (menuKey.consumeClick()) client.setScreenAndShow(new MenuScreen());
         });
         System.out.println("[" + NAME + "] " + VERSION + " loaded (Fabric), " + Modules.ALL.size() + " modules.");
