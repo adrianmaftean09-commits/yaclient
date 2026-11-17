@@ -188,9 +188,18 @@ export async function onRequest({ request, env }) {
       const f = await form(request);
       let uuid = norm(f.uuid);
       if (!uuid && f.username) {
-        const prof = await getJson('https://api.mojang.com/users/profiles/minecraft/' + encodeURIComponent(f.username));
-        if (!prof || !prof.id) return send(404, { error: 'unknown username' });
-        uuid = norm(prof.id);
+        const nm = String(f.username).trim();
+        uuid = (await env.DB.get('n:' + nm.toLowerCase())) || '';   // known from the launcher/client
+        if (!uuid) {
+          const prof = await getJson('https://api.mojang.com/users/profiles/minecraft/' + encodeURIComponent(nm));
+          if (prof && prof.id) uuid = norm(prof.id);
+        }
+        if (!uuid) {
+          const pdb = await getJson('https://playerdb.co/api/player/minecraft/' + encodeURIComponent(nm));
+          const id = pdb && pdb.data && pdb.data.player && pdb.data.player.raw_id;
+          if (id) uuid = norm(id);
+        }
+        if (!uuid) return send(404, { error: 'unknown username' });
       }
       if (!uuid) return send(400, { error: 'uuid or username required' });
       if (f.item === 'plus') {
