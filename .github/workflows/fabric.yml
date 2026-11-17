@@ -33,7 +33,7 @@ jobs:
         if: always()
         working-directory: fabric
         run: |
-          JARS=$(find ~/.gradle -name "*.jar" | grep -i "minecraft" | grep -vi "sources" | head -20)
+          JARS=$( (find ~/.gradle -name "*.jar" | grep -i "minecraft" | grep -vi "sources" | head -20; find ~/.gradle/caches/modules-2 -name "fabric-*.jar" | grep -vi "sources" | head -80) )
           echo "== jars =="; echo "$JARS"
           CP=$(echo "$JARS" | tr '\n' ':')
           echo "== class search =="

@@ -1,7 +1,9 @@
-net.minecraft.client.gui.GuiGraphicsExtractor
-net.minecraft.client.KeyMapping
-net.minecraft.client.Options
 net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement
 net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
+net.minecraft.client.gui.screens.Screen
+net.minecraft.client.Minecraft
+net.minecraft.client.input.KeyEvent
+net.minecraft.client.input.MouseButtonEvent
+net.minecraft.resources.Identifier
