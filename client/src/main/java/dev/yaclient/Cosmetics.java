@@ -55,6 +55,9 @@ public final class Cosmetics {
     /** Equips the whole bundle, or removes everything when all of it is already worn. */
     public static void toggleBundle(int bundle) {
         boolean all = wearsBundle(bundle);
-        for (String s : SLOTS) equip(s, all ? "none" : item(bundle, s));
+        java.util.Map<String, String> m = new java.util.LinkedHashMap<String, String>();
+        for (String s : SLOTS) { String v = all ? "none" : item(bundle, s); Config.set("cos." + s, v); m.put(s, v); }
+        Config.save();
+        CosmeticsApi.pushEquipAll(m);
     }
 }

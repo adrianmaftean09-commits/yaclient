@@ -197,14 +197,18 @@ export async function onRequest({ request, env }) {
       const f = await form(request);
       const uuid = await who(env, f.token);
       if (!uuid) return send(401, { error: 'bad token' });
-      if (!SLOTS.includes(f.slot)) return send(400, { error: 'bad slot' });
+      // one slot (slot + item) or several at once (set = "cape:none,wings:mono_wings,...") so a bundle is one atomic write
+      const pairs = f.set ? String(f.set).split(',').map((x) => x.split(':')) : [[f.slot, f.item]];
       const p = await loadPlayer(env, uuid);
-      if (f.item === 'none') p.equipped[f.slot] = 'none';
-      else {
-        const it = ITEMS[f.item];
-        if (!it || it.slot !== f.slot) return send(400, { error: 'bad item' });
-        if (!p.owned.includes(f.item)) return send(403, { error: 'not owned' });
-        p.equipped[f.slot] = f.item;
+      for (const [slot, item] of pairs) {
+        if (!SLOTS.includes(slot)) return send(400, { error: 'bad slot' });
+        if (item === 'none') p.equipped[slot] = 'none';
+        else {
+          const it = ITEMS[item];
+          if (!it || it.slot !== slot) return send(400, { error: 'bad item' });
+          if (!p.owned.includes(item)) return send(403, { error: 'not owned' });
+          p.equipped[slot] = item;
+        }
       }
       await savePlayer(env, uuid, p);
       return send(200, { ok: 1 });

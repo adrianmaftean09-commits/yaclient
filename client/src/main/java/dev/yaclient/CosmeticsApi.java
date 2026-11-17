@@ -198,19 +198,36 @@ public final class CosmeticsApi {
         t.start();
     }
 
-    /** Tells the server what you wear, so other YA CLIENT players can see it. */
-    public static void pushEquip(final String slot, final String item) {
-        if (!enabled()) return;
-        Thread t = new Thread(new Runnable() {
+    private static final java.util.concurrent.ExecutorService PUSH = java.util.concurrent.Executors.newSingleThreadExecutor(new java.util.concurrent.ThreadFactory() {
+        @Override public Thread newThread(Runnable r) { Thread t = new Thread(r, "YA-CosmeticsPush"); t.setDaemon(true); return t; }
+    });
+
+    /** Tells the server what you wear, so other YA CLIENT players can see it (one ordered queue, one request per change). */
+    public static void pushEquip(String slot, String item) {
+        Map<String, String> m = new java.util.LinkedHashMap<String, String>();
+        m.put(slot, item);
+        pushEquipAll(m);
+    }
+
+    /** Several slots in a single request, so a bundle is applied (or removed) atomically on the server. */
+    public static void pushEquipAll(Map<String, String> items) {
+        if (!enabled() || items.isEmpty()) return;
+        final StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> e : items.entrySet()) { if (sb.length() > 0) sb.append(','); sb.append(e.getKey()).append(':').append(e.getValue()); }
+        PUSH.execute(new Runnable() {
             @Override public void run() {
-                try {
-                    String tok = token();
-                    if (tok != null) http("POST", base() + "/v1/equip", "token=" + enc(tok) + "&slot=" + enc(slot) + "&item=" + enc(item));
-                } catch (Exception ignored) { }
+                for (int attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        String tok = token();
+                        if (tok == null) return;
+                        http("POST", base() + "/v1/equip", "token=" + enc(tok) + "&set=" + enc(sb.toString()));
+                        return;
+                    } catch (Exception e) {
+                        resetToken();   // expired token: log in again and retry once
+                    }
+                }
             }
-        }, "YA-CosmeticsPush");
-        t.setDaemon(true);
-        t.start();
+        });
     }
 
     public static void openStore() {
@@ -244,7 +261,7 @@ public final class CosmeticsApi {
     private static Map<String, String> lookup(final String uuid) {
         Map<String, String> cached = OTHERS.get(uuid);
         Long at = FETCHED.get(uuid);
-        long ttl = cached != null && "1".equals(cached.get("client")) ? 5L * 60L * 1000L : 45L * 1000L;   // re-check non-YA players quickly: they may have just joined
+        long ttl = cached != null && "1".equals(cached.get("client")) ? 8L * 1000L : 30L * 1000L;   // short, so equipping or removing a cosmetic shows up for others within seconds
         boolean stale = at == null || System.currentTimeMillis() - at > ttl;
         if (stale && PENDING.add(uuid)) {
             Thread t = new Thread(new Runnable() {
