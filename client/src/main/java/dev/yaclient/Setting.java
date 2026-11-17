@@ -5,8 +5,15 @@ public abstract class Setting {
     public final String id;
     /** Id of the module that owns this setting (set by Module.add). */
     public String owner = "";
+    /** Section of the options page this setting is shown in (lang key "grp.&lt;group&gt;"). */
+    public String group = "general";
 
     protected Setting(String id) { this.id = id; }
+
+    public Setting in(String g) { group = g; return this; }
+
+    /** Back to the default value (the "Reset options" button). */
+    public abstract void reset();
 
     protected String key() { return "set." + owner + "." + id; }
 
@@ -27,6 +34,8 @@ public abstract class Setting {
         public Bool(String id, boolean def) { super(id); this.def = def; this.value = def; }
 
         @Override public void load() { value = Config.getBool(key(), def); }
+
+        @Override public void reset() { value = def; }
 
         @Override public void save() { Config.setBool(key(), value); }
     }
@@ -58,6 +67,8 @@ public abstract class Setting {
 
         @Override public void load() { value = Ui.clamp(Config.getFloat(key(), def), min, max); }
 
+        @Override public void reset() { value = def; }
+
         @Override public void save() { Config.setFloat(key(), value); }
     }
 
@@ -75,6 +86,33 @@ public abstract class Setting {
 
         @Override public void load() { index = Ui.clamp(Config.getInt(key(), def), 0, options.length - 1); }
 
+        @Override public void reset() { index = def; }
+
         @Override public void save() { Config.setInt(key(), index); }
+    }
+
+    /** A color picked from a fixed palette (shown as round swatches). */
+    public static final class Palette extends Setting {
+        public static final String[] IDS = {"white", "silver", "red", "orange", "gold", "green", "cyan", "blue", "violet", "pink", "accent", "rainbow"};
+        private static final int[] RGB = {0xFFF4F4F5, 0xFF9A9AA5, 0xFFEF4444, 0xFFF97316, 0xFFFFC21A, 0xFF22C55E, 0xFF22D3EE, 0xFF3B82F6, 0xFF8B5CF6, 0xFFEC4899, 0, 0};
+        public int index;
+        private final int def;
+
+        public Palette(String id, int def) { super(id); this.def = def; this.index = def; }
+
+        public static int color(int i) {
+            i = Ui.clamp(i, 0, IDS.length - 1);
+            if (IDS[i].equals("accent")) return Theme.accent();
+            if (IDS[i].equals("rainbow")) return 0xFF000000 | (java.awt.Color.HSBtoRGB((System.currentTimeMillis() % 4000L) / 4000f, 0.65f, 1f) & 0xFFFFFF);
+            return RGB[i];
+        }
+
+        public int rgb() { return color(index); }
+
+        @Override public void load() { index = Ui.clamp(Config.getInt(key(), def), 0, IDS.length - 1); }
+
+        @Override public void save() { Config.setInt(key(), index); }
+
+        @Override public void reset() { index = def; }
     }
 }

@@ -1,5 +1,6 @@
 package dev.yaclient.modules;
 
+import dev.yaclient.Setting;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayDeque;
@@ -9,6 +10,9 @@ public class CpsModule extends PillModule {
     private final Deque<Long> left = new ArrayDeque<Long>();
     private final Deque<Long> right = new ArrayDeque<Long>();
     private boolean lastL, lastR;
+    private final Setting.Bool right_ = add("general", new Setting.Bool("right", true));
+    private final Setting.Bool label = add("general", new Setting.Bool("label", true));
+    private final Setting.Choice sep = add("general", new Setting.Choice("sep", 0, "bar", "slash", "dash", "space"));
 
     public CpsModule() { super("cps", Category.PVP, true, 0.008f, 0.064f); }
 
@@ -28,5 +32,9 @@ public class CpsModule extends PillModule {
     }
 
     @Override
-    protected String text() { return count(left) + " | " + count(right) + " CPS"; }
+    protected String text() {
+        String[] seps = {" | ", " / ", " - ", "  "};
+        String sp = seps[sep.index];
+        return count(left) + (right_.value ? sp + count(right) : "") + (label.value ? " CPS" : "");
+    }
 }

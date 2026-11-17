@@ -45,6 +45,17 @@ public abstract class Module {
         return s;
     }
 
+    protected <T extends Setting> T add(String group, T s) {
+        s.group = group;
+        return add(s);
+    }
+
+    /** Every option back to its default value. */
+    public void resetSettings() {
+        for (Setting s : settings) s.reset();
+        saveConfig();
+    }
+
     public void loadConfig() {
         enabled = available && Config.getBool("mod." + id + ".enabled", enabled);
         for (Setting s : settings) s.load();

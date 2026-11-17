@@ -16,6 +16,8 @@ public abstract class HudModule extends Module {
     public float px, py;
     public float scale = 0.8f;
     private final float defX, defY;
+    /** Shared by every HUD element: how see-through the whole element is. */
+    protected final dev.yaclient.Setting.Num opacity = add("style", new dev.yaclient.Setting.Num("opacity", 20f, 100f, 5f, 100f, "%"));
     /** True while the HUD editor is open (modules show sample content when they have none). */
     protected boolean preview;
 
@@ -77,7 +79,24 @@ public abstract class HudModule extends Module {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, 0f);
         GlStateManager.scale(s, s, 1f);
+        float f0 = Gfx.fade;
+        Gfx.fade = f0 * opacity.value / 100f;
         draw();
+        Gfx.fade = f0;
+        GlStateManager.popMatrix();
+        preview = false;
+    }
+
+    /** Draws the element at (x, y) with the given scale, with sample content (used by the options page). */
+    public final void drawPreviewAt(int x, int y, float s) {
+        preview = true;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x, (float) y, 0f);
+        GlStateManager.scale(s, s, 1f);
+        float f0 = Gfx.fade;
+        Gfx.fade = f0 * opacity.value / 100f;
+        draw();
+        Gfx.fade = f0;
         GlStateManager.popMatrix();
         preview = false;
     }

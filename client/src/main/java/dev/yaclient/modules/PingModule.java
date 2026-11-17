@@ -1,17 +1,29 @@
 package dev.yaclient.modules;
 
+import dev.yaclient.Setting;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
 public class PingModule extends PillModule {
+    private final Setting.Bool label = add("general", new Setting.Bool("label", true));
+    private final Setting.Bool colorize = add("general", new Setting.Bool("colorize", true));
+    private int last = -1;
+
     public PingModule() { super("ping", Category.INFO, false, 0.99f, 0.012f); }
 
     @Override
     protected String text() {
         if (mc == null || mc.thePlayer == null || mc.getNetHandler() == null) return "";
         NetworkPlayerInfo info = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
-        return info == null ? "-- ms" : info.getResponseTime() + " ms";
+        last = info == null ? -1 : info.getResponseTime();
+        return info == null ? "--" + (label.value ? " ms" : "") : info.getResponseTime() + (label.value ? " ms" : "");
     }
 
     @Override
-    protected String sample() { return "42 ms"; }
+    protected int autoColor() {
+        if (!colorize.value || last < 0) return 0;
+        return last <= 80 ? 0xFF22C55E : (last <= 160 ? 0xFFFFC21A : 0xFFEF4444);
+    }
+
+    @Override
+    protected String sample() { return "42" + (label.value ? " ms" : ""); }
 }

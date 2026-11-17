@@ -108,11 +108,16 @@ async function friendsRoute(env, request, url, route) {
   if (act === 'add') {
     const low = String(b.name || '').trim().toLowerCase();
     if (!/^[a-z0-9_]{3,16}$/.test(low)) return send(404, { error: 'not found' });
-    const other = await env.DB.get('n:' + low);
+    let other = await env.DB.get('n:' + low), canon = '';
+    if (!other) {   // never opened YA CLIENT yet: look the player up, the request waits in their list until they do
+      const pdb = await getJson('https://playerdb.co/api/player/minecraft/' + encodeURIComponent(low));
+      const pl = pdb && pdb.data && pdb.data.player;
+      if (pl && pl.raw_id) { other = norm(pl.raw_id); canon = pl.username || ''; }
+    }
     if (!other) return send(404, { error: 'not found' });
     if (other === me) return send(400, { error: 'self' });
     const theirs = await getF(env, other);
-    const otherE = { u: other, n: theirs.name || low };
+    const otherE = { u: other, n: theirs.name || canon || low };
     if (mine.friends.some((x) => x.u === other)) return send(409, { error: 'already' });
     if (mine.incoming.some((x) => x.u === other)) {   // they already asked you: becomes a friendship
       mine.incoming = without(mine.incoming, other); mine.friends.push(otherE);
