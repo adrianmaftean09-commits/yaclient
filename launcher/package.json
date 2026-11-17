@@ -1,7 +1,7 @@
 {
   "name": "ya-client-launcher",
   "productName": "YA CLIENT",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Launcher ufficiale di YA CLIENT (Minecraft 1.8.9)",
   "main": "main.js",
   "author": "YA",
