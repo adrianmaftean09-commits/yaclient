@@ -41,7 +41,7 @@ public class HubScreen extends GuiScreen {
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
         // fixed physical size on every GUI scale: about 1 pixel per unit at 1080p
-        float f = Math.max(1.1f, Minecraft.getMinecraft().displayHeight / 1080f * 1.45f);
+        float f = Math.max(1.25f, Minecraft.getMinecraft().displayHeight / 1080f * 1.65f);
         sc = f / gs;
         int vw = Math.round(width / sc), vh = Math.round(height / sc);
         int mx = Math.round(gmx / sc), my = Math.round(gmy / sc);

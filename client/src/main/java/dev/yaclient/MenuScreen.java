@@ -152,7 +152,7 @@ public class MenuScreen extends GuiScreen {
         float open = Ui.ease((now - opened) / 240f);
         gs = new ScaledResolution(mc).getScaleFactor();
         // same physical size on every GUI scale: about 1 pixel per unit at 1080p
-        float phys = Math.max(0.5f, mc.displayHeight / 1080f * 1.0f);
+        float phys = Math.max(0.5f, mc.displayHeight / 1080f * 1.15f);
         scale = Math.min(phys / gs, Math.min((height - 16f) / PH, (width - 16f) / PW));
         Gfx.setScale(Math.max(1, Math.round(phys * 2f)));
         originX = Math.round(width / 2f - PW * scale / 2f);
