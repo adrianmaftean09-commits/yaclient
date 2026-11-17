@@ -16,7 +16,7 @@ svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke
 .rail{width:208px;background:linear-gradient(180deg,var(--glow3),transparent 40%),var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 12px 14px}
 .brandbox{display:flex;align-items:center;gap:10px;padding:2px 8px 0;cursor:default}
 .mark{width:40px;height:40px;object-fit:contain;flex:none}
-.bn{font-weight:800;letter-spacing:.6px;font-size:15px;line-height:1.1}.bn span{color:var(--accent-hi)}
+.bn{font-weight:800;letter-spacing:1px;font-size:17px;line-height:1}.bn span{color:var(--accent-hi)}
 .bs{font-size:11px;color:var(--mute);margin-top:2px;display:flex;align-items:center;gap:5px}.bs::before{content:"";width:6px;height:6px;border-radius:50%;background:#3ddc84}
 .rail nav{display:flex;flex-direction:column;gap:4px;margin-top:26px;flex:1}
 .nav{height:42px;width:100%;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 12px;color:var(--mute);transition:.15s;font-weight:600;text-align:left;position:relative}
