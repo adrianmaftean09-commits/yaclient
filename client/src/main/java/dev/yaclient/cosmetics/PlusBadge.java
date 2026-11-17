@@ -26,7 +26,7 @@ public final class PlusBadge {
         // glow (additive)
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-        GL11.glColor4f(1f, 0.80f, 0.22f, 0.28f * pulse);
+        GL11.glColor4f(1f, 0.80f, 0.22f, 0.20f * pulse);
         GL11.glVertex2f(cx, cy);
         GL11.glColor4f(1f, 0.62f, 0.05f, 0f);
         for (int i = 0; i <= 28; i++) {
@@ -38,8 +38,8 @@ public final class PlusBadge {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
         float a = s * 0.42f, b = s * 0.16f;
         GL11.glColor4f(0.80f, 0.55f, 0.05f, 1f);   // dark gold edge
-        rect(cx - a - 0.4f, cy - b - 0.4f, cx + a + 0.4f, cy + b + 0.4f);
-        rect(cx - b - 0.4f, cy - a - 0.4f, cx + b + 0.4f, cy + a + 0.4f);
+        rect(cx - a - 0.25f, cy - b - 0.25f, cx + a + 0.25f, cy + b + 0.25f);
+        rect(cx - b - 0.25f, cy - a - 0.25f, cx + b + 0.25f, cy + a + 0.25f);
         GL11.glColor4f(1f, 0.84f, 0.26f, 1f);       // gold
         rect(cx - a, cy - b, cx + a, cy + b);
         rect(cx - b, cy - a, cx + b, cy + a);

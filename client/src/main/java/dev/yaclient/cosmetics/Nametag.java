@@ -61,7 +61,7 @@ final class Nametag {
         Poly.tex(x0 + LOGO, -1f, 0, 1f, 0f, 1f, 1f, 1f, 1f);
         Poly.end();
         // name, normal Minecraft font
-        if (plus) PlusBadge.draw(x0 + LOGO - 5.5f, -4.5f, 7.5f);   // exponent on the A
+        if (plus) PlusBadge.draw(x0 + LOGO - 3.5f, -3f, 4.2f);   // exponent on the A
         fr.drawStringWithShadow(name, x0 + badgeW + GAP, 0f, 0xFFFFFFFF);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
@@ -101,7 +101,7 @@ final class Nametag {
         Poly.tex(x0 + LOGO, -1f + LOGO, 0, 1f, 1f, 1f, 1f, 1f, 1f);
         Poly.tex(x0 + LOGO, -1f, 0, 1f, 0f, 1f, 1f, 1f, 1f);
         Poly.end();
-        if (plus) PlusBadge.draw(x0 + LOGO - 5.5f, -4.5f, 7.5f);   // exponent on the A
+        if (plus) PlusBadge.draw(x0 + LOGO - 3.5f, -3f, 4.2f);   // exponent on the A
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
