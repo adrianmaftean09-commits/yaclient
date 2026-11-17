@@ -341,5 +341,10 @@
  "grp.style": "Boxstil",
  "grp.colors": "Farben",
  "grp.text": "Text",
- "grp.layout": "Größe und Abstände"
+ "grp.layout": "Größe und Abstände",
+ "grp.shape": "Form",
+ "set.crosshair.shape": "Form oder Text (cross, plus, dot, ring, square, diamond oder beliebiger Text)",
+ "set.crosshair.gap": "Mittelabstand",
+ "set.crosshair.outline": "Dunkle Kontur",
+ "set.crosshair.dynamic": "Weitet sich beim Sprinten/Springen"
 }

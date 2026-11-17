@@ -67,6 +67,7 @@ public class MenuScreen extends GuiScreen {
     public MenuScreen(int startTab) { this.tab = startTab; this.cosMode = startTab == 4; if (startTab == 4) CosmeticsApi.refreshAsync(true); }
     private String query = "";
     private boolean searchFocus;
+    private Setting.Text focusText;
     private Module drawerModule, drawerLast;
     private Action activeDrag;
 
@@ -416,7 +417,8 @@ public class MenuScreen extends GuiScreen {
             float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 80f / eh0));
             hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((108 - eh0 * ps) / 2f), ps);
         } else {
-            Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 30, 48, Theme.DIM);
+            if (m instanceof dev.yaclient.modules.CrosshairModule) ((dev.yaclient.modules.CrosshairModule) m).drawAt(lx0 + lw / 2, PG_Y + 54, 1.6f, false);
+            else Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 30, 48, Theme.DIM);
         }
         int gy = PG_Y + 108 + 12;
         for (final String g : groups) {
@@ -430,7 +432,7 @@ public class MenuScreen extends GuiScreen {
             Gfx.text(Lang.t("grp." + g), lx0 + 16, gy + (28 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
             String cs = String.valueOf(count);
             Gfx.text(cs, lx0 + lw - 12 - Gfx.width(cs, 10, false), gy + (28 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.DIM);
-            if (live) hit(lx0, gy, lw, 28, new Action() { @Override public void run(float x, float y) { pageGroup = g; pageScroll = 0f; pageTarget = 0f; } }, null, null);
+            if (live) hit(lx0, gy, lw, 28, new Action() { @Override public void run(float x, float y) { pageGroup = g; focusText = null; pageScroll = 0f; pageTarget = 0f; } }, null, null);
             gy += 30;
         }
         int by = PG_Y + PG_H - 28;
@@ -519,6 +521,23 @@ public class MenuScreen extends GuiScreen {
                 if (live) pageHit(cx, cy, ws[i], 28, new Action() { @Override public void run(float px, float py) { c.index = idx; saveAll(); } }, null);
                 cx += ws[i];
             }
+            return y + rh;
+        }
+        if (st instanceof Setting.Text) {
+            final Setting.Text tx = (Setting.Text) st;
+            int rh = 62;
+            boolean foc = focusText == tx;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w), x, y + 12, 12, false, Theme.TEXT);
+            int bx = x, by = y + 32, bw = w, bh = 24;
+            Gfx.rr(bx, by, bw, bh, 8, foc ? 0x22FFFFFF : 0x12FFFFFF);
+            Gfx.rrOutline(bx, by, bw, bh, 8, 1, foc ? Theme.accent() : 0x1AFFFFFF);
+            String shown = tx.value;
+            Gfx.text(Gfx.trim(shown, 12, false, bw - 24), bx + 10, by + (bh - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
+            if (foc && (System.currentTimeMillis() / 500) % 2 == 0) {
+                int cw = Gfx.width(Gfx.trim(shown, 12, false, bw - 24), 12, false);
+                Gfx.rr(bx + 11 + cw, by + 5, 1, bh - 10, 0, Theme.TEXT);
+            }
+            if (live) pageHit(bx, by, bw, bh, new Action() { @Override public void run(float px, float py) { focusText = tx; } }, null);
             return y + rh;
         }
         if (st instanceof Setting.Palette) {
@@ -841,6 +860,16 @@ public class MenuScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typed, int key) {
+        if (focusText != null) {
+            if (key == Keyboard.KEY_ESCAPE || key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) { focusText = null; saveAll(); return; }
+            if (key == Keyboard.KEY_BACK) {
+                if (!focusText.value.isEmpty()) focusText.value = focusText.value.substring(0, focusText.value.length() - 1);
+            } else if (typed >= 32 && typed != 127 && focusText.value.length() < focusText.maxLen) {
+                focusText.value += typed;
+            }
+            saveAll();
+            return;
+        }
         if (key == Keyboard.KEY_ESCAPE) {
             if (searchFocus) { searchFocus = false; return; }
             if (drawerModule != null) { drawerModule = null; return; }

@@ -99,6 +99,7 @@ public class YAClient implements ModInitializer {
 
             // cosmetics: add the render layer once the renderers exist, keep purchases in sync
             CosmeticsInstaller.tryInstall();
+            if (!(mc.ingameGUI instanceof YaIngame) && !ingameFailed) { YaIngame.install(); if (!(mc.ingameGUI instanceof YaIngame)) ingameFailed = true; }
             CosmeticsApi.refreshAsync(false);
 
             // our title screen replaces the vanilla one
@@ -132,6 +133,8 @@ public class YAClient implements ModInitializer {
 
         System.out.println("[" + NAME + "] " + VERSION + " loaded. Press Right Shift for the menu.");
     }
+
+    private static boolean ingameFailed;
 
     @Override
     @SuppressWarnings("deprecation")

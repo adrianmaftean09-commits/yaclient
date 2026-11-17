@@ -351,5 +351,10 @@
  "grp.style": "Box style",
  "grp.colors": "Colors",
  "grp.text": "Text",
- "grp.layout": "Size and spacing"
+ "grp.layout": "Size and spacing",
+ "grp.shape": "Shape",
+ "set.crosshair.shape": "Shape or text (cross, plus, dot, ring, square, diamond, or any text)",
+ "set.crosshair.gap": "Center gap",
+ "set.crosshair.outline": "Dark outline",
+ "set.crosshair.dynamic": "Widen while sprinting or jumping"
 }

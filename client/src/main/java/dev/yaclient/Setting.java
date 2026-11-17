@@ -115,4 +115,19 @@ public abstract class Setting {
 
         @Override public void reset() { index = def; }
     }
+
+    /** Free text typed by the player (e.g. the crosshair shape or text). */
+    public static final class Text extends Setting {
+        public String value;
+        public final int maxLen;
+        private final String def;
+
+        public Text(String id, String def, int maxLen) { super(id); this.def = def; this.value = def; this.maxLen = maxLen; }
+
+        @Override public void load() { String v = Config.get(key(), def); value = v == null ? def : v; }
+
+        @Override public void reset() { value = def; }
+
+        @Override public void save() { Config.set(key(), value); }
+    }
 }

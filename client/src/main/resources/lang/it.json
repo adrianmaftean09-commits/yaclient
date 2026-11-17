@@ -341,5 +341,10 @@
  "grp.style": "Stile del riquadro",
  "grp.colors": "Colori",
  "grp.text": "Testo",
- "grp.layout": "Dimensioni e spazi"
+ "grp.layout": "Dimensioni e spazi",
+ "grp.shape": "Forma",
+ "set.crosshair.shape": "Forma o testo (croce, plus, punto, cerchio, quadrato, rombo, oppure scrivi quello che vuoi)",
+ "set.crosshair.gap": "Spazio al centro",
+ "set.crosshair.outline": "Contorno scuro",
+ "set.crosshair.dynamic": "Si allarga quando corri o salti"
 }

@@ -341,5 +341,10 @@
  "grp.style": "Estilo del recuadro",
  "grp.colors": "Colores",
  "grp.text": "Texto",
- "grp.layout": "Tamaño y espacios"
+ "grp.layout": "Tamaño y espacios",
+ "grp.shape": "Forma",
+ "set.crosshair.shape": "Forma o texto (cruz, plus, punto, círculo, cuadrado, rombo o cualquier texto)",
+ "set.crosshair.gap": "Espacio central",
+ "set.crosshair.outline": "Contorno oscuro",
+ "set.crosshair.dynamic": "Se ensancha al correr o saltar"
 }
