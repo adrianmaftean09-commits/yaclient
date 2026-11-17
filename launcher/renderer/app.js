@@ -1,7 +1,7 @@
 'use strict';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const safeImg = (u) => (/^https:\/\//i.test(u || '') ? u : '');
+const safeImg = (u) => (/^(https:\/\/|\.\.\/assets\/[\w\/.-]+$)/i.test(u || '') ? u : '');
 
 const I18N = {
   en: { launchpad: 'Launchpad', mods: 'Modules', servers: 'Servers', cosmetics: 'Cosmetics', settings: 'Settings', launch: 'LAUNCH GAME', launching: 'LAUNCHING...',

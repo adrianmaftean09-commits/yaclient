@@ -8,14 +8,14 @@
     {
       "title": "Update 1.1 - What's new",
       "text": "14 new mods (Combo, Target HUD, Minimap, AutoGG, 1.7 Animations...), dragon wings, client logo in tab and many fixes. Open the news card in the game's main menu for the full changelog.",
-      "image": "",
+      "image": "../assets/news/update.png",
       "url": "",
       "date": "2026-11-17"
     },
     {
       "title": "Welcome to YA CLIENT",
       "text": "New HUD editor, cosmetics, 4 languages and many new modules. Press Right Shift in game.",
-      "image": "",
+      "image": "../assets/news/welcome.png",
       "url": "",
       "date": "2026-11-16"
     }
