@@ -90,8 +90,43 @@ final class CosmeticQlux {
     // ------------------------------------------------------------------ pet: "Lumi", a little light fox-cat
     private static final double YO = -0.045;   // lifts the whole pet so the paws hover at the right height
 
-    private static final double TEXEL = 0.0185;   // one "pixel" of the pet's fur texture
+    private static final double TEXEL = 0.0125;   // one "pixel" of the pet's fur texture
     private static int boxSeed = 0;
+    private static int PART = 0;   // 0 body, 1 head, 2 snout, 3 leg, 4 tail, 5 ear: picks the pixel-art markings
+
+    /** Hand-placed pixel markings (fur patches, face mask, socks) by part; coordinates are relative to the box (-1..1). */
+    private static float[] mark(int part, int a, int sa, double rx, double ry, double rz) {
+        double ax = Math.abs(rx), ay = Math.abs(ry);
+        switch (part) {
+            case 1:   // head
+                if (a == 2 && sa < 0) {
+                    if (ry < -0.55 && ax < 0.16) return Poly.ICE;                                // forehead mark
+                    if (ry < -0.40 && ax < 0.34 && ax > 0.20) return Poly.SILVER;               // brow
+                    if (ry > 0.05 && ry < 0.50 && ax > 0.50 && ax < 0.66) return Poly.SILVER;   // tear streaks
+                    if (ry > 0.40 && ax > 0.70) return Poly.PEARL;                              // cheek fluff
+                    if (ry > 0.62) return Poly.PEARL;
+                }
+                if (a == 1 && sa < 0 && ax < 0.13) return Poly.SILVER;                           // top stripe
+                if (a == 1 && sa < 0 && ax < 0.30 && rz > 0.2) return Poly.PEARL;
+                if (a == 0 && rz > 0.35 && ry > -0.3) return Poly.PEARL;                         // side fluff
+                return null;
+            case 0:   // body
+                if (a == 1 && sa < 0 && ax < 0.22) return ((int) Math.round(rz * 5)) % 2 == 0 ? Poly.SILVER : Poly.PEARL;
+                if (a == 0 && ry > 0.35) return Poly.PEARL;                                      // belly fade
+                if (a == 0 && ry > -0.5 && ry < 0.2 && (((int) Math.round(rz * 4)) + ((int) Math.round(ry * 4))) % 3 == 0) return Poly.PEARL;
+                return null;
+            case 3:   // leg: pearl socks
+                if (ry > 0.30) return Poly.PEARL;
+                return null;
+            case 4:   // tail rings
+                if (Math.abs(rz) > 0.45) return Poly.ICE;
+                return null;
+            case 5:   // ear
+                if (ry < -0.55) return Poly.PEARL;
+                return null;
+            default: return null;
+        }
+    }
 
     private static float hash(int a, int b, int c, int d) {
         long x = (a * 73856093L) ^ (b * 19349663L) ^ (c * 83492791L) ^ (d * 374761393L);
@@ -119,11 +154,14 @@ final class CosmeticQlux {
                 }
                 double ym = (q[0][1] + q[2][1]) * 0.5;
                 float[] base = Poly.mix(top, bot, (float) Math.max(0, Math.min(1, (ym - (cy - h[1])) / (2 * h[1]))));
+                double[] cc = {(q[0][0] + q[2][0]) * 0.5, (q[0][1] + q[2][1]) * 0.5, (q[0][2] + q[2][2]) * 0.5};
+                float[] mk = nb * nd > 6 ? mark(PART, a, sa, (cc[0] - cx) / hx, (cc[1] - cy) / hy, (cc[2] - cz) / hz) : null;
+                if (mk != null) base = Poly.mix(base, mk, mk == Poly.ICE ? 0.85f : 0.8f);
                 float r = hash(id, a * 2 + (sa > 0 ? 1 : 0), i, j);
-                float k = 0.90f + 0.12f * r;                                   // fur noise
+                float k = 0.94f + 0.08f * r;                                   // fur noise
                 float[] col = {Math.min(1f, base[0] * k), Math.min(1f, base[1] * k), Math.min(1f, base[2] * k), base[3]};
-                if (r > 0.965f && nb * nd > 6) col = new float[]{Poly.ICE[0] * 0.9f + 0.1f, Poly.ICE[1] * 0.9f + 0.1f, Poly.ICE[2], 0.5f};   // sparkle pixel
-                else if (r < 0.06f && nb * nd > 6) col = new float[]{base[0] * 0.80f, base[1] * 0.82f, base[2] * 0.90f, base[3]};          // shadow pixel
+                if (r > 0.985f && nb * nd > 6) col = new float[]{Poly.ICE[0] * 0.9f + 0.1f, Poly.ICE[1] * 0.9f + 0.1f, Poly.ICE[2], 0.5f};   // sparkle pixel
+                else if (r < 0.04f && nb * nd > 6) col = new float[]{base[0] * 0.80f, base[1] * 0.82f, base[2] * 0.90f, base[3]};          // shadow pixel
                 if (sa < 0) Poly.quad(q[0], q[1], q[2], q[3], col, col, col, col, 1f);
                 else Poly.quad(q[3], q[2], q[1], q[0], col, col, col, col, 1f);
             }
@@ -134,10 +172,13 @@ final class CosmeticQlux {
         float pulse = 0.85f + 0.15f * (float) Math.sin(age * 0.2);
         double bob = Math.sin(age * 0.20) * 0.004;
         // body, with a pearl belly/chest and a silver stripe along the back
+        PART = 0;
         box(0, 0.02, 0.045, 0.068, 0.062, 0.115, 0.016, Poly.SNOW, Poly.PEARL);
+        PART = 2;
         box(0, 0.045, -0.052, 0.042, 0.036, 0.020, 0.008, Poly.PEARL, Poly.PEARL);
         box(0, -0.046, 0.05, 0.026, 0.006, 0.095, 0.004, Poly.SILVER, Poly.SILVER);
         // legs with pearl paws (small idle step)
+        PART = 3;
         for (int s = -1; s <= 1; s += 2) {
             for (int f = 0; f < 2; f++) {
                 double z = f == 0 ? -0.045 : 0.135, step = Math.sin(age * 0.20 + (f + (s > 0 ? 1 : 0)) * Math.PI) * 0.006;
@@ -147,11 +188,15 @@ final class CosmeticQlux {
         }
         // head (cube) with snout, nose, ears, eyes
         double hz = -0.115, hy = -0.072 + bob;
+        PART = 1;
         box(0, hy, hz, 0.076, 0.066, 0.066, 0.016, Poly.SNOW, Poly.SNOW);
+        PART = 2;
         box(0, hy + 0.030, hz - 0.074, 0.036, 0.026, 0.026, 0.008, Poly.PEARL, Poly.PEARL);
         box(0, hy + 0.012, hz - 0.101, 0.012, 0.008, 0.004, 0.003, Poly.INK, Poly.INK);
         for (int s = -1; s <= 1; s += 2) {
+            PART = 5;
             box(s * 0.052, hy - 0.090, hz + 0.010, 0.022, 0.032, 0.014, 0.006, Poly.SNOW, Poly.PEARL);            // ear
+            PART = 2;
             box(s * 0.052, hy - 0.086, hz - 0.003, 0.012, 0.020, 0.003, 0.002, Poly.ICE, Poly.ICE);               // inner ear
             box(s * 0.040, hy - 0.006, hz - 0.068, 0.014, 0.016, 0.004, 0.003, Poly.ICE, Poly.ICE);               // glowing eyes
             box(s * 0.040, hy - 0.006, hz - 0.071, 0.007, 0.010, 0.002, 0.001, Poly.INK, Poly.INK);              // pupils
@@ -179,6 +224,7 @@ final class CosmeticQlux {
             double y = 0.0 - 0.11 * f * f - 0.02 * f;
             double z = 0.17 + 0.14 * f;
             double r = 0.034 * (1 - f * 0.45);
+            PART = 4;
             if (i < T - 1) box(x, y, z, r, r, r * 1.35, 0.009, Poly.SNOW, i == T - 2 ? Poly.ICE : Poly.PEARL);
             else Poly.ellipsoid(x, y + YO - 0.012, z, 0.030 * pulse, 0.030 * pulse, 0.030 * pulse, Poly.ICE, Poly.SNOW, 1f);
         }
