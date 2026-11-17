@@ -156,14 +156,31 @@ final class Icons {
                 g.draw(poly(false, 6f, 9f, 3f, 12f, 6f, 15f));
                 g.draw(poly(false, 18f, 9f, 21f, 12f, 18f, 15f));
                 break;
-            case "gear":
-                g.draw(new Ellipse2D.Float(9f, 9f, 6f, 6f));
-                g.draw(new Ellipse2D.Float(5f, 5f, 14f, 14f));
-                for (int k = 0; k < 8; k++) {
-                    double a = Math.PI * 2 * k / 8.0;
-                    g.draw(new Line2D.Double(12 + Math.cos(a) * 7, 12 + Math.sin(a) * 7,
-                            12 + Math.cos(a) * 10, 12 + Math.sin(a) * 10));
+            case "gear": {
+                Path2D.Float cog = new Path2D.Float();
+                int teeth = 8;
+                boolean first = true;
+                for (int k = 0; k < teeth; k++) {
+                    double c = Math.PI * 2 * k / teeth;
+                    double step = Math.PI * 2 / teeth;
+                    double[][] pts = {{c - step * 0.32, 7.6}, {c - step * 0.2, 10.6}, {c + step * 0.2, 10.6}, {c + step * 0.32, 7.6}};
+                    for (double[] q : pts) {
+                        float x = (float) (12 + Math.cos(q[0]) * q[1]), y = (float) (12 + Math.sin(q[0]) * q[1]);
+                        if (first) { cog.moveTo(x, y); first = false; } else cog.lineTo(x, y);
+                    }
                 }
+                cog.closePath();
+                g.draw(cog);
+                g.draw(new Ellipse2D.Float(8.8f, 8.8f, 6.4f, 6.4f));
+                break;
+            }
+            case "sliders":
+                g.draw(new Line2D.Float(4f, 7f, 20f, 7f));
+                g.draw(new Line2D.Float(4f, 12f, 20f, 12f));
+                g.draw(new Line2D.Float(4f, 17f, 20f, 17f));
+                g.fill(new Ellipse2D.Float(7f, 4.2f, 5.6f, 5.6f));
+                g.fill(new Ellipse2D.Float(13.5f, 9.2f, 5.6f, 5.6f));
+                g.fill(new Ellipse2D.Float(6f, 14.2f, 5.6f, 5.6f));
                 break;
             case "search":
                 g.draw(new Ellipse2D.Float(4f, 4f, 12f, 12f));

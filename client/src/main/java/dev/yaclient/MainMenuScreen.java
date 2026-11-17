@@ -16,9 +16,8 @@ import org.lwjgl.util.glu.Project;
 
 /** YA CLIENT title screen: panorama backdrop, centered logo only (no title text), stacked buttons and a dock of labeled icon tiles. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 140, BH = 20, GAP = 5, TW = 40, TH = 38, DG = 5;
-    private static final String[] ICONS = {"shirt", "gear", "wrench", "close"};
-    private static final String[] TIPS = {"tab.cosmetics", "menu.options", "tab.settings", "menu.quit"};
+    private static final int BW = 140, BH = 20, GAP = 5, TW = 32, TH = 28, DG = 4;
+    private static final String[] ICONS = {"shirt", "gear", "sliders", "close"};
 
     private static final ResourceLocation[] PANO = new ResourceLocation[6];
     static { for (int i = 0; i < 6; i++) PANO[i] = new ResourceLocation("textures/gui/title/background/panorama_" + i + ".png"); }
@@ -73,15 +72,14 @@ public class MainMenuScreen extends GuiScreen {
         // icon dock: four clear tiles, big icon + label
         int dockW = ICONS.length * TW + (ICONS.length - 1) * DG;
         dockX = cx - dockW / 2;
-        dockY = btnY(2) + BH + 10;
+        dockY = btnY(2) + BH + 8;
         for (int i = 0; i < ICONS.length; i++) {
             int x = dockX + i * (TW + DG);
             boolean over = mx >= x && mx < x + TW && my >= dockY && my < dockY + TH;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
             Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0x90101014, 0xC0303036, dock[i]));
             Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
-            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + 6, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
-            Gfx.textCentered(Lang.t(TIPS[i]), x + TW / 2, dockY + TH - 12, 7, true, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 18) / 2, dockY + (TH - 18) / 2, 18, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
         }
 
         // news card (bottom left): banner + title, opens the changelog sheet
