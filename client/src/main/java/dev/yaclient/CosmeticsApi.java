@@ -88,7 +88,14 @@ public final class CosmeticsApi {
             o.close();
         }
         int code = c.getResponseCode();
-        if (code >= 400) throw new Exception("HTTP " + code);
+        if (code >= 400) {
+            String msg = "";
+            try {
+                InputStream es = c.getErrorStream();
+                if (es != null) { ByteArrayOutputStream eb = new ByteArrayOutputStream(); byte[] b2 = new byte[512]; int k = es.read(b2); if (k > 0) eb.write(b2, 0, k); msg = new String(eb.toByteArray(), "UTF-8").replaceAll("[\\r\\n{}\"]", " ").trim(); }
+            } catch (Exception ignored) { }
+            throw new Exception("HTTP " + code + (msg.isEmpty() ? "" : " " + msg));
+        }
         InputStream in = c.getInputStream();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];

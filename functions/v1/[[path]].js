@@ -160,8 +160,14 @@ export async function onRequest({ request, env }) {
       const rl = (globalThis.__rl = globalThis.__rl || new Map()), bucket = ip + ':' + Math.floor(Date.now() / 60000);
       const n = (rl.get(bucket) || 0) + 1; rl.set(bucket, n); if (rl.size > 500) rl.clear();
       if (n > 30) return send(429, { error: 'rate limited' });
-      const check = await getJson('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=' + encodeURIComponent(f.username) + '&serverId=' + encodeURIComponent(f.serverId));
-      if (!check || !check.id) return send(401, { error: 'not verified' });
+      let check = null, why = '';
+      try {
+        const mr = await fetch('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=' + encodeURIComponent(f.username) + '&serverId=' + encodeURIComponent(f.serverId), { headers: { 'user-agent': 'YA-CLIENT-Store' } });
+        const mt = await mr.text();
+        if (mr.status === 200) { try { check = JSON.parse(mt); } catch (_) { why = 'mojang bad json'; } }
+        else why = 'mojang ' + mr.status + (mr.status === 204 ? ' (join not seen)' : '');
+      } catch (e) { why = 'mojang unreachable'; }
+      if (!check || !check.id) return send(401, { error: 'not verified: ' + (why || 'no id') });
       const token = hex(24);
       await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });   // required: the login itself
       if (check.name) {   // friends: remember who this account is (written only when it changes)
