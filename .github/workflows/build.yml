@@ -39,11 +39,16 @@ jobs:
         shell: bash
         run: |
           sed -i "s#TUO_UTENTE_GITHUB/ya-client#${{ github.repository }}#" launcher/config.json
-      - name: Compila installer .exe
+      - name: Compila installer .exe (con nuovi tentativi se la rete di GitHub fallisce)
+        shell: bash
         working-directory: launcher
         run: |
-          npm install
-          npm run dist
+          for i in 1 2 3 4; do
+            npm install && npm run dist && exit 0
+            echo "Tentativo $i fallito, riprovo tra 30 secondi..."
+            sleep 30
+          done
+          exit 1
       - uses: actions/upload-artifact@v4
         with:
           name: YA-CLIENT-Setup
