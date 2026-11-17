@@ -87,51 +87,120 @@ final class CosmeticQlux {
         GlStateManager.disableTexture2D();
     }
 
-    // ------------------------------------------------------------------ pet: "Lumi", a little light spirit
+    // ------------------------------------------------------------------ pet: "Lumi", a little light fox-cat
+    private static final double YO = -0.045;   // lifts the whole pet so the paws hover at the right height
+
+    /** Chamfered box (Minecraft-animal proportions, softened edges). Colour fades from {@code top} to {@code bot}. */
+    private static void box(double cx, double cy, double cz, double hx, double hy, double hz, double bev, float[] top, float[] bot) {
+        cy += YO;
+        double[] h = {hx, hy, hz}, c = {cx, cy, cz};
+        // F(a, sa, i, j, k): corner (i,j,k) in {-1,1}^3 as seen from face (a, sa): pulled in by bev on the other axes
+        for (int a = 0; a < 3; a++) for (int sa = -1; sa <= 1; sa += 2) {
+            int b = (a + 1) % 3, d = (a + 2) % 3;
+            double[][] q = new double[4][];
+            int[][] uv = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+            float[][] col = new float[4][];
+            for (int n = 0; n < 4; n++) {
+                int[] k = new int[3]; k[a] = sa; k[b] = uv[n][0]; k[d] = uv[n][1];
+                q[n] = cp(c, h, k, a, bev); col[n] = shadeCol(top, bot, q[n][1], cy, hy);
+            }
+            if (sa < 0) Poly.quad(q[0], q[1], q[2], q[3], col[0], col[1], col[2], col[3], 1f);
+            else Poly.quad(q[3], q[2], q[1], q[0], col[3], col[2], col[1], col[0], 1f);
+        }
+        // edge strips and corner triangles
+        for (int a = 0; a < 3; a++) {
+            int b = (a + 1) % 3, d = (a + 2) % 3;
+            for (int sa = -1; sa <= 1; sa += 2) for (int sb = -1; sb <= 1; sb += 2) {
+                int[] k1 = new int[3], k2 = new int[3];
+                k1[a] = sa; k1[b] = sb; k1[d] = -1; k2[a] = sa; k2[b] = sb; k2[d] = 1;
+                double[] p1 = cp(c, h, k1, a, bev), p2 = cp(c, h, k2, a, bev), p3 = cp(c, h, k2, b, bev), p4 = cp(c, h, k1, b, bev);
+                float[] c1 = shadeCol(top, bot, p1[1], cy, hy), c2 = shadeCol(top, bot, p2[1], cy, hy), c3 = shadeCol(top, bot, p3[1], cy, hy), c4 = shadeCol(top, bot, p4[1], cy, hy);
+                Poly.quad(p1, p2, p3, p4, c1, c2, c3, c4, 1f);
+            }
+        }
+        for (int i = -1; i <= 1; i += 2) for (int j = -1; j <= 1; j += 2) for (int k = -1; k <= 1; k += 2) {
+            int[] kk = {i, j, k};
+            double[] p0 = cp(c, h, kk, 0, bev), p1 = cp(c, h, kk, 1, bev), p2 = cp(c, h, kk, 2, bev);
+            Poly.tri(p0, p1, p2, shadeCol(top, bot, p0[1], cy, hy), shadeCol(top, bot, p1[1], cy, hy), shadeCol(top, bot, p2[1], cy, hy), 1f);
+        }
+    }
+
+    private static double[] cp(double[] c, double[] h, int[] k, int face, double bev) {
+        double[] p = new double[3];
+        for (int i = 0; i < 3; i++) p[i] = c[i] + k[i] * (i == face ? h[i] : h[i] - bev);
+        return p;
+    }
+
+    private static float[] shadeCol(float[] top, float[] bot, double y, double cy, double hy) {
+        return Poly.mix(top, bot, (float) Math.max(0, Math.min(1, (y - (cy - hy)) / (2 * hy))));
+    }
+
     static void pet(float age) {
         float pulse = 0.85f + 0.15f * (float) Math.sin(age * 0.2);
-        // body and head (one soft blob pair)
-        Poly.ellipsoid(0, 0.01, 0.02, 0.095, 0.085, 0.10, Poly.SNOW, Poly.PEARL, 0.25f);
-        Poly.ellipsoid(0, -0.075, -0.045, 0.082, 0.074, 0.076, Poly.SNOW, Poly.SNOW, 0.3f);
-        // ears
+        double bob = Math.sin(age * 0.20) * 0.004;
+        // body, with a pearl belly/chest and a silver stripe along the back
+        box(0, 0.02, 0.045, 0.068, 0.062, 0.115, 0.016, Poly.SNOW, Poly.PEARL);
+        box(0, 0.045, -0.052, 0.042, 0.036, 0.020, 0.008, Poly.PEARL, Poly.PEARL);
+        box(0, -0.046, 0.05, 0.026, 0.006, 0.095, 0.004, Poly.SILVER, Poly.SILVER);
+        // legs with pearl paws (small idle step)
         for (int s = -1; s <= 1; s += 2) {
-            Poly.cone(s * 0.045, -0.125, -0.045, s * 0.07, -0.215, -0.055, 0.030, Poly.SNOW, Poly.ICE);
-            // eyes (glowing ice blue) and cheeks
-            Poly.ellipsoid(s * 0.034, -0.082, -0.112, 0.014, 0.017, 0.010, Poly.ICE, Poly.ICE, 1f);
-            Poly.ellipsoid(s * 0.058, -0.052, -0.100, 0.012, 0.008, 0.008, Poly.PEARL, Poly.PEARL, 0f);
+            for (int f = 0; f < 2; f++) {
+                double z = f == 0 ? -0.045 : 0.135, step = Math.sin(age * 0.20 + (f + (s > 0 ? 1 : 0)) * Math.PI) * 0.006;
+                box(s * 0.046, 0.108 + bob * 0, z + step, 0.024, 0.034, 0.024, 0.008, Poly.SNOW, Poly.PEARL);
+                box(s * 0.046, 0.140, z + step - 0.003, 0.026, 0.008, 0.028, 0.004, Poly.PEARL, Poly.SILVER);
+            }
         }
-        Poly.ellipsoid(0, -0.052, -0.120, 0.009, 0.006, 0.006, Poly.SILVER, Poly.SILVER, 0f);
+        // head (cube) with snout, nose, ears, eyes
+        double hz = -0.115, hy = -0.072 + bob;
+        box(0, hy, hz, 0.076, 0.066, 0.066, 0.016, Poly.SNOW, Poly.SNOW);
+        box(0, hy + 0.030, hz - 0.074, 0.036, 0.026, 0.026, 0.008, Poly.PEARL, Poly.PEARL);
+        box(0, hy + 0.012, hz - 0.101, 0.012, 0.008, 0.004, 0.003, Poly.INK, Poly.INK);
+        for (int s = -1; s <= 1; s += 2) {
+            box(s * 0.052, hy - 0.090, hz + 0.010, 0.022, 0.032, 0.014, 0.006, Poly.SNOW, Poly.PEARL);            // ear
+            box(s * 0.052, hy - 0.086, hz - 0.003, 0.012, 0.020, 0.003, 0.002, Poly.ICE, Poly.ICE);               // inner ear
+            box(s * 0.040, hy - 0.006, hz - 0.068, 0.014, 0.016, 0.004, 0.003, Poly.ICE, Poly.ICE);               // glowing eyes
+            box(s * 0.040, hy - 0.006, hz - 0.071, 0.007, 0.010, 0.002, 0.001, Poly.INK, Poly.INK);              // pupils
+            box(s * 0.060, hy + 0.030, hz - 0.060, 0.010, 0.006, 0.006, 0.002, Poly.ICE, Poly.ICE);               // cheek glow
+        }
+        // collar with a star charm
+        box(0, -0.012, -0.060, 0.074, 0.014, 0.020, 0.006, Poly.ICE, Poly.ICE);
+        Poly.ellipsoid(0, 0.016 + YO, -0.082, 0.012 * pulse, 0.012 * pulse, 0.006, Poly.SNOW, Poly.ICE, 1f);
         // halo ring above the head
         final int n = 28;
-        double hy = -0.205 + Math.sin(age * 0.12) * 0.006;
+        double haloY = -0.205 + YO + Math.sin(age * 0.12) * 0.006;
         for (int i = 0; i < n; i++) {
             double a0 = Math.PI * 2 * i / n, a1 = Math.PI * 2 * (i + 1) / n;
             double r0 = 0.072, r1 = 0.088;
-            double[] p0 = Poly.p(Math.cos(a0) * r0, hy, -0.045 + Math.sin(a0) * r0), p1 = Poly.p(Math.cos(a1) * r0, hy, -0.045 + Math.sin(a1) * r0);
-            double[] q1 = Poly.p(Math.cos(a1) * r1, hy, -0.045 + Math.sin(a1) * r1), q0 = Poly.p(Math.cos(a0) * r1, hy, -0.045 + Math.sin(a0) * r1);
+            double[] p0 = Poly.p(Math.cos(a0) * r0, haloY, hz + Math.sin(a0) * r0), p1 = Poly.p(Math.cos(a1) * r0, haloY, hz + Math.sin(a1) * r0);
+            double[] q1 = Poly.p(Math.cos(a1) * r1, haloY, hz + Math.sin(a1) * r1), q0 = Poly.p(Math.cos(a0) * r1, haloY, hz + Math.sin(a0) * r1);
             float[] hc = Poly.mix(Poly.ICE, Poly.SNOW, (float) (0.5 + 0.5 * Math.sin(a0 * 2 - age * 0.25)));
             Poly.quad(p0, p1, q1, q0, hc, hc, hc, hc, 1f);
         }
-        // tail: shrinking spheres ending in a sparkle
+        // fluffy tail: stacked cubes curving up, ending in a glowing ice-blue star
         final int T = 5;
         for (int i = 0; i < T; i++) {
             double f = i / (double) (T - 1);
-            double x = Math.sin(age * 0.14 - i * 0.7) * 0.04 * f * 2.0;
-            double y = 0.03 - 0.10 * f;
-            double z = 0.10 + 0.20 * f;
-            double r = 0.052 * (1 - f * 0.7);
-            if (i < T - 1) Poly.ellipsoid(x, y, z, r, r, r, Poly.SNOW, Poly.PEARL, 0.2f);
-            else Poly.ellipsoid(x, y - 0.01, z, r * 1.8 * pulse, r * 1.8 * pulse, r * 1.8 * pulse, Poly.ICE, Poly.SNOW, 1f);
+            double x = Math.sin(age * 0.14 - i * 0.7) * 0.035 * f * 2.0;
+            double y = 0.0 - 0.11 * f * f - 0.02 * f;
+            double z = 0.17 + 0.14 * f;
+            double r = 0.034 * (1 - f * 0.45);
+            if (i < T - 1) box(x, y, z, r, r, r * 1.35, 0.009, Poly.SNOW, i == T - 2 ? Poly.ICE : Poly.PEARL);
+            else Poly.ellipsoid(x, y + YO - 0.012, z, 0.030 * pulse, 0.030 * pulse, 0.030 * pulse, Poly.ICE, Poly.SNOW, 1f);
         }
-        // tiny feather wings
-        double flap = Math.sin(age * 0.40) * 0.10;
+        // tiny feathered wings: three overlapping feathers each, flapping
+        double flap = Math.sin(age * 0.40) * 0.12;
         for (int s = -1; s <= 1; s += 2) {
-            double[] root = Poly.p(s * 0.07, -0.01, 0.03);
-            double[] t1 = Poly.p(s * 0.30, -0.15 - flap, 0.05);
-            double[] t2 = Poly.p(s * 0.27, 0.01 - flap * 0.6, 0.12);
-            double[] t3 = Poly.p(s * 0.14, 0.06 - flap * 0.2, 0.12);
-            Poly.quad(root, t1, t2, root, Poly.SNOW, Poly.ICE, Poly.SNOW, Poly.SNOW, 1f);
-            Poly.quad(root, t2, t3, root, Poly.SNOW, Poly.SNOW, Poly.PEARL, Poly.SNOW, 1f);
+            for (int k = 0; k < 3; k++) {
+                double ang = -0.55 + k * 0.42 - flap;                 // fan angle, radians
+                double len = 0.17 - k * 0.03;
+                double rx = s * 0.062, ry = -0.025 + YO + k * 0.012, rz = 0.06 + k * 0.012;
+                double tx = rx + s * Math.cos(ang) * len, ty = ry + Math.sin(ang) * len * 1.0, tz = rz + 0.03;
+                double w = 0.075;
+                float[] tip = k == 0 ? Poly.ICE : Poly.PEARL;
+                Poly.quad(Poly.p(rx, ry - w * 0.4, rz), Poly.p(rx, ry + w * 0.4, rz), Poly.p(tx, ty + w * 0.30, tz), Poly.p(tx, ty - w * 0.30, tz),
+                          Poly.SNOW, Poly.SNOW, tip, tip, 1f);
+                Poly.tri(Poly.p(tx, ty - w * 0.25, tz), Poly.p(tx, ty + w * 0.25, tz), Poly.p(tx + s * 0.03, ty + Math.sin(ang) * 0.03, tz + 0.01), tip, tip, Poly.ICE, 1f);
+            }
         }
     }
 }
