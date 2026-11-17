@@ -113,7 +113,33 @@ final class Anime {
         return c;
     }
 
+    private static float noise(int a, int b) {
+        long x = (a * 73856093L) ^ (b * 19349663L);
+        x = (x ^ (x >>> 13)) * 1274126177L; x ^= x >>> 16;
+        return (x & 0xFFFF) / 65535f;
+    }
+
+    /** Kitsune: the whole cape is a Minecraft-style pixel grid with an orange outline and a zig-zag hem. */
+    private static void pixelCape(float age, boolean plus) {
+        final int NU = 11, NV = 16;
+        final float[] orange = Vox.rgb(0xFF8A1E, 0.30f), deepOr = Vox.rgb(0xE2560F, 0.20f), cream = Vox.rgb(0xFFF1DC, 0.40f), white = Vox.rgb(0xFFFFFF, 0.40f);
+        for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
+            float[] c;
+            boolean border = i == 0 || i == NU - 1 || j == 0 || j == NV - 1;
+            if (border) c = orange;
+            else if (j >= NV - 3) c = ((i + j) % 2 == 0) ? deepOr : orange;          // zig-zag hem
+            else if (i == 1 || i == NU - 2 || j == 1) c = cream;                       // inner line
+            else c = noise(i, j) > 0.86f ? cream : white;
+            float k = 0.95f + 0.05f * noise(j, i);
+            float[] col = {Math.min(1f, c[0] * k), Math.min(1f, c[1] * k), Math.min(1f, c[2] * k), c[3]};
+            double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
+            Poly.quad(CosmeticRender.capePt(u0, v0, age, plus), CosmeticRender.capePt(u1, v0, age, plus),
+                    CosmeticRender.capePt(u1, v1, age, plus), CosmeticRender.capePt(u0, v1, age, plus), col, col, col, col, 1f);
+        }
+    }
+
     static void capeBase(Th t, float age, boolean plus) {
+        if (t.index == 3) { pixelCape(age, plus); return; }
         for (int i = 0; i < CosmeticRender.CAPE_C; i++) {
             for (int j = 0; j < CosmeticRender.CAPE_R; j++) {
                 double u0 = i / (double) CosmeticRender.CAPE_C, u1 = (i + 1) / (double) CosmeticRender.CAPE_C;
@@ -167,8 +193,8 @@ final class Anime {
             BufferedImage im = AnimeArt.paint(i);
             TEX[i] = new DynamicTexture(im);
             GlStateManager.bindTexture(TEX[i].getGlTextureId());
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);   // hard pixels
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, i == 0 ? GL11.GL_LINEAR : GL11.GL_NEAREST);   // hard pixels (Sakura keeps its smooth art)
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, i == 0 ? GL11.GL_LINEAR : GL11.GL_NEAREST);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
         }

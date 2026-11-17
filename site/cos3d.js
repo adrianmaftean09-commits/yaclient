@@ -85,7 +85,7 @@
     ['qlux', 'sakura', 'shinobi', 'kitsune'].forEach(function (st) {
       var tx = gl.createTexture(); self.etex[st] = tx;
       var im = new Image(); im.onload = function () { gl.bindTexture(gl.TEXTURE_2D, tx); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, st === 'qlux' ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, st === 'qlux' ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.eok[st] = true; };
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, (st === 'qlux' || st === 'sakura') ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, (st === 'qlux' || st === 'sakura') ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.eok[st] = true; };
       im.src = st === 'qlux' ? '/qlux-wordmark.png' : '/anime-' + st + '.png';
     });
     // drag to rotate

@@ -1,5 +1,7 @@
 package dev.yaclient.cosmetics;
 
+import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 
 /** Cape emblems of the anime bundles, drawn with vector strokes into a 512x512 texture (pure Java2D, no Minecraft deps). */
@@ -11,9 +13,10 @@ final class AnimeArt {
     static final int G = 16, SCALE = 8;
 
     static BufferedImage paint(int theme) {
+        if (theme == 0) return sakuraVector();          // the smooth blossom branch
         int[][] px = new int[G][G];
         switch (theme) {
-            case 0: sakura(px); break;
+            case 0: break;
             case 1: shinobi(px); break;
             case 2: neon(px); break;
             default: kitsune(px); break;
@@ -22,30 +25,6 @@ final class AnimeArt {
         for (int y = 0; y < G; y++) for (int x = 0; x < G; x++)
             for (int j = 0; j < SCALE; j++) for (int i = 0; i < SCALE; i++) img.setRGB(x * SCALE + i, y * SCALE + j, px[y][x]);
         return img;
-    }
-
-    private static final int PINK = 0xFFFF9CBF, LPINK = 0xFFFFD3E2, YEL = 0xFFFFD54A, DPINK = 0xFFE0709A;
-
-    private static void disc(int[][] p, double cx, double cy, double r, int col) {
-        for (int y = 0; y < G; y++) for (int x = 0; x < G; x++) {
-            double dx = x + 0.5 - cx, dy = y + 0.5 - cy;
-            if (dx * dx + dy * dy <= r * r) p[y][x] = col;
-        }
-    }
-
-    private static void sakura(int[][] p) {
-        // one five-petal blossom, two falling petals
-        for (int i = 0; i < 5; i++) {
-            double an = -Math.PI / 2 + i * Math.PI * 2 / 5;
-            disc(p, 8 + Math.cos(an) * 3.6, 8 + Math.sin(an) * 3.6, 2.5, PINK);
-        }
-        for (int i = 0; i < 5; i++) {
-            double an = -Math.PI / 2 + i * Math.PI * 2 / 5;
-            disc(p, 8 + Math.cos(an) * 4.2, 8 + Math.sin(an) * 4.2, 1.0, LPINK);
-        }
-        disc(p, 8, 8, 1.6, YEL);
-        p[2][13] = PINK; p[3][13] = LPINK; p[3][14] = PINK;
-        p[13][2] = PINK; p[13][3] = LPINK; p[14][2] = LPINK;
     }
 
     private static void shinobi(int[][] p) {
@@ -103,6 +82,85 @@ final class AnimeArt {
                 default: c = 0;
             }
             p[y][x] = c; p[y][G - 1 - x] = c;
+        }
+    }
+
+    /** Smooth vector sakura branch (the one the Sakura cape keeps), 512x512, use GL_LINEAR. */
+    static BufferedImage sakuraVector() {
+        BufferedImage img = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        sakura(g);
+        g.dispose();
+        return img;
+    }
+
+    private static Color a(int rgb, int alpha) { return new Color((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255, alpha); }
+
+    private static void glow(Graphics2D g, Shape s, int rgb, float w) {
+        for (int i = 4; i >= 1; i--) {
+            g.setStroke(new BasicStroke(w + i * 9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g.setColor(a(rgb, 22));
+            g.draw(s);
+        }
+        g.setStroke(new BasicStroke(w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.setColor(a(rgb, 255));
+        g.draw(s);
+        g.setStroke(new BasicStroke(Math.max(2f, w * 0.35f), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.setColor(new Color(255, 255, 255, 230));
+        g.draw(s);
+    }
+
+    private static void flower(Graphics2D g, double cx, double cy, double r, double rot) {
+        for (int i = 0; i < 5; i++) {
+            AffineTransform t = g.getTransform();
+            g.translate(cx, cy);
+            g.rotate(rot + i * Math.PI * 2 / 5);
+            Path2D.Double petal = new Path2D.Double();
+            petal.moveTo(0, 0);
+            petal.curveTo(-r * 0.75, -r * 0.35, -r * 0.55, -r * 1.05, -r * 0.14, -r * 1.00);   // notched petal tip
+            petal.lineTo(0, -r * 0.86);
+            petal.lineTo(r * 0.14, -r * 1.00);
+            petal.curveTo(r * 0.55, -r * 1.05, r * 0.75, -r * 0.35, 0, 0);
+            g.setPaint(new GradientPaint(0, 0, a(0xFFFFFF, 255), 0, (float) -r, a(0xF7A8C4, 255)));
+            g.fill(petal);
+            g.setColor(a(0xE0709A, 255));
+            g.setStroke(new BasicStroke(3f));
+            g.draw(petal);
+            g.setTransform(t);
+        }
+        g.setColor(a(0xF2C94C, 255));
+        g.fill(new Ellipse2D.Double(cx - r * 0.12, cy - r * 0.12, r * 0.24, r * 0.24));
+        for (int i = 0; i < 6; i++) {
+            double an = rot + i * Math.PI / 3;
+            g.setColor(a(0xE0709A, 255));
+            g.setStroke(new BasicStroke(3f));
+            g.draw(new Line2D.Double(cx, cy, cx + Math.cos(an) * r * 0.32, cy + Math.sin(an) * r * 0.32));
+            g.fill(new Ellipse2D.Double(cx + Math.cos(an) * r * 0.32 - 4, cy + Math.sin(an) * r * 0.32 - 4, 8, 8));
+        }
+    }
+
+    private static void sakura(Graphics2D g) {
+        // a blossoming branch
+        Path2D.Double br = new Path2D.Double();
+        br.moveTo(40, 470); br.curveTo(140, 400, 190, 330, 260, 280); br.curveTo(330, 230, 380, 200, 470, 70);
+        g.setStroke(new BasicStroke(15f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.setColor(a(0x7A4A52, 255)); g.draw(br);
+        Path2D.Double tw = new Path2D.Double();
+        tw.moveTo(190, 335); tw.curveTo(190, 290, 160, 250, 120, 220);
+        tw.moveTo(330, 232); tw.curveTo(350, 280, 390, 310, 440, 320);
+        g.setStroke(new BasicStroke(8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)); g.draw(tw);
+        flower(g, 120, 214, 52, 0.2); flower(g, 262, 278, 64, 0.7); flower(g, 445, 322, 50, 1.2);
+        flower(g, 400, 160, 56, 0.4); flower(g, 90, 410, 44, 1.0); flower(g, 340, 100, 36, 0.1);
+        // falling petals
+        double[][] pt = {{60, 120, 0.8}, {200, 60, 2.2}, {440, 240, 1.4}, {330, 420, 0.3}, {170, 450, 2.6}, {470, 400, 1.9}, {40, 290, 0.5}, {230, 180, 1.2}};
+        for (double[] p : pt) {
+            AffineTransform t = g.getTransform();
+            g.translate(p[0], p[1]); g.rotate(p[2]);
+            g.setPaint(new GradientPaint(-12, 0, a(0xFFFFFF, 240), 12, 0, a(0xF7A8C4, 240)));
+            g.fill(new Ellipse2D.Double(-14, -8, 28, 16));
+            g.setTransform(t);
         }
     }
 }
