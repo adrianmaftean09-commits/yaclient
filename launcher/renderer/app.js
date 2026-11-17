@@ -66,8 +66,8 @@ Object.assign(I18N.it, {"fr_r_not_configured": "Il server degli amici non è anc
 Object.assign(I18N.es, {"fr_r_not_configured": "El servidor de amigos aún no está activo. Funcionará cuando el servidor de YA CLIENT esté en línea.", "fr_r_login": "No se pudo iniciar sesión en el servicio de amigos. Inicia sesión con Microsoft otra vez.", "fr_r_premium": "Los amigos necesitan una cuenta Microsoft."});
 Object.assign(I18N.de, {"fr_r_not_configured": "Der Freunde-Server ist noch nicht aktiv. Er funktioniert, sobald der YA-CLIENT-Server online ist.", "fr_r_login": "Anmeldung beim Freunde-Dienst fehlgeschlagen. Melde dich erneut mit Microsoft an.", "fr_r_premium": "Freunde brauchen ein Microsoft-Konto."});
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
-const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
-const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
+const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet', qlux_cape: 'cape', qlux_wings: 'wings', qlux_bandana: 'bandana', qlux_pet: 'pet' };
+const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' , qlux_cape: 'Qlux Cape', qlux_wings: 'Qlux Angel Wings', qlux_bandana: 'Qlux Band', qlux_pet: 'Lumi (pet)' };
 const ICON = {
   home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
   versions: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17.5l9 5 9-5"/>',

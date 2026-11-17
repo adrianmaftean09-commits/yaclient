@@ -16,19 +16,24 @@ var P={
  mono_cape:{n:'Infinity Cape',cat:'cape',slot:'cape',d:'Pure black cape, a white infinity symbol draws itself on it.',set:'mono'},
  mono_wings:{n:'Shadow Dragon Wings',cat:'wings',slot:'wings',d:'All-black dragon wings with white spikes.',set:'mono'},
  mono_bandana:{n:'Monochrome Bandana',cat:'bandana',slot:'bandana',d:'Black bandana with a white stripe.',set:'mono'},
- mono_pet:{n:'Yin Yang (pet)',cat:'pet',slot:'pet',d:'A spinning yin yang that floats next to you.',set:'mono'}};
+ mono_pet:{n:'Yin Yang (pet)',cat:'pet',slot:'pet',d:'A spinning yin yang that floats next to you.',set:'mono'},
+ qlux_cape:{n:'Qlux Cape',cat:'cape',slot:'cape',d:'White satin cape with the black Qlux_ wordmark.',set:'qlux',partner:1},
+ qlux_wings:{n:'Qlux Angel Wings',cat:'wings',slot:'wings',d:'White feather wings with ice-blue tips.',set:'qlux',partner:1},
+ qlux_bandana:{n:'Qlux Band',cat:'bandana',slot:'bandana',d:'White band with an ice-blue glow and flowing tails.',set:'qlux',partner:1},
+ qlux_pet:{n:'Lumi (pet)',cat:'pet',slot:'pet',d:'A little light spirit with a halo that floats next to you.',set:'qlux',partner:1}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
-          mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle}};
+          mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle},
+          qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1}};
 var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
 var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
-function total(list){var m=list.filter(function(i){return P[i].set==='mono'}).length;return R((m===4?PR.monoBundle:m*PR.item)*K())}
+function total(list){var t=0;['mono','qlux'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
 function card(key,isSet){
  var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:R(d.price*K())):priceOf(key);
  var on=isSet?ids.every(function(i){return worn.indexOf(i)>=0}):worn.indexOf(key)>=0;
- var tag=isSet?(d.free?'Free':'Bundle'):(free?'Beta':'');
+ var tag=isSet?(d.free?'Free':d.partner?'Partner':'Bundle'):(free?'Beta':(d.partner?'Partner':''));
  var save=isSet&&!d.free?'<span class="tagb save">Save '+eur(R(4*PR.item-price))+'</span>':(tag?'<span class="tagb">'+tag+'</span>':'');
  var pr=free?'<span class="price free">Free</span>':(isSet?'<span class="price"><s>'+eur(4*PR.item)+'</s>'+eur(price)+'</span>':(window.YAplusOn?'<span class="price"><s>'+eur(PR.item)+'</s>'+eur(price)+'</span>':'<span class="price">'+eur(price)+'</span>'));
  var im=thumbs[(isSet?'s:':'i:')+key];
@@ -36,9 +41,10 @@ function card(key,isSet){
 function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
- if(cat==='partner'){h+='<div class="pc" style="cursor:default"><span class="tagb">Partner · Qlux</span><div class="im" style="display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a2c33,#0f1012)"><img src="/qlux-wordmark.png" alt="Qlux" style="width:78%;height:auto;object-fit:contain"></div><div class="bd"><h3>Qlux Bundle</h3><p>White satin cape with an animated Qlux wordmark, angel wings, light band and the Lumi spirit pet. Made with the streamer Qlux.</p><div class="pr"><span class="price">Partner bundle</span></div></div></div>'}
- if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('beta',true)}
+ if(cat==='partner'){h+=card('qlux',true)}
+ if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('beta',true)}
  if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
+ if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner)h+=card(id,false)});
  document.getElementById('grid').innerHTML=h;
  renderSide()}
 function renderSide(){
@@ -49,7 +55,7 @@ function renderSide(){
  if(view)view.set(worn,false)}
 function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1)}else{worn=worn.filter(function(x){return P[x].slot!==s});worn.push(id)}}
 function orderFor(ids){
- var t=total(ids),m=ids.filter(function(i){return P[i].set==='mono'}).length,free=!t;
+ var t=total(ids),m=ids.length===4&&ids.every(function(i){return P[i].set!=='beta'&&P[i].set===P[ids[0]].set})?4:0,free=!t;
  var title=ids.length===4&&ids.every(function(i){return P[i].set===P[ids[0]].set})?SETS[P[ids[0]].set].n:(ids.length===1?P[ids[0]].n:'Custom cosmetics');
  return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -70% applied ('+window.YAplusName+')']:[]),total:t,ids:ids.join(',')}}
 document.addEventListener('yaplus',function(e){var b=document.getElementById('plusbar2');if(b){b.className='plusbar'+(e.detail&&e.detail.on?' on':'');b.querySelector('span').textContent=e.detail&&e.detail.on?'YA Plus active for '+e.detail.name+': -70% on everything, already applied below.':'Enter your Minecraft name under the 3D character to check your YA Plus discount.'}render()});

@@ -61,7 +61,8 @@
   }
 
   var ITEM = { ya_cape: ['cape', 'ya'], ya_wings: ['wing', 'ya'], ya_bandana: ['bandana', 'ya'], ya_pet: ['pet', 'ya'],
-               mono_cape: ['cape', 'mono'], mono_wings: ['wing', 'mono'], mono_bandana: ['bandana', 'mono'], mono_pet: ['pet', 'mono'] };
+               mono_cape: ['cape', 'mono'], mono_wings: ['wing', 'mono'], mono_bandana: ['bandana', 'mono'], mono_pet: ['pet', 'mono'],
+               qlux_cape: ['cape', 'qlux'], qlux_wings: ['wing', 'qlux'], qlux_bandana: ['bandana', 'qlux'], qlux_pet: ['pet', 'qlux'] };
 
   function Scene(canvas, opts) {
     opts = opts || {};
@@ -80,6 +81,10 @@
     this.tex = gl.createTexture();
     loadLogo(function () { gl.bindTexture(gl.TEXTURE_2D, self.tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logoImg);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); self.texOk = true; });
+    this.qtex = gl.createTexture();
+    var qi = new Image(); qi.onload = function () { gl.bindTexture(gl.TEXTURE_2D, self.qtex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, qi);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.qOk = true; };
+    qi.src = '/qlux-wordmark.png';
     // drag to rotate
     if (opts.drag !== false) {
       var down = false, lx = 0, ly = 0;
@@ -133,26 +138,26 @@
     else this.drawMesh(this.man, base, false);
     var items = this.items, self = this, has = function (id) { return items.indexOf(id) >= 0; };
     items.forEach(function (id) {
-      var d = ITEM[id]; if (!d) return; var kind = d[0], mono = d[1] === 'mono';
+      var d = ITEM[id]; if (!d) return; var kind = d[0], sty = d[1], mono = sty === 'mono';
       if (kind === 'wing') {
         var flap = Math.sin(age * .10) * (mono ? 17 : 7), raise = (mono ? -6 : -2) + flap, spread = 40;
-        var g = self.get('wing_' + (mono ? 'mono' : 'ya'), 0);
+        var g = self.get('wing_' + sty, 0);
         [-1, 1].forEach(function (s) {
           var m = mul(base, mul(T(s * .07, .08, .19), mul(RZ(-s * raise * D), mul(RY(-s * spread * D), S(s, -1, 1)))));
           // the geometry may be split into several batches
-          for (var b = 0; b < batches('wing_' + (mono ? 'mono' : 'ya')).length; b++) { var gg = self.get('wing_' + (mono ? 'mono' : 'ya'), b); self.drawMesh(gg.m, m, gg.tex); }
+          for (var b = 0; b < batches('wing_' + sty).length; b++) { var gg = self.get('wing_' + sty, b); self.drawMesh(gg.m, m, gg.tex); }
         });
       } else if (kind === 'cape') {
         var m = mul(base, mul(T(0, 0, .125), RX(6 * D)));
-        if (!mono && self.plus && GEO.cape_ya_plus) { self.plusCape(age); self.drawMesh(self.pcBuf, m, false); if (self.pcEm && self.texOk) self.drawMesh(self.pcEm, m, true); }
-        else { var key = mono ? 'cape_mono' : 'cape_ya'; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); if (gg.tex && !self.texOk) continue; self.drawMesh(gg.m, m, gg.tex); } }
+        if (sty === 'ya' && self.plus && GEO.cape_ya_plus) { self.plusCape(age); self.drawMesh(self.pcBuf, m, false); if (self.pcEm && self.texOk) self.drawMesh(self.pcEm, m, true); }
+        else { var key = 'cape_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); if (gg.tex && !self.texOk) continue; if (gg.tex && sty === 'qlux') { if (!self.qOk) continue; gl.bindTexture(gl.TEXTURE_2D, self.qtex); self.drawMesh(gg.m, m, true); gl.bindTexture(gl.TEXTURE_2D, self.tex); continue; } self.drawMesh(gg.m, m, gg.tex); } }
       } else if (kind === 'bandana') {
-        var key = mono ? 'bandana_mono' : 'bandana_ya'; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); self.drawMesh(gg.m, base, gg.tex); }
+        var key = 'bandana_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); self.drawMesh(gg.m, base, gg.tex); }
       } else if (kind === 'pet') {
         var bob = Math.sin(age * .10) * .035, sx = Math.sin(age * .05) * .04, sz = Math.cos(age * .04) * .05;
         var rot = mono ? age * 6 * D : Math.sin(age * .05) * 12 * D;
         var m = mul(base, mul(T(-.64 + sx, -.20 + bob, .04 + sz), RY(rot)));
-        var key = mono ? 'pet_mono' : 'pet_ya'; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); self.drawMesh(gg.m, m, gg.tex); }
+        var key = 'pet_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); self.drawMesh(gg.m, m, gg.tex); }
       }
     });
   };
