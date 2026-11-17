@@ -61,6 +61,10 @@ Object.assign(I18N.en, {"friends_nav": "Friends", "fr_title": "Friends", "fr_sub
 Object.assign(I18N.it, {"friends_nav": "Amici", "fr_title": "Amici", "fr_sub": "Aggiungi amici col loro nome Minecraft e guarda chi è online.", "fr_ph": "Nome Minecraft", "fr_add": "Aggiungi amico", "fr_req": "Richieste", "fr_on": "Online", "fr_off": "Offline", "fr_sent": "Inviate", "fr_accept": "Accetta", "fr_decline": "Rifiuta", "fr_remove": "Rimuovi", "fr_cancel": "Annulla", "fr_wants": "Vuole essere tuo amico", "fr_pending": "Richiesta inviata", "fr_game": "In gioco", "fr_launcher": "Nel launcher", "fr_offl": "Offline", "fr_empty": "Ancora nessun amico. Aggiungi qualcuno col suo nome Minecraft qui sopra.", "fr_premium": "Gli amici richiedono un account Microsoft. Accedi con Microsoft per usarli.", "fr_login": "Impossibile accedere al servizio amici. Prova ad accedere di nuovo.", "fr_offline": "Gli amici non sono disponibili al momento.", "fr_loading": "Caricamento...", "fr_sending": "Invio...", "fr_r_sent": "Richiesta inviata", "fr_r_accepted": "Ora siete amici", "fr_r_not_found": "Giocatore non trovato. Deve aver usato YA CLIENT.", "fr_r_self": "Non puoi aggiungere te stesso.", "fr_r_already": "Siete già amici o c'è una richiesta in sospeso.", "fr_r_offline": "Impossibile contattare il server.", "fr_n_online": "online"});
 Object.assign(I18N.es, {"friends_nav": "Amigos", "fr_title": "Amigos", "fr_sub": "Añade amigos por su nombre de Minecraft y mira quién está en línea.", "fr_ph": "Nombre de Minecraft", "fr_add": "Añadir amigo", "fr_req": "Solicitudes", "fr_on": "En línea", "fr_off": "Desconectados", "fr_sent": "Enviadas", "fr_accept": "Aceptar", "fr_decline": "Rechazar", "fr_remove": "Eliminar", "fr_cancel": "Cancelar", "fr_wants": "Quiere ser tu amigo", "fr_pending": "Solicitud enviada", "fr_game": "Jugando", "fr_launcher": "En el launcher", "fr_offl": "Desconectado", "fr_empty": "Aún no tienes amigos. Añade a alguien con su nombre de Minecraft arriba.", "fr_premium": "Los amigos necesitan una cuenta Microsoft. Inicia sesión con Microsoft.", "fr_login": "No se pudo iniciar sesión en el servicio de amigos. Inténtalo de nuevo.", "fr_offline": "Los amigos no están disponibles ahora.", "fr_loading": "Cargando...", "fr_sending": "Enviando...", "fr_r_sent": "Solicitud enviada", "fr_r_accepted": "Ya sois amigos", "fr_r_not_found": "Jugador no encontrado. Debe haber usado YA CLIENT.", "fr_r_self": "No puedes añadirte a ti mismo.", "fr_r_already": "Ya sois amigos o hay una solicitud pendiente.", "fr_r_offline": "No se pudo contactar con el servidor.", "fr_n_online": "en línea"});
 Object.assign(I18N.de, {"friends_nav": "Freunde", "fr_title": "Freunde", "fr_sub": "Füge Freunde per Minecraft-Namen hinzu und sieh, wer online ist.", "fr_ph": "Minecraft-Name", "fr_add": "Freund hinzufügen", "fr_req": "Anfragen", "fr_on": "Online", "fr_off": "Offline", "fr_sent": "Gesendet", "fr_accept": "Annehmen", "fr_decline": "Ablehnen", "fr_remove": "Entfernen", "fr_cancel": "Abbrechen", "fr_wants": "Möchte dein Freund sein", "fr_pending": "Anfrage gesendet", "fr_game": "Spielt gerade", "fr_launcher": "Im Launcher", "fr_offl": "Offline", "fr_empty": "Noch keine Freunde. Füge oben jemanden per Minecraft-Namen hinzu.", "fr_premium": "Freunde brauchen ein Microsoft-Konto. Melde dich mit Microsoft an.", "fr_login": "Anmeldung beim Freunde-Dienst fehlgeschlagen. Melde dich erneut an.", "fr_offline": "Freunde sind gerade nicht verfügbar.", "fr_loading": "Laden...", "fr_sending": "Sende...", "fr_r_sent": "Anfrage gesendet", "fr_r_accepted": "Ihr seid jetzt Freunde", "fr_r_not_found": "Spieler nicht gefunden. Er muss YA CLIENT benutzt haben.", "fr_r_self": "Du kannst dich nicht selbst hinzufügen.", "fr_r_already": "Bereits befreundet oder Anfrage offen.", "fr_r_offline": "Server nicht erreichbar.", "fr_n_online": "online"});
+Object.assign(I18N.en, {"fr_r_not_configured": "The friends server is not set up yet. It will work once the YA CLIENT server is online.", "fr_r_login": "Could not sign in to the friends service. Sign in with Microsoft again.", "fr_r_premium": "Friends need a Microsoft account."});
+Object.assign(I18N.it, {"fr_r_not_configured": "Il server degli amici non è ancora attivo. Funzionerà appena il server di YA CLIENT sarà online.", "fr_r_login": "Impossibile accedere al servizio amici. Accedi di nuovo con Microsoft.", "fr_r_premium": "Gli amici richiedono un account Microsoft."});
+Object.assign(I18N.es, {"fr_r_not_configured": "El servidor de amigos aún no está activo. Funcionará cuando el servidor de YA CLIENT esté en línea.", "fr_r_login": "No se pudo iniciar sesión en el servicio de amigos. Inicia sesión con Microsoft otra vez.", "fr_r_premium": "Los amigos necesitan una cuenta Microsoft."});
+Object.assign(I18N.de, {"fr_r_not_configured": "Der Freunde-Server ist noch nicht aktiv. Er funktioniert, sobald der YA-CLIENT-Server online ist.", "fr_r_login": "Anmeldung beim Freunde-Dienst fehlgeschlagen. Melde dich erneut mit Microsoft an.", "fr_r_premium": "Freunde brauchen ein Microsoft-Konto."});
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
 const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
@@ -216,7 +220,7 @@ function frRows(list, kind) {
   }).join('');
 }
 function frList() {
-  if (FR.err) return `<div class="card sv ph">${esc(t('fr_' + FR.err))}</div>`;
+  if (FR.err) return `<div class="card sv ph">${esc(t(FR.err === 'not_configured' ? 'fr_r_not_configured' : 'fr_' + FR.err))}</div>`;
   if (!FR.data) return `<div class="card sv ph">${esc(t('fr_loading'))}</div>`;
   const d = FR.data; let h = '';
   const sec = (key, n, body) => body ? `<div class="frh">${esc(t(key))} <em>${n}</em></div>${body}` : '';
@@ -239,7 +243,7 @@ function viewFriends() {
 async function loadFriends() {
   if (!S.account) { FR.data = null; FR.err = 'premium'; return; }
   const r = await window.ya.friends();
-  if (r.error) { FR.err = r.error === 'not_configured' ? 'offline' : r.error; if (!FR.data) FR.data = null; }
+  if (r.error) { FR.err = ['not_configured', 'login', 'premium'].includes(r.error) ? r.error : 'offline'; if (!FR.data) FR.data = null; }
   else { FR.err = ''; FR.data = r; }
   renderNav();
   if (page === 'friends') { const l = $('#frList'); if (l) l.innerHTML = frList(); const s = $('#frSub'); if (s) s.innerHTML = frSub(); }
@@ -248,7 +252,7 @@ setInterval(() => { if (S.account && S.account.type === 'microsoft') loadFriends
 async function friendAct(a, v) {
   const r = await window.ya.friendAct(a, v);
   if (a === 'add') {
-    FR.ok = !r.error; FR.msg = r.error ? t('fr_r_' + r.error) : r.status === 'accepted' ? t('fr_r_accepted') : t('fr_r_sent');
+    FR.ok = !r.error; FR.msg = r.error ? (I18N.en['fr_r_' + r.error] ? t('fr_r_' + r.error) : t('fr_r_offline')) : r.status === 'accepted' ? t('fr_r_accepted') : t('fr_r_sent');
     const m = $('#frMsg'); if (m) { m.className = 'frmsg ' + (FR.ok ? 'ok' : 'bad'); m.textContent = FR.msg; }
     if (FR.ok) { const i = $('#frName'); if (i) i.value = ''; }
   }
