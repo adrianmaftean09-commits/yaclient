@@ -346,175 +346,198 @@ public class MenuScreen extends GuiScreen {
         }
     }
 
-    // ----- module options page (full page, grouped options, live preview) -----
+    // ----- module options page: group list on the left, one calm card of rows on the right -----
     private static final String[] GROUP_ORDER = {"general", "style", "colors", "text", "layout"};
-    private static final int PG_X = 284, PG_Y = 80, PG_W = PW - 284 - 24, PG_H = PH - 80 - 16;
+    private static final int PG_X = 284, PG_Y = 84, PG_W = PW - 284 - 24, PG_H = PH - 84 - 20, PAD = 20;
     private float pageScroll, pageTarget, pageContentH;
     private Module pageFor;
+    private String pageGroup;
 
     private void pageHit(int x, int y, int w, int h, Action click, Action drag) {
-        int y0 = Math.max(y, PG_Y), y1 = Math.min(y + h, PG_Y + PG_H);
+        int y0 = Math.max(y, PG_Y + 4), y1 = Math.min(y + h, PG_Y + PG_H - 4);
         if (y1 > y0) hits.add(new Hit(x, y0, w, y1 - y0, click, drag, null));
     }
 
     private boolean pageOver(int x, int y, int w, int h) {
-        return over(x, y, w, h) && myl >= PG_Y && myl < PG_Y + PG_H;
+        return over(x, y, w, h) && myl >= PG_Y + 4 && myl < PG_Y + PG_H - 4;
+    }
+
+    private java.util.List<String> groupsOf(Module m) {
+        java.util.List<String> out = new ArrayList<String>();
+        for (String g : GROUP_ORDER) for (Setting st : m.settings) if (st.group.equals(g)) { out.add(g); break; }
+        for (Setting st : m.settings) if (!out.contains(st.group)) out.add(st.group);
+        return out;
+    }
+
+    private void ghostButton(int x, int y, int w, String icon, String label, boolean live, Action act) {
+        boolean ov = over(x, y, w, 30);
+        Gfx.rr(x, y, w, 30, 9, ov ? 0x1FFFFFFF : 0x0DFFFFFF);
+        Gfx.icon(icon, x + 11, y + 6, 18, ov ? Theme.TEXT : Theme.MUTED);
+        Gfx.text(label, x + 36, y + (30 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
+        if (live) hit(x, y, w, 30, act, null, null);
     }
 
     private void drawDrawer(float dt) {
         final Module m = drawerModule != null ? drawerModule : drawerLast;
         float p = Ui.ease(drawerP);
         if (m == null || p <= 0.003f) return;
-        if (pageFor != m) { pageFor = m; pageScroll = 0f; pageTarget = 0f; }
+        if (pageFor != m) { pageFor = m; pageScroll = 0f; pageTarget = 0f; pageGroup = null; }
+        java.util.List<String> groups = groupsOf(m);
+        if (pageGroup == null || !groups.contains(pageGroup)) pageGroup = groups.isEmpty() ? "" : groups.get(0);
         pageScroll = Ui.approach(pageScroll, pageTarget, dt, 16f);
         boolean live = drawerModule != null;
         Gfx.fade = fade * p;
-        int ox = Math.round((1f - p) * 30f);
 
         if (live) hits.add(new Hit(0, 0, PW, PH, null, null, null));   // the page swallows every click behind it
-        Gfx.rr(0, 0, PW, PH, 16, Ui.alpha(0xFA101015, 1f));
+        Gfx.rr(0, 0, PW, PH, 16, 0xFA0E0E12);
         Gfx.rrOutline(0, 0, PW, PH, 16, 1, Theme.GLASS_LINE);
 
-        // ---- header: back, icon + name, enable switch
-        boolean bo = over(24, 18, 86, 32);
-        Gfx.rr(24, 18, 86, 32, 10, bo ? 0x26FFFFFF : 0x14FFFFFF);
-        Gfx.textCentered("<  " + Lang.t("ui.back"), 24 + 43, 18 + (32 - Gfx.lineHeight(12, true)) / 2, 12, true, Theme.TEXT);
-        if (live) hit(24, 18, 86, 32, new Action() { @Override public void run(float x, float y) { drawerModule = null; } }, null, null);
-        Gfx.icon(m.icon(), 128, 18, 32, Theme.accent());
-        Gfx.text(Gfx.trim(m.name(), 18, true, PW - 128 - 190), 172, 16, 18, true, Theme.TEXT);
-        Gfx.text(Gfx.trim(m.desc(), 10, false, PW - 172 - 190), 172, 16 + Gfx.lineHeight(18, true) + 2, 10, false, Theme.MUTED);
+        // ---- header: breadcrumb, title, enable switch
+        boolean bo = over(24, 22, 70, 20);
+        Gfx.text("<  " + Lang.t("ui.back"), 24, 22, 11, false, bo ? Theme.TEXT : Theme.MUTED);
+        if (live) hit(20, 18, 80, 28, new Action() { @Override public void run(float x, float y) { drawerModule = null; } }, null, null);
+        Gfx.icon(m.icon(), 24, 46, 28, Theme.TEXT);
+        Gfx.text(Gfx.trim(m.name(), 20, true, PW - 24 - 90 - 220), 62, 44, 20, true, Theme.TEXT);
         float ea = anim("pg_en" + m.id, m.enabled ? 1f : 0f, dt, 14f, m.enabled ? 1f : 0f);
-        int ew = 120, ex = PW - 24 - ew;
-        boolean eo = over(ex, 18, ew, 32);
-        Gfx.rr(ex, 18, ew, 32, 10, Ui.mix(eo ? 0xFF3A3A44 : 0xFF26262C, eo ? 0xFFFFFFFF : 0xFFE9E9EC, ea));
-        Gfx.textCentered(Lang.t(m.enabled ? "ui.enabled" : "ui.disabled"), ex + ew / 2, 18 + (32 - Gfx.lineHeight(11, true)) / 2, 11, true, Ui.mix(Theme.MUTED, 0xFF101014, ea));
-        if (live) hit(ex, 18, ew, 32, new Action() { @Override public void run(float x, float y) { m.toggle(); } }, null, null);
-        Gui.drawRect(24, 64, PW - 24, 65, Ui.alpha(0x1AFFFFFF, fade * p));
+        String es = Lang.t(m.enabled ? "ui.enabled" : "ui.disabled");
+        int sx0 = PW - 24 - 38;
+        Gfx.text(es, sx0 - 12 - Gfx.width(es, 11, false), 48, 11, false, Ui.mix(Theme.MUTED, Theme.TEXT, ea));
+        Gfx.rr(sx0, 46, 38, 20, 10, Ui.mix(0x33FFFFFF, Theme.accent(), ea));
+        Gfx.rr(sx0 + 2 + Math.round(18 * ea), 48, 16, 16, 8, Ui.mix(0xFFB4B4BC, Theme.onAccent(), ea));
+        if (live) hit(sx0 - 90, 40, 130, 32, new Action() { @Override public void run(float x, float y) { m.toggle(); } }, null, null);
 
-        // ---- left: live preview, description, actions
+        // ---- left column: preview, group list, actions
         int lx0 = 24, lw = 236;
-        Gfx.rr(lx0, PG_Y, lw, 150, 14, 0x12FFFFFF);
-        Gfx.rrOutline(lx0, PG_Y, lw, 150, 14, 1, 0x1AFFFFFF);
+        Gfx.rr(lx0, PG_Y, lw, 128, 14, 0x0FFFFFFF);
+        Gfx.rrOutline(lx0, PG_Y, lw, 128, 14, 1, 0x14FFFFFF);
         if (m instanceof dev.yaclient.modules.HudModule) {
             dev.yaclient.modules.HudModule hm = (dev.yaclient.modules.HudModule) m;
             int ew0 = Math.max(1, hm.width()), eh0 = Math.max(1, hm.height());
-            float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 110f / eh0));
-            hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((150 - eh0 * ps) / 2f), ps);
-            Gfx.text(Lang.t("ui.preview"), lx0 + 12, PG_Y + 10, 9, true, Theme.DIM);
+            float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 96f / eh0));
+            hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((128 - eh0 * ps) / 2f), ps);
         } else {
-            Gfx.icon(m.icon(), lx0 + (lw - 56) / 2, PG_Y + 47, 56, Theme.MUTED);
+            Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 40, 48, Theme.DIM);
         }
-        String cnt = Lang.t("ui.options_count", m.settings.size());
-        Gfx.text(cnt, lx0 + 2, PG_Y + 164, 11, true, Theme.TEXT);
-        Gfx.text(Gfx.trim(Lang.t("ui.options_hint"), 10, false, lw - 4), lx0 + 2, PG_Y + 164 + Gfx.lineHeight(11, true) + 3, 10, false, Theme.MUTED);
-        int by = PG_Y + 214;
+        int gy = PG_Y + 128 + 14;
+        for (final String g : groups) {
+            int count = 0;
+            for (Setting st : m.settings) if (st.group.equals(g)) count++;
+            boolean act = g.equals(pageGroup), go = over(lx0, gy, lw, 32);
+            float ga = anim("pg_g" + g, act ? 1f : 0f, dt, 16f, act ? 1f : 0f);
+            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 32, 9, Ui.alpha(0x1AFFFFFF, ga));
+            else if (go) Gfx.rr(lx0, gy, lw, 32, 9, 0x0AFFFFFF);
+            if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 8, 3, 16, 2, Ui.alpha(Theme.accent(), ga));
+            Gfx.text(Lang.t("grp." + g), lx0 + 16, gy + (32 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
+            String cs = String.valueOf(count);
+            Gfx.text(cs, lx0 + lw - 12 - Gfx.width(cs, 10, false), gy + (32 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.DIM);
+            if (live) hit(lx0, gy, lw, 32, new Action() { @Override public void run(float x, float y) { pageGroup = g; pageScroll = 0f; pageTarget = 0f; } }, null, null);
+            gy += 36;
+        }
+        int by = PG_Y + PG_H - 30;
+        ghostButton(lx0, by, lw, "reset", Lang.t("ui.reset_opts"), live, new Action() { @Override public void run(float x, float y) { m.resetSettings(); saveAll(); } });
         if (m instanceof dev.yaclient.modules.HudModule) {
-            boolean o1 = over(lx0, by, lw, 32);
-            Gfx.rr(lx0, by, lw, 32, 10, o1 ? 0x2BFFFFFF : 0x17FFFFFF);
-            Gfx.icon("move", lx0 + 12, by + 7, 18, Theme.TEXT);
-            Gfx.text(Lang.t("ui.edit_pos"), lx0 + 38, by + (32 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.TEXT);
-            if (live) hit(lx0, by, lw, 32, new Action() { @Override public void run(float x, float y) { saveAll(); Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); } }, null, null);
-            by += 40;
+            by -= 36;
+            ghostButton(lx0, by, lw, "move", Lang.t("ui.edit_pos"), live, new Action() { @Override public void run(float x, float y) { saveAll(); Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); } });
         }
-        boolean o2 = over(lx0, by, lw, 32);
-        Gfx.rr(lx0, by, lw, 32, 10, o2 ? 0x2BFFFFFF : 0x17FFFFFF);
-        Gfx.icon("reset", lx0 + 12, by + 7, 18, Theme.TEXT);
-        Gfx.text(Lang.t("ui.reset_opts"), lx0 + 38, by + (32 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.TEXT);
-        if (live) hit(lx0, by, lw, 32, new Action() { @Override public void run(float x, float y) { m.resetSettings(); saveAll(); } }, null, null);
 
-        // ---- right: grouped, scrollable options
-        clip(PG_X - 6, PG_Y - 2, PG_W + 12, PG_H + 4);
-        int y = PG_Y - Math.round(pageScroll);
-        java.util.List<String> groups = new ArrayList<String>();
-        for (String g : GROUP_ORDER) groups.add(g);
-        for (Setting st : m.settings) if (!groups.contains(st.group)) groups.add(st.group);
-        boolean any = false;
-        for (String g : groups) {
-            java.util.List<Setting> list = new ArrayList<Setting>();
-            for (Setting st : m.settings) if (st.group.equals(g)) list.add(st);
-            if (list.isEmpty()) continue;
-            any = true;
-            Gfx.text(Lang.t("grp." + g).toUpperCase(Locale.ROOT), PG_X, y + 2, 10, true, Theme.accent());
-            Gui.drawRect(PG_X + Gfx.width(Lang.t("grp." + g).toUpperCase(Locale.ROOT), 10, true) + 10, y + 8, PG_X + PG_W, y + 9, Ui.alpha(0x1AFFFFFF, fade * p));
-            y += 24;
-            for (final Setting st : list) y = drawOptionRow(m, st, y, dt, live);
-            y += 10;
+        // ---- right: one card with the options of the chosen group
+        Gfx.rr(PG_X, PG_Y, PG_W, PG_H, 14, 0x0CFFFFFF);
+        Gfx.rrOutline(PG_X, PG_Y, PG_W, PG_H, 14, 1, 0x14FFFFFF);
+        clip(PG_X, PG_Y + 2, PG_W, PG_H - 4);
+        int y = PG_Y + 6 - Math.round(pageScroll);
+        int first = y;
+        boolean firstRow = true;
+        for (Setting st : m.settings) {
+            if (!st.group.equals(pageGroup)) continue;
+            if (!firstRow) { Gui.drawRect(PG_X + PAD, y, PG_X + PG_W - PAD, y + 1, Ui.alpha(0x12FFFFFF, fade * p)); }
+            firstRow = false;
+            y = drawOptionRow(m, st, y, dt, live);
         }
-        if (!any) Gfx.text(Lang.t("ui.no_settings"), PG_X, y, 12, false, Theme.MUTED);
         unclip();
-        pageContentH = y - (PG_Y - Math.round(pageScroll));
+        pageContentH = y - first + 12;
         pageTarget = Ui.clamp(pageTarget, 0f, Math.max(0f, pageContentH - PG_H));
         if (pageContentH > PG_H) {
             float kh = Math.max(24f, PG_H * PG_H / pageContentH);
             float ky = PG_Y + (pageScroll / (pageContentH - PG_H)) * (PG_H - kh);
-            Gfx.rr(PW - 16, Math.round(ky), 4, Math.round(kh), 2, 0x33FFFFFF);
+            Gfx.rr(PG_X + PG_W - 8, Math.round(ky), 3, Math.round(kh), 2, 0x33FFFFFF);
         }
         Gfx.fade = fade;
     }
 
     private int drawOptionRow(final Module m, Setting st, int y, float dt, boolean live) {
-        final int x = PG_X, w = PG_W;
+        final int x = PG_X + PAD, w = PG_W - 2 * PAD;
         if (st instanceof Setting.Bool) {
             final Setting.Bool b = (Setting.Bool) st;
             float a = anim("pg" + m.id + st.id, b.value ? 1f : 0f, dt, 14f, b.value ? 1f : 0f);
-            boolean ov = pageOver(x, y, w, 34);
-            if (ov) Gfx.rr(x - 6, y, w + 12, 34, 9, 0x0DFFFFFF);
-            Gfx.text(Gfx.trim(st.label(), 12, false, w - 80), x, y + (34 - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
-            int sx = x + w - 38;
-            Gfx.rr(sx, y + 8, 38, 18, 9, Ui.mix(0x33FFFFFF, Theme.accent(), a));
-            Gfx.rr(sx + 2 + Math.round(20 * a), y + 10, 14, 14, 7, Ui.mix(0xFFB4B4BC, Theme.onAccent(), a));
-            if (live) pageHit(x - 6, y, w + 12, 34, new Action() { @Override public void run(float px, float py) { b.value = !b.value; saveAll(); } }, null);
-            return y + 36;
+            int rh = 46;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w - 70), x, y + (rh - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
+            int sx = x + w - 36;
+            Gfx.rr(sx, y + (rh - 20) / 2, 36, 20, 10, Ui.mix(0x2EFFFFFF, Theme.accent(), a));
+            Gfx.rr(sx + 2 + Math.round(16 * a), y + (rh - 20) / 2 + 2, 16, 16, 8, Ui.mix(0xFFB4B4BC, Theme.onAccent(), a));
+            if (live) pageHit(x - 8, y, w + 16, rh, new Action() { @Override public void run(float px, float py) { b.value = !b.value; saveAll(); } }, null);
+            return y + rh;
         }
         if (st instanceof Setting.Num) {
             final Setting.Num n = (Setting.Num) st;
-            final int trackX = x, trackW = w, ty = y + 30;
-            Gfx.text(Gfx.trim(st.label(), 12, false, w - 110), x, y + 2, 12, false, Theme.TEXT);
+            int rh = 62;
+            final int trackX = x, trackW = w, ty = y + 38;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w - 100), x, y + 12, 12, false, Theme.TEXT);
             String val = n.text();
-            Gfx.text(val, x + w - Gfx.width(val, 12, true), y + 2, 12, true, Theme.MUTED);
-            Gfx.rr(trackX, ty, trackW, 6, 3, 0x26FFFFFF);
-            int fw = Math.max(6, Math.round(trackW * n.fraction()));
-            Gfx.rr(trackX, ty, fw, 6, 3, Theme.accent());
-            Gfx.rr(trackX + fw - 7, ty - 4, 14, 14, 7, 0xFFF5F5F5);
+            int vw = Gfx.width(val, 11, true) + 16;
+            Gfx.rr(x + w - vw, y + 8, vw, 22, 7, 0x14FFFFFF);
+            Gfx.textCentered(val, x + w - vw / 2, y + 8 + (22 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.TEXT);
+            Gfx.rr(trackX, ty, trackW, 4, 2, 0x26FFFFFF);
+            int fw = Math.max(4, Math.round(trackW * n.fraction()));
+            Gfx.rr(trackX, ty, fw, 4, 2, Theme.accent());
+            Gfx.rr(trackX + fw - 7, ty - 5, 14, 14, 7, 0xFFF5F5F5);
             if (live) {
                 Action drag = new Action() { @Override public void run(float px, float py) { n.setFraction((px - trackX) / trackW); } };
-                pageHit(x - 6, y + 20, w + 12, 28, drag, drag);
+                pageHit(x - 8, y + 26, w + 16, 30, drag, drag);
             }
-            return y + 52;
+            return y + rh;
         }
         if (st instanceof Setting.Choice) {
             final Setting.Choice c = (Setting.Choice) st;
-            Gfx.text(Gfx.trim(st.label(), 12, false, w), x, y + 2, 12, false, Theme.TEXT);
-            int cx = x, cy = y + 24;
-            for (int i = 0; i < c.options.length; i++) {
+            int total = 0;
+            int[] ws = new int[c.options.length];
+            for (int i = 0; i < ws.length; i++) { ws[i] = Gfx.width(Lang.t("opt." + c.options[i]), 11, false) + 22; total += ws[i]; }
+            int lab = Gfx.width(st.label(), 12, false);
+            boolean inline = total + 4 + lab + 24 <= w;
+            int rh = inline ? 46 : 80;
+            int sy = inline ? y + (rh - 28) / 2 : y + 38, sx = inline ? x + w - total - 4 : x;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w), x, inline ? y + (rh - Gfx.lineHeight(12, false)) / 2 : y + 12, 12, false, Theme.TEXT);
+            // segmented control (wraps to a second line when it does not fit)
+            int cx = sx, cy = sy;
+            Gfx.rr(sx - 2, sy - 2, Math.min(total, w) + 4, 32, 9, 0x10FFFFFF);
+            for (int i = 0; i < ws.length; i++) {
                 final int idx = i;
-                String lab = Lang.t("opt." + c.options[i]);
-                int cwid = Gfx.width(lab, 11, false) + 22;
-                if (cx + cwid > x + w) { cx = x; cy += 30; }
-                boolean sel = c.index == i, cov = pageOver(cx, cy, cwid, 24);
-                Gfx.rr(cx, cy, cwid, 24, 8, sel ? Ui.alpha(Theme.accent(), 0.22f) : (cov ? 0x1AFFFFFF : 0x10FFFFFF));
-                if (sel) Gfx.rrOutline(cx, cy, cwid, 24, 8, 1, Theme.accent());
-                Gfx.text(lab, cx + 11, cy + (24 - Gfx.lineHeight(11, false)) / 2, 11, false, sel ? Theme.TEXT : Theme.MUTED);
-                if (live) pageHit(cx, cy, cwid, 24, new Action() { @Override public void run(float px, float py) { c.index = idx; saveAll(); } }, null);
-                cx += cwid + 6;
+                if (cx + ws[i] > x + w + 2) { cx = x; cy += 32; Gfx.rr(x - 2, cy - 2, Math.min(total, w) + 4, 32, 9, 0x10FFFFFF); rh += 32; }
+                boolean sel = c.index == i, cov = pageOver(cx, cy, ws[i], 28);
+                if (sel) Gfx.rr(cx, cy, ws[i], 28, 7, 0x30FFFFFF);
+                else if (cov) Gfx.rr(cx, cy, ws[i], 28, 7, 0x12FFFFFF);
+                Gfx.textCentered(Lang.t("opt." + c.options[i]), cx + ws[i] / 2, cy + (28 - Gfx.lineHeight(11, sel)) / 2, 11, sel, sel ? Theme.TEXT : Theme.MUTED);
+                if (live) pageHit(cx, cy, ws[i], 28, new Action() { @Override public void run(float px, float py) { c.index = idx; saveAll(); } }, null);
+                cx += ws[i];
             }
-            return cy + 24 + 14;
+            return y + rh;
         }
         if (st instanceof Setting.Palette) {
             final Setting.Palette pal = (Setting.Palette) st;
-            Gfx.text(Gfx.trim(st.label(), 12, false, w - 140), x, y + 2, 12, false, Theme.TEXT);
-            Gfx.text(Lang.t("opt." + Setting.Palette.IDS[pal.index]), x + w - Gfx.width(Lang.t("opt." + Setting.Palette.IDS[pal.index]), 11, true), y + 3, 11, true, Theme.MUTED);
-            int sy = y + 24;
+            int rh = 78;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w - 120), x, y + 12, 12, false, Theme.TEXT);
+            String cn = Lang.t("opt." + Setting.Palette.IDS[pal.index]);
+            Gfx.text(cn, x + w - Gfx.width(cn, 11, false), y + 13, 11, false, Theme.MUTED);
+            int sy = y + 40, step = w / Setting.Palette.IDS.length;
             for (int i = 0; i < Setting.Palette.IDS.length; i++) {
                 final int idx = i;
-                int sx = x + i * 36;
-                boolean sel = pal.index == i, cov = pageOver(sx, sy, 28, 28);
-                if (sel || cov) Gfx.rrOutline(sx - 3, sy - 3, 34, 34, 17, 2, sel ? 0xFFF5F5F5 : 0x66FFFFFF);
-                Gfx.rr(sx, sy, 28, 28, 14, Setting.Palette.color(i));
-                if (sel) Gfx.icon("check", sx + 7, sy + 7, 14, 0xFF101014);
-                if (live) pageHit(sx - 3, sy - 3, 34, 34, new Action() { @Override public void run(float px, float py) { pal.index = idx; saveAll(); } }, null);
+                int sx = x + i * step + (step - 24) / 2;
+                boolean sel = pal.index == i, cov = pageOver(sx, sy, 24, 24);
+                if (sel) Gfx.rrOutline(sx - 4, sy - 4, 32, 32, 16, 2, 0xFFF5F5F5);
+                else if (cov) Gfx.rrOutline(sx - 3, sy - 3, 30, 30, 15, 1, 0x77FFFFFF);
+                Gfx.rr(sx, sy, 24, 24, 12, Setting.Palette.color(i));
+                if (live) pageHit(sx - 4, sy - 4, 32, 32, new Action() { @Override public void run(float px, float py) { pal.index = idx; saveAll(); } }, null);
             }
-            return sy + 28 + 16;
+            return y + rh;
         }
         return y;
     }
