@@ -31,7 +31,7 @@ public class HudEditorScreen extends GuiScreen {
     @Override
     public void drawScreen(int mx, int my, float pt) {
         gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
-        Gui.drawRect(0, 0, width, height, 0x66000000);
+        Gui.drawRect(0, 0, width, height, 0x22000000);
 
         List<HudModule> list = Hud.elements();
         for (HudModule m : list) m.renderHud(true, width, height, gs);
@@ -55,18 +55,20 @@ public class HudEditorScreen extends GuiScreen {
             }
         }
 
-        // toolbar
+        // toolbar: a light, see-through pill
         String title = Lang.t("editor.title");
         String hint = Lang.t("editor.hint");
-        int tw = Math.max(Gfx.width(hint, 10, false), Gfx.width(title, 13, true)) + 40 + 2 * btnW + 20;
-        int tx = (width - tw) / 2, ty = 10, th = 38;
-        Gfx.rr(tx, ty, tw, th, 12, Theme.GLASS);
-        Gfx.rrOutline(tx, ty, tw, th, 12, 1, Theme.GLASS_LINE);
-        Gfx.text(title, tx + 16, ty + 5, 13, true, Theme.TEXT);
-        Gfx.text(hint, tx + 16, ty + 22, 10, false, Theme.MUTED);
-        btnY = ty + 8;
-        btnDoneX = tx + tw - btnW - 8;
-        btnResetX = btnDoneX - btnW - 6;
+        btnW = 54; btnH = 20;
+        int tw = Gfx.width(title, 10, true) + Gfx.width(hint, 8, false) + 2 * btnW + 78;
+        int tx = (width - tw) / 2, ty = 8, th = 30;
+        Gfx.rr(tx, ty, tw, th, 15, 0x55FFFFFF);
+        Gfx.rrOutline(tx, ty, tw, th, 15, 1, 0x80FFFFFF);
+        Gfx.icon("move", tx + 12, ty + 8, 14, 0xFF1B1B22);
+        Gfx.text(title, tx + 32, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, 0xFF1B1B22);
+        Gfx.text(hint, tx + 32 + Gfx.width(title, 10, true) + 10, ty + (th - Gfx.lineHeight(8, false)) / 2, 8, false, 0xFF45454F);
+        btnY = ty + (th - btnH) / 2;
+        btnDoneX = tx + tw - btnW - 6;
+        btnResetX = btnDoneX - btnW - 4;
         button(Lang.t("editor.reset"), btnResetX, mx, my, false);
         button(Lang.t("editor.done"), btnDoneX, mx, my, true);
 
@@ -77,11 +79,10 @@ public class HudEditorScreen extends GuiScreen {
 
     private void button(String label, int x, int mx, int my, boolean primary) {
         boolean over = mx >= x && mx < x + btnW && my >= btnY && my < btnY + btnH;
-        int fill = primary ? (over ? Ui.mix(Theme.accent(), 0xFFFFFFFF, 0.15f) : Theme.accent())
-                : (over ? 0x26FFFFFF : 0x14FFFFFF);
-        Gfx.rr(x, btnY, btnW, btnH, 8, fill);
-        Gfx.textCentered(label, x + btnW / 2, btnY + (btnH - Gfx.lineHeight(11, true)) / 2, 11, true,
-                primary ? Theme.onAccent() : Theme.TEXT);
+        int fill = primary ? (over ? 0xE0000000 : 0xC0101014) : (over ? 0x60FFFFFF : 0x30FFFFFF);
+        Gfx.rr(x, btnY, btnW, btnH, 10, fill);
+        Gfx.textCentered(label, x + btnW / 2, btnY + (btnH - Gfx.lineHeight(9, true)) / 2, 9, true,
+                primary ? 0xFFFFFFFF : 0xFF1B1B22);
     }
 
     private void leave() {

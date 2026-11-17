@@ -49,7 +49,7 @@ public class MenuScreen extends GuiScreen {
     private static final String[] TABS = {"all", "info", "pvp", "utility", "cosmetics", "settings"};
     private static final String[] TAB_ICONS = {"grid", "info", "sword", "wrench", "shirt", "gear"};
     // menu palette (same as the design previews): near-black panel, soft grey surfaces, white accents
-    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
+    private static final int PANEL = 0x980F1012, SURF = 0x781A1B1F, SURF2 = 0x84222328, SURF3 = 0x962D2E34;
     private static final int ACC = 0xFFE8E8E8, ON_ACC = 0xFF101014, OFF = 0xFF3A3B42, GOLD = 0xFFFFC21A;
 
     private final List<Hit> hits = new ArrayList<Hit>();
@@ -164,7 +164,7 @@ public class MenuScreen extends GuiScreen {
         drawerP = Ui.approach(drawerP, drawerModule != null ? 1f : 0f, dt, 16f);
         if (drawerModule != null) drawerLast = drawerModule;
 
-        Gui.drawRect(0, 0, width, height, Ui.alpha(0x99000000, fade));
+        Gui.drawRect(0, 0, width, height, Ui.alpha(0x40000000, fade));
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(width / 2f, height / 2f, 0f);

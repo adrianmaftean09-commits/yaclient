@@ -88,7 +88,7 @@ public class FriendsScreen extends GuiScreen {
         float dt = Math.min(100, now - last);
         last = now;
         float fade = Ui.ease((now - opened) / 200f);
-        drawGradientRect(0, 0, width, height, Ui.alpha(0x70000000, fade), Ui.alpha(0xA0000000, fade));
+        drawGradientRect(0, 0, width, height, Ui.alpha(0x20000000, fade), Ui.alpha(0x38000000, fade));
 
         ScaledResolution sr = new ScaledResolution(mc);
         int sf = sr.getScaleFactor();
@@ -102,7 +102,7 @@ public class FriendsScreen extends GuiScreen {
         ix = px + 14;
         iw = PW - 28;
 
-        Gfx.rr(px, py, PW, ph, 12, Theme.GLASS);
+        Gfx.rr(px, py, PW, ph, 12, 0x66101015);
         Gfx.rrOutline(px, py, PW, ph, 12, 1, Theme.GLASS_LINE);
 
         Gfx.icon("friends", ix, py + 11, 14, Theme.TEXT);

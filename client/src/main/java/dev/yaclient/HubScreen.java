@@ -12,7 +12,7 @@ import net.minecraft.client.gui.ScaledResolution;
  */
 public class HubScreen extends GuiScreen {
     private static final int PW = 320, PH = 202, PAD = 16, GAP = 8, R = 10;
-    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
+    private static final int PANEL = 0x900F1012, SURF = 0x701A1B1F, SURF2 = 0x80222328, SURF3 = 0x902D2E34;
     private static final String[] ICONS = {"grid", "shirt", "friends", "move", "gear"};
     private static final String[] LABELS = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
 
@@ -23,6 +23,7 @@ public class HubScreen extends GuiScreen {
     private int nx, ny;
     private static final int NW = 120, NH = 82;
     private float newsHover;
+    private float sc = 1f;
 
     private int[] rect(int i) {
         if (i == 0) return new int[]{px + PAD, py + 60, PW - 2 * PAD, 52};
@@ -31,19 +32,26 @@ public class HubScreen extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(int mx, int my, float pt) {
+    public void drawScreen(int gmx, int gmy, float pt) {
         long now = System.currentTimeMillis();
         float dt = Math.min(100, now - last);
         last = now;
         float fade = Ui.ease((now - opened) / 220f);
-        drawGradientRect(0, 0, width, height, Ui.alpha(0x70000000, fade), Ui.alpha(0xA0000000, fade));
+        drawGradientRect(0, 0, width, height, Ui.alpha(0x20000000, fade), Ui.alpha(0x38000000, fade));
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
-        Gfx.setScale(Math.max(1, gs));
+        // fixed physical size on every GUI scale: about 1 pixel per unit at 1080p
+        float f = Math.max(0.75f, Minecraft.getMinecraft().displayHeight / 1080f);
+        sc = f / gs;
+        int vw = Math.round(width / sc), vh = Math.round(height / sc);
+        int mx = Math.round(gmx / sc), my = Math.round(gmy / sc);
+        Gfx.setScale(Math.max(1, Math.round(f)));
+        net.minecraft.client.renderer.GlStateManager.pushMatrix();
+        net.minecraft.client.renderer.GlStateManager.scale(sc, sc, 1f);
         Gfx.fade = fade;
 
-        px = (width - PW) / 2;
-        py = (height - PH) / 2 + Math.round((1f - fade) * 6f);
+        px = (vw - PW) / 2;
+        py = (vh - PH) / 2 + Math.round((1f - fade) * 6f);
 
         Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 16, 0x22000000);
         Gfx.rr(px, py, PW, PH, 14, PANEL);
@@ -84,7 +92,7 @@ public class HubScreen extends GuiScreen {
 
         // changelog card (bottom left), same as on the main menu
         nx = 10;
-        ny = height - 20 - 8 - NH;
+        ny = vh - 20 - 8 - NH;
         boolean nOver = mx >= nx && mx < nx + NW && my >= ny && my < ny + NH;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
         Gfx.rr(nx, ny, NW, NH, 8, Ui.mix(0xE0101014, 0xF0242429, newsHover));
@@ -95,12 +103,14 @@ public class HubScreen extends GuiScreen {
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, NW - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
         Gfx.fade = 1f;
+        net.minecraft.client.renderer.GlStateManager.popMatrix();
         FriendToast.render();
     }
 
     @Override
-    protected void mouseClicked(int mx, int my, int button) {
+    protected void mouseClicked(int gmx, int gmy, int button) {
         if (button != 0) return;
+        int mx = Math.round(gmx / sc), my = Math.round(gmy / sc);
         Minecraft mc = Minecraft.getMinecraft();
         if (mx >= nx && mx < nx + NW && my >= ny && my < ny + NH) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 5; i++) {
