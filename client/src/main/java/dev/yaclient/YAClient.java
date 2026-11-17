@@ -76,11 +76,21 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ScoreboardModule());
         MODULES.add(new FpsBoostModule());
         // planned (need the Mixin phase, see docs/PHASE2.md)
-        MODULES.add(new SoonModule("hit_color", Category.PVP));
-        MODULES.add(new SoonModule("old_animations", Category.PVP));
-        MODULES.add(new SoonModule("autogg", Category.UTILITY));
         MODULES.add(new SoonModule("levelhead", Category.INFO));
-        MODULES.add(new SoonModule("minimap", Category.INFO));
+        MODULES.add(new HitColorModule());
+        MODULES.add(new OldAnimationsModule());
+        MODULES.add(new AutoGGModule());
+        MODULES.add(new MinimapModule());
+        MODULES.add(new ComboModule());
+        MODULES.add(new BowChargeModule());
+        MODULES.add(new BlockInfoModule());
+        MODULES.add(new NoHurtCamModule());
+        MODULES.add(new BackgroundFpsModule());
+        MODULES.add(new LowHealthModule());
+        MODULES.add(new TargetHudModule());
+        MODULES.add(new ItemCounterModule());
+        MODULES.add(new InventoryHudModule());
+        MODULES.add(new NearbyPlayersModule());
 
         for (Module m : MODULES) m.loadConfig();
 
@@ -98,6 +108,7 @@ public class YAClient implements ModInitializer {
 
             ScoreboardModule.afterOverlay();
             TabBadge.tick();
+            HitTracker.tick(mc);
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();

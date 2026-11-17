@@ -355,22 +355,20 @@
     {
       "id": "hit_color",
       "name": "Hit Color",
-      "desc": "Custom color when you hit",
+      "desc": "Colored ring on your crosshair when you hit",
       "category": "pvp",
       "versions": [
         "1.8.9"
-      ],
-      "soon": true
+      ]
     },
     {
       "id": "old_animations",
       "name": "1.7 Animations",
-      "desc": "Old block and hit animations",
+      "desc": "Sword block-hit and lower sword like 1.7",
       "category": "pvp",
       "versions": [
         "1.8.9"
-      ],
-      "soon": true
+      ]
     },
     {
       "id": "autogg",
@@ -379,8 +377,7 @@
       "category": "utility",
       "versions": [
         "1.8.9"
-      ],
-      "soon": true
+      ]
     },
     {
       "id": "levelhead",
@@ -395,12 +392,11 @@
     {
       "id": "minimap",
       "name": "Minimap",
-      "desc": "Client-side map overlay",
+      "desc": "Top-down map of the terrain around you",
       "category": "info",
       "versions": [
         "1.8.9"
-      ],
-      "soon": true
+      ]
     },
     {
       "id": "scoreboard",
@@ -416,6 +412,96 @@
       "name": "FPS Boost",
       "desc": "Lowers heavy effects to raise your FPS",
       "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "combo",
+      "name": "Combo",
+      "desc": "Counts your consecutive hits",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "bow_charge",
+      "name": "Bow Charge",
+      "desc": "Shows how charged your bow is",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "block_info",
+      "name": "Block Info",
+      "desc": "Name and position of the block you look at",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "no_hurt_cam",
+      "name": "No Hurt Cam",
+      "desc": "Removes the camera shake when hit",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "bg_fps",
+      "name": "Background FPS",
+      "desc": "Limits FPS when the game is in the background",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "low_health",
+      "name": "Low Health",
+      "desc": "Red pulsing warning when your health is low",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "target_hud",
+      "name": "Target HUD",
+      "desc": "Name and health of the player you fight",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "item_counter",
+      "name": "Item Counter",
+      "desc": "Pearls, golden apples, potions and arrows",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "inventory_hud",
+      "name": "Inventory HUD",
+      "desc": "Shows your inventory on screen",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "nearby_players",
+      "name": "Nearby Players",
+      "desc": "List of players close to you",
+      "category": "info",
       "versions": [
         "1.8.9"
       ]
