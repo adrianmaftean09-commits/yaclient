@@ -97,6 +97,7 @@ public class YAClient implements ModInitializer {
             }
 
             ScoreboardModule.afterOverlay();
+            TabBadge.tick();
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();

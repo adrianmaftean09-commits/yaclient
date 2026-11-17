@@ -106,14 +106,14 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         float flap = (float) Math.sin(age * 0.10f) * (mono ? 17f : 7f) * (1f - air)
                 + (float) Math.sin(age * 0.32f) * (mono ? 34f : 22f) * air;
         float raise = (mono ? -6f : -2f) + flap;
-        float spread = 26f + 8f * air;
+        float spread = 40f + 6f * air;
         GlStateManager.pushMatrix();
         model.bipedBody.postRender(S);
         for (int side = -1; side <= 1; side += 2) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(side * 0.07f, 0.08f, 0.19f);
-            GlStateManager.rotate(-side * spread, 0f, 1f, 0f);
-            GlStateManager.rotate(-side * raise, 0f, 0f, 1f);
+            GlStateManager.rotate(-side * raise, 0f, 0f, 1f);     // flap: pure up/down around the body's front-back axis
+            GlStateManager.rotate(-side * spread, 0f, 1f, 0f);    // fixed outward lean
             GlStateManager.scale((float) side, -1f, 1f);
             Poly.begin();
             if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);

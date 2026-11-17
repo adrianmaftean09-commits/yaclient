@@ -209,7 +209,19 @@ public final class CosmeticsApi {
             return m;
         }
         if (!enabled()) return null;
-        final String uuid = p.getUniqueID().toString().replace("-", "");
+        return lookup(p.getUniqueID().toString().replace("-", ""));
+    }
+
+    /** True if that player runs YA CLIENT (always true for yourself; others come from the server). */
+    public static boolean usesClient(UUID id) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer != null && id.equals(mc.thePlayer.getUniqueID())) return true;
+        if (!enabled()) return false;
+        Map<String, String> m = lookup(id.toString().replace("-", ""));
+        return m != null && "1".equals(m.get("client"));
+    }
+
+    private static Map<String, String> lookup(final String uuid) {
         Map<String, String> cached = OTHERS.get(uuid);
         Long at = FETCHED.get(uuid);
         boolean stale = at == null || System.currentTimeMillis() - at > 5L * 60L * 1000L;

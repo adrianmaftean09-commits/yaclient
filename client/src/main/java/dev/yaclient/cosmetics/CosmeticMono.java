@@ -29,7 +29,7 @@ final class CosmeticMono {
 
     private static double[] bary(double[] a, double[] b, double[] c, int i, int j, int n) {
         double u = i / (double) n, v = j / (double) n, w = 1 - u - v;
-        double billow = 0.045 * 27.0 * u * v * w;     // the membrane bows backwards between the bones (3D volume)
+        double billow = 0.02 * 27.0 * u * v * w;     // the membrane bows backwards between the bones (3D volume)
         return pt(a[0] * w + b[0] * u + c[0] * v, a[1] * w + b[1] * u + c[1] * v, a[2] * w + b[2] * u + c[2] * v + billow);
     }
 
@@ -66,12 +66,12 @@ final class CosmeticMono {
      *  rising from the joint, and a membrane hanging below with three bone fingers and a scalloped edge. */
     static void wing(float age) {
         double fl = Math.sin(age * 0.10) * 0.02;
-        double[] A = pt(0.02, 0.0, 0), J = pt(0.52, 0.32, 0.03);
-        double[] K = pt(0.68 + fl, 0.90, 0.12);                       // spike tip
-        double[] F1 = pt(0.58 + fl, -0.46, 0.09), F2 = pt(0.33 + fl * 0.5, -0.44, 0.07), F3 = pt(0.08, -0.30, 0.03);
+        double[] A = pt(0.02, 0.0, 0), J = pt(0.52, 0.32, 0);
+        double[] K = pt(0.68 + fl, 0.90, 0);                       // spike tip
+        double[] F1 = pt(0.58 + fl, -0.46, 0), F2 = pt(0.33 + fl * 0.5, -0.44, 0), F3 = pt(0.08, -0.30, 0);
         double[] M1 = pt((F1[0] + F2[0]) / 2, (F1[1] + F2[1]) / 2 + 0.07, (F1[2] + F2[2]) / 2);
         double[] M2 = pt((F2[0] + F3[0]) / 2, (F2[1] + F3[1]) / 2 + 0.06, (F2[2] + F3[2]) / 2);
-        double[] Mo = pt(J[0] + 0.14, J[1] - 0.44, 0.08);              // outer edge between spike and first finger
+        double[] Mo = pt(J[0] + 0.14, J[1] - 0.44, 0);              // outer edge between spike and first finger
         scaled(J, F1, M1, 0); scaled(J, M1, F2, 1);
         scaled(J, F2, M2, 2); scaled(J, M2, F3, 3);
         scaled(J, F3, A, 0);
