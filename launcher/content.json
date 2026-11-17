@@ -1,7 +1,7 @@
 {
   "_help": "Edit this file to fill the launcher. Images can be https URLs. Leave a list empty to show placeholders.",
-  "apiBase": "",
-  "storeUrl": "",
+  "apiBase": "https://yaclient.pages.dev",
+  "storeUrl": "https://yaclient.pages.dev/store",
   "supportUrl": "",
   "remote": "",
   "news": [
