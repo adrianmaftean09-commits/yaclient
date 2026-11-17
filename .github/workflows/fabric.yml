@@ -1,0 +1,59 @@
+name: Build YA CLIENT (Fabric)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fabric-jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "9.5.1"
+      - name: Build the Fabric jar (retries: the Maven mirrors sometimes fail)
+        working-directory: fabric
+        run: |
+          for i in 1 2 3; do
+            gradle build --no-daemon && exit 0
+            echo "Build failed (try $i), retrying in 45s..."
+            sleep 45
+          done
+          exit 1
+      - name: API dump (public signatures of the classes in tools/api-classes.txt)
+        if: always()
+        working-directory: fabric
+        run: |
+          JAR=$(find ~/.gradle -name "*.jar" -path "*fabric-loom*" | grep -i "minecraft" | grep -v "sources" | head -20)
+          echo "$JAR"
+          mkdir -p ../api-dump
+          CP=$(echo "$JAR" | tr '\n' ':')
+          while read -r c; do
+            [ -z "$c" ] && continue
+            javap -public -cp "$CP" "$c" > "../api-dump/$c.txt" 2>&1 || true
+          done < tools/api-classes.txt
+          find ~/.gradle -name "*.jar" -path "*fabric-loom*" | head -30 > ../api-dump/_jars.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-dump
+          path: api-dump
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YAClient-fabric-jar
+          path: fabric/build/libs/yaclient-fabric-*.jar
+          if-no-files-found: error
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: fabric/build/libs/yaclient-fabric-26.2.jar
