@@ -37,6 +37,12 @@ public final class Config {
         } catch (Exception ignored) { }
     }
 
+    /** True if at least one stored key starts with the prefix. */
+    public static synchronized boolean hasPrefix(String prefix) {
+        for (Object k : P.keySet()) if (String.valueOf(k).startsWith(prefix)) return true;
+        return false;
+    }
+
     public static synchronized String get(String key, String def) {
         return P.getProperty(key, def);
     }

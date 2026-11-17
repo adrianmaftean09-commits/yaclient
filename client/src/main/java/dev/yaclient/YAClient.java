@@ -61,6 +61,7 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ToggleSprintModule());
         MODULES.add(new ToggleSneakModule());
         MODULES.add(new ZoomModule());
+        MODULES.add(new ChatModule());
         MODULES.add(new FullbrightModule());
         MODULES.add(new MotionBlurModule());
         MODULES.add(new CrosshairModule());
@@ -96,7 +97,14 @@ public class YAClient implements ModInitializer {
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
                 "minimap", "waypoints", "motion_blur", "cinematic", "time_changer", "nearby_players"));
         for (Module m : MODULES) { if (plusMods.contains(m.id)) m.plusOnly = true; }
-        // one-time: FPS Boost (unlimited frame rate, light effects) is on by default for everyone
+        // new installs: only FPS, CPS and Keystrokes are on; every other mod starts off (the player turns on what they want)
+        if (!Config.hasPrefix("mod.") && !Config.getBool("perf.v2", false)) {
+            java.util.Set<String> base = new java.util.HashSet<String>(java.util.Arrays.asList("fps", "cps", "keystrokes"));
+            for (Module m : MODULES) Config.setBool("mod." + m.id + ".enabled", m.available && base.contains(m.id));
+            Config.setBool("perf.v2", true);
+            Config.save();
+        }
+        // existing installs, one time: FPS Boost (unlimited frame rate, light effects) on
         if (!Config.getBool("perf.v2", false)) { Config.setBool("mod.fps_boost.enabled", true); Config.setBool("perf.v2", true); Config.save(); }
         for (Module m : MODULES) m.loadConfig();
 

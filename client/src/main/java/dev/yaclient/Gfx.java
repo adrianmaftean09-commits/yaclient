@@ -115,9 +115,63 @@ public final class Gfx {
         GlStateManager.color(1f, 1f, 1f, 1f);
     }
 
+
+    /** Color with the global fade applied (for the solid parts of the nine-slice shapes). */
+    private static int faded(int color) {
+        int a = Math.round(((color >>> 24) & 255) * fade);
+        return (Math.max(0, Math.min(255, a)) << 24) | (color & 0xFFFFFF);
+    }
+
+    /** One corner quarter (cs x cs GUI units) of a rounded shape texture of size 2cs x 2cs. */
+    private static void corner(DynamicTexture t, int x, int y, int cs, int qx, int qy, int color) {
+        float a = ((color >>> 24) & 255) / 255f * fade;
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        GlStateManager.color(((color >> 16) & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f, a);
+        GlStateManager.bindTexture(t.getGlTextureId());
+        Gui.drawScaledCustomSizeModalRect(x, y, (float) (qx * cs), (float) (qy * cs), cs, cs, cs, cs, (float) (2 * cs), (float) (2 * cs));
+        GlStateManager.color(1f, 1f, 1f, 1f);
+    }
+
+    private static DynamicTexture cornerTex(String key, int cs, int r, boolean outline, int thick) {
+        DynamicTexture t = TEX.get(key);
+        if (t == null) {
+            int s = 2 * cs;
+            BufferedImage img = new BufferedImage(s * ss, s * ss, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            hints(g);
+            g.setColor(Color.WHITE);
+            if (outline) {
+                float th = thick * ss;
+                g.setStroke(new BasicStroke(th));
+                g.draw(new RoundRectangle2D.Float(th / 2f, th / 2f, s * ss - th, s * ss - th, 2f * r * ss, 2f * r * ss));
+            } else {
+                g.fill(new RoundRectangle2D.Float(0f, 0f, s * ss, s * ss, 2f * r * ss, 2f * r * ss));
+            }
+            g.dispose();
+            t = upload(key, img);
+        }
+        return t;
+    }
+
     /** Rettangolo con angoli arrotondati (anti-aliased). */
     public static void rr(int x, int y, int w, int h, int r, int color) {
         if (w <= 0 || h <= 0) return;
+        // big shapes: 4 small cached corners + solid rectangles (no new full-size texture for every size, so no stutter)
+        int cs = r + 1;
+        if (r > 0 && w > 2 * cs + 8 && h > 2 * cs + 8) {
+            DynamicTexture ct = cornerTex("rc|" + r + "|" + ss, cs, r, false, 0);
+            int c2 = faded(color);
+            corner(ct, x, y, cs, 0, 0, color);
+            corner(ct, x + w - cs, y, cs, 1, 0, color);
+            corner(ct, x, y + h - cs, cs, 0, 1, color);
+            corner(ct, x + w - cs, y + h - cs, cs, 1, 1, color);
+            Gui.drawRect(x + cs, y, x + w - cs, y + cs, c2);
+            Gui.drawRect(x, y + cs, x + w, y + h - cs, c2);
+            Gui.drawRect(x + cs, y + h - cs, x + w - cs, y + h, c2);
+            return;
+        }
         String key = "r|" + w + "|" + h + "|" + r + "|" + ss;
         DynamicTexture t = TEX.get(key);
         if (t == null) {
@@ -184,6 +238,20 @@ public final class Gfx {
     /** Rounded outline (stroke only) with the given thickness in GUI units. */
     public static void rrOutline(int x, int y, int w, int h, int r, int thick, int color) {
         if (w <= 0 || h <= 0) return;
+        int cs = r + thick;
+        if (r > 0 && w > 2 * cs + 8 && h > 2 * cs + 8) {
+            DynamicTexture ct = cornerTex("oc|" + r + "|" + thick + "|" + ss, cs, r, true, thick);
+            int c2 = faded(color);
+            corner(ct, x, y, cs, 0, 0, color);
+            corner(ct, x + w - cs, y, cs, 1, 0, color);
+            corner(ct, x, y + h - cs, cs, 0, 1, color);
+            corner(ct, x + w - cs, y + h - cs, cs, 1, 1, color);
+            Gui.drawRect(x + cs, y, x + w - cs, y + thick, c2);
+            Gui.drawRect(x + cs, y + h - thick, x + w - cs, y + h, c2);
+            Gui.drawRect(x, y + cs, x + thick, y + h - cs, c2);
+            Gui.drawRect(x + w - thick, y + cs, x + w, y + h - cs, c2);
+            return;
+        }
         String key = "o|" + w + "|" + h + "|" + r + "|" + thick + "|" + ss;
         DynamicTexture t = TEX.get(key);
         if (t == null) {
