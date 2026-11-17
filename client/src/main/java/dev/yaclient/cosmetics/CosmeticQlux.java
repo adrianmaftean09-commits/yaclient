@@ -88,7 +88,8 @@ final class CosmeticQlux {
     }
 
     // ------------------------------------------------------------------ pet: "Lumi", a little light fox-cat
-    private static final double YO = -0.045;   // lifts the whole pet so the paws hover at the right height
+    private static final double YO0 = -0.045;     // lifts the whole pet so the paws hover at the right height
+    private static double YO = YO0;                // YO0 plus the current hop
 
     private static final double TEXEL = 0.0125;   // one "pixel" of the pet's fur texture
     private static int boxSeed = 0;
@@ -170,7 +171,10 @@ final class CosmeticQlux {
 
     static void pet(float age) {
         float pulse = 0.85f + 0.15f * (float) Math.sin(age * 0.2);
-        double bob = Math.sin(age * 0.20) * 0.004;
+        double ph = age * 0.32;                                   // trot cycle
+        double hop = Math.abs(Math.sin(ph)) * 0.016 + Math.sin(age * 0.07) * 0.006;   // bounces up and down
+        YO = YO0 - hop;
+        double bob = Math.sin(ph * 2) * 0.004;
         // body, with a pearl belly/chest and a silver stripe along the back
         PART = 0;
         box(0, 0.02, 0.045, 0.068, 0.062, 0.115, 0.016, Poly.SNOW, Poly.PEARL);
@@ -181,9 +185,10 @@ final class CosmeticQlux {
         PART = 3;
         for (int s = -1; s <= 1; s += 2) {
             for (int f = 0; f < 2; f++) {
-                double z = f == 0 ? -0.045 : 0.135, step = Math.sin(age * 0.20 + (f + (s > 0 ? 1 : 0)) * Math.PI) * 0.006;
-                box(s * 0.046, 0.108 + bob * 0, z + step, 0.024, 0.034, 0.024, 0.008, Poly.SNOW, Poly.PEARL);
-                box(s * 0.046, 0.140, z + step - 0.003, 0.026, 0.008, 0.028, 0.004, Poly.PEARL, Poly.SILVER);
+                double lp = ph + (f + (s > 0 ? 1 : 0)) * Math.PI;           // diagonal pairs move together
+                double z = f == 0 ? -0.045 : 0.135, step = Math.sin(lp) * 0.026, lift = Math.max(0, Math.cos(lp)) * 0.016;
+                box(s * 0.046, 0.108 - lift, z + step, 0.024, 0.034, 0.024, 0.008, Poly.SNOW, Poly.PEARL);
+                box(s * 0.046, 0.140 - lift, z + step - 0.003, 0.026, 0.008, 0.028, 0.004, Poly.PEARL, Poly.SILVER);
             }
         }
         // head (cube) with snout, nose, ears, eyes
