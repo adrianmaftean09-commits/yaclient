@@ -583,7 +583,7 @@ public class MenuScreen extends GuiScreen {
         else stKey = "cos.status." + CosmeticsApi.status();
         String store = Lang.t("cos.store");
         int sw = Gfx.width(store, 11, true) + 40;
-        Gfx.text(Gfx.trim(Lang.t(stKey), 10, false, wRight - sw - 12), x0, fy + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
+        Gfx.text(Gfx.trim(Lang.t(stKey) + (CosmeticsApi.enabled() && !CosmeticsApi.detail().isEmpty() ? " [" + CosmeticsApi.detail() + "]" : ""), 10, false, wRight - sw - 12), x0, fy + (26 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.MUTED);
         if (CosmeticsApi.enabled()) {
             int bx = x0 + wRight - sw;
             boolean ov = over(bx, fy, sw, 26);

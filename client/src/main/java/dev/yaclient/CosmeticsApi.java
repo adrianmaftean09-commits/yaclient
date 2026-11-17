@@ -34,6 +34,7 @@ public final class CosmeticsApi {
     private static volatile String storeUrl = "";
     private static volatile boolean plus;
     private static volatile String status = "";
+    private static volatile String detail = "";
     private static volatile boolean refreshing;
     private static long lastRefresh;
 
@@ -64,6 +65,9 @@ public final class CosmeticsApi {
     public static String price(String item) { return catalog.get(item); }
 
     public static String status() { return status; }
+
+    /** Technical reason of the last failure (shown next to the status to help support). */
+    public static String detail() { return detail; }
 
     private static String enc(String s) {
         try { return URLEncoder.encode(s, "UTF-8"); } catch (Exception e) { return s; }
@@ -118,7 +122,7 @@ public final class CosmeticsApi {
             Minecraft mc = Minecraft.getMinecraft();
             Session s = mc.getSession();
             String[] parts = s.getSessionID().split(":");
-            if (parts.length < 3 || s.getPlayerID() == null || s.getPlayerID().length() < 32) return null;
+            if (parts.length < 3 || s.getPlayerID() == null || s.getPlayerID().length() < 32) { detail = "no MS session (" + parts.length + ")"; return null; }
             String serverId = Long.toHexString(new SecureRandom().nextLong()) + Long.toHexString(new SecureRandom().nextLong());
 
             Object svc = sessionService(mc);
@@ -132,6 +136,8 @@ public final class CosmeticsApi {
             authExpiry = System.currentTimeMillis() + 50L * 60L * 1000L;
             return authToken;
         } catch (Throwable t) {
+            Throwable c = t.getCause() != null ? t.getCause() : t;
+            detail = c.getClass().getSimpleName() + ": " + String.valueOf(c.getMessage());
             return null;
         }
     }
@@ -158,6 +164,7 @@ public final class CosmeticsApi {
                     if (tok == null) {
                         status = "login";
                     } else {
+                        detail = "";
                         Map<String, String> me = Lang.parse(http("GET", base() + "/v1/me?token=" + enc(tok), null));
                         String list = me.get("owned");
                         owned = new HashSet<String>(Arrays.asList(list == null ? new String[0] : list.split(",")));
@@ -171,6 +178,7 @@ public final class CosmeticsApi {
                     }
                 } catch (Exception e) {
                     status = "offline";
+                    detail = String.valueOf(e.getMessage());
                 } finally {
                     refreshing = false;
                 }
