@@ -12,7 +12,11 @@ const ITEMS = {
   shinobi_cape: { slot: 'cape', price: 'Exclusive' }, shinobi_wings: { slot: 'wings', price: 'Exclusive' },
   shinobi_bandana: { slot: 'bandana', price: 'Exclusive' }, shinobi_pet: { slot: 'pet', price: 'Exclusive' },
   kitsune_cape: { slot: 'cape', price: 'Exclusive' }, kitsune_wings: { slot: 'wings', price: 'Exclusive' },
-  kitsune_bandana: { slot: 'bandana', price: 'Exclusive' }, kitsune_pet: { slot: 'pet', price: 'Exclusive' }
+  kitsune_bandana: { slot: 'bandana', price: 'Exclusive' }, kitsune_pet: { slot: 'pet', price: 'Exclusive' },
+  santa_cape: { slot: 'cape', price: 'Exclusive' }, santa_wings: { slot: 'wings', price: 'Exclusive' },
+  santa_bandana: { slot: 'bandana', price: 'Exclusive' }, santa_pet: { slot: 'pet', price: 'Exclusive' },
+  frost_cape: { slot: 'cape', price: 'Exclusive' }, frost_wings: { slot: 'wings', price: 'Exclusive' },
+  frost_bandana: { slot: 'bandana', price: 'Exclusive' }, frost_pet: { slot: 'pet', price: 'Exclusive' }
 };
 // Bundles unlock several items at once. "beta" = Beta Tester bundle (free, granted by the admin to testers).
 const BUNDLES = {
@@ -22,7 +26,9 @@ const BUNDLES = {
   qlux: { price: 'Partner', partner: 'Qlux', items: ['qlux_cape', 'qlux_wings', 'qlux_bandana', 'qlux_pet'] },
   sakura: { price: 'Exclusive', items: ['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'] },
   shinobi: { price: 'Exclusive', items: ['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'] },
-  kitsune: { price: 'Exclusive', items: ['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'] }
+  kitsune: { price: 'Exclusive', items: ['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'] },
+  santa: { price: 'Exclusive', items: ['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'] },
+  frost: { price: 'Exclusive', items: ['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'] }
 };
 const SLOTS = ['cape', 'wings', 'bandana', 'pet'];
 const norm = (u) => String(u || '').replace(/-/g, '').toLowerCase();

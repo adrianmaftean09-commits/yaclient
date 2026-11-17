@@ -382,5 +382,15 @@
  "cos.item.kitsune_cape": "Kitsune Mantello",
  "cos.item.kitsune_wings": "Flame Ali",
  "cos.item.kitsune_bandana": "Shrine Fascia",
- "cos.item.kitsune_pet": "Inari (pet)"
+ "cos.item.kitsune_pet": "Inari (pet)",
+ "cos.bundle.santa": "Santa Bundle",
+ "cos.item.santa_cape": "Santa Mantello",
+ "cos.item.santa_wings": "Candy Ali",
+ "cos.item.santa_bandana": "Santa Fascia",
+ "cos.item.santa_pet": "Rudy (pet)",
+ "cos.bundle.frost": "Frost Bundle",
+ "cos.item.frost_cape": "Snowflake Mantello",
+ "cos.item.frost_wings": "Ice Ali",
+ "cos.item.frost_bandana": "Frost Fascia",
+ "cos.item.frost_pet": "Frosty (pet)"
 }

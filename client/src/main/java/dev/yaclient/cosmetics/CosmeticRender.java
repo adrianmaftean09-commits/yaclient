@@ -16,14 +16,14 @@ final class CosmeticRender {
     // WINGS
     // =====================================================================================
     // row: count, tStart, tEnd, angleStart, angleEnd (deg), lenBase, lenAmp (len = base + amp*sin(pi*f)), width, zOffset
-    private static final double[][] ROWS = {
+    static final double[][] ROWS = {
             {9, 0.25, 1.00, -84, -14, 0.34, 0.40, 0.070, 0.000},
             {8, 0.12, 0.90, -88, -30, 0.26, 0.20, 0.062, 0.006},
             {8, 0.05, 0.95, -84, -20, 0.14, 0.10, 0.052, 0.012}
     };
 
     /** Arm of the wing (leading edge), cubic bezier in the wing plane: x outwards, y up. */
-    private static double[] arm(double t) {
+    static double[] arm(double t) {
         double[] p0 = {0.02, 0.0}, p1 = {0.04, 0.26}, p2 = {0.30, 0.38}, p3 = {0.62, 0.28};
         double u = 1 - t;
         double x = u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0];
@@ -33,6 +33,7 @@ final class CosmeticRender {
 
     /** One wing in its own plane (x out, y up, z thickness). The caller mirrors it for the other side. */
     static void wing(float age) {
+        if (anime != null && anime.pixel) { XmasPix.wing(anime, age); return; }
         int k = 0;
         for (int row = 2; row >= 0; row--) {          // long feathers first, short covert feathers on top
             double[] r = (anime != null ? anime.rows : ROWS)[row];
@@ -237,6 +238,7 @@ final class CosmeticRender {
     }
 
     static void bandana(float age, float limbSwing) {
+        if (anime != null && anime.pixel) { XmasPix.band(anime, age, limbSwing); return; }
         monoAge = age;
         final int N = 56;
         final double a = 0.298, yTop = -0.43, yBot = -0.31;

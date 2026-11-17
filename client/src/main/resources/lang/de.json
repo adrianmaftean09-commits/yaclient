@@ -382,5 +382,15 @@
  "cos.item.kitsune_cape": "Kitsune Umhang",
  "cos.item.kitsune_wings": "Flame Flügel",
  "cos.item.kitsune_bandana": "Shrine Band",
- "cos.item.kitsune_pet": "Inari (Haustier)"
+ "cos.item.kitsune_pet": "Inari (Haustier)",
+ "cos.bundle.santa": "Santa Bundle",
+ "cos.item.santa_cape": "Santa Umhang",
+ "cos.item.santa_wings": "Candy Flügel",
+ "cos.item.santa_bandana": "Santa Band",
+ "cos.item.santa_pet": "Rudy (Haustier)",
+ "cos.bundle.frost": "Frost Bundle",
+ "cos.item.frost_cape": "Snowflake Umhang",
+ "cos.item.frost_wings": "Ice Flügel",
+ "cos.item.frost_bandana": "Frost Band",
+ "cos.item.frost_pet": "Frosty (Haustier)"
 }

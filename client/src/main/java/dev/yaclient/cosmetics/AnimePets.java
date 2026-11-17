@@ -59,6 +59,7 @@ final class AnimePets {
     };
 
     static void pet(Anime.Th th, float age) {
+        if (th.pixel) { XmasPix.pet(th, age); return; }
         T = th.index;
         Vox.marker = MARK;
         Vox.TEXEL = T == 2 ? 0.0185 : 0.0125;      // Byte is the chunky one

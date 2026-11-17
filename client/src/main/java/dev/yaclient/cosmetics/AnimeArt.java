@@ -19,6 +19,8 @@ final class AnimeArt {
             case 0: break;
             case 1: shinobi(px); break;
             case 2: neon(px); break;
+            case 4: gift(px); break;
+            case 5: snowflake(px); break;
             default: kitsune(px); break;
         }
         BufferedImage img = new BufferedImage(G * SCALE, G * SCALE, BufferedImage.TYPE_INT_ARGB);
@@ -54,6 +56,40 @@ final class AnimeArt {
         p[1][14] = cyan; p[2][13] = cyan; p[2][14] = white; p[2][15] = cyan; p[3][14] = cyan;      // sparkle
         p[13][1] = mag; p[14][0] = mag; p[14][1] = white; p[14][2] = mag; p[15][1] = mag;
     }
+
+    private static void rect(int[][] p, int x, int y, int w, int h, int col) {
+        for (int j = y; j < y + h; j++) for (int i = x; i < x + w; i++) if (i >= 0 && j >= 0 && i < G && j < G) p[j][i] = col;
+    }
+
+    /** Christmas gift with a golden bow. */
+    private static void gift(int[][] p) {
+        int red = 0xFFD62A2A, dred = 0xFFB81E1E, white = 0xFFFFFFFF, gold = 0xFFFFC21A, green = 0xFF2E9E4B;
+        rect(p, 3, 7, 10, 7, red); rect(p, 2, 5, 12, 3, dred);
+        rect(p, 7, 5, 2, 9, gold); rect(p, 3, 9, 10, 1, dred);
+        rect(p, 5, 3, 2, 2, gold); rect(p, 9, 3, 2, 2, gold); rect(p, 7, 4, 2, 1, gold);
+        rect(p, 4, 2, 1, 1, gold); rect(p, 11, 2, 1, 1, gold);
+        rect(p, 3, 13, 10, 1, dred);
+        p[1][1] = white; p[2][14] = white; p[12][1] = white; p[14][13] = white; p[0][8] = white;
+        p[11][14] = green; p[12][14] = green; p[12][13] = green;
+    }
+
+    /** Snowflake. */
+    private static void snowflake(int[][] p) {
+        int ice = 0xFF7CCBF5, white = 0xFFFFFFFF;
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+        for (int[] d : dirs) {
+            for (int k = 1; k <= 6; k++) {
+                int x = 7 + d[0] * k + (d[0] >= 0 ? 1 : 0) * 0, y = 7 + d[1] * k;
+                int px = 7 + d[0] * k, py = 7 + d[1] * k;
+                set(p, px, py, (d[0] == 0 || d[1] == 0) ? white : ice);
+                if (k == 4 && (d[0] == 0 || d[1] == 0)) { set(p, px + d[1], py + d[0], ice); set(p, px - d[1], py - d[0], ice); }
+            }
+        }
+        rect(p, 7, 7, 2, 2, white);
+        set(p, 8, 7, white);
+    }
+
+    private static void set(int[][] p, int x, int y, int col) { if (x >= 0 && y >= 0 && x < G && y < G) p[y][x] = col; }
 
     private static void kitsune(int[][] p) {
         String[] half = {

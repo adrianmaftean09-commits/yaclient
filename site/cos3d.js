@@ -62,7 +62,7 @@
 
   var ITEM = { ya_cape: ['cape', 'ya'], ya_wings: ['wing', 'ya'], ya_bandana: ['bandana', 'ya'], ya_pet: ['pet', 'ya'],
                mono_cape: ['cape', 'mono'], mono_wings: ['wing', 'mono'], mono_bandana: ['bandana', 'mono'], mono_pet: ['pet', 'mono'],
-               qlux_cape: ['cape', 'qlux'], qlux_wings: ['wing', 'qlux'], qlux_bandana: ['bandana', 'qlux'], qlux_pet: ['pet', 'qlux'], sakura_cape: ['cape', 'sakura'], sakura_wings: ['wing', 'sakura'], sakura_bandana: ['bandana', 'sakura'], sakura_pet: ['pet', 'sakura'], shinobi_cape: ['cape', 'shinobi'], shinobi_wings: ['wing', 'shinobi'], shinobi_bandana: ['bandana', 'shinobi'], shinobi_pet: ['pet', 'shinobi'], kitsune_cape: ['cape', 'kitsune'], kitsune_wings: ['wing', 'kitsune'], kitsune_bandana: ['bandana', 'kitsune'], kitsune_pet: ['pet', 'kitsune'] };
+               qlux_cape: ['cape', 'qlux'], qlux_wings: ['wing', 'qlux'], qlux_bandana: ['bandana', 'qlux'], qlux_pet: ['pet', 'qlux'], sakura_cape: ['cape', 'sakura'], sakura_wings: ['wing', 'sakura'], sakura_bandana: ['bandana', 'sakura'], sakura_pet: ['pet', 'sakura'], shinobi_cape: ['cape', 'shinobi'], shinobi_wings: ['wing', 'shinobi'], shinobi_bandana: ['bandana', 'shinobi'], shinobi_pet: ['pet', 'shinobi'], kitsune_cape: ['cape', 'kitsune'], kitsune_wings: ['wing', 'kitsune'], kitsune_bandana: ['bandana', 'kitsune'], kitsune_pet: ['pet', 'kitsune'], santa_cape: ['cape', 'santa'], santa_wings: ['wing', 'santa'], santa_bandana: ['bandana', 'santa'], santa_pet: ['pet', 'santa'], frost_cape: ['cape', 'frost'], frost_wings: ['wing', 'frost'], frost_bandana: ['bandana', 'frost'], frost_pet: ['pet', 'frost'] };
 
   function Scene(canvas, opts) {
     opts = opts || {};
@@ -82,7 +82,7 @@
     loadLogo(function () { gl.bindTexture(gl.TEXTURE_2D, self.tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logoImg);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); self.texOk = true; });
     this.etex = {}; this.eok = {};
-    ['qlux', 'sakura', 'shinobi', 'kitsune'].forEach(function (st) {
+    ['qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost'].forEach(function (st) {
       var tx = gl.createTexture(); self.etex[st] = tx;
       var im = new Image(); im.onload = function () { gl.bindTexture(gl.TEXTURE_2D, tx); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, (st === 'qlux' || st === 'sakura') ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, (st === 'qlux' || st === 'sakura') ? gl.LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.eok[st] = true; };

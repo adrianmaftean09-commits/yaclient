@@ -382,5 +382,15 @@
  "cos.item.kitsune_cape": "Kitsune Capa",
  "cos.item.kitsune_wings": "Flame Alas",
  "cos.item.kitsune_bandana": "Shrine Cinta",
- "cos.item.kitsune_pet": "Inari (mascota)"
+ "cos.item.kitsune_pet": "Inari (mascota)",
+ "cos.bundle.santa": "Santa Pack",
+ "cos.item.santa_cape": "Santa Capa",
+ "cos.item.santa_wings": "Candy Alas",
+ "cos.item.santa_bandana": "Santa Cinta",
+ "cos.item.santa_pet": "Rudy (mascota)",
+ "cos.bundle.frost": "Frost Pack",
+ "cos.item.frost_cape": "Snowflake Capa",
+ "cos.item.frost_wings": "Ice Alas",
+ "cos.item.frost_bandana": "Frost Cinta",
+ "cos.item.frost_pet": "Frosty (mascota)"
 }

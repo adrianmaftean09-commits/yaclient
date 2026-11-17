@@ -18,8 +18,12 @@ final class Anime {
         final String id; final int index;
         final float[] main, light, accent, alt, deep;
         final double[][] rows;     // wing feather rows (see CosmeticRender.ROWS)
+        final boolean pixel;       // fully pixelated (Christmas bundles)
         Th(String id, int index, float[] main, float[] light, float[] accent, float[] alt, float[] deep, double[][] rows) {
-            this.id = id; this.index = index; this.main = main; this.light = light; this.accent = accent; this.alt = alt; this.deep = deep; this.rows = rows;
+            this(id, index, main, light, accent, alt, deep, rows, false);
+        }
+        Th(String id, int index, float[] main, float[] light, float[] accent, float[] alt, float[] deep, double[][] rows, boolean pixel) {
+            this.id = id; this.index = index; this.main = main; this.light = light; this.accent = accent; this.alt = alt; this.deep = deep; this.rows = rows; this.pixel = pixel;
         }
     }
 
@@ -53,7 +57,13 @@ final class Anime {
     static final Th KITSUNE = new Th("kitsune", 3,
             new float[]{0.98f, 0.95f, 0.91f, 0.30f}, new float[]{1.00f, 1.00f, 1.00f, 0.40f}, new float[]{0.88f, 0.17f, 0.10f, 0.35f},
             new float[]{1.00f, 0.78f, 0.25f, 0.70f}, new float[]{0.58f, 0.08f, 0.05f, 0.00f}, FLAME);
-    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE};
+    static final Th SANTA = new Th("santa", 4,
+            new float[]{0.84f, 0.16f, 0.16f, 0.25f}, new float[]{1f, 1f, 1f, 0.4f}, new float[]{1.00f, 0.82f, 0.30f, 0.7f},
+            new float[]{0.18f, 0.62f, 0.29f, 0.3f}, new float[]{0.72f, 0.12f, 0.12f, 0f}, PETAL, true);
+    static final Th FROST = new Th("frost", 5,
+            new float[]{0.74f, 0.90f, 1.00f, 0.3f}, new float[]{1f, 1f, 1f, 0.4f}, new float[]{0.36f, 0.70f, 0.96f, 0.6f},
+            new float[]{0.90f, 0.97f, 1.00f, 0.7f}, new float[]{0.30f, 0.55f, 0.85f, 0f}, PETAL, true);
+    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE, SANTA, FROST};
 
     static Th byStyle(String id) { for (Th t : ALL) if (t.id.equals(id)) return t; return null; }
 
@@ -139,6 +149,7 @@ final class Anime {
     }
 
     static void capeBase(Th t, float age, boolean plus) {
+        if (t.pixel) { XmasPix.capeBase(t, age, plus); return; }
         if (t.index == 3) { pixelCape(age, plus); return; }
         for (int i = 0; i < CosmeticRender.CAPE_C; i++) {
             for (int j = 0; j < CosmeticRender.CAPE_R; j++) {
@@ -186,7 +197,7 @@ final class Anime {
     }
 
     // ------------------------------------------------------------------ emblem textures
-    private static final DynamicTexture[] TEX = new DynamicTexture[4];
+    private static final DynamicTexture[] TEX = new DynamicTexture[6];
 
     static void bind(int i) {
         if (TEX[i] == null) {
