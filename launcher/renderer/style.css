@@ -144,7 +144,7 @@ body.plus .pluschip{background:var(--glow2);border-color:var(--accent);color:#ff
 .hero3 .who img{height:190px;image-rendering:pixelated;filter:drop-shadow(0 12px 22px rgba(0,0,0,.6))}
 .hero3 .who img.logo{height:130px;image-rendering:auto;margin-top:30px}
 .playwrap{position:relative;display:flex;gap:10px;align-items:center;z-index:2}
-.launch2{min-width:310px;height:58px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 0 38px var(--glow),0 10px 30px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s}
+.launch2{min-width:310px;height:58px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 0 38px var(--glow),0 10px 30px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s}
 .launch2:hover{transform:translateY(-2px);box-shadow:0 0 54px var(--glow),0 12px 34px rgba(0,0,0,.55)}
 .launch2:disabled{opacity:.6;transform:none;cursor:default}
 .launch2 b{font-size:17px;font-weight:800;letter-spacing:.8px}
