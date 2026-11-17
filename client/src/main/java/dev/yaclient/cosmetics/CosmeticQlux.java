@@ -90,49 +90,44 @@ final class CosmeticQlux {
     // ------------------------------------------------------------------ pet: "Lumi", a little light fox-cat
     private static final double YO = -0.045;   // lifts the whole pet so the paws hover at the right height
 
-    /** Chamfered box (Minecraft-animal proportions, softened edges). Colour fades from {@code top} to {@code bot}. */
+    private static final double TEXEL = 0.0185;   // one "pixel" of the pet's fur texture
+    private static int boxSeed = 0;
+
+    private static float hash(int a, int b, int c, int d) {
+        long x = (a * 73856093L) ^ (b * 19349663L) ^ (c * 83492791L) ^ (d * 374761393L);
+        x = (x ^ (x >>> 13)) * 1274126177L; x ^= x >>> 16;
+        return (x & 0xFFFF) / 65535f;
+    }
+
+    /** Minecraft-style box whose faces are tiled with pixel cells (each a flat colour with a little fur noise). */
     private static void box(double cx, double cy, double cz, double hx, double hy, double hz, double bev, float[] top, float[] bot) {
         cy += YO;
+        int id = ++boxSeed;
         double[] h = {hx, hy, hz}, c = {cx, cy, cz};
-        // F(a, sa, i, j, k): corner (i,j,k) in {-1,1}^3 as seen from face (a, sa): pulled in by bev on the other axes
         for (int a = 0; a < 3; a++) for (int sa = -1; sa <= 1; sa += 2) {
             int b = (a + 1) % 3, d = (a + 2) % 3;
-            double[][] q = new double[4][];
-            int[][] uv = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
-            float[][] col = new float[4][];
-            for (int n = 0; n < 4; n++) {
-                int[] k = new int[3]; k[a] = sa; k[b] = uv[n][0]; k[d] = uv[n][1];
-                q[n] = cp(c, h, k, a, bev); col[n] = shadeCol(top, bot, q[n][1], cy, hy);
+            int nb = Math.max(1, (int) Math.round(2 * h[b] / TEXEL)), nd = Math.max(1, (int) Math.round(2 * h[d] / TEXEL));
+            for (int i = 0; i < nb; i++) for (int j = 0; j < nd; j++) {
+                double[][] q = new double[4][];
+                int[][] uv = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+                for (int n = 0; n < 4; n++) {
+                    double[] p = new double[3];
+                    p[a] = c[a] + sa * h[a];
+                    p[b] = c[b] - h[b] + 2 * h[b] * (i + uv[n][0]) / nb;
+                    p[d] = c[d] - h[d] + 2 * h[d] * (j + uv[n][1]) / nd;
+                    q[n] = p;
+                }
+                double ym = (q[0][1] + q[2][1]) * 0.5;
+                float[] base = Poly.mix(top, bot, (float) Math.max(0, Math.min(1, (ym - (cy - h[1])) / (2 * h[1]))));
+                float r = hash(id, a * 2 + (sa > 0 ? 1 : 0), i, j);
+                float k = 0.90f + 0.12f * r;                                   // fur noise
+                float[] col = {Math.min(1f, base[0] * k), Math.min(1f, base[1] * k), Math.min(1f, base[2] * k), base[3]};
+                if (r > 0.965f && nb * nd > 6) col = new float[]{Poly.ICE[0] * 0.9f + 0.1f, Poly.ICE[1] * 0.9f + 0.1f, Poly.ICE[2], 0.5f};   // sparkle pixel
+                else if (r < 0.06f && nb * nd > 6) col = new float[]{base[0] * 0.80f, base[1] * 0.82f, base[2] * 0.90f, base[3]};          // shadow pixel
+                if (sa < 0) Poly.quad(q[0], q[1], q[2], q[3], col, col, col, col, 1f);
+                else Poly.quad(q[3], q[2], q[1], q[0], col, col, col, col, 1f);
             }
-            if (sa < 0) Poly.quad(q[0], q[1], q[2], q[3], col[0], col[1], col[2], col[3], 1f);
-            else Poly.quad(q[3], q[2], q[1], q[0], col[3], col[2], col[1], col[0], 1f);
         }
-        // edge strips and corner triangles
-        for (int a = 0; a < 3; a++) {
-            int b = (a + 1) % 3, d = (a + 2) % 3;
-            for (int sa = -1; sa <= 1; sa += 2) for (int sb = -1; sb <= 1; sb += 2) {
-                int[] k1 = new int[3], k2 = new int[3];
-                k1[a] = sa; k1[b] = sb; k1[d] = -1; k2[a] = sa; k2[b] = sb; k2[d] = 1;
-                double[] p1 = cp(c, h, k1, a, bev), p2 = cp(c, h, k2, a, bev), p3 = cp(c, h, k2, b, bev), p4 = cp(c, h, k1, b, bev);
-                float[] c1 = shadeCol(top, bot, p1[1], cy, hy), c2 = shadeCol(top, bot, p2[1], cy, hy), c3 = shadeCol(top, bot, p3[1], cy, hy), c4 = shadeCol(top, bot, p4[1], cy, hy);
-                Poly.quad(p1, p2, p3, p4, c1, c2, c3, c4, 1f);
-            }
-        }
-        for (int i = -1; i <= 1; i += 2) for (int j = -1; j <= 1; j += 2) for (int k = -1; k <= 1; k += 2) {
-            int[] kk = {i, j, k};
-            double[] p0 = cp(c, h, kk, 0, bev), p1 = cp(c, h, kk, 1, bev), p2 = cp(c, h, kk, 2, bev);
-            Poly.tri(p0, p1, p2, shadeCol(top, bot, p0[1], cy, hy), shadeCol(top, bot, p1[1], cy, hy), shadeCol(top, bot, p2[1], cy, hy), 1f);
-        }
-    }
-
-    private static double[] cp(double[] c, double[] h, int[] k, int face, double bev) {
-        double[] p = new double[3];
-        for (int i = 0; i < 3; i++) p[i] = c[i] + k[i] * (i == face ? h[i] : h[i] - bev);
-        return p;
-    }
-
-    private static float[] shadeCol(float[] top, float[] bot, double y, double cy, double hy) {
-        return Poly.mix(top, bot, (float) Math.max(0, Math.min(1, (y - (cy - hy)) / (2 * hy))));
     }
 
     static void pet(float age) {
