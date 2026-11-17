@@ -49,7 +49,7 @@ jobs:
           echo "== javap =="
           while read -r c; do
             [ -z "$c" ] && continue
-            echo "##### $c"; javap -public -cp "$CP" "$c" 2>&1 | head -150
+            echo "##### $c"; javap -public -cp "$CP" "$c" 2>&1 | head -400
           done < tools/api-classes.txt
       - uses: actions/upload-artifact@v4
         with:

@@ -1,10 +1,4 @@
-^net\.minecraft\.client\.Minecraft$
-^net\.minecraft\.client\.Options$
-^net\.minecraft\.client\.KeyMapping$
-^net\.minecraft\.client\.gui\.[A-Za-z]*(Gui|Graphics)[A-Za-z]*$
-^net\.minecraft\.client\.gui\.screens\.[A-Za-z]*$
-^net\.minecraft\.client\.player\.LocalPlayer$
-^net\.minecraft\.world\.entity\.decoration\.EndCrystal$
-^net\.minecraft\.world\.entity\.boss\.enderdragon\.EndCrystal$
-net\.fabricmc\.fabric\.api\.client\.rendering\.v1\.[A-Za-z]*$
-net\.fabricmc\.fabric\.api\.client\.keymapping
+^net\.fabricmc\.fabric\.api\.client\.rendering\.v1\.hud\.[A-Za-z]*$
+^net\.fabricmc\.fabric\.api\.client\.event\.lifecycle\.v1\.[A-Za-z$]*$
+^net\.fabricmc\.fabric\.api\.client\.keymapping\.v1\.[A-Za-z]*$
+^net\.fabricmc\.fabric\.api\.client\.rendering\.v1\.[A-Za-z]*$
