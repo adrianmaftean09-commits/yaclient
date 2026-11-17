@@ -45,6 +45,81 @@ async function who(env, token) {
 }
 function hex(n) { return [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, '0')).join(''); }
 
+
+// ---------- friends: f:<uuid> = { name, friends:[{u,n}], incoming:[..], outgoing:[..] }, n:<lowername> = uuid, o:<uuid> = "where|time" ----------
+async function getF(env, uuid) {
+  const v = (await env.DB.get('f:' + uuid, 'json')) || {};
+  return { name: v.name || '', friends: v.friends || [], incoming: v.incoming || [], outgoing: v.outgoing || [] };
+}
+const putF = (env, uuid, f) => env.DB.put('f:' + uuid, JSON.stringify(f));
+const without = (list, u) => list.filter((x) => x.u !== u);
+const ONLINE_MS = 100000;
+async function presenceOf(env, uuid) {
+  const v = await env.DB.get('o:' + uuid);
+  if (!v) return null;
+  const [where, ts] = v.split('|');
+  return Date.now() - parseInt(ts, 10) < ONLINE_MS ? where : null;
+}
+async function packFriends(env, list, sort) {
+  const out = await Promise.all(list.map(async (x) => ({ u: x.u, n: x.n, w: await presenceOf(env, x.u) })));
+  if (sort) out.sort((a, b) => (b.w ? 1 : 0) - (a.w ? 1 : 0) || a.n.toLowerCase().localeCompare(b.n.toLowerCase()));
+  return out.map((e) => [e.u, e.n, e.w ? 1 : 0, e.w || ''].join(',')).join(';');
+}
+async function friendsRoute(env, request, url, route) {
+  if (route === 'GET /v1/friends') {
+    const me = await who(env, url.searchParams.get('token'));
+    if (!me) return send(401, { error: 'bad token' });
+    const w = url.searchParams.get('where') === 'launcher' ? 'launcher' : 'game';
+    const prev = (await env.DB.get('o:' + me)) || '';
+    const [pw, pts] = prev.split('|');
+    const age = Date.now() - (parseInt(pts, 10) || 0);
+    if (age > 45000 || (pw === 'launcher' && w === 'game')) await env.DB.put('o:' + me, w + '|' + Date.now(), { expirationTtl: 120 });   // heartbeat, written about once a minute
+    const f = await getF(env, me);
+    return send(200, { friends: await packFriends(env, f.friends, true), incoming: await packFriends(env, f.incoming, false), outgoing: await packFriends(env, f.outgoing, false) });
+  }
+  if (!route.startsWith('POST /v1/friends/')) return null;
+  const b = await form(request);
+  const me = await who(env, b.token);
+  if (!me) return send(401, { error: 'bad token' });
+  const act = url.pathname.replace(/\/+$/, '').slice('/v1/friends/'.length);
+  const mine = await getF(env, me);
+  const meE = { u: me, n: mine.name || 'Player' };
+  if (act === 'add') {
+    const low = String(b.name || '').trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,16}$/.test(low)) return send(404, { error: 'not found' });
+    const other = await env.DB.get('n:' + low);
+    if (!other) return send(404, { error: 'not found' });
+    if (other === me) return send(400, { error: 'self' });
+    const theirs = await getF(env, other);
+    const otherE = { u: other, n: theirs.name || low };
+    if (mine.friends.some((x) => x.u === other)) return send(409, { error: 'already' });
+    if (mine.incoming.some((x) => x.u === other)) {   // they already asked you: becomes a friendship
+      mine.incoming = without(mine.incoming, other); mine.friends.push(otherE);
+      theirs.outgoing = without(theirs.outgoing, me); theirs.friends.push(meE);
+      await putF(env, me, mine); await putF(env, other, theirs);
+      return send(200, { ok: 1, status: 'accepted' });
+    }
+    if (mine.outgoing.some((x) => x.u === other)) return send(409, { error: 'pending' });
+    if (mine.friends.length >= 200) return send(400, { error: 'full' });
+    mine.outgoing.push(otherE); theirs.incoming.push(meE);
+    await putF(env, me, mine); await putF(env, other, theirs);
+    return send(200, { ok: 1, status: 'sent' });
+  }
+  const other = norm(b.uuid);
+  if (!/^[0-9a-f]{32}$/.test(other)) return send(400, { error: 'bad uuid' });
+  const theirs = await getF(env, other);
+  if (act === 'accept') {
+    const req = mine.incoming.find((x) => x.u === other);
+    if (!req) return send(400, { error: 'no request' });
+    mine.incoming = without(mine.incoming, other); mine.friends.push(req);
+    theirs.outgoing = without(theirs.outgoing, me); theirs.friends.push(meE);
+  } else if (act === 'decline' || act === 'remove') {
+    for (const [a, id] of [[mine, other], [theirs, me]]) { a.friends = without(a.friends, id); a.incoming = without(a.incoming, id); a.outgoing = without(a.outgoing, id); }
+  } else return send(404, { error: 'not found' });
+  await putF(env, me, mine); await putF(env, other, theirs);
+  return send(200, { ok: 1 });
+}
+
 export async function onRequest({ request, env }) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'x-admin-key,content-type', 'access-control-allow-methods': 'GET,POST' } });
   if (!env.DB) return send(500, { error: 'KV binding DB missing' });
@@ -69,6 +144,12 @@ export async function onRequest({ request, env }) {
       if (!check || !check.id) return send(401, { error: 'not verified' });
       const token = hex(24);
       await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });
+      if (check.name) {   // friends: remember who this account is (written only when it changes)
+        const id = norm(check.id), low = String(check.name).toLowerCase();
+        const fr = await getF(env, id);
+        if (fr.name !== check.name) { fr.name = check.name; await env.DB.put('f:' + id, JSON.stringify(fr)); }
+        if ((await env.DB.get('n:' + low)) !== id) await env.DB.put('n:' + low, id);
+      }
       return send(200, { token, uuid: norm(check.id) });
     }
     if (route === 'GET /v1/me') {
@@ -131,6 +212,7 @@ export async function onRequest({ request, env }) {
       await savePlayer(env, uuid, p);
       return send(200, { ok: 1, uuid, owned: p.owned.join(',') });
     }
+    if (url.pathname.startsWith('/v1/friends')) { const r = await friendsRoute(env, request, url, route); if (r) return r; }
     return send(404, { error: 'not found' });
   } catch (e) {
     return send(500, { error: 'server error' });

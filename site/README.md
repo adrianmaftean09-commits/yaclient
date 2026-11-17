@@ -32,3 +32,9 @@ Items live in `functions/v1/[[path]].js` (ITEMS, BUNDLES) and in `store.html`. N
 ## YA Plus
 In /admin use item `plus` and the number of days (default 30) to give or extend a subscription.
 Plus members see the cape cloth wave and glow (also visible to other players). Revoke removes it.
+
+## Friends
+Friend requests and online status live in the same Function (`/v1/friends`, KV keys `f:`, `n:`, `o:`).
+Players appear as "online" for about 100 seconds after their last heartbeat. A player can only be added by name after
+they have launched YA CLIENT once. KV free plan allows 1000 writes/day; each online player writes about once a minute,
+so for many players use the Workers Paid plan ($5/month) or ask to move presence to D1.
