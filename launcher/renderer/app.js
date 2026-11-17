@@ -37,9 +37,9 @@ const I18N = {
     need_login: 'Bitte zuerst anmelden.', launch_failed: 'Start fehlgeschlagen.', launch_error: 'Fehler', crashed: 'Das Spiel wurde unerwartet beendet. Siehe Konsole.', closed: 'Spiel beendet.', ingame: 'Im Spiel',
     updating: 'Client wird aktualisiert...', loader: 'Loader wird vorbereitet...', starting: 'Spiel startet...', download: 'Lade Spieldateien...', wings: 'Flügel', cape: 'Umhänge', pet: 'Haustiere', bandana: 'Bandanas', all: 'Alle', price: 'Preis', online: 'Online', javaHint: 'Optional: der Launcher lädt Java selbst herunter' }
 };
-Object.assign(I18N.en, { back: 'Welcome back', versions: 'Versions', latest: 'Latest', releases: 'Releases', snapshots: 'Snapshots', old: 'Old', search: 'Search version...', modsFor: 'Modules for Minecraft', avail: 'available on this version',
+Object.assign(I18N.en, {"bundles": "Bundles", "get_it": "View on the website", "owned_free": "Free",  back: 'Welcome back', versions: 'Versions', latest: 'Latest', releases: 'Releases', snapshots: 'Snapshots', old: 'Old', search: 'Search version...', modsFor: 'Modules for Minecraft', avail: 'available on this version',
   needs: 'Only on', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Soon', vanillaNote: 'This version starts without YA CLIENT mods. The mods below work on', java_missing: 'Java {n} is required for this version. Install it (Temurin {n}) and try again.', latestRelease: 'Latest release', change: 'Change version', noRes: 'No versions found.', offlineList: 'Offline: showing a short list of versions.' });
-Object.assign(I18N.it, { back: 'Bentornato', versions: 'Versioni', latest: 'Ultima', releases: 'Release', snapshots: 'Snapshot', old: 'Vecchie', search: 'Cerca versione...', modsFor: 'Mod per Minecraft', avail: 'disponibili in questa versione',
+Object.assign(I18N.it, {"bundles": "Bundle", "get_it": "Vedi sul sito", "owned_free": "Gratis",  back: 'Bentornato', versions: 'Versioni', latest: 'Ultima', releases: 'Release', snapshots: 'Snapshot', old: 'Vecchie', search: 'Cerca versione...', modsFor: 'Mod per Minecraft', avail: 'disponibili in questa versione',
   needs: 'Solo su', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Presto', vanillaNote: 'Questa versione parte senza le mod di YA CLIENT. Le mod qui sotto funzionano su', java_missing: 'Per questa versione serve Java {n}. Installalo (Temurin {n}) e riprova.', latestRelease: 'Ultima release', change: 'Cambia versione', noRes: 'Nessuna versione trovata.', offlineList: 'Offline: mostro un elenco ridotto di versioni.' });
 Object.assign(I18N.es, { back: 'Bienvenido de nuevo', versions: 'Versiones', latest: 'Última', releases: 'Releases', snapshots: 'Snapshots', old: 'Antiguas', search: 'Buscar versión...', modsFor: 'Mods para Minecraft', avail: 'disponibles en esta versión',
   needs: 'Solo en', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Pronto', vanillaNote: 'Esta versión inicia sin los mods de YA CLIENT. Los mods de abajo funcionan en', java_missing: 'Esta versión necesita Java {n}. Instálalo (Temurin {n}) e inténtalo de nuevo.', latestRelease: 'Última release', change: 'Cambiar versión', noRes: 'No hay versiones.', offlineList: 'Sin conexión: lista reducida de versiones.' });
@@ -90,6 +90,8 @@ let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest:
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
+Object.assign(I18N.es, { bundles: 'Packs', get_it: 'Ver en la web', owned_free: 'Gratis' });
+Object.assign(I18N.de, { bundles: 'Bundles', get_it: 'Auf der Website ansehen', owned_free: 'Gratis' });
 const PAGES = ['home', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
 const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
@@ -263,15 +265,33 @@ function viewCosmetics() {
     <div class="playrow" style="margin-bottom:18px"><button class="btn" id="openStore">${esc(t('store'))}</button></div>
     <div class="tabs" id="ctabs"></div><div id="cmsg" class="note"></div><div class="cos" id="cgrid"></div>`;
 }
+const BUNDLES = [
+  ['beta', 'Beta Tester Bundle', '#e10600', 0], ['mono', 'Monochrome Bundle', '#e4e4e8', 10], ['qlux', 'Qlux Bundle', '#9fd8ff', 8],
+  ['sakura', 'Sakura Bundle', '#ff86b6', 10], ['shinobi', 'Shinobi Bundle', '#8c6cff', 10], ['kitsune', 'Kitsune Bundle', '#ff9b3d', 10],
+  ['santa', 'Santa Bundle', '#ff4040', 10], ['frost', 'Frost Bundle', '#6ec6ff', 10]];
+const SETCOL = { ya: '#e10600', mono: '#e4e4e8', qlux: '#9fd8ff', sakura: '#ff86b6', shinobi: '#8c6cff', kitsune: '#ff9b3d', santa: '#ff4040', frost: '#6ec6ff' };
+function siteBase() { return String(S._store || C.storeUrl || '').replace(/\/+$/, '').replace(/\/store$/, ''); }
+function openCos(v) {
+  const b = siteBase(); if (!b) return;
+  const [kind, id] = v.split(':');
+  window.ya.openExternal(b + (kind === 'b' ? '/bundle?b=' : '/item?i=') + encodeURIComponent(id));
+}
 async function fillCosmetics() {
   const r = await window.ya.catalog();
   const msg = $('#cmsg'); if (!msg) return;
   if (r.error) { msg.textContent = r.error === 'offline' ? t('offline') : t('notConf'); }
   const prices = (r.data) || {};
-  const slots = ['all', 'cape', 'wings', 'bandana', 'pet'];
+  const slots = ['all', 'cape', 'wings', 'bandana', 'pet', 'bundles'];
   $('#ctabs').innerHTML = slots.map((s) => `<button class="tab ${s === cosTab ? 'on' : ''}" data-ct="${s}">${esc(t(s))}</button>`).join('');
-  $('#cgrid').innerHTML = Object.keys(SLOT).filter((id) => cosTab === 'all' || SLOT[id] === cosTab).map((id) =>
-    `<div class="card ci"><div class="pv">${esc(t(SLOT[id]))}</div><b>${esc(NAMES[id])}</b><small>${esc(prices[id] ? t('price') + ': ' + prices[id] : '')}</small></div>`).join('');
+  const money = (n) => (n ? '\u20ac' + n : t('owned_free'));
+  const card = (img, col, name, price, v) =>
+    `<div class="card ci" data-co="${esc(v)}" style="--c:${col}"><div class="pv"><img src="${img}" alt="" loading="lazy"></div><b>${esc(name)}</b><small>${esc(price)}</small></div>`;
+  if (cosTab === 'bundles') {
+    $('#cgrid').innerHTML = BUNDLES.map((b) => card('../assets/cos/b_' + b[0] + '.jpg', b[2], b[1], money(b[3]), 'b:' + b[0])).join('');
+  } else {
+    $('#cgrid').innerHTML = Object.keys(SLOT).filter((id) => cosTab === 'all' || SLOT[id] === cosTab).map((id) =>
+      card('../assets/cos/' + id + '.jpg', SETCOL[id.split('_')[0]], NAMES[id], prices[id] ? t('price') + ': ' + prices[id] : money(id.startsWith('ya_') ? 0 : 3), 'i:' + id)).join('');
+  }
   S._store = r.store || '';
 }
 function viewSettings() {
@@ -469,7 +489,7 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('click', async (e) => {
-  const el = e.target.closest('button, .nc, .ad');
+  const el = e.target.closest('button, .nc, .ad, .ci');
   if (!el) return;
   if (el.dataset.w) return window.ya.win(el.dataset.w);
   if (el.dataset.ob) {
@@ -503,6 +523,7 @@ document.addEventListener('click', async (e) => {
     const id = el.dataset.mod; const on = MODSTATE[id] === false; MODSTATE[id] = on;
     el.classList.toggle('on', on); return window.ya.modsSet(id, on);
   }
+  if (el.dataset.co) return openCos(el.dataset.co);
   if (el.dataset.ct) { cosTab = el.dataset.ct; return fillCosmetics(); }
   if (el.id === 'openStore') { const u = S._store || C.storeUrl; if (u) window.ya.openExternal(u); return; }
   if (el.id === 'sMin') { S.minimizeOnLaunch = !S.minimizeOnLaunch; el.classList.toggle('on', S.minimizeOnLaunch); return window.ya.saveSettings({ minimizeOnLaunch: S.minimizeOnLaunch }); }
