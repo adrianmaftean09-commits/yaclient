@@ -139,9 +139,9 @@ public class MainMenuScreen extends GuiScreen {
                 wr.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 int a = 255 / (j + 1);
                 wr.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, a).endVertex();
-                wr.pos(-1.0D, 1.0D, 1.0D).tex(0.0D, 1.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(-1.0D, 1.0D, 1.0D).tex(1.0D, 0.0D).color(255, 255, 255, a).endVertex();
                 wr.pos(1.0D, 1.0D, 1.0D).tex(1.0D, 1.0D).color(255, 255, 255, a).endVertex();
-                wr.pos(1.0D, -1.0D, 1.0D).tex(1.0D, 0.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(1.0D, -1.0D, 1.0D).tex(0.0D, 1.0D).color(255, 255, 255, a).endVertex();
                 t.draw();
                 GlStateManager.popMatrix();
             }
