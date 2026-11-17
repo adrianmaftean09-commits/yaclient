@@ -193,7 +193,42 @@ function findJava(major) {
   }
   return null;
 }
-const findJava8 = () => findJava(8);
+const findJava8 = () => findJava(8) || findBundledJava(8);
+// Java runtimes the launcher downloaded itself live in %APPDATA%/.yaclient/java/<major>
+function findBundledJava(major) {
+  const root = path.join(dataDir, 'java', String(major));
+  const walk = (dir, depth) => {
+    let names; try { names = fs.readdirSync(dir); } catch (_) { return null; }
+    if (names.indexOf('bin') >= 0) { const exe = path.join(dir, 'bin', 'java.exe'); if (fs.existsSync(exe)) return exe; }
+    if (depth <= 0) return null;
+    for (const n of names) { const r = walk(path.join(dir, n), depth - 1); if (r) return r; }
+    return null;
+  };
+  return walk(root, 2);
+}
+// Finds a Java of the right version or downloads one (Eclipse Temurin JRE) so the player never has to.
+async function ensureJava(major) {
+  if (major === 8 && state.javaPath && state.javaPath !== 'java' && fs.existsSync(state.javaPath)) return state.javaPath;
+  const have = findJava(major) || findBundledJava(major);
+  if (have) return have;
+  const dir = path.join(dataDir, 'java', String(major));
+  const zipFile = path.join(dataDir, `java-${major}.zip`);
+  try {
+    send('log', `Java ${major} not found: downloading it automatically...`);
+    send('status', { k: 'java_dl', pct: 5 });
+    fs.mkdirSync(dir, { recursive: true });
+    await download(`https://api.adoptium.net/v3/binary/latest/${major}/ga/windows/x64/jre/hotspot/normal/eclipse`, zipFile);
+    send('status', { k: 'java_dl', pct: 8 });
+    new AdmZip(zipFile).extractAllTo(dir, true);
+    try { fs.unlinkSync(zipFile); } catch (_) {}
+    const exe = findBundledJava(major);
+    if (exe) { send('log', `Java ${major} installed: ${exe}`); return exe; }
+  } catch (e) {
+    send('log', `Automatic Java ${major} download failed: ${e.message}`);
+    try { fs.unlinkSync(zipFile); } catch (_) {}
+  }
+  return major === 8 ? 'java' : null;   // last resort for 8: whatever "java" is on the PATH
+}
 function resolveJava(major) {
   if (major === 8) {
     if (state.javaPath && state.javaPath !== 'java' && fs.existsSync(state.javaPath)) return state.javaPath;
@@ -378,7 +413,7 @@ ipcMain.handle('play', async (_e, opts) => {
     }
 
     const major = yaMode ? 8 : javaMajorFor(version);
-    const javaPath = resolveJava(major);
+    const javaPath = await ensureJava(major);
     if (!javaPath) return { error: 'java_missing', detail: String(major) };
     send('log', `Java ${major}: ${javaPath}`);
 
