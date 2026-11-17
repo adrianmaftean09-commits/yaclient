@@ -7,7 +7,7 @@ import java.util.Map;
 final class XmasPix {
     private XmasPix() {}
 
-    private static final double CELL = 0.035;               // size of one wing "pixel"
+    private static final double CELL = 0.022;               // size of one wing "pixel" (finer than the pets)
 
     private static float[] c(int hex) { return Vox.rgb(hex, 0.25f); }
     private static float[] g(int hex, float e) { return Vox.rgb(hex, e); }
@@ -17,54 +17,95 @@ final class XmasPix {
         return (x & 0xFFFF) / 65535f;
     }
 
-    // ------------------------------------------------------------------ wings: the angel-wing feathers rasterised onto a pixel grid
-    private static float[] wingColor(boolean santa, int row, int idx, double s, int ix, int iy) {
-        if (santa) {
-            if (row == 2) return c(0xFFFFFF);
-            boolean stripe = ((idx + (s > 0.5 ? 1 : 0)) % 2 == 0);
-            if (s > 0.86) return g(0xFFE27A, 0.7f);                       // golden tips
-            return stripe ? c(0xD62A2A) : c(0xFFF5F0);                   // candy-cane stripes
+    // ------------------------------------------------------------------ wings: bow loops (Santa) and snow-crystal branches (Frost)
+    private static final java.util.Map<Long, float[]> W = new LinkedHashMap<Long, float[]>();
+
+    private static long key(int ix, int iy) { return ((long) (ix + 1000) << 20) | (iy + 1000); }
+
+    private static void put(int ix, int iy, float[] col) { W.put(key(ix, iy), col); }
+
+    /** Fills every cell whose centre lies within {@code w} of the segment. */
+    private static void seg(double x0, double y0, double x1, double y1, double w, float[] col0, float[] col1) {
+        double len = Math.hypot(x1 - x0, y1 - y0);
+        int steps = Math.max(2, (int) (len / (CELL * 0.4)));
+        for (int k = 0; k <= steps; k++) {
+            double t = k / (double) steps, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+            float[] col = Poly.mix(col0, col1, (float) t);
+            int ax = (int) Math.floor((x - w) / CELL), bx = (int) Math.floor((x + w) / CELL);
+            int ay = (int) Math.floor((y - w) / CELL), by = (int) Math.floor((y + w) / CELL);
+            for (int ix = ax; ix <= bx; ix++) for (int iy = ay; iy <= by; iy++) {
+                double px = (ix + 0.5) * CELL - x, py = (iy + 0.5) * CELL - y;
+                if (px * px + py * py <= w * w) put(ix, iy, col);
+            }
         }
-        float[] base = Poly.mix(c(0x6FC3F7), c(0xFFFFFF), (float) Math.min(1.0, s * 0.9 + (row == 2 ? 0.3 : 0.0)));
-        if (noise(ix, iy) > 0.93f) return g(0xFFFFFF, 0.9f);              // glints
-        if (s > 0.88) return g(0xE6F6FF, 0.7f);
-        return base;
     }
 
-    static void wing(Anime.Th t, float age) {
-        boolean santa = t.index == 4;
-        Map<Long, float[]> cells = new LinkedHashMap<Long, float[]>();
-        for (int row = 2; row >= 0; row--) {
-            double[] r = CosmeticRender.ROWS[row];
-            int n = (int) r[0];
-            for (int i = 0; i < n; i++) {
-                double f = n == 1 ? 0 : i / (double) (n - 1);
-                double tt = r[1] + (r[2] - r[1]) * f;
-                double ang = Math.toRadians(r[3] + (r[4] - r[3]) * f);
-                double len = r[5] + r[6] * Math.sin(Math.PI * f);
-                double[] b = CosmeticRender.arm(tt);
-                double dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx, w = r[7] * 0.85;
-                for (double s = 0; s <= 1.0001; s += 0.02) {
-                    double bend = 0.14 * len * s * s;
-                    double cx = b[0] + dx * len * s + nx * bend, cy = b[1] + dy * len * s + ny * bend;
-                    double wp = Math.max(CELL * 0.55, w * Math.sin(Math.PI * (0.12 + 0.88 * s)));
-                    int x0 = (int) Math.floor((cx - wp) / CELL), x1 = (int) Math.floor((cx + wp) / CELL);
-                    int y0 = (int) Math.floor((cy - wp) / CELL), y1 = (int) Math.floor((cy + wp) / CELL);
-                    for (int ix = x0; ix <= x1; ix++) for (int iy = y0; iy <= y1; iy++) {
-                        double px = (ix + 0.5) * CELL - cx, py = (iy + 0.5) * CELL - cy;
-                        if (px * px + py * py > wp * wp) continue;
-                        cells.put(((long) (ix + 1000) << 20) | (iy + 1000), wingColor(santa, row, i, s, ix, iy));
-                    }
+    /** A bow loop: a rotated ellipse ring with a lighter fill. */
+    private static void loop(double cx, double cy, double rx, double ry, double rot, double ring, int edge, int fill, int stripe) {
+        double ca = Math.cos(rot), sa = Math.sin(rot);
+        int span = (int) Math.ceil(Math.max(rx, ry) / CELL) + 2;
+        int cix = (int) Math.floor(cx / CELL), ciy = (int) Math.floor(cy / CELL);
+        for (int ix = cix - span; ix <= cix + span; ix++) for (int iy = ciy - span; iy <= ciy + span; iy++) {
+            double px = (ix + 0.5) * CELL - cx, py = (iy + 0.5) * CELL - cy;
+            double u = (px * ca + py * sa) / rx, v = (-px * sa + py * ca) / ry;
+            double d = u * u + v * v;
+            if (d > 1.0) continue;
+            double rim = 1.0 - Math.sqrt(d);                          // 0 at the edge
+            if (rim * Math.min(rx, ry) < ring) put(ix, iy, c(edge));
+            else put(ix, iy, ((ix + iy) % 4 == 0 && noise(ix, iy) > 0.3f) ? c(stripe) : c(fill));
+        }
+    }
+
+    private static void santaWing() {
+        loop(0.34, 0.30, 0.30, 0.17, 0.42, 0.045, 0xB81E1E, 0xE04040, 0xFFFFFF);     // upper loop
+        loop(0.30, -0.06, 0.27, 0.15, -0.38, 0.045, 0xB81E1E, 0xE04040, 0xFFFFFF);  // lower loop
+        seg(0.10, 0.10, 0.46, -0.52, 0.045, c(0xD62A2A), c(0xB81E1E));              // ribbon tails
+        seg(0.08, 0.06, 0.20, -0.58, 0.040, c(0xD62A2A), c(0xB81E1E));
+        seg(0.46, -0.52, 0.50, -0.60, 0.03, c(0xFFC21A), c(0xFFC21A));               // gold ends
+        seg(0.20, -0.58, 0.20, -0.66, 0.03, c(0xFFC21A), c(0xFFC21A));
+        for (int ix = -2; ix <= 2; ix++) for (int iy = 2; iy <= 6; iy++) put(ix + 3, iy, c(0xFFC21A));  // golden knot
+    }
+
+    private static void frostWing() {
+        float[] base = c(0x4FA8E8), tip = c(0xFFFFFF);
+        double[][] arms = {{36, 0.74}, {-8, 0.60}, {72, 0.50}, {-50, 0.44}};
+        for (double[] arm : arms) {
+            double an = Math.toRadians(arm[0]), L = arm[1], dx = Math.cos(an), dy = Math.sin(an);
+            seg(0.03, 0.0, 0.03 + dx * L, dy * L, 0.036, base, tip);
+            double[] ts = {0.38, 0.62, 0.84};
+            for (int bi = 0; bi < ts.length; bi++) {
+                double bx = 0.03 + dx * L * ts[bi], by = dy * L * ts[bi], bl = L * (0.34 - 0.08 * bi);
+                for (int sgn = -1; sgn <= 1; sgn += 2) {
+                    double ba = an + sgn * Math.toRadians(52);
+                    seg(bx, by, bx + Math.cos(ba) * bl, by + Math.sin(ba) * bl, 0.024, Poly.mix(base, tip, (float) ts[bi]), tip);
                 }
             }
         }
-        Vox.TEXEL = CELL; Vox.marker = null; Vox.yo = 0; Vox.reset();
-        for (Map.Entry<Long, float[]> e : cells.entrySet()) {
+        for (int ix = 0; ix <= 3; ix++) for (int iy = -2; iy <= 2; iy++) put(ix, iy, c(0xFFFFFF));   // bright core
+    }
+
+    static void wing(Anime.Th t, float age) {
+        W.clear();
+        if (t.index == 4) santaWing(); else frostWing();
+        final double hz = 0.013;
+        int n = 0;
+        for (java.util.Map.Entry<Long, float[]> e : W.entrySet()) {
             long k = e.getKey();
             int ix = (int) (k >> 20) - 1000, iy = (int) (k & 0xFFFFF) - 1000;
-            Vox.box((ix + 0.5) * CELL, (iy + 0.5) * CELL, 0.0, CELL / 2, CELL / 2, 0.016, e.getValue(), e.getValue(), 0);
+            float[] col = e.getValue();
+            float sparkle = (t.index == 5 && noise(ix, iy) > 0.94f) ? 1f : 0f;
+            float sh = 0.96f + 0.06f * noise(iy, ix);
+            float[] cc = sparkle > 0 ? g(0xFFFFFF, 0.9f) : new float[]{Math.min(1f, col[0] * sh), Math.min(1f, col[1] * sh), Math.min(1f, col[2] * sh), col[3]};
+            double x0 = ix * CELL, x1 = x0 + CELL, y0 = iy * CELL, y1 = y0 + CELL;
+            double[] p000 = Poly.p(x0, y0, -hz), p100 = Poly.p(x1, y0, -hz), p110 = Poly.p(x1, y1, -hz), p010 = Poly.p(x0, y1, -hz);
+            double[] p001 = Poly.p(x0, y0, hz), p101 = Poly.p(x1, y0, hz), p111 = Poly.p(x1, y1, hz), p011 = Poly.p(x0, y1, hz);
+            Poly.quad(p000, p100, p110, p010, cc, cc, cc, cc, 1f);      // front
+            Poly.quad(p001, p011, p111, p101, cc, cc, cc, cc, 1f);      // back
+            if (!W.containsKey(key(ix - 1, iy))) Poly.quad(p000, p010, p011, p001, cc, cc, cc, cc, 1f);
+            if (!W.containsKey(key(ix + 1, iy))) Poly.quad(p100, p101, p111, p110, cc, cc, cc, cc, 1f);
+            if (!W.containsKey(key(ix, iy - 1))) Poly.quad(p000, p001, p101, p100, cc, cc, cc, cc, 1f);
+            if (!W.containsKey(key(ix, iy + 1))) Poly.quad(p010, p110, p111, p011, cc, cc, cc, cc, 1f);
         }
-        Vox.TEXEL = 0.0125;
     }
 
     // ------------------------------------------------------------------ cape: pixel grid with a fur border
