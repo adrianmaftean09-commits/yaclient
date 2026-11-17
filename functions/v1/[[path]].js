@@ -94,7 +94,7 @@ async function friendsRoute(env, request, url, route) {
     const prev = (await env.DB.get('o:' + me)) || '';
     const [pw, pts] = prev.split('|');
     const age = Date.now() - (parseInt(pts, 10) || 0);
-    if (age > 45000 || (pw === 'launcher' && w === 'game')) await env.DB.put('o:' + me, w + '|' + Date.now(), { expirationTtl: 120 });   // heartbeat, written about once a minute
+    if (age > 45000 || (pw === 'launcher' && w === 'game')) { try { await env.DB.put('o:' + me, w + '|' + Date.now(), { expirationTtl: 120 }); } catch (_) { } }   // heartbeat, written about once a minute
     const f = await getF(env, me);
     return send(200, { friends: await packFriends(env, f.friends, true), incoming: await packFriends(env, f.incoming, false), outgoing: await packFriends(env, f.outgoing, false) });
   }
@@ -157,21 +157,22 @@ export async function onRequest({ request, env }) {
       const f = await form(request);
       if (!f.username || !f.serverId) return send(400, { error: 'missing fields' });
       const ip = request.headers.get('cf-connecting-ip') || 'x';
-      const rk = 'r:' + ip + ':' + Math.floor(Date.now() / 60000);
-      const n = parseInt((await env.DB.get(rk)) || '0', 10) + 1;
-      if (n > 20) return send(429, { error: 'rate limited' });
-      await env.DB.put(rk, String(n), { expirationTtl: 120 });
+      const rl = (globalThis.__rl = globalThis.__rl || new Map()), bucket = ip + ':' + Math.floor(Date.now() / 60000);
+      const n = (rl.get(bucket) || 0) + 1; rl.set(bucket, n); if (rl.size > 500) rl.clear();
+      if (n > 30) return send(429, { error: 'rate limited' });
       const check = await getJson('https://sessionserver.mojang.com/session/minecraft/hasJoined?username=' + encodeURIComponent(f.username) + '&serverId=' + encodeURIComponent(f.serverId));
       if (!check || !check.id) return send(401, { error: 'not verified' });
       const token = hex(24);
-      await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });
+      await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });   // required: the login itself
       if (check.name) {   // friends: remember who this account is (written only when it changes)
         const id = norm(check.id), low = String(check.name).toLowerCase();
-        const fr = await getF(env, id);
-        if (fr.name !== check.name) { fr.name = check.name; await env.DB.put('f:' + id, JSON.stringify(fr)); }
-        if ((await env.DB.get('n:' + low)) !== id) await env.DB.put('n:' + low, id);
-        const pend = await env.DB.get('g:' + low, 'json');   // grants queued by name from /admin
-        if (pend && pend.length) { for (const g of pend) await applyGrant(env, id, g); await env.DB.delete('g:' + low); }
+        try {
+          const fr = await getF(env, id);
+          if (fr.name !== check.name) { fr.name = check.name; await env.DB.put('f:' + id, JSON.stringify(fr)); }
+          if ((await env.DB.get('n:' + low)) !== id) await env.DB.put('n:' + low, id);
+          const pend = await env.DB.get('g:' + low, 'json');   // grants queued by name from /admin
+          if (pend && pend.length) { for (const g of pend) await applyGrant(env, id, g); await env.DB.delete('g:' + low); }
+        } catch (_) { }
       }
       return send(200, { token, uuid: norm(check.id) });
     }
@@ -179,7 +180,10 @@ export async function onRequest({ request, env }) {
       const uuid = await who(env, url.searchParams.get('token'));
       if (!uuid) return send(401, { error: 'bad token' });
       const p = await loadPlayer(env, uuid);
-      await env.DB.put('c:' + uuid, '1', { expirationTtl: 1500 });   // heartbeat: this player is running YA CLIENT
+      try {   // heartbeat: this player is running YA CLIENT (rewritten at most every 10 minutes)
+        const c0 = parseInt((await env.DB.get('c:' + uuid)) || '0', 10) || 0;
+        if (Date.now() - c0 > 600000) await env.DB.put('c:' + uuid, String(Date.now()), { expirationTtl: 1500 });
+      } catch (_) { }
       return send(200, Object.assign({ owned: p.owned.join(',') }, equippedMap(p), { client: '1' }));
     }
     if (route === 'POST /v1/equip') {
@@ -206,6 +210,18 @@ export async function onRequest({ request, env }) {
       return send(200, out);
     }
 
+    if (route === 'GET /v1/admin/status') {
+      if (!env.ADMIN_KEY || url.searchParams.get('key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
+      const nm = String(url.searchParams.get('name') || '').trim().toLowerCase();
+      let uuid = norm(url.searchParams.get('uuid')) || (nm ? (await env.DB.get('n:' + nm)) || '' : '');
+      const out = { name: nm, registered: uuid ? 'yes' : 'no (this player never logged in from YA CLIENT/launcher)', pending_grants: nm ? String((await env.DB.get('g:' + nm)) || 'none') : '' };
+      if (uuid) {
+        const p = await loadPlayer(env, uuid);
+        out.uuid = uuid; out.owned = p.owned.join(',') || 'none'; out.plus = plusActive(p) ? 'yes until ' + new Date(p.plusUntil).toISOString() : 'no';
+        out.equipped = JSON.stringify(p.equipped || {}); out.client_flag = (await env.DB.get('c:' + uuid)) ? 'on' : 'off (no recent in-game login)';
+      }
+      return send(200, out);
+    }
     if (route === 'POST /v1/admin/grant') {
       if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
       const f = await form(request);
