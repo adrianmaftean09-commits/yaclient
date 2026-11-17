@@ -6,7 +6,7 @@ final class Vox {
 
     interface Marker { float[] mark(int part, int axis, int sign, double rx, double ry, double rz); }
 
-    static final double TEXEL = 0.0125;
+    static double TEXEL = 0.0125;
     static double yo = 0;          // vertical offset applied to every box
     static Marker marker = null;
     private static int seed = 0;

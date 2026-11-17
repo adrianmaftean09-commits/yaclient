@@ -29,7 +29,13 @@ final class AnimePets {
                     if (part == BODY && a == 1 && sa < 0 && ax < 0.2) return g(0x8C6BFF, 0.35f);
                     if (part == BODY && a == 0 && ry > -0.1 && ry < 0.1) return g(0x6B4FD6, 0.25f);
                     return null;
-                case 2:   // Byte: dark screen face, neon strips, cyan paws
+                case 2:   // Byte: chunky pixels, dark screen face with a pixel smile, neon strips, glitch noise
+                    if (part == HEAD && a == 2 && sa < 0) {
+                        if (ry > 0.18 && ry < 0.42 && ((ax > 0.14 && ax < 0.30) || (ry > 0.30 && ax < 0.30))) return g(0x00F0FF, 0.95f);    // pixel smile
+                        if (ry > -0.62 && ry < 0.62 && ax < 0.82) return c(0x05050E);
+                    }
+                    if ((part == BODY || part == HEAD || part == LEG) && ((int) Math.floor(rx * 6) * 31 + (int) Math.floor(ry * 5) * 17 + (int) Math.floor(rz * 7) * 13 + a * 7) % 11 == 0)
+                        return ((int) Math.floor(rx * 6) + (int) Math.floor(rz * 7)) % 2 == 0 ? g(0x00F0FF, 0.9f) : g(0xFF2FBF, 0.9f);
                     if (part == HEAD && a == 2 && sa < 0 && ry > -0.62 && ry < 0.62 && ax < 0.82) return c(0x05050E);
                     if (part == HEAD && a == 1 && sa < 0 && ax < 0.12) return g(0xFF2FBF, 0.9f);
                     if (part == BODY && a == 0 && ry > -0.15 && ry < 0.08) return g(0x00F0FF, 0.95f);
@@ -55,6 +61,7 @@ final class AnimePets {
     static void pet(Anime.Th th, float age) {
         T = th.index;
         Vox.marker = MARK;
+        Vox.TEXEL = T == 2 ? 0.0185 : 0.0125;      // Byte is the chunky one
         Vox.reset();
         float[] bt, bb, ht;       // body top/bottom, head
         switch (T) {
@@ -162,6 +169,7 @@ final class AnimePets {
         float[] sp = T == 0 ? g(0xFFB7CF, 0.9f) : T == 1 ? g(0x8C6BFF, 0.9f) : T == 2 ? g(0x00F0FF, 1f) : g(0xFFC21A, 0.9f);
         Poly.ellipsoid(0.11, -0.12 + Vox.yo, 0.06, 0.016 * pulse, 0.016 * pulse, 0.016 * pulse, sp, Poly.SNOW, 1f);
         Vox.marker = null;
+        Vox.TEXEL = 0.0125;
     }
 
     private static void box(double cx, double cy, double cz, double hx, double hy, double hz, float[] top, float[] bot, int part) {
