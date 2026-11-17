@@ -16,7 +16,7 @@ import org.lwjgl.util.glu.Project;
 
 /** YA CLIENT title screen: panorama backdrop, centered logo only (no title text), stacked buttons and a dock of labeled icon tiles. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 200, BH = 30, GAP = 8, TW = 56, TH = 54, DG = 8;
+    private static final int BW = 140, BH = 20, GAP = 5, TW = 40, TH = 38, DG = 5;
     private static final String[] ICONS = {"shirt", "gear", "wrench", "close"};
     private static final String[] TIPS = {"tab.cosmetics", "menu.options", "tab.settings", "menu.quit"};
 
@@ -47,39 +47,39 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.setScale(Math.max(1, gs));
         Gfx.fade = fadeIn;
 
-        int logo = Math.min(96, height / 4);
+        int logo = Math.min(64, height / 5);
         int cx = width / 2;
-        int total = logo + 18 + 3 * BH + 2 * GAP + 16 + TH;
+        int total = logo + 12 + 3 * BH + 2 * GAP + 10 + TH;
         int top = Math.max(12, (height - total) / 2);
         float bob = (float) Math.sin(t * 1.4f) * 1.5f;
         Logo.draw(cx - logo / 2f, top + bob, logo, logo, fadeIn);
 
         bx = cx - BW / 2;
-        by0 = top + logo + 18;
+        by0 = top + logo + 12;
         String[] labels = {Lang.t("menu.play"), Lang.t("menu.multiplayer"), Lang.t("menu.client_settings")};
         for (int i = 0; i < 3; i++) {
             int x = bx, y = btnY(i);
             boolean over = mx >= x && mx < x + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
             boolean primary = i == 2;
-            Gfx.rr(x, y, BW, BH, 9, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
-            if (!primary) Gfx.rrOutline(x, y, BW, BH, 9, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
+            Gfx.rr(x, y, BW, BH, 7, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
+            if (!primary) Gfx.rrOutline(x, y, BW, BH, 7, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
             int fg = primary ? 0xFF101014 : Theme.TEXT;
-            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(11, true)) / 2, 11, true, fg);
+            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(9, true)) / 2, 9, true, fg);
         }
 
         // icon dock: four clear tiles, big icon + label
         int dockW = ICONS.length * TW + (ICONS.length - 1) * DG;
         dockX = cx - dockW / 2;
-        dockY = btnY(2) + BH + 16;
+        dockY = btnY(2) + BH + 10;
         for (int i = 0; i < ICONS.length; i++) {
             int x = dockX + i * (TW + DG);
             boolean over = mx >= x && mx < x + TW && my >= dockY && my < dockY + TH;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
-            Gfx.rr(x, dockY, TW, TH, 10, Ui.mix(0x90101014, 0xC0303036, dock[i]));
-            Gfx.rrOutline(x, dockY, TW, TH, 10, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
-            Gfx.icon(ICONS[i], x + (TW - 22) / 2, dockY + 8, 22, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
-            Gfx.textCentered(Lang.t(TIPS[i]), x + TW / 2, dockY + TH - 14, 9, true, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
+            Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0x90101014, 0xC0303036, dock[i]));
+            Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + 6, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
+            Gfx.textCentered(Lang.t(TIPS[i]), x + TW / 2, dockY + TH - 12, 7, true, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
         }
 
         Gfx.text("YA CLIENT 1.8.9", 8, height - 16, 10, false, Theme.DIM);
