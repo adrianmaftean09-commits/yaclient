@@ -186,3 +186,35 @@ body.plus .pluschip{background:var(--glow2);border-color:var(--accent);color:#ff
 /* free look: the interface is grey, but logos, banners and the "Get YA Plus" chip stay in the brand colors */
 body:not(.plus) .pluschip{background:linear-gradient(135deg,#e10600,#ff3b30);border-color:#ff3b30;color:#fff;box-shadow:0 0 18px rgba(225,6,0,.35)}
 body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
+/* ---- 3D player ---- */
+.mc3d{position:relative;width:200px;height:225px;perspective:900px;cursor:grab;touch-action:none}
+.mc3d.grab{cursor:grabbing}
+.mc3d .stage{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.mc3d .limb,.mc3d .part{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.mc3d .f{position:absolute;left:50%;top:50%;image-rendering:pixelated;backface-visibility:hidden}
+.mc3d .logo{height:120px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.mc3d.big{width:280px;height:340px}
+.hero3 .who{top:14px;gap:2px}
+.hero3 .who b{font-size:17px}
+.mc3d .stage{filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
+/* ---- plus welcome: split layout ---- */
+.ob{text-align:left}
+.split{display:grid;grid-template-columns:minmax(300px,1fr) minmax(340px,1.05fr);gap:40px;align-items:center;max-width:900px;width:100%}
+.split .vis{position:relative;display:grid;place-items:center;height:420px}
+.split .ring{position:absolute;width:340px;height:340px;border-radius:50%;border:1px solid var(--glow);background:radial-gradient(circle,var(--glow2),transparent 68%);animation:spin 18s linear infinite}
+.split .ring::after{content:"";position:absolute;top:-5px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent)}
+.split .ring.r2{width:250px;height:250px;animation-duration:12s;animation-direction:reverse;opacity:.6}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plusbadge{position:absolute;bottom:10px;padding:6px 16px;border-radius:99px;background:var(--accent);color:var(--accent-ink);font-weight:800;letter-spacing:2px;font-size:12px;box-shadow:0 0 26px var(--glow)}
+.split .txt{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.split .txt .eyebrow{color:var(--accent-hi)}
+.split h1{font-size:64px;letter-spacing:-2px}
+.split p{max-width:400px}
+.frows{display:flex;flex-direction:column;gap:10px;width:100%;margin:6px 0 4px}
+.frow{display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line2)}
+.fic{width:38px;height:38px;border-radius:11px;background:var(--glow2);border:1px solid var(--glow);display:grid;place-items:center;color:var(--accent-hi);flex:none}
+.frow b{display:block;font-size:14px}.frow small{color:var(--mute);font-size:12.5px}
+.split .acts{display:flex;align-items:center;gap:16px;margin-top:6px}
+.split .go{margin-top:0}.split .ghost{margin-top:0}
+.split .dots{margin-top:12px}
+.ob .in{text-align:center}

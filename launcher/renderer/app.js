@@ -49,6 +49,10 @@ Object.assign(I18N.en, {"plus_nav": "YA Plus", "chip_on": "YA Plus active", "chi
 Object.assign(I18N.it, {"plus_nav": "YA Plus", "chip_on": "YA Plus attivo", "chip_off": "Ottieni YA Plus", "online_s": "Online", "preview": "Anteprima", "p_title": "YA Plus", "p_promo_t": "Passa a YA Plus", "p_promo_d": "Rende il launcher rosso e anima il tuo mantello in gioco.", "p_buy": "Ottieni YA Plus", "p_active_t": "YA Plus è attivo", "p_active_d": "Grazie per supportare YA CLIENT. I tuoi vantaggi sono attivi.", "p_rerun": "Rifai la configurazione", "p_how": "Plus viene aggiunto al tuo account dal nostro store o da Discord.", "perk_theme": "Launcher a tema rosso", "perk_cape": "Mantello animato", "perk_more": "Altri vantaggi in arrivo", "perk_setup": "Configurazione guidata", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Benvenuto in", "wp_title_b": "Plus", "wp_sub": "Il tuo abbonamento YA Plus è attivo su questo launcher. Ecco cosa hai appena sbloccato.", "cont": "Continua", "skip": "Salta per ora", "back_b": "Indietro", "finish": "Inizia a giocare", "st_title": "Configura il tuo client", "st_sub": "Scegli come deve partire YA CLIENT. Potrai cambiare tutto dopo in Impostazioni e Moduli.", "lbl_preset": "PRESET MOD", "pre_pvp": "PvP", "pre_pvp_d": "Mod di combattimento e utilità attive, HUD info spento", "pre_all": "Tutto", "pre_all_d": "Tutte le mod disponibili attive", "pre_min": "Minimo", "pre_min_d": "Solo prestazioni e HUD base", "lbl_perf": "PRESTAZIONI", "ram_l": "Memoria di gioco", "ram_d": "Consigliato per PvP: 3 GB", "done_t": "Tutto pronto", "done_s": "Il launcher è rosso e i tuoi vantaggi Plus sono attivi in gioco. Entra in un server e guarda il mantello muoversi."});
 Object.assign(I18N.es, {"plus_nav": "YA Plus", "chip_on": "YA Plus activo", "chip_off": "Consigue YA Plus", "online_s": "En línea", "preview": "Vista previa", "p_title": "YA Plus", "p_promo_t": "Pásate a YA Plus", "p_promo_d": "Pone el launcher en rojo y anima tu capa en el juego.", "p_buy": "Consigue YA Plus", "p_active_t": "YA Plus está activo", "p_active_d": "Gracias por apoyar YA CLIENT. Tus ventajas están activas.", "p_rerun": "Repetir configuración", "p_how": "Plus se añade a tu cuenta desde nuestra tienda o Discord.", "perk_theme": "Launcher en rojo", "perk_cape": "Capa animada", "perk_more": "Más ventajas pronto", "perk_setup": "Configuración guiada", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Bienvenido a", "wp_title_b": "Plus", "wp_sub": "Tu suscripción YA Plus está activa en este launcher. Esto es lo que acabas de desbloquear.", "cont": "Continuar", "skip": "Omitir por ahora", "back_b": "Atrás", "finish": "Empezar a jugar", "st_title": "Configura tu cliente", "st_sub": "Elige cómo debe iniciar YA CLIENT. Podrás cambiarlo luego en Ajustes y Módulos.", "lbl_preset": "PRESET DE MODS", "pre_pvp": "PvP", "pre_pvp_d": "Mods de combate y utilidades activos, HUD de info apagado", "pre_all": "Todo", "pre_all_d": "Todos los mods disponibles activos", "pre_min": "Mínimo", "pre_min_d": "Solo rendimiento y HUD básico", "lbl_perf": "RENDIMIENTO", "ram_l": "Memoria del juego", "ram_d": "Recomendado para PvP: 3 GB", "done_t": "Todo listo", "done_s": "Tu launcher es rojo y tus ventajas Plus están activas en el juego."});
 Object.assign(I18N.de, {"plus_nav": "YA Plus", "chip_on": "YA Plus aktiv", "chip_off": "YA Plus holen", "online_s": "Online", "preview": "Vorschau", "p_title": "YA Plus", "p_promo_t": "Auf YA Plus upgraden", "p_promo_d": "Färbt den Launcher rot und animiert deinen Umhang im Spiel.", "p_buy": "YA Plus holen", "p_active_t": "YA Plus ist aktiv", "p_active_d": "Danke für die Unterstützung von YA CLIENT. Deine Vorteile sind aktiv.", "p_rerun": "Einrichtung wiederholen", "p_how": "Plus wird deinem Konto über unseren Shop oder Discord hinzugefügt.", "perk_theme": "Roter Launcher", "perk_cape": "Animierter Umhang", "perk_more": "Bald mehr Vorteile", "perk_setup": "Geführte Einrichtung", "wp_eyebrow": "YA CLIENT PLUS", "wp_title_a": "Willkommen bei", "wp_title_b": "Plus", "wp_sub": "Dein YA-Plus-Abo ist in diesem Launcher aktiv. Das hast du gerade freigeschaltet.", "cont": "Weiter", "skip": "Vorerst überspringen", "back_b": "Zurück", "finish": "Los geht's", "st_title": "Richte deinen Client ein", "st_sub": "Wähle, wie YA CLIENT starten soll. Du kannst alles später ändern.", "lbl_preset": "MOD-PRESET", "pre_pvp": "PvP", "pre_pvp_d": "Kampf-Mods und Hilfsmittel an, Info-HUD aus", "pre_all": "Alles", "pre_all_d": "Alle verfügbaren Mods aktiv", "pre_min": "Minimal", "pre_min_d": "Nur Leistung und Basis-HUD", "lbl_perf": "LEISTUNG", "ram_l": "Spielspeicher", "ram_d": "Empfohlen für PvP: 3 GB", "done_t": "Alles bereit", "done_s": "Dein Launcher ist rot und deine Plus-Vorteile sind im Spiel aktiv."});
+Object.assign(I18N.en, {"wp_eyebrow2": "PLUS UNLOCKED", "wp_h": "You're in.", "f1t": "Red launcher", "f1d": "The whole launcher switches to the YA red look.", "f2t": "Animated cape", "f2d": "Your cape moves with cloth motion in game.", "f3t": "More on the way", "f3d": "New Plus perks unlock automatically."});
+Object.assign(I18N.it, {"wp_eyebrow2": "PLUS SBLOCCATO", "wp_h": "Sei dentro.", "f1t": "Launcher rosso", "f1d": "Tutto il launcher passa allo stile rosso di YA.", "f2t": "Mantello animato", "f2d": "Il tuo mantello si muove come un vero tessuto in gioco.", "f3t": "Altro in arrivo", "f3d": "I nuovi vantaggi Plus si sbloccano da soli."});
+Object.assign(I18N.es, {"wp_eyebrow2": "PLUS DESBLOQUEADO", "wp_h": "Ya estás dentro.", "f1t": "Launcher rojo", "f1d": "Todo el launcher cambia al estilo rojo de YA.", "f2t": "Capa animada", "f2d": "Tu capa se mueve como una tela real en el juego.", "f3t": "Más por venir", "f3d": "Las nuevas ventajas Plus se desbloquean solas."});
+Object.assign(I18N.de, {"wp_eyebrow2": "PLUS FREIGESCHALTET", "wp_h": "Du bist dabei.", "f1t": "Roter Launcher", "f1d": "Der ganze Launcher wechselt in den roten YA-Look.", "f2t": "Animierter Umhang", "f2d": "Dein Umhang bewegt sich im Spiel wie echter Stoff.", "f3t": "Mehr folgt", "f3d": "Neue Plus-Vorteile werden automatisch freigeschaltet."});
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
 const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
 const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
@@ -110,7 +114,7 @@ function viewHome() {
   const ads = C.ads || [];
   const nm = S.account ? S.account.name : '';
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
-  const av = nm ? `<img id="avatar" src="https://mc-heads.net/body/${encodeURIComponent(nm)}/190" alt="">` : `<img class="logo" src="../assets/logo.png" alt="">`;
+  const av = nm ? `<div class="mc3d" id="mc3d"></div>` : `<img class="logo" src="../assets/logo.png" alt="">`;
   return `<div class="lp"><div>
     <div class="card hero3"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
       <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
@@ -223,7 +227,85 @@ function render() {
   const v = $('#view');
   v.innerHTML = { home: viewHome, plus: viewPlus, versions: viewVersions, servers: viewServers, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
-  const av = $('#avatar'); if (av) av.addEventListener('error', () => { av.src = '../assets/logo.png'; av.className = 'logo'; });
+  if (page === 'home' && S.account) mountPlayer($('#mc3d'), S.account.name, 5.8);
+}
+
+
+// ---------- 3D player (CSS 3D, no WebGL): builds the Minecraft model from the account's skin ----------
+const SKIN_URLS = (n) => ['https://mc-heads.net/skin/' + encodeURIComponent(n), 'https://minotar.net/skin/' + encodeURIComponent(n)];
+const skinCache = {};
+function loadSkin(name) {
+  if (skinCache[name]) return skinCache[name];
+  const tryAt = (i, resolve) => {
+    const urls = SKIN_URLS(name);
+    if (i >= urls.length) return resolve(null);
+    const im = new Image();
+    im.onload = () => resolve({ url: urls[i], h: im.naturalHeight >= 64 ? 64 : 32 });
+    im.onerror = () => tryAt(i + 1, resolve);
+    im.src = urls[i];
+  };
+  skinCache[name] = new Promise((res) => tryAt(0, res));
+  return skinCache[name];
+}
+function mkBox(K, sk, w, h, d, u, v, pad) {
+  const el = document.createElement('div'); el.className = 'part';
+  const W = w + pad * 2, H = h + pad * 2, D = d + pad * 2;
+  const faces = [
+    [u + d, v + d, w, h, 'translateZ(' + (D * K / 2) + 'px)', W, H],
+    [u + 2 * d + w, v + d, w, h, 'rotateY(180deg) translateZ(' + (D * K / 2) + 'px)', W, H],
+    [u, v + d, d, h, 'rotateY(-90deg) translateZ(' + (W * K / 2) + 'px)', D, H],
+    [u + d + w, v + d, d, h, 'rotateY(90deg) translateZ(' + (W * K / 2) + 'px)', D, H],
+    [u + d, v, w, d, 'rotateX(90deg) translateZ(' + (H * K / 2) + 'px)', W, D],
+    [u + d + w, v, w, d, 'rotateX(-90deg) translateZ(' + (H * K / 2) + 'px)', W, D]
+  ];
+  faces.forEach((f) => {
+    const sx = f[0], sy = f[1], fw = f[2], fh = f[3], pw = f[5], ph = f[6];
+    const e = document.createElement('div'); e.className = 'f';
+    e.style.cssText = 'width:' + pw * K + 'px;height:' + ph * K + 'px;margin:' + (-ph * K / 2) + 'px 0 0 ' + (-pw * K / 2) + 'px;transform:' + f[4] +
+      ';background-image:url("' + sk.url + '");background-size:' + (64 * K * pw / fw) + 'px ' + (sk.h * K * ph / fh) + 'px;background-position:' + (-sx * K * pw / fw) + 'px ' + (-sy * K * ph / fh) + 'px';
+    el.appendChild(e);
+  });
+  return el;
+}
+async function mountPlayer(host, name, K) {
+  if (!host) return;
+  K = K || 5.2;
+  const sk = await loadSkin(name);
+  if (!sk || !host.isConnected) { if (host.isConnected) host.innerHTML = '<img class="logo" src="../assets/logo.png" alt="">'; return; }
+  const modern = sk.h >= 64;
+  host.innerHTML = '<div class="stage"></div>';
+  const stage = host.firstChild;
+  const put = (parent, x, y, kids) => { const g = document.createElement('div'); g.className = 'limb'; g.style.transform = 'translate3d(' + x * K + 'px,' + y * K + 'px,0)'; kids.forEach((c) => g.appendChild(c)); parent.appendChild(g); return g; };
+  const part = (w, h, d, u, v, ov, ou, dy) => {   // a body part plus its overlay layer, shifted so the pivot is at the top
+    const g = document.createElement('div'); g.className = 'part'; g.style.transform = 'translateY(' + (dy * K) + 'px)';
+    g.appendChild(mkBox(K, sk, w, h, d, u, v, 0));
+    if (ov) g.appendChild(mkBox(K, sk, w, h, d, ou[0], ou[1], 0.45));
+    return g;
+  };
+  put(stage, 0, -10 + 0, [(() => { const g = part(8, 8, 8, 0, 0, true, [32, 0], 0); return g; })()]);                    // head
+  put(stage, 0, 0, [part(8, 12, 4, 16, 16, modern, [16, 32], 0)]);                                                         // body
+  const arm = (x, u, v, ou) => put(stage, x, -6, [part(4, 12, 4, u, v, modern, ou, 6)]);
+  const leg = (x, u, v, ou) => put(stage, x, 6, [part(4, 12, 4, u, v, modern, ou, 6)]);
+  const rArm = arm(-6, 40, 16, [40, 32]);
+  const lArm = arm(6, modern ? 32 : 40, modern ? 48 : 16, [48, 48]);
+  const rLeg = leg(-2, 0, 16, [0, 32]);
+  const lLeg = leg(2, modern ? 16 : 0, modern ? 48 : 16, [0, 48]);
+  let yaw = 25, drag = false, lx = 0, t0 = performance.now();
+  host.onpointerdown = (e) => { drag = true; lx = e.clientX; host.setPointerCapture(e.pointerId); host.classList.add('grab'); };
+  host.onpointermove = (e) => { if (drag) { yaw += (e.clientX - lx) * 0.8; lx = e.clientX; } };
+  host.onpointerup = host.onpointercancel = () => { drag = false; host.classList.remove('grab'); };
+  (function frame(now) {
+    if (!host.isConnected) return;
+    const t = (now - t0) / 1000;
+    if (!drag) yaw += 0.35;
+    stage.style.transform = 'rotateX(-8deg) rotateY(' + yaw + 'deg)';
+    const sw = Math.sin(t * 1.6) * 7;
+    rArm.style.transform = 'translate3d(' + (-6 * K) + 'px,' + (-6 * K) + 'px,0) rotateX(' + sw + 'deg)';
+    lArm.style.transform = 'translate3d(' + (6 * K) + 'px,' + (-6 * K) + 'px,0) rotateX(' + (-sw) + 'deg)';
+    rLeg.style.transform = 'translate3d(' + (-2 * K) + 'px,' + (6 * K) + 'px,0) rotateX(' + (-sw * 0.6) + 'deg)';
+    lLeg.style.transform = 'translate3d(' + (2 * K) + 'px,' + (6 * K) + 'px,0) rotateX(' + (sw * 0.6) + 'deg)';
+    requestAnimationFrame(frame);
+  })(performance.now());
 }
 
 // ---------- YA Plus: detection, welcome + setup ----------
@@ -259,9 +341,12 @@ function drawOb() {
   const dots = `<div class="dots">${[0, 1, 2].map((i) => `<i class="${i === obStep ? 'on' : ''}"></i>`).join('')}</div>`;
   const perks = ['perk_theme', 'perk_cape', 'perk_more', 'perk_setup'].map((k) => `<span class="perk">${ic('check')}${esc(t(k))}</span>`).join('');
   if (obStep === 0) {
-    o.innerHTML = `<div class="in"><div class="eyebrow">&#9733; ${esc(t('wp_eyebrow'))}</div>
-      <h1>${esc(t('wp_title_a'))} <b>${esc(t('wp_title_b'))}</b></h1><p>${esc(t('wp_sub'))}</p><div class="perks">${perks}</div>
-      <button class="go" data-ob="next">${esc(t('cont'))}</button><button class="ghost" data-ob="skip">${esc(t('skip'))}</button>${dots}</div>`;
+    const row = (ico, k) => `<div class="frow"><span class="fic">${ic(ico)}</span><div><b>${esc(t(k + 't'))}</b><small>${esc(t(k + 'd'))}</small></div></div>`;
+    o.innerHTML = `<div class="split"><div class="vis"><div class="ring"></div><div class="ring r2"></div><div class="mc3d big" id="obPlayer"></div><span class="plusbadge">PLUS</span></div>
+      <div class="txt"><div class="eyebrow">${esc(t('wp_eyebrow2'))}</div><h1>${esc(t('wp_h'))}</h1><p>${esc(t('wp_sub'))}</p>
+        <div class="frows">${row('plus', 'f1')}${row('cosmetics', 'f2')}${row('check', 'f3')}</div>
+        <div class="acts"><button class="go" data-ob="next">${esc(t('cont'))}</button><button class="ghost" data-ob="skip">${esc(t('skip'))}</button></div>${dots}</div></div>`;
+    if (S.account) mountPlayer($('#obPlayer'), S.account.name, 6.2);
   } else if (obStep === 1) {
     const op = (k) => `<button class="opt ${obPreset === k ? 'on' : ''}" data-preset="${k}"><b>${esc(t('pre_' + k))}</b><small>${esc(t('pre_' + k + '_d'))}</small></button>`;
     o.innerHTML = `<div class="in"><div class="eyebrow">&#9733; ${esc(t('wp_eyebrow'))}</div><h1 style="font-size:40px">${esc(t('st_title'))}</h1><p>${esc(t('st_sub'))}</p>
