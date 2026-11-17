@@ -20,7 +20,7 @@ public class FpsBoostModule extends Module {
     private boolean applied;
     private int ticks;
 
-    public FpsBoostModule() { super("fps_boost", Category.UTILITY, false); }
+    public FpsBoostModule() { super("fps_boost", Category.UTILITY, true); }
 
     private static final String K = "fpsboost.orig.";
 

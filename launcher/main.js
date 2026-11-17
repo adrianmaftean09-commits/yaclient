@@ -16,6 +16,8 @@ const propsFile = path.join(os.homedir(), '.yaclient', 'config.properties'); // 
 fs.mkdirSync(gameDir, { recursive: true });
 fs.mkdirSync(weaveModsDir, { recursive: true });
 
+// GC tuning for smooth frame times (G1, short pauses, big young generation); valid on Java 8 and newer
+const JVM_TUNING = ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseG1GC', '-XX:G1NewSizePercent=20', '-XX:G1ReservePercent=20', '-XX:MaxGCPauseMillis=50', '-XX:G1HeapRegionSize=16M', '-XX:+ParallelRefProcEnabled', '-XX:+DisableExplicitGC'];
 let state = { account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false, lang: 'en', version: '' };
 try { state = { ...state, ...JSON.parse(fs.readFileSync(stateFile, 'utf8')) }; } catch (_) {}
 const save = () => fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
@@ -506,7 +508,7 @@ ipcMain.handle('play', async (_e, opts) => {
       version: fabric ? { number: version, type: versionType(version), custom: fabric.id } : { number: version, type: versionType(version) },
       overrides: fabric ? { gameDirectory: fabric.dir } : {},
       memory: { max: `${state.ram}M`, min: '1024M' },
-      customArgs: yaMode ? [`-javaagent:${loaderJar}`] : []
+      customArgs: (yaMode ? [`-javaagent:${loaderJar}`] : []).concat(JVM_TUNING)
     };
     if (opts && opts.server && opts.server.host) {
       launchOpts.server = { host: String(opts.server.host), port: String(opts.server.port || 25565) };

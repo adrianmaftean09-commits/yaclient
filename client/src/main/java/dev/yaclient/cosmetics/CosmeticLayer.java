@@ -33,6 +33,8 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             Nametag.renderOther(p, partialTicks, CosmeticsApi.isPlus(p.getUniqueID()));
         }
         if (p.isInvisible()) return;
+        // other players further than 40 blocks: the cosmetics are a few pixels, skip the heavy geometry
+        if (p != mc.thePlayer && p.getDistanceSqToEntity(mc.thePlayer) > 1600.0) return;
         Map<String, String> eq = CosmeticsApi.equippedFor(p);
         if (eq == null) return;
         ModelPlayer model = renderer.getMainModel();

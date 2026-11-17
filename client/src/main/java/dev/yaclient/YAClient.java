@@ -96,6 +96,8 @@ public class YAClient implements ModInitializer {
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
                 "minimap", "waypoints", "motion_blur", "cinematic", "time_changer", "nearby_players"));
         for (Module m : MODULES) { if (plusMods.contains(m.id)) m.plusOnly = true; }
+        // one-time: FPS Boost (unlimited frame rate, light effects) is on by default for everyone
+        if (!Config.getBool("perf.v2", false)) { Config.setBool("mod.fps_boost.enabled", true); Config.setBool("perf.v2", true); Config.save(); }
         for (Module m : MODULES) m.loadConfig();
 
         EventBus.subscribe(TickEvent.Post.class, e -> {
@@ -115,6 +117,7 @@ public class YAClient implements ModInitializer {
             TabBadge.tick();
             FriendsApi.tick();
             HitTracker.tick(mc);
+            KeyGuard.tick(mc);
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();
