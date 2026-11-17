@@ -216,6 +216,15 @@ export async function onRequest({ request, env }) {
       return send(200, out);
     }
 
+    if (route === 'GET /v1/selftest') {   // can this server reach Mojang's session server? (expected: 204 for an unknown join)
+      const out = {};
+      for (const [k, u] of [['hasJoined', 'https://sessionserver.mojang.com/session/minecraft/hasJoined?username=Notch&serverId=ya-selftest'], ['profile', 'https://api.mojang.com/users/profiles/minecraft/Notch'], ['playerdb', 'https://playerdb.co/api/player/minecraft/Notch']]) {
+        try { const r = await fetch(u, { headers: { 'user-agent': 'YA-CLIENT-Store' } }); out[k] = String(r.status); } catch (e) { out[k] = 'unreachable'; }
+      }
+      try { await env.DB.get('selftest'); out.kv_read = 'ok'; } catch (e) { out.kv_read = 'fail'; }
+      try { await env.DB.put('selftest', String(Date.now()), { expirationTtl: 60 }); out.kv_write = 'ok'; } catch (e) { out.kv_write = 'FAIL: ' + String(e && e.message || e).slice(0, 80); }
+      return send(200, out);
+    }
     if (route === 'GET /v1/admin/status') {
       if (!env.ADMIN_KEY || url.searchParams.get('key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
       if (url.searchParams.get('probe')) {   // can this server reach Mojang at all?
