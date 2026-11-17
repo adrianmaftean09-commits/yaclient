@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=7"><link rel="stylesheet" href="/bundle.css?v=14"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bundle - YA CLIENT</title><meta name="description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:title" content="Bundle - YA CLIENT"><meta property="og:description" content="YA CLIENT cosmetics store: real 3D wings, capes, bandanas and pets. Try them on before you buy."><meta property="og:image" content="/news-update.png"><link rel="icon" href="/logo.png"><link rel="stylesheet" href="/ya.css?v=7"><link rel="stylesheet" href="/bundle.css?v=15"></head><body class=""><nav class="top"><div class="wrap"><a class="brand" href="/"><img src="/logo.png" alt="">YA <b>CLIENT</b></a><div class="nl"><a href="/" class=" ">Home</a><a href="/changelogs" class=" ">Changelogs</a><a href="/store" class="on ">Store</a><a href="/plus" class=" plusl">YA Plus</a><a href="#" data-dc>Discord</a><a class="cta keep" href="#" data-dl>Download</a></div></div></nav>
 
 <section class="hero" id="hero"><div class="hs" id="hs">
 <a class="hback" href="/store?c=bundle"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Store</a><div class="hr">COSMETICS</div>
@@ -10,11 +10,12 @@
 </div></section>
 <div class="wrap">
 <div class="plusbar" id="plusbar2" style="margin-top:34px"></div><h2 class="bd-h">What's inside</h2><div class="bd-items" id="its"></div>
+<h2 class="bd-h">3D view</h2><div class="bd-3d" id="stage3"><canvas id="v3d"></canvas><span class="cap">Drag to rotate</span></div>
 <h2 class="bd-h">More bundles</h2><div class="bd-og" id="og"></div><div style="height:110px"></div></div>
 <button class="cartfab" id="cartfab" aria-label="Cart">Cart <b id="cn">0</b></button>
 <div class="cartdr" id="cartdr"><div class="cd"><div class="ch"><b>Your cart</b><button id="cx" aria-label="Close">×</button></div><div id="cl"></div><div class="cf"><div class="ct"><span>Total</span><b id="ctot">-</b></div><button class="btn pri block" id="cbuy">Checkout</button><button class="btn block" id="cclr" style="margin-top:10px">Empty cart</button></div></div></div>
 <div class="lb" id="lb"><img alt=""></div>
-<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/cosdata.js?v=1"></script><script src="/site.js"></script><script src="/plusbar.js?v=1"></script><script>
+<footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/cosdata.js?v=1"></script><script src="/site.js"></script><script src="/plusbar.js?v=1"></script><script src="/geo.js"></script><script src="/cos3d.js"></script><script>
 (function(){
 var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math.round(x*100)/100},K=function(){return window.YAplusOn?.3:1};
 var B=window.YA_B;
@@ -60,5 +61,8 @@ document.addEventListener('click',function(e){var t=e.target.closest('[data-add]
 document.getElementById('cartdr').addEventListener('click',function(e){if(e.target.id==='cartdr')e.target.className='cartdr'});
 document.addEventListener('yaplus',function(){price();items();drawCart()});
 price();items();
+/* 3D */
+if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){var v=YA3D.viewer(document.getElementById('v3d'),{yaw:.55,dist:6.2,target:[0,.98,0]});v.set(ids,false);YA3D.skinBox(document.getElementById('stage3'),v)})}
+else document.getElementById('stage3').innerHTML='<div class="fall" style="padding:40px;text-align:center;color:var(--mute)">3D preview needs WebGL.</div>';
 })();
 </script></body></html>
