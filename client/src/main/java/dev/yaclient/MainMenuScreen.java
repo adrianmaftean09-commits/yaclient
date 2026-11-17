@@ -96,7 +96,7 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
-        Gfx.text("YA CLIENT 1.8.9", 8, height - 14, 10, false, Theme.DIM);
+        Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, Theme.DIM);
         String acc = Minecraft.getMinecraft().getSession().getUsername();
         Gfx.text(acc, width - Gfx.width(acc, 10, false) - 8, height - 14, 10, false, Theme.MUTED);
         Gfx.fade = 1f;

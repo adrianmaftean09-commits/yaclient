@@ -11,7 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
  * a wide Mods tile and four tiles for cosmetics, friends, HUD editor and settings.
  */
 public class HubScreen extends GuiScreen {
-    private static final int PW = 320, PH = 196, PAD = 16, GAP = 8, R = 10;
+    private static final int PW = 320, PH = 202, PAD = 16, GAP = 8, R = 10;
     private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
     private static final String[] ICONS = {"grid", "shirt", "friends", "move", "gear"};
     private static final String[] LABELS = {"hub.mods", "hub.cosmetics", "hub.friends", "hub.hud", "hub.settings"};
@@ -27,7 +27,7 @@ public class HubScreen extends GuiScreen {
     private int[] rect(int i) {
         if (i == 0) return new int[]{px + PAD, py + 60, PW - 2 * PAD, 52};
         int w = (PW - 2 * PAD - 3 * GAP) / 4;
-        return new int[]{px + PAD + (i - 1) * (w + GAP), py + 60 + 52 + GAP, w, 56};
+        return new int[]{px + PAD + (i - 1) * (w + GAP), py + 60 + 52 + GAP, w, 60};
     }
 
     @Override
@@ -51,8 +51,7 @@ public class HubScreen extends GuiScreen {
 
         // header
         Logo.draw(px + PAD, py + 14, 34, 34, fade);
-        Gfx.text("YA ", px + PAD + 42, py + 16, 14, true, Theme.TEXT);
-        Gfx.text("CLIENT", px + PAD + 42 + Gfx.width("YA ", 14, true), py + 16, 14, true, Theme.BRAND_RED);
+        Gfx.text("CLIENT", px + PAD + 42, py + 16, 14, true, Theme.BRAND_RED);
         Gfx.text("Minecraft 1.8.9", px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
         if (CosmeticsApi.enabled() && CosmeticsApi.plus()) {
             int w = Gfx.width("PLUS", 8, true) + 16;
@@ -68,15 +67,17 @@ public class HubScreen extends GuiScreen {
             Gfx.rrOutline(r[0], r[1], r[2], r[3], R, 1, Ui.mix(0x14FFFFFF, 0x33FFFFFF, hover[i]));
             int fg = Ui.mix(0xFFD8D8DC, Theme.TEXT, hover[i]);
             if (i == 0) {
-                Gfx.icon(ICONS[0], r[0] + 16, r[1] + (r[3] - 22) / 2, 22, fg);
-                Gfx.text(Lang.t(LABELS[0]), r[0] + 50, r[1] + 11, 12, true, Theme.TEXT);
+                Gfx.rr(r[0] + 10, r[1] + 8, 36, 36, 10, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.icon(ICONS[0], r[0] + 18, r[1] + 16, 20, fg);
+                Gfx.text(Lang.t(LABELS[0]), r[0] + 56, r[1] + 11, 12, true, Theme.TEXT);
                 int total = 0, on = 0;
                 for (Module m : YAClient.MODULES) { total++; if (m.enabled) on++; }
-                Gfx.text(Lang.t("ui.count", total, on), r[0] + 50, r[1] + 11 + Gfx.lineHeight(12, true) + 3, 8, false, Theme.MUTED);
+                Gfx.text(Lang.t("ui.count", total, on), r[0] + 56, r[1] + 11 + Gfx.lineHeight(12, true) + 3, 8, false, Theme.MUTED);
                 Gfx.icon("arrow_right", r[0] + r[2] - 28, r[1] + (r[3] - 14) / 2, 14, Ui.mix(Theme.DIM, Theme.TEXT, hover[i]));
             } else {
-                Gfx.icon(ICONS[i], r[0] + (r[2] - 18) / 2, r[1] + 10, 18, fg);
-                Gfx.textCentered(Gfx.trim(Lang.t(LABELS[i]), 8, false, r[2] - 6), r[0] + r[2] / 2, r[1] + 34, 8, false, Ui.mix(Theme.MUTED, Theme.TEXT, hover[i]));
+                Gfx.rr(r[0] + (r[2] - 28) / 2, r[1] + 6, 28, 28, 8, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.icon(ICONS[i], r[0] + (r[2] - 16) / 2, r[1] + 12, 16, fg);
+                Gfx.textCentered(Gfx.trim(Lang.t(LABELS[i]), 8, false, r[2] - 6), r[0] + r[2] / 2, r[1] + 40, 8, false, Ui.mix(Theme.MUTED, Theme.TEXT, hover[i]));
             }
         }
         Gfx.textCentered(Lang.t("ui.esc_hint"), px + PW / 2, py + PH - 16, 7, false, Theme.DIM);

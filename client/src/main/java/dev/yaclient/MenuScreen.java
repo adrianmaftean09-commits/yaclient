@@ -224,8 +224,7 @@ public class MenuScreen extends GuiScreen {
     private void drawHeader() {
         Logo.draw(24, 14, 38, 38, fade);
         int ls = 18;
-        Gfx.text("YA ", 70, 16, ls, true, Theme.TEXT);
-        Gfx.text("CLIENT", 70 + Gfx.width("YA ", ls, true), 16, ls, true, Theme.BRAND_RED);
+        Gfx.text("CLIENT", 70, 16, ls, true, Theme.BRAND_RED);
         String sub;
         if (moduleTab()) {
             int total = visibleModules().size(), on = 0;
@@ -670,12 +669,12 @@ public class MenuScreen extends GuiScreen {
         for (int i = 0; i < COS_CATS.length; i++) {
             final int idx = i;
             String lab = Lang.t("cos.cat." + COS_CATS[i]);
-            int w = Gfx.width(lab, 10, true) + 22;
-            boolean on = cosCat == i, ov = over(px, VY, w, 24);
-            Gfx.rr(px, VY, w, 24, 8, on ? Ui.alpha(Theme.accent(), 0.25f) : (ov ? 0x1AFFFFFF : 0x10FFFFFF));
-            if (on) Gfx.rrOutline(px, VY, w, 24, 8, 1, Theme.accent());
-            Gfx.text(lab, px + 11, VY + (24 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? Theme.TEXT : Theme.MUTED);
-            hit(px, VY, w, 24, new Action() {
+            int w = Gfx.width(lab, 10, true) + 40;
+            boolean on = cosCat == i, ov = over(px, VY, w, 26);
+            Gfx.rr(px, VY, w, 26, 8, on ? SURF3 : (ov ? SURF2 : SURF));
+            Gfx.icon(cosIcon(COS_CATS[i]), px + 9, VY + 6, 14, on ? Theme.TEXT : Theme.MUTED);
+            Gfx.text(lab, px + 28, VY + (26 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? Theme.TEXT : Theme.MUTED);
+            hit(px, VY, w, 26, new Action() {
                 @Override public void run(float mx, float my) { cosCat = idx; }
             }, null, null);
             px += w + 6;
@@ -688,7 +687,7 @@ public class MenuScreen extends GuiScreen {
             else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
         int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 150;
-        int gy = VY + 36;
+        int gy = VY + 40;
         for (int n = 0; n < entries.size(); n++) {
             final String[] kv = entries.get(n).split(":");
             final String key = kv[0];
@@ -842,7 +841,7 @@ public class MenuScreen extends GuiScreen {
 
         // about
         y = section("settings.about", y);
-        Gfx.text("YA CLIENT 1.1.0 - Minecraft 1.8.9", CX, y, 12, false, Theme.TEXT);
+        Gfx.text("CLIENT - Minecraft 1.8.9", CX, y, 12, false, Theme.TEXT);
         y += 18;
         Gfx.text(Gfx.trim(Lang.t("settings.config_hint"), 10, false, VW), CX, y, 10, false, Theme.MUTED);
         y += 30;
