@@ -148,7 +148,7 @@ public class MenuScreen extends GuiScreen {
         last = now;
         fade = 0.05f + 0.95f * Ui.ease((now - opened) / 200f);
         float open = Ui.ease((now - opened) / 240f);
-        scale = Math.min(1f, Math.min((height - 16f) / PH, (width - 16f) / PW));
+        scale = Math.min(0.74f, Math.min((height - 16f) / PH, (width - 16f) / PW));
         gs = new ScaledResolution(mc).getScaleFactor();
         Gfx.setScale(Math.max(1, Math.round(gs * scale)));
         originX = Math.round(width / 2f - PW * scale / 2f);

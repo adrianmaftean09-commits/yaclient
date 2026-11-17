@@ -10,7 +10,7 @@ import net.minecraft.client.gui.ScaledResolution;
  * plus two small shortcuts (HUD editor, settings). Mods and cosmetics are separate screens.
  */
 public class HubScreen extends GuiScreen {
-    private static final int BW = 150, BH = 30, SQ = 30, GAP = 8, SM = 24;
+    private static final int BW = 104, BH = 22, SQ = 22, GAP = 6, SM = 18;
 
     private final float[] hover = new float[4];
     private final long opened = System.currentTimeMillis();
@@ -30,38 +30,38 @@ public class HubScreen extends GuiScreen {
         Gfx.fade = fade;
 
         int cx = width / 2;
-        int logo = 72;
-        int total = logo + 6 + 16 + BH + 10 + SM;
+        int logo = 50;
+        int total = logo + 6 + 10 + BH + 8 + SM;
         int top = (height - total) / 2;
         Logo.draw(cx - logo / 2f, top, logo, logo, fade);
         int wy = top + logo + 6;
 
         int rowW = BW + GAP + SQ;
         x0 = cx - rowW / 2;
-        y0 = wy + 16;
+        y0 = wy + 10;
         // MODS
         button(0, x0, y0, BW, BH, mx, my, dt);
-        Gfx.textCentered(Lang.t("hub.mods"), x0 + BW / 2, y0 + (BH - Gfx.lineHeight(12, true)) / 2, 12, true, Theme.TEXT);
+        Gfx.textCentered(Lang.t("hub.mods"), x0 + BW / 2, y0 + (BH - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.TEXT);
         // cosmetics (shirt)
         button(1, x0 + BW + GAP, y0, SQ, BH, mx, my, dt);
-        Gfx.icon("shirt", x0 + BW + GAP + (SQ - 18) / 2, y0 + (BH - 18) / 2, 18, Theme.TEXT);
+        Gfx.icon("shirt", x0 + BW + GAP + (SQ - 14) / 2, y0 + (BH - 14) / 2, 14, Theme.TEXT);
         // small shortcuts
-        int sy = y0 + BH + 10;
+        int sy = y0 + BH + 8;
         int sx = cx - (2 * SM + GAP) / 2;
         button(2, sx, sy, SM, SM, mx, my, dt);
-        Gfx.icon("move", sx + 4, sy + 4, 16, Theme.TEXT);
+        Gfx.icon("move", sx + 3, sy + 3, 12, Theme.TEXT);
         button(3, sx + SM + GAP, sy, SM, SM, mx, my, dt);
-        Gfx.icon("gear", sx + SM + GAP + 4, sy + 4, 16, Theme.TEXT);
+        Gfx.icon("gear", sx + SM + GAP + 3, sy + 3, 12, Theme.TEXT);
 
         int hv = -1;
         for (int i = 0; i < 4; i++) if (hover[i] > 0.5f) hv = i;
         String[] tips = {"hub.mods", "hub.cosmetics", "hub.hud", "hub.settings"};
-        if (hv >= 0) Gfx.textCentered(Lang.t(tips[hv]), cx, sy + SM + 8, 10, false, Theme.MUTED);
+        if (hv >= 0) Gfx.textCentered(Lang.t(tips[hv]), cx, sy + SM + 6, 8, false, Theme.MUTED);
         Gfx.fade = 1f;
     }
 
     private int[] rect(int i) {
-        int cx = width / 2, sy = y0 + BH + 10, sx = cx - (2 * SM + GAP) / 2;
+        int cx = width / 2, sy = y0 + BH + 8, sx = cx - (2 * SM + GAP) / 2;
         switch (i) {
             case 0: return new int[]{x0, y0, BW, BH};
             case 1: return new int[]{x0 + BW + GAP, y0, SQ, BH};
