@@ -20,15 +20,35 @@ var P={
  qlux_cape:{n:'Qlux Cape',cat:'cape',slot:'cape',d:'White satin cape with the black Qlux_ wordmark.',set:'qlux',partner:1},
  qlux_wings:{n:'Qlux Angel Wings',cat:'wings',slot:'wings',d:'White feather wings with ice-blue tips.',set:'qlux',partner:1},
  qlux_bandana:{n:'Qlux Band',cat:'bandana',slot:'bandana',d:'White band with an ice-blue glow and flowing tails.',set:'qlux',partner:1},
- qlux_pet:{n:'Lumi (pet)',cat:'pet',slot:'pet',d:'A tiny light fox-cat with a halo, glowing eyes and little wings.',set:'qlux',partner:1}};
+ qlux_pet:{n:'Lumi (pet)',cat:'pet',slot:'pet',d:'A tiny light fox-cat with a halo, glowing eyes and little wings.',set:'qlux',partner:1},
+ sakura_cape:{n:'Sakura Cape',cat:'cape',slot:'cape',d:'Soft pink satin cape with a blossoming cherry branch.',set:'sakura'},
+ sakura_wings:{n:'Petal Wings',cat:'wings',slot:'wings',d:'Wings of layered cherry-blossom petals.',set:'sakura'},
+ sakura_bandana:{n:'Blossom Band',cat:'bandana',slot:'bandana',d:'Pink band with a ribbon of petals.',set:'sakura'},
+ sakura_pet:{n:'Mochi (pet)',cat:'pet',slot:'pet',d:'A pixel bunny with a blossom on its ear.',set:'sakura'},
+ shinobi_cape:{n:'Moonlit Cloak',cat:'cape',slot:'cape',d:'Night-blue cloak with a silver crescent moon.',set:'shinobi'},
+ shinobi_wings:{n:'Blade Wings',cat:'wings',slot:'wings',d:'Long violet blade feathers.',set:'shinobi'},
+ shinobi_bandana:{n:'Shinobi Headband',cat:'bandana',slot:'bandana',d:'A dark headband with a violet glow.',set:'shinobi'},
+ shinobi_pet:{n:'Kage (pet)',cat:'pet',slot:'pet',d:'A pixel ninja cat with a headband and scarf.',set:'shinobi'},
+ neon_cape:{n:'Neon Heart Cape',cat:'cape',slot:'cape',d:'Dark cape with a glowing neon heart and grid.',set:'neon'},
+ neon_wings:{n:'Hologram Wings',cat:'wings',slot:'wings',d:'Crystal wings glowing cyan and magenta.',set:'neon'},
+ neon_bandana:{n:'Neon Band',cat:'bandana',slot:'bandana',d:'A band that pulses with neon light.',set:'neon'},
+ neon_pet:{n:'Byte (pet)',cat:'pet',slot:'pet',d:'A pixel robot cat with headphones and an antenna.',set:'neon'},
+ kitsune_cape:{n:'Kitsune Cape',cat:'cape',slot:'cape',d:'White cape with a red fox mask and a vermilion hem.',set:'kitsune'},
+ kitsune_wings:{n:'Flame Wings',cat:'wings',slot:'wings',d:'Wings of orange and gold flames.',set:'kitsune'},
+ kitsune_bandana:{n:'Shrine Ribbon',cat:'bandana',slot:'bandana',d:'A shrine ribbon in vermilion and gold.',set:'kitsune'},
+ kitsune_pet:{n:'Inari (pet)',cat:'pet',slot:'pet',d:'A pixel two-tailed fox with a golden bell.',set:'kitsune'}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle},
-          qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1}};
+          qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1},
+          sakura:{n:'Sakura Bundle',d:'Cherry-blossom pink: petal wings, blossom cape, ribbon band and the bunny Mochi.',items:['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'],price:PR.animeBundle||10},
+          shinobi:{n:'Shinobi Bundle',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',items:['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'],price:PR.animeBundle||10},
+          neon:{n:'Neon Idol Bundle',d:'Cyber idol: hologram wings, neon heart cape, glowing band and the robot cat Byte.',items:['neon_cape', 'neon_wings', 'neon_bandana', 'neon_pet'],price:PR.animeBundle||10},
+          kitsune:{n:'Kitsune Bundle',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',items:['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'],price:PR.animeBundle||10}};
 var CATS=[['all','All'],['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
 var cat='all',worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
-function total(list){var t=0;['mono','qlux'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
+function total(list){var t=0;['mono','qlux','sakura','shinobi','neon','kitsune'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
 function card(key,isSet){
  var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:R(d.price*K())):priceOf(key);
@@ -42,7 +62,7 @@ function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
  if(cat==='partner'){h+=card('qlux',true)}
- if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('beta',true)}
+ if(cat==='all'||cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('sakura',true)+card('shinobi',true)+card('neon',true)+card('kitsune',true)+card('beta',true)}
  if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(cat==='all'||P[id].cat===cat)h+=card(id,false)});
  if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner)h+=card(id,false)});
  document.getElementById('grid').innerHTML=h;

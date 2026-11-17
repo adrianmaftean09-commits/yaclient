@@ -57,11 +57,13 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             String bs = style(eq, "bandana");
             CosmeticRender.mono = bs.equals("mono");
             CosmeticRender.qlux = bs.equals("qlux");
+            CosmeticRender.anime = Anime.byStyle(bs);
             Poly.begin();
             CosmeticRender.bandana(age, limbSwingAmount);
             Poly.end();
             CosmeticRender.mono = false;
             CosmeticRender.qlux = false;
+            CosmeticRender.anime = null;
             GlStateManager.popMatrix();
         }
         if (pet) drawPet(p, age, style(eq, "pet"));
@@ -103,6 +105,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         if (v == null) return "ya";
         if (v.startsWith("mono_")) return "mono";
         if (v.startsWith("qlux_")) return "qlux";
+        for (Anime.Th t : Anime.ALL) if (v.startsWith(t.id + "_")) return t.id;
         return "ya";
     }
 
@@ -128,8 +131,10 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             GlStateManager.scale((float) side, -1f, 1f);
             Poly.begin();
             CosmeticRender.qlux = style.equals("qlux");
+            CosmeticRender.anime = Anime.byStyle(style);
             if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
             CosmeticRender.qlux = false;
+            CosmeticRender.anime = null;
             Poly.end();
             GlStateManager.popMatrix();
         }
@@ -160,7 +165,9 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.rotate(6f + f2 / 2f + f1, 1f, 0f, 0f);
         GlStateManager.rotate(f3 / 2f, 0f, 0f, 1f);
         GlStateManager.rotate(-f3 / 2f, 0f, 1f, 0f);
-        if (style.equals("qlux")) {
+        if (Anime.byStyle(style) != null) {
+            Anime.drawCape(Anime.byStyle(style), age, plus);
+        } else if (style.equals("qlux")) {
             CosmeticQlux.drawCape(age, plus);
         } else if (mono) {
             Poly.begin();
@@ -191,7 +198,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         if (mono) GlStateManager.rotate(age * 6f, 0f, 1f, 0f);
         else GlStateManager.rotate((float) (Math.sin(age * 0.05) * 12.0), 0f, 1f, 0f);
         Poly.begin();
-        if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+        if (Anime.byStyle(style) != null) AnimePets.pet(Anime.byStyle(style), age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
         Poly.end();
         GlStateManager.popMatrix();
     }

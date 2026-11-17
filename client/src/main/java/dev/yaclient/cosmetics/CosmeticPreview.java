@@ -18,6 +18,7 @@ public final class CosmeticPreview {
     /** @param variant "ya" (Beta Tester bundle) or "mono" (Monochrome bundle) */
     public static void draw(String key, String variant, float cx, float cy, float scale, long timeMs, boolean plus) {
         final boolean mono = "mono".equals(variant), qlux = "qlux".equals(variant);
+        final Anime.Th an = Anime.byStyle(variant);
         float age = timeMs / 50f;
         boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
         GlStateManager.enableDepth();
@@ -39,42 +40,44 @@ public final class CosmeticPreview {
         if (key.equals("cape")) {
             GlStateManager.translate(0f, -0.5f, 0f);
             GlStateManager.rotate(sway * 0.7f, 0f, 1f, 0f);
-            cape(age, plus, mono, qlux);
+            cape(age, plus, mono, qlux, an);
         } else if (key.equals("wings")) {
             GlStateManager.translate(0f, 0.05f, 0f);
             GlStateManager.rotate(sway * 0.5f, 0f, 1f, 0f);
-            wings(age, mono, qlux);
+            wings(age, mono, qlux, an);
         } else if (key.equals("bandana")) {
             GlStateManager.translate(0f, 0.37f, 0f);
             GlStateManager.rotate(18f, 1f, 0f, 0f);
             GlStateManager.rotate(age * 2.5f, 0f, 1f, 0f);
             CosmeticRender.mono = mono;
             CosmeticRender.qlux = qlux;
+            CosmeticRender.anime = an;
             Poly.begin();
             CosmeticRender.bandana(age, 0f);
             Poly.end();
             CosmeticRender.mono = false;
             CosmeticRender.qlux = false;
+            CosmeticRender.anime = null;
         } else if (key.equals("pet")) {
             GlStateManager.translate(0f, 0.02f, 0f);
-            GlStateManager.rotate(mono ? age * 6f : (qlux ? age * 2.5f : 180f + sway * 1.6f), 0f, 1f, 0f);
+            GlStateManager.rotate(mono ? age * 6f : ((qlux || an != null) ? age * 2.5f : 180f + sway * 1.6f), 0f, 1f, 0f);
             Poly.begin();
-            if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+            if (an != null) AnimePets.pet(an, age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
             Poly.end();
         } else {   // bundle
             GlStateManager.translate(0f, -0.25f, 0f);
             GlStateManager.rotate(sway * 0.5f, 0f, 1f, 0f);
             GlStateManager.pushMatrix();
             GlStateManager.translate(0f, -0.1f, 0.1f);
-            wings(age, mono, qlux);
+            wings(age, mono, qlux, an);
             GlStateManager.popMatrix();
-            cape(age, plus, mono, qlux);
+            cape(age, plus, mono, qlux, an);
             GlStateManager.pushMatrix();
             GlStateManager.translate(-0.95f, 0.1f, 0.25f);
             GlStateManager.scale(0.8f, 0.8f, 0.8f);
-            GlStateManager.rotate(mono ? age * 6f : (qlux ? age * 2.5f : 180f), 0f, 1f, 0f);
+            GlStateManager.rotate(mono ? age * 6f : ((qlux || an != null) ? age * 2.5f : 180f), 0f, 1f, 0f);
             Poly.begin();
-            if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+            if (an != null) AnimePets.pet(an, age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
             Poly.end();
             GlStateManager.popMatrix();
         }
@@ -87,7 +90,8 @@ public final class CosmeticPreview {
         if (!depth) GlStateManager.disableDepth();
     }
 
-    private static void cape(float age, boolean plus, boolean mono, boolean qlux) {
+    private static void cape(float age, boolean plus, boolean mono, boolean qlux, Anime.Th an) {
+        if (an != null) { Anime.drawCape(an, age, plus); return; }
         if (qlux) { CosmeticQlux.drawCape(age, plus); return; }
         if (mono) {
             Poly.begin();
@@ -107,7 +111,7 @@ public final class CosmeticPreview {
         GlStateManager.disableTexture2D();
     }
 
-    private static void wings(float age, boolean mono, boolean qlux) {
+    private static void wings(float age, boolean mono, boolean qlux, Anime.Th an) {
         float flap = (float) Math.sin(age * 0.10) * 7f;
         for (int side = -1; side <= 1; side += 2) {
             GlStateManager.pushMatrix();
@@ -117,8 +121,10 @@ public final class CosmeticPreview {
             GlStateManager.scale((float) side, -1f, 1f);
             Poly.begin();
             CosmeticRender.qlux = qlux;
+            CosmeticRender.anime = an;
             if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
             CosmeticRender.qlux = false;
+            CosmeticRender.anime = null;
             Poly.end();
             GlStateManager.popMatrix();
         }

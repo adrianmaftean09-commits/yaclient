@@ -62,7 +62,7 @@
 
   var ITEM = { ya_cape: ['cape', 'ya'], ya_wings: ['wing', 'ya'], ya_bandana: ['bandana', 'ya'], ya_pet: ['pet', 'ya'],
                mono_cape: ['cape', 'mono'], mono_wings: ['wing', 'mono'], mono_bandana: ['bandana', 'mono'], mono_pet: ['pet', 'mono'],
-               qlux_cape: ['cape', 'qlux'], qlux_wings: ['wing', 'qlux'], qlux_bandana: ['bandana', 'qlux'], qlux_pet: ['pet', 'qlux'] };
+               qlux_cape: ['cape', 'qlux'], qlux_wings: ['wing', 'qlux'], qlux_bandana: ['bandana', 'qlux'], qlux_pet: ['pet', 'qlux'], sakura_cape: ['cape', 'sakura'], sakura_wings: ['wing', 'sakura'], sakura_bandana: ['bandana', 'sakura'], sakura_pet: ['pet', 'sakura'], shinobi_cape: ['cape', 'shinobi'], shinobi_wings: ['wing', 'shinobi'], shinobi_bandana: ['bandana', 'shinobi'], shinobi_pet: ['pet', 'shinobi'], neon_cape: ['cape', 'neon'], neon_wings: ['wing', 'neon'], neon_bandana: ['bandana', 'neon'], neon_pet: ['pet', 'neon'], kitsune_cape: ['cape', 'kitsune'], kitsune_wings: ['wing', 'kitsune'], kitsune_bandana: ['bandana', 'kitsune'], kitsune_pet: ['pet', 'kitsune'] };
 
   function Scene(canvas, opts) {
     opts = opts || {};
@@ -81,10 +81,13 @@
     this.tex = gl.createTexture();
     loadLogo(function () { gl.bindTexture(gl.TEXTURE_2D, self.tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logoImg);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); self.texOk = true; });
-    this.qtex = gl.createTexture();
-    var qi = new Image(); qi.onload = function () { gl.bindTexture(gl.TEXTURE_2D, self.qtex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, qi);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.qOk = true; };
-    qi.src = '/qlux-wordmark.png';
+    this.etex = {}; this.eok = {};
+    ['qlux', 'sakura', 'shinobi', 'neon', 'kitsune'].forEach(function (st) {
+      var tx = gl.createTexture(); self.etex[st] = tx;
+      var im = new Image(); im.onload = function () { gl.bindTexture(gl.TEXTURE_2D, tx); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.bindTexture(gl.TEXTURE_2D, self.tex); self.eok[st] = true; };
+      im.src = st === 'qlux' ? '/qlux-wordmark.png' : '/anime-' + st + '.png';
+    });
     // drag to rotate
     if (opts.drag !== false) {
       var down = false, lx = 0, ly = 0;
@@ -150,7 +153,7 @@
       } else if (kind === 'cape') {
         var m = mul(base, mul(T(0, 0, .125), RX(6 * D)));
         if (sty === 'ya' && self.plus && GEO.cape_ya_plus) { self.plusCape(age); self.drawMesh(self.pcBuf, m, false); if (self.pcEm && self.texOk) self.drawMesh(self.pcEm, m, true); }
-        else { var key = 'cape_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); if (gg.tex && !self.texOk) continue; if (gg.tex && sty === 'qlux') { if (!self.qOk) continue; gl.bindTexture(gl.TEXTURE_2D, self.qtex); self.drawMesh(gg.m, m, true); gl.bindTexture(gl.TEXTURE_2D, self.tex); continue; } self.drawMesh(gg.m, m, gg.tex); } }
+        else { var key = 'cape_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); if (gg.tex && !self.texOk) continue; if (gg.tex && self.etex[sty]) { if (!self.eok[sty]) continue; gl.bindTexture(gl.TEXTURE_2D, self.etex[sty]); self.drawMesh(gg.m, m, true); gl.bindTexture(gl.TEXTURE_2D, self.tex); continue; } self.drawMesh(gg.m, m, gg.tex); } }
       } else if (kind === 'bandana') {
         var key = 'bandana_' + sty; for (var b = 0; b < batches(key).length; b++) { var gg = self.get(key, b); self.drawMesh(gg.m, base, gg.tex); }
       } else if (kind === 'pet') {
