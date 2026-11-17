@@ -6,15 +6,22 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSelectWorld;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.util.glu.Project;
 
 /** YA CLIENT title screen: dark animated backdrop, centered logo, stacked buttons and a small icon dock. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 200, BH = 22, GAP = 6;
+    private static final int BW = 220, BH = 26, GAP = 7;
     private static final String[] ICONS = {"shirt", "gear", "wrench", "close"};
     private static final String[] TIPS = {"tab.cosmetics", "menu.options", "tab.settings", "menu.quit"};
+
+    private static final ResourceLocation[] PANO = new ResourceLocation[6];
+    static { for (int i = 0; i < 6; i++) PANO[i] = new ResourceLocation("textures/gui/title/background/panorama_" + i + ".png"); }
 
     private final float[] hover = new float[3];
     private final float[] dock = new float[ICONS.length];
@@ -32,20 +39,9 @@ public class MainMenuScreen extends GuiScreen {
         float t = (now - opened) / 1000f;
         float fadeIn = Ui.ease((now - opened) / 500f);
 
-        // backdrop: deep gradient + slow drifting soft glows (a cheap blurred-scene look)
-        drawGradientRect(0, 0, width, height, 0xFF0B0B0F, 0xFF050507);
-        for (int i = 0; i < 4; i++) {
-            float px = width * (0.2f + 0.2f * i) + (float) Math.sin(t * 0.25f + i * 1.7f) * width * 0.08f;
-            float py = height * (0.35f + 0.15f * (i % 2)) + (float) Math.cos(t * 0.2f + i) * height * 0.07f;
-            int r = Math.round(Math.min(width, height) * (0.30f + 0.04f * i));
-            for (int k = 6; k >= 1; k--) {
-                int a = i % 2 == 0 ? 0x0E0E1318 : 0x0A1A0608;
-                glow(px, py, r * k / 6f, (a >>> 24) == 0 ? 0 : a);
-            }
-        }
-        // vignette
-        drawGradientRect(0, 0, width, height / 4, 0x66000000, 0x00000000);
-        drawGradientRect(0, height * 3 / 4, width, height, 0x00000000, 0x88000000);
+        // backdrop: the slowly rotating Minecraft panorama, lightly darkened (no black screen)
+        drawPanorama((now - opened) / 50f);
+        drawGradientRect(0, 0, width, height, 0x38000000, 0x70000000);
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
         Gfx.setScale(Math.max(1, gs));
@@ -65,19 +61,15 @@ public class MainMenuScreen extends GuiScreen {
         bx = cx - BW / 2;
         by0 = wy + 26;
         String[] labels = {Lang.t("menu.play"), Lang.t("menu.multiplayer"), Lang.t("menu.client_settings")};
-        String[] icons = {"sword", "globe", "star"};
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
             boolean over = mx >= bx && mx < bx + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
             boolean primary = i == 2;
-            Gfx.rr(bx, y, BW, BH, 6, primary ? Ui.mix(0xFFEDEDF0, 0xFFFFFFFF, hover[i]) : Ui.mix(0xE0101014, 0xF0202026, hover[i]));
-            if (!primary) Gfx.rrOutline(bx, y, BW, BH, 6, 1, Ui.mix(0x1AFFFFFF, 0x44FFFFFF, hover[i]));
+            Gfx.rr(bx, y, BW, BH, 8, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
+            if (!primary) Gfx.rrOutline(bx, y, BW, BH, 8, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
             int fg = primary ? 0xFF101014 : Theme.TEXT;
-            int lw = Gfx.width(labels[i], 11, true) + 20;
-            int ix = bx + (BW - lw) / 2;
-            Gfx.icon(icons[i], ix, y + (BH - 14) / 2, 14, fg);
-            Gfx.text(labels[i], ix + 20, y + (BH - Gfx.lineHeight(11, true)) / 2, 11, true, fg);
+            Gfx.textCentered(labels[i], bx + BW / 2, y + (BH - Gfx.lineHeight(12, true)) / 2, 12, true, fg);
         }
 
         // icon dock
@@ -88,8 +80,8 @@ public class MainMenuScreen extends GuiScreen {
             int x = dockX + i * (dsz + dg);
             boolean over = mx >= x && mx < x + dsz && my >= dockY && my < dockY + dsz;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
-            Gfx.rr(x, dockY, dsz, dsz, 6, Ui.mix(0xE0101014, 0xF0202026, dock[i]));
-            Gfx.rrOutline(x, dockY, dsz, dsz, 6, 1, Ui.mix(0x1AFFFFFF, 0x44FFFFFF, dock[i]));
+            Gfx.rr(x, dockY, dsz, dsz, 7, Ui.mix(0x90101014, 0xB0242429, dock[i]));
+            Gfx.rrOutline(x, dockY, dsz, dsz, 7, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, dock[i]));
             Gfx.icon(ICONS[i], x + 4, dockY + 4, 14, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
             if (over) Gfx.textCentered(Lang.t(TIPS[i]), cx, dockY + dsz + 6, 9, false, Theme.MUTED);
         }
@@ -100,15 +92,61 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.fade = 1f;
     }
 
-    /** Soft circle approximated with stacked translucent rectangles (cheap, no textures). */
-    private void glow(float cx, float cy, float r, int argb) {
-        if (argb == 0) return;
-        int steps = 14;
-        for (int i = 0; i < steps; i++) {
-            float yy = -r + 2 * r * i / steps, h = 2 * r / steps;
-            float half = (float) Math.sqrt(Math.max(0, r * r - (yy + h / 2) * (yy + h / 2)));
-            Gui.drawRect(Math.round(cx - half), Math.round(cy + yy), Math.round(cx + half), Math.round(cy + yy + h + 1), argb);
+    /** The vanilla title panorama (same technique as the original menu), rendered at the screen's aspect. */
+    private void drawPanorama(float timer) {
+        Tessellator t = Tessellator.getInstance();
+        WorldRenderer wr = t.getWorldRenderer();
+        GlStateManager.matrixMode(5889);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        Project.gluPerspective(85.0F, (float) width / (float) height, 0.05F, 10.0F);
+        GlStateManager.matrixMode(5888);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.disableCull();
+        GlStateManager.depthMask(false);
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        final int n = 4;
+        for (int j = 0; j < n * n; j++) {
+            GlStateManager.pushMatrix();
+            float dx = ((float) (j % n) / n - 0.5F) / 64.0F, dy = ((float) (j / n) / n - 0.5F) / 64.0F;
+            GlStateManager.translate(dx, dy, 0.0F);
+            GlStateManager.rotate((float) Math.sin(timer / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-timer * 0.1F, 0.0F, 1.0F, 0.0F);
+            for (int k = 0; k < 6; k++) {
+                GlStateManager.pushMatrix();
+                if (k == 1) GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 2) GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 3) GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 4) GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                if (k == 5) GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+                Minecraft.getMinecraft().getTextureManager().bindTexture(PANO[k]);
+                wr.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                int a = 255 / (j + 1);
+                wr.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(-1.0D, 1.0D, 1.0D).tex(0.0D, 1.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(1.0D, 1.0D, 1.0D).tex(1.0D, 1.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(1.0D, -1.0D, 1.0D).tex(1.0D, 0.0D).color(255, 255, 255, a).endVertex();
+                t.draw();
+                GlStateManager.popMatrix();
+            }
+            GlStateManager.popMatrix();
+            GlStateManager.colorMask(true, true, true, false);
         }
+        GlStateManager.colorMask(true, true, true, true);
+        GlStateManager.matrixMode(5889);
+        GlStateManager.popMatrix();
+        GlStateManager.matrixMode(5888);
+        GlStateManager.popMatrix();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.enableAlpha();
     }
 
     @Override

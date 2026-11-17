@@ -31,23 +31,7 @@ function createWindow() {
   win.removeMenu();
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
-let splash = null;
-function showSplash() {
-  try {
-    closeSplash();
-    splash = new BrowserWindow({ width: 640, height: 400, frame: false, resizable: false, show: false, backgroundColor: '#07070a',
-      title: 'YA CLIENT', icon: path.join(__dirname, 'assets', 'icon.png'), alwaysOnTop: false });
-    splash.removeMenu();
-    splash.loadFile(path.join(__dirname, 'renderer', 'splash.html'));
-    splash.once('ready-to-show', () => { if (splash) splash.show(); });
-    splash.on('closed', () => { splash = null; });
-  } catch (_) { splash = null; }
-}
-function splashSet(text, pct) {
-  if (!splash || splash.isDestroyed()) return;
-  splash.webContents.executeJavaScript(`document.getElementById('t').textContent=${JSON.stringify(String(text))};document.getElementById('b').style.width=${Math.max(2, Math.min(100, pct | 0))}+'%'`).catch(() => {});
-}
-function closeSplash() { if (splash && !splash.isDestroyed()) splash.close(); splash = null; }
+const showSplash = () => {}, splashSet = () => {}, closeSplash = () => {};
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());
 
@@ -230,7 +214,9 @@ ipcMain.handle('login-ms', async () => {
     const auth = new Auth('select_account');
     const xbox = await auth.launch('electron');
     const mc = await xbox.getMinecraft();
-    state.account = { type: 'microsoft', name: mc.profile.name, auth: mc.mclc() };
+    let refresh = '';
+    try { refresh = xbox.save(); } catch (_) {}
+    state.account = { type: 'microsoft', name: mc.profile.name, auth: mc.mclc(), refresh };
     save();
     return { name: mc.profile.name, type: 'microsoft' };
   } catch (e) {
@@ -320,6 +306,19 @@ async function setupFabric(mc) {
 // ---------- launch ----------
 ipcMain.handle('play', async (_e, opts) => {
   if (!state.account) return { error: 'need_login' };
+  // Microsoft tokens expire: renew the session before every launch
+  if (state.account.type === 'microsoft') {
+    if (!state.account.refresh) return { error: 'session_expired' };
+    try {
+      const { Auth } = require('msmc');
+      const xbox = await new Auth('select_account').refresh(state.account.refresh);
+      const mc = await xbox.getMinecraft();
+      let r2 = state.account.refresh;
+      try { r2 = xbox.save(); } catch (_) {}
+      state.account = { type: 'microsoft', name: mc.profile.name, auth: mc.mclc(), refresh: r2 };
+      save();
+    } catch (e) { return { error: 'session_expired' }; }
+  }
   try {
     const content = contentCache || (await loadContent());
     // tell the game where the store is and which language to use
@@ -361,10 +360,7 @@ ipcMain.handle('play', async (_e, opts) => {
     launcher.on('debug', (m) => send('log', clean(m)));
     launcher.on('data', (m) => {
       const l = clean(m); send('log', l);
-      if (/Setting user|LWJGL|Loading/i.test(l)) splashSet('Starting Minecraft', 78);
-      if (/OpenAL initialized|textures-atlas|Sound engine started|Reloading ResourceManager/i.test(l)) { splashSet('Starting Minecraft', 96); setTimeout(closeSplash, 1800); }
     });
-    setTimeout(closeSplash, 150000);
     launcher.on('arguments', () => {
       if (!yaMode) return;
       try { patchSplash(); } catch (e) { send('log', 'splash: ' + e.message); }

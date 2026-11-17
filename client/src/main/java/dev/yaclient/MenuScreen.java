@@ -302,13 +302,16 @@ public class MenuScreen extends GuiScreen {
         float h = anim("h" + m.id, overView(x, y, cw, ch) ? 1f : 0f, dt, 16f, 0f);
         float a = anim("e" + m.id, m.enabled ? 1f : 0f, dt, 14f, m.enabled ? 1f : 0f);
 
-        Gfx.rr(x, y, cw, ch, 12, Ui.mix(Theme.CARD, Theme.CARD_HOVER, h));
-        Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x14FFFFFF, 0x55FFFFFF, a * 0.6f + h * 0.4f));
+        Gfx.rr(x, y, cw, ch, 12, Ui.mix(0x1AFFFFFF, 0x26FFFFFF, h));
+        Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x30FFFFFF, 0x77FFFFFF, a * 0.6f + h * 0.4f));
 
         // big icon, centered
         Gfx.icon(m.category.icon, x + (cw - 30) / 2, y + 12, 30, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
         Gfx.textCentered(Gfx.trim(m.name(), 12, true, cw - 16), x + cw / 2, y + 48, 12, true, m.available ? Theme.TEXT : Theme.MUTED);
 
+        hitView(x, y, cw, ch, null, null, new Action() {
+            @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available) drawerModule = m; }
+        });
         boolean gear = m.available && !m.settings.isEmpty();
         int bx = x + 10, bw = cw - 20, oy = y + 70, oh = 20;
         int ow = gear ? bw : bw;
@@ -335,9 +338,6 @@ public class MenuScreen extends GuiScreen {
             Gfx.rr(bx, ty, bw, th, 8, 0x14FFFFFF);
             Gfx.textCentered(Lang.t("ui.soon"), bx + bw / 2, ty + (th - Gfx.lineHeight(10, true)) / 2, 10, true, Theme.DIM);
         }
-        hitView(x, y, cw, ch, null, null, new Action() {
-            @Override public void run(float px, float py) { if (!m.settings.isEmpty() && m.available) drawerModule = m; }
-        });
     }
 
     // ----- settings drawer -----
