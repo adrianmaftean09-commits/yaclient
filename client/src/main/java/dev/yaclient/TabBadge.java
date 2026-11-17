@@ -49,7 +49,6 @@ final class TabBadge {
 
     private static final class YaTabList extends GuiPlayerTabOverlay {
         private static final String RESERVE = "   ";        // 3 spaces = 12px kept free in front of the name
-        private static final String RESERVE_PLUS = "     ";  // 5 spaces = 20px: logo + gold plus
 
         YaTabList(Minecraft mc, GuiIngame gui) { super(mc, gui); }
 
@@ -62,7 +61,7 @@ final class TabBadge {
         public String getPlayerName(NetworkPlayerInfo info) {
             String n = super.getPlayerName(info);
             if (!badge(info)) return n;
-            return CosmeticsApi.isPlus(info.getGameProfile().getId()) ? RESERVE_PLUS + n : RESERVE + n;
+            return RESERVE + n;
         }
 
         @Override
@@ -73,7 +72,7 @@ final class TabBadge {
             boolean head = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
             int bx = x + (head ? 9 : 0);
             Logo.draw(bx + 1, y, 9, 9, 1f);
-            if (CosmeticsApi.isPlus(info.getGameProfile().getId())) PlusBadge.draw(bx + 11, y, 9);
+            if (CosmeticsApi.isPlus(info.getGameProfile().getId())) PlusBadge.draw(bx + 6, y - 3, 7);   // small gold plus sitting on the A like an exponent
         }
     }
 }
