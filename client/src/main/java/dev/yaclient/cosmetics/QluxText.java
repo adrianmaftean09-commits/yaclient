@@ -63,14 +63,8 @@ final class QluxText {
         // x: two crossing strokes
         g.draw(new Line2D.Double(676, 122, 800, base));
         g.draw(new Line2D.Double(800, 122, 676, base));
-        // a small four-point sparkle (the "lux")
-        g.setStroke(new BasicStroke(14f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        double sx = 880, sy = 84, r = 46;
-        Path2D.Double star = new Path2D.Double();
-        star.moveTo(sx, sy - r); star.quadTo(sx, sy, sx + r, sy); star.quadTo(sx, sy, sx, sy + r);
-        star.quadTo(sx, sy, sx - r, sy); star.quadTo(sx, sy, sx, sy - r);
-        g.fill(star);
-        g.draw(star);
+        // trailing underscore: "Qlux_"
+        g.draw(new Line2D.Double(850, base + 22, 972, base + 22));
         g.dispose();
         return img;
     }
