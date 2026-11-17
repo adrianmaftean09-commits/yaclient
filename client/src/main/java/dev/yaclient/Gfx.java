@@ -67,6 +67,9 @@ public final class Gfx {
     /** Font family used for all client text (also for the in-world nametag). */
     public static String family() { return FAMILY; }
 
+    /** True if the module id has its own custom icon. */
+    public static boolean hasIcon(String name) { return Icons.has(name); }
+
     private static void hints(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

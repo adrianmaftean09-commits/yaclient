@@ -32,6 +32,9 @@ public abstract class Module {
         this.enabled = available && enabledByDefault;
     }
 
+    /** Icon name: the module's own icon when it has one, otherwise its category icon. */
+    public String icon() { return dev.yaclient.Gfx.hasIcon(id) ? id : category.icon; }
+
     public String name() { return Lang.t("mod." + id + ".name"); }
 
     public String desc() { return Lang.t("mod." + id + ".desc"); }

@@ -196,7 +196,18 @@ final class CosmeticRender {
         return Poly.p(a * Math.signum(c) * Math.pow(Math.abs(c), e), y, a * Math.signum(s) * Math.pow(Math.abs(s), e));
     }
 
+    /** True while the black & white bundle is being drawn (bandana palette). */
+    static boolean mono;
+    private static float monoAge;
+
     private static float[] bandColor(double vv, double theta) {
+        if (mono) {
+            double st = Math.sin(theta * 4.0 - monoAge * 0.12 + vv * 3.0);
+            float w = (float) Math.pow(Math.max(0.0, st), 6.0);
+            float[] c = Poly.mix(Poly.INK, Poly.CHAR, (float) (0.3 + 0.3 * Math.sin(theta * 2.0)));
+            if (vv < 0.12 || vv > 0.88) c = Poly.mix(Poly.WHITE, Poly.GREY, 0.2f);
+            return Poly.mix(c, Poly.WHITE, w * (vv < 0.12 || vv > 0.88 ? 0f : 0.95f));
+        }
         float[] c;
         if (vv < 0.16 || vv > 0.84) c = Poly.mix(Poly.BLACK, Poly.DARK, 0.3f);
         else c = Poly.mix(Poly.DEEP, Poly.RED, (float) (0.35 + 0.35 * Math.sin(theta * 3.0)));
@@ -205,6 +216,7 @@ final class CosmeticRender {
     }
 
     static void bandana(float age, float limbSwing) {
+        monoAge = age;
         final int N = 56;
         final double a = 0.298, yTop = -0.43, yBot = -0.31;
         for (int i = 0; i < N; i++) {
@@ -217,7 +229,7 @@ final class CosmeticRender {
             }
         }
         // knot
-        Poly.ellipsoid(0, -0.37, a + 0.015, 0.045, 0.05, 0.035, Poly.RED, Poly.DEEP, 0.15f);
+        Poly.ellipsoid(0, -0.37, a + 0.015, 0.045, 0.05, 0.035, mono ? Poly.WHITE : Poly.RED, mono ? Poly.GREY : Poly.DEEP, 0.15f);
         // two waving tails
         for (int side = -1; side <= 1; side += 2) {
             final int S = 9;
@@ -232,7 +244,7 @@ final class CosmeticRender {
                 double cz = a + 0.035 + 0.03 * v + Math.sin(age * 0.10 + v * 2.5) * 0.028 * v + 0.14 * v * Math.min(1f, limbSwing);
                 double cy = -0.36 + v * len;
                 double[] l = Poly.p(cx - w, cy, cz), r = Poly.p(cx + w, cy, cz);
-                float[] col = Poly.mix(Poly.RED, Poly.DEEP, (float) v);
+                float[] col = mono ? Poly.mix(Poly.WHITE, Poly.INK, (float) Math.min(1.0, v * 1.1 + 0.15 * Math.sin(age * 0.2 + v * 6.0))) : Poly.mix(Poly.RED, Poly.DEEP, (float) v);
                 if (v > 0.95) col = Poly.mix(col, Poly.BLACK, 0.7f);
                 if (prevL != null) Poly.quad(prevL, prevR, r, l, prevC, prevC, col, col, 1f);
                 prevL = l; prevR = r; prevC = col;

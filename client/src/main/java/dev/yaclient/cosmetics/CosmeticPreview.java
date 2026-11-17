@@ -12,6 +12,12 @@ public final class CosmeticPreview {
      * @param scale pixels per block
      */
     public static void draw(String key, float cx, float cy, float scale, long timeMs, boolean plus) {
+        draw(key, "ya", cx, cy, scale, timeMs, plus);
+    }
+
+    /** @param variant "ya" (Beta Tester bundle) or "mono" (Monochrome bundle) */
+    public static void draw(String key, String variant, float cx, float cy, float scale, long timeMs, boolean plus) {
+        final boolean mono = "mono".equals(variant);
         float age = timeMs / 50f;
         boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
         GlStateManager.enableDepth();
@@ -33,38 +39,40 @@ public final class CosmeticPreview {
         if (key.equals("cape")) {
             GlStateManager.translate(0f, -0.5f, 0f);
             GlStateManager.rotate(sway * 0.7f, 0f, 1f, 0f);
-            cape(age, plus);
+            cape(age, plus, mono);
         } else if (key.equals("wings")) {
             GlStateManager.translate(0f, 0.05f, 0f);
             GlStateManager.rotate(sway * 0.5f, 0f, 1f, 0f);
-            wings(age);
+            wings(age, mono);
         } else if (key.equals("bandana")) {
             GlStateManager.translate(0f, 0.37f, 0f);
             GlStateManager.rotate(18f, 1f, 0f, 0f);
             GlStateManager.rotate(age * 2.5f, 0f, 1f, 0f);
+            CosmeticRender.mono = mono;
             Poly.begin();
             CosmeticRender.bandana(age, 0f);
             Poly.end();
+            CosmeticRender.mono = false;
         } else if (key.equals("pet")) {
             GlStateManager.translate(0f, 0.02f, 0f);
-            GlStateManager.rotate(180f + sway * 1.6f, 0f, 1f, 0f);
+            GlStateManager.rotate(mono ? age * 6f : 180f + sway * 1.6f, 0f, 1f, 0f);
             Poly.begin();
-            CosmeticRender.pet(age);
+            if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
             Poly.end();
         } else {   // bundle
             GlStateManager.translate(0f, -0.25f, 0f);
             GlStateManager.rotate(sway * 0.5f, 0f, 1f, 0f);
             GlStateManager.pushMatrix();
             GlStateManager.translate(0f, -0.1f, 0.1f);
-            wings(age);
+            wings(age, mono);
             GlStateManager.popMatrix();
-            cape(age, plus);
+            cape(age, plus, mono);
             GlStateManager.pushMatrix();
             GlStateManager.translate(-0.95f, 0.1f, 0.25f);
             GlStateManager.scale(0.8f, 0.8f, 0.8f);
-            GlStateManager.rotate(180f, 0f, 1f, 0f);
+            GlStateManager.rotate(mono ? age * 6f : 180f, 0f, 1f, 0f);
             Poly.begin();
-            CosmeticRender.pet(age);
+            if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
             Poly.end();
             GlStateManager.popMatrix();
         }
@@ -77,7 +85,14 @@ public final class CosmeticPreview {
         if (!depth) GlStateManager.disableDepth();
     }
 
-    private static void cape(float age, boolean plus) {
+    private static void cape(float age, boolean plus, boolean mono) {
+        if (mono) {
+            Poly.begin();
+            CosmeticMono.capeBase(age, plus);
+            CosmeticMono.emblem(age, plus);
+            Poly.end();
+            return;
+        }
         Poly.begin();
         CosmeticRender.capeBase(age, plus);
         Poly.end();
@@ -89,7 +104,7 @@ public final class CosmeticPreview {
         GlStateManager.disableTexture2D();
     }
 
-    private static void wings(float age) {
+    private static void wings(float age, boolean mono) {
         float flap = (float) Math.sin(age * 0.10) * 7f;
         for (int side = -1; side <= 1; side += 2) {
             GlStateManager.pushMatrix();
@@ -98,7 +113,7 @@ public final class CosmeticPreview {
             GlStateManager.rotate(-side * (-2f + flap), 0f, 0f, 1f);
             GlStateManager.scale((float) side, -1f, 1f);
             Poly.begin();
-            CosmeticRender.wing(age);
+            if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
             Poly.end();
             GlStateManager.popMatrix();
         }

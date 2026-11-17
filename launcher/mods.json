@@ -1,406 +1,424 @@
 {
- "_help": "Each mod lists the Minecraft versions it works on. Specs: \"1.8.9\" (exact), \"1.8.x\" (any 1.8), \">=1.12\", \"*\" (all). Add a version here when a mod gets ported.",
- "mods": [
-  {
-   "id": "armor",
-   "name": "Armor Status",
-   "desc": "Armor and held item durability",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "biome",
-   "name": "Biome",
-   "desc": "Name of the biome you are in",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "clock",
-   "name": "Clock",
-   "desc": "Your computer time",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "coords",
-   "name": "Coordinates",
-   "desc": "Your X, Y, Z position",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "cps",
-   "name": "CPS",
-   "desc": "Clicks per second (left | right)",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "crosshair",
-   "name": "Crosshair",
-   "desc": "Custom crosshair styles",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "days",
-   "name": "Day Counter",
-   "desc": "Shows the current world day",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "direction",
-   "name": "Direction",
-   "desc": "Compass heading",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "discord_rpc",
-   "name": "Discord Presence",
-   "desc": "Show what you play on Discord",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "food",
-   "name": "Food",
-   "desc": "Food level and saturation",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "fps",
-   "name": "FPS",
-   "desc": "Frames per second",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "fullbright",
-   "name": "Fullbright",
-   "desc": "Gamma control, always bright",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "health",
-   "name": "Health",
-   "desc": "Your hit points",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "item_info",
-   "name": "Item Info",
-   "desc": "Durability or count of the held item",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "keystrokes",
-   "name": "Keystrokes",
-   "desc": "WASD, mouse and space overlay",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "light",
-   "name": "Light Level",
-   "desc": "Light level at your position",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "memory",
-   "name": "Memory",
-   "desc": "RAM used by the game",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "motion_blur",
-   "name": "Motion Blur",
-   "desc": "Smooth trail on fast movement",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "ping",
-   "name": "Ping",
-   "desc": "Latency to the server",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "players",
-   "name": "Player Count",
-   "desc": "Players currently online on the server",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "potions",
-   "name": "Potion Status",
-   "desc": "Active effects and timers",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "reach",
-   "name": "Reach Display",
-   "desc": "Distance to the target (info only)",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "rotation",
-   "name": "Rotation",
-   "desc": "Your yaw and pitch",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "server_ip",
-   "name": "Server Address",
-   "desc": "Address of the server you are playing on",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "session",
-   "name": "Session Time",
-   "desc": "How long you have been playing",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "speed",
-   "name": "Speed",
-   "desc": "Blocks per second",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "spotify",
-   "name": "Spotify",
-   "desc": "Now playing (Spotify desktop app)",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "toggle_sneak",
-   "name": "Toggle Sneak",
-   "desc": "Press once to sneak",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "toggle_sprint",
-   "name": "Toggle Sprint",
-   "desc": "Automatic sprint",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "waypoints",
-   "name": "Waypoints",
-   "desc": "B saves a point, N removes the nearest",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "zoom",
-   "name": "Zoom",
-   "desc": "Hold C to zoom in",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "time_changer",
-   "name": "Time Changer",
-   "desc": "Set the time of day (visual only)",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "clear_weather",
-   "name": "Clear Weather",
-   "desc": "Hide rain and thunder",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "hitboxes",
-   "name": "Hitboxes",
-   "desc": "Show entity hitboxes",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "fov",
-   "name": "FOV Changer",
-   "desc": "Any field of view, even above 110",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "cinematic",
-   "name": "Cinematic Camera",
-   "desc": "Smooth camera movement",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "entities",
-   "name": "Entity Count",
-   "desc": "Loaded entities around you",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "fall",
-   "name": "Fall Distance",
-   "desc": "How far you have fallen",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "xp",
-   "name": "XP Level",
-   "desc": "Your experience level",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ]
-  },
-  {
-   "id": "hit_color",
-   "name": "Hit Color",
-   "desc": "Custom color when you hit",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ],
-   "soon": true
-  },
-  {
-   "id": "old_animations",
-   "name": "1.7 Animations",
-   "desc": "Old block and hit animations",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ],
-   "soon": true
-  },
-  {
-   "id": "autogg",
-   "name": "AutoGG",
-   "desc": "Say GG when a game ends",
-   "category": "utility",
-   "versions": [
-    "1.8.9"
-   ],
-   "soon": true
-  },
-  {
-   "id": "levelhead",
-   "name": "Levelhead",
-   "desc": "Player levels above nametags",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ],
-   "soon": true
-  },
-  {
-   "id": "minimap",
-   "name": "Minimap",
-   "desc": "Client-side map overlay",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ],
-   "soon": true
-  }
- ]
+  "_help": "Each mod lists the Minecraft versions it works on. Specs: \"1.8.9\" (exact), \"1.8.x\" (any 1.8), \">=1.12\", \"*\" (all). Add a version here when a mod gets ported.",
+  "mods": [
+    {
+      "id": "armor",
+      "name": "Armor Status",
+      "desc": "Armor and held item durability",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "biome",
+      "name": "Biome",
+      "desc": "Name of the biome you are in",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "clock",
+      "name": "Clock",
+      "desc": "Your computer time",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "coords",
+      "name": "Coordinates",
+      "desc": "Your X, Y, Z position",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "cps",
+      "name": "CPS",
+      "desc": "Clicks per second (left | right)",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "crosshair",
+      "name": "Crosshair",
+      "desc": "Custom crosshair styles",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "days",
+      "name": "Day Counter",
+      "desc": "Shows the current world day",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "direction",
+      "name": "Direction",
+      "desc": "Compass heading",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "discord_rpc",
+      "name": "Discord Presence",
+      "desc": "Show what you play on Discord",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "food",
+      "name": "Food",
+      "desc": "Food level and saturation",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "fps",
+      "name": "FPS",
+      "desc": "Frames per second",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "fullbright",
+      "name": "Fullbright",
+      "desc": "Gamma control, always bright",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "desc": "Your hit points",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "item_info",
+      "name": "Item Info",
+      "desc": "Durability or count of the held item",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "keystrokes",
+      "name": "Keystrokes",
+      "desc": "WASD, mouse and space overlay",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "light",
+      "name": "Light Level",
+      "desc": "Light level at your position",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "memory",
+      "name": "Memory",
+      "desc": "RAM used by the game",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "motion_blur",
+      "name": "Motion Blur",
+      "desc": "Smooth trail on fast movement",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "ping",
+      "name": "Ping",
+      "desc": "Latency to the server",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "players",
+      "name": "Player Count",
+      "desc": "Players currently online on the server",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "potions",
+      "name": "Potion Status",
+      "desc": "Active effects and timers",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "reach",
+      "name": "Reach Display",
+      "desc": "Distance to the target (info only)",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "rotation",
+      "name": "Rotation",
+      "desc": "Your yaw and pitch",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "server_ip",
+      "name": "Server Address",
+      "desc": "Address of the server you are playing on",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "session",
+      "name": "Session Time",
+      "desc": "How long you have been playing",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "speed",
+      "name": "Speed",
+      "desc": "Blocks per second",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "desc": "Now playing (Spotify desktop app)",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "toggle_sneak",
+      "name": "Toggle Sneak",
+      "desc": "Press once to sneak",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "toggle_sprint",
+      "name": "Toggle Sprint",
+      "desc": "Automatic sprint",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "waypoints",
+      "name": "Waypoints",
+      "desc": "B saves a point, N removes the nearest",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "desc": "Hold C to zoom in",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "time_changer",
+      "name": "Time Changer",
+      "desc": "Set the time of day (visual only)",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "clear_weather",
+      "name": "Clear Weather",
+      "desc": "Hide rain and thunder",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "hitboxes",
+      "name": "Hitboxes",
+      "desc": "Show entity hitboxes",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "fov",
+      "name": "FOV Changer",
+      "desc": "Any field of view, even above 110",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "cinematic",
+      "name": "Cinematic Camera",
+      "desc": "Smooth camera movement",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "entities",
+      "name": "Entity Count",
+      "desc": "Loaded entities around you",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "fall",
+      "name": "Fall Distance",
+      "desc": "How far you have fallen",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "xp",
+      "name": "XP Level",
+      "desc": "Your experience level",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "hit_color",
+      "name": "Hit Color",
+      "desc": "Custom color when you hit",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ],
+      "soon": true
+    },
+    {
+      "id": "old_animations",
+      "name": "1.7 Animations",
+      "desc": "Old block and hit animations",
+      "category": "pvp",
+      "versions": [
+        "1.8.9"
+      ],
+      "soon": true
+    },
+    {
+      "id": "autogg",
+      "name": "AutoGG",
+      "desc": "Say GG when a game ends",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ],
+      "soon": true
+    },
+    {
+      "id": "levelhead",
+      "name": "Levelhead",
+      "desc": "Player levels above nametags",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ],
+      "soon": true
+    },
+    {
+      "id": "minimap",
+      "name": "Minimap",
+      "desc": "Client-side map overlay",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ],
+      "soon": true
+    },
+    {
+      "id": "scoreboard",
+      "name": "Scoreboard",
+      "desc": "Show or hide the sidebar scoreboard; move and resize it",
+      "category": "info",
+      "versions": [
+        "1.8.9"
+      ]
+    },
+    {
+      "id": "fps_boost",
+      "name": "FPS Boost",
+      "desc": "Lowers heavy effects to raise your FPS",
+      "category": "utility",
+      "versions": [
+        "1.8.9"
+      ]
+    }
+  ]
 }

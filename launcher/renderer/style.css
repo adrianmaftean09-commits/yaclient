@@ -99,7 +99,6 @@ input[type=range]{accent-color:#fff;width:180px}
 .mod.off{opacity:.5}.lockic{color:var(--dim)}.lockic svg{width:18px;height:18px}
 .chip{width:fit-content;display:block}
 
-.wb{font-size:20px;font-weight:600;margin-bottom:14px}.wb span{font-weight:800}
 .hero2{position:relative;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;
  background:radial-gradient(ellipse at 20% 0%,rgba(225,6,0,.10),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(255,255,255,.06),transparent 55%),#0c0c10}
 .hero2 .hlogo{position:absolute;right:-30px;bottom:-40px;width:230px;opacity:.06;pointer-events:none}
@@ -112,3 +111,7 @@ input[type=range]{accent-color:#fff;width:180px}
 .hero2 .bar{width:340px}.hero2 .stat{min-height:16px}
 
 .conp{height:calc(100vh - 190px);max-height:none}
+
+.welcome{display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;margin:0 0 14px;font-size:20px;line-height:1.2}
+.welcome .wt{font-weight:500;color:var(--mute);flex:none}
+.welcome .wn{font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;min-width:0}

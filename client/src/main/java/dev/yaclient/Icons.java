@@ -19,7 +19,105 @@ final class Icons {
         return path;
     }
 
+    // ---- per-module icons, written in a tiny path language (24x24 grid) ----
+    // M x y | L x y | B x1 y1 x2 y2 x y | Q x1 y1 x y | Z | C cx cy r | D cx cy r (filled) | E cx cy rx ry | R x y w h r | A cx cy r start extent
+    private static final java.util.Map<String, String> DSL = new java.util.HashMap<String, String>();
+    static {
+        DSL.put("fps", "A 12 15 8 -20 220 M 12 15 L 16.5 9 D 12 15 1.5");
+        DSL.put("cps", "R 7 3 10 18 5 M 12 3 L 12 10 M 7 10 L 17 10");
+        DSL.put("coords", "M 12 21 B 6 15 5 12 5 9 B 5 5.5 8 3 12 3 B 16 3 19 5.5 19 9 B 19 12 18 15 12 21 Z C 12 9 2.5");
+        DSL.put("keystrokes", "R 9 3 6 6 1.5 R 3 11 6 6 1.5 R 9 11 6 6 1.5 R 15 11 6 6 1.5");
+        DSL.put("armor", "M 12 3 L 20 6 L 19 14 B 18.5 17 15 19.5 12 21 B 9 19.5 5.5 17 5 14 L 4 6 Z");
+        DSL.put("ping", "M 5 19 L 5 15 M 10 19 L 10 11 M 15 19 L 15 7 M 20 19 L 20 3");
+        DSL.put("direction", "C 12 12 9 M 15.5 8.5 L 13.5 13.5 L 8.5 15.5 L 10.5 10.5 Z");
+        DSL.put("clock", "C 12 12 9 M 12 7 L 12 12 L 15.5 14");
+        DSL.put("speed", "M 5 6 L 11 12 L 5 18 M 12 6 L 18 12 L 12 18 M 19 6 L 19 18");
+        DSL.put("memory", "R 7 7 10 10 2 M 10 3 L 10 7 M 14 3 L 14 7 M 10 17 L 10 21 M 14 17 L 14 21 M 3 10 L 7 10 M 3 14 L 7 14 M 17 10 L 21 10 M 17 14 L 21 14");
+        DSL.put("health", "M 12 20 B 4 14 3 9 3 7 B 3 4.5 5 3 7.2 3 B 9.2 3 11 4.3 12 6 B 13 4.3 14.8 3 16.8 3 B 19 3 21 4.5 21 7 B 21 9 20 14 12 20 Z");
+        DSL.put("potions", "M 10 3 L 14 3 M 10.5 3 L 10.5 9 L 5 19 B 4.5 20.5 5.5 21 7 21 L 17 21 B 18.5 21 19.5 20.5 19 19 L 13.5 9 L 13.5 3 M 7.5 15 L 16.5 15");
+        DSL.put("reach", "M 3 12 L 21 12 M 17 8 L 21 12 L 17 16 M 3 8 L 3 16");
+        DSL.put("spotify", "M 9 17 L 9 5 L 19 3 L 19 15 C 6.8 17.5 2.4 C 16.8 15.5 2.4");
+        DSL.put("waypoints", "M 6 21 L 6 3 M 6 4 L 18 4 L 15 8.5 L 18 13 L 6 13");
+        DSL.put("days", "R 4 5 16 16 2.5 M 4 10 L 20 10 M 9 3 L 9 7 M 15 3 L 15 7");
+        DSL.put("biome", "M 5 19 B 5 9 10 4 20 4 B 20 14 15 19 5 19 Z M 5 19 L 13 11");
+        DSL.put("light", "M 9 17 L 15 17 M 10 20.5 L 14 20.5 M 9 17 B 9 14 6 13 6 9.5 B 6 6 8.7 3.5 12 3.5 B 15.3 3.5 18 6 18 9.5 B 18 13 15 14 15 17");
+        DSL.put("server_ip", "C 12 12 9 E 12 12 4 9 M 3 12 L 21 12");
+        DSL.put("session", "M 6 3 L 18 3 M 6 21 L 18 21 M 7 3 B 7 9 11 10 12 12 B 11 14 7 15 7 21 M 17 3 B 17 9 13 10 12 12 B 13 14 17 15 17 21");
+        DSL.put("rotation", "A 12 12 8 40 270 M 19 4 L 19 9 L 14 9");
+        DSL.put("item_info", "R 4 4 16 16 3 M 12 11 L 12 17 D 12 7.8 1.2");
+        DSL.put("players", "C 9 8 3.2 M 3 20 B 3 15 6 13.5 9 13.5 B 12 13.5 15 15 15 20 C 17 9 2.5 M 17 13.8 B 19.5 14 21 15.5 21 19");
+        DSL.put("food", "M 12 8 B 8 5 3 8 4.5 14 B 6 19 9 21 12 20 B 15 21 18 19 19.5 14 B 21 8 16 5 12 8 Z M 12 8 L 13 3");
+        DSL.put("toggle_sprint", "M 13 3 L 5 13 L 11 13 L 10 21 L 19 10 L 13 10 Z");
+        DSL.put("toggle_sneak", "C 9 5 2.5 M 9 8 L 12 13 L 17 13 M 12 13 L 9 19 M 9 19 L 5 19");
+        DSL.put("zoom", "C 10.5 10.5 6.5 M 15.5 15.5 L 21 21 M 8 10.5 L 13 10.5 M 10.5 8 L 10.5 13");
+        DSL.put("fullbright", "C 12 12 4 M 12 2 L 12 5 M 12 19 L 12 22 M 2 12 L 5 12 M 19 12 L 22 12 M 4.9 4.9 L 7 7 M 17 17 L 19.1 19.1 M 4.9 19.1 L 7 17 M 17 7 L 19.1 4.9");
+        DSL.put("motion_blur", "R 3 8 8 8 2 M 14 8 L 20 8 M 14 12 L 22 12 M 14 16 L 20 16");
+        DSL.put("crosshair", "C 12 12 7 M 12 2 L 12 8 M 12 16 L 12 22 M 2 12 L 8 12 M 16 12 L 22 12");
+        DSL.put("discord_rpc", "M 5 5 L 19 5 B 20.5 5 21 5.5 21 7 L 21 15 B 21 16.5 20.5 17 19 17 L 11 17 L 7 21 L 7 17 L 5 17 B 3.5 17 3 16.5 3 15 L 3 7 B 3 5.5 3.5 5 5 5 Z D 9 11 1.2 D 15 11 1.2");
+        DSL.put("time_changer", "M 20 15 B 13 21 3 15 6 6 B 7 4 9 3 10.5 3 B 8 8 12 17 20 15 Z");
+        DSL.put("clear_weather", "M 7 18 B 3 18 3 12 7.5 12 B 8 7 16 7 17 12 B 21 12 21 18 17 18 Z M 4 4 L 20 20");
+        DSL.put("hitboxes", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");
+        DSL.put("fov", "M 12 20 L 3 6 B 8 3 16 3 21 6 Z");
+        DSL.put("cinematic", "R 3 6 18 14 2 M 3 10 L 21 10 M 8 6 L 6 10 M 13 6 L 11 10 M 18 6 L 16 10");
+        DSL.put("entities", "R 5 4 14 16 2 R 7.5 8 3 3 0.5 R 13.5 8 3 3 0.5 R 10 13 4 5 0.5");
+        DSL.put("fall", "M 12 3 L 12 17 M 6 11 L 12 17 L 18 11 M 5 21 L 19 21");
+        DSL.put("xp", "C 12 12 8 M 12 7 L 13.3 10.7 L 17 12 L 13.3 13.3 L 12 17 L 10.7 13.3 L 7 12 L 10.7 10.7 Z");
+        DSL.put("hit_color", "M 12 3 B 12 3 5 11 5 15 B 5 19 8 21 12 21 B 16 21 19 19 19 15 B 19 11 12 3 12 3 Z");
+        DSL.put("old_animations", "M 5 5 L 19 19 M 19 5 L 5 19 M 3 8 L 8 3 M 16 21 L 21 16");
+        DSL.put("autogg", "M 8 4 L 16 4 L 15 11 B 14.5 13 9.5 13 9 11 Z M 8 6 L 4 6 B 4 10 6 11 8.5 11 M 16 6 L 20 6 B 20 10 18 11 15.5 11 M 12 13 L 12 17 M 8 20 L 16 20");
+        DSL.put("levelhead", "R 3 8 18 8 2 M 8 12 L 16 12");
+        DSL.put("minimap", "M 3 6 L 9 4 L 15 6 L 21 4 L 21 18 L 15 20 L 9 18 L 3 20 Z M 9 4 L 9 18 M 15 6 L 15 20");
+        DSL.put("scoreboard", "R 4 3 16 18 2 M 8 8 L 16 8 M 8 12 L 16 12 M 8 16 L 13 16");
+        DSL.put("fps_boost", "M 12 3 B 17 6 18 12 16 17 L 8 17 B 6 12 7 6 12 3 Z C 12 10 1.8 M 8 17 L 6 21 M 16 17 L 18 21");
+    }
+
+    static boolean has(String name) { return DSL.containsKey(name); }
+
+    private static float f(String s) { return Float.parseFloat(s); }
+
+    private static void dsl(Graphics2D g, String spec) {
+        String[] t = spec.trim().split("\\s+");
+        Path2D.Float path = null;
+        int i = 0;
+        while (i < t.length) {
+            String c = t[i++];
+            if (c.equals("M")) {
+                if (path != null) g.draw(path);
+                path = new Path2D.Float();
+                float x = f(t[i++]), y = f(t[i++]);
+                path.moveTo(x, y);
+            } else if (c.equals("L")) {
+                float x = f(t[i++]), y = f(t[i++]);
+                path.lineTo(x, y);
+            } else if (c.equals("B")) {
+                float a = f(t[i++]), b = f(t[i++]), c2 = f(t[i++]), d = f(t[i++]), x = f(t[i++]), y = f(t[i++]);
+                path.curveTo(a, b, c2, d, x, y);
+            } else if (c.equals("Q")) {
+                float a = f(t[i++]), b = f(t[i++]), x = f(t[i++]), y = f(t[i++]);
+                path.quadTo(a, b, x, y);
+            } else if (c.equals("Z")) {
+                path.closePath();
+            } else if (c.equals("C") || c.equals("D")) {
+                float x = f(t[i++]), y = f(t[i++]), r = f(t[i++]);
+                Ellipse2D.Float e = new Ellipse2D.Float(x - r, y - r, 2 * r, 2 * r);
+                if (c.equals("D")) g.fill(e); else g.draw(e);
+            } else if (c.equals("E")) {
+                float x = f(t[i++]), y = f(t[i++]), rx = f(t[i++]), ry = f(t[i++]);
+                g.draw(new Ellipse2D.Float(x - rx, y - ry, 2 * rx, 2 * ry));
+            } else if (c.equals("R")) {
+                float x = f(t[i++]), y = f(t[i++]), w = f(t[i++]), h = f(t[i++]), r = f(t[i++]);
+                g.draw(new RoundRectangle2D.Float(x, y, w, h, r * 2, r * 2));
+            } else if (c.equals("A")) {
+                float x = f(t[i++]), y = f(t[i++]), r = f(t[i++]), st = f(t[i++]), ex = f(t[i++]);
+                g.draw(new Arc2D.Float(x - r, y - r, 2 * r, 2 * r, st, ex, Arc2D.OPEN));
+            }
+        }
+        if (path != null) g.draw(path);
+    }
+
     static void draw(Graphics2D g, String name) {
+        String spec = DSL.get(name);
+        if (spec != null) { dsl(g, spec); return; }
         switch (name) {
             case "grid":
                 g.draw(new RoundRectangle2D.Float(3.5f, 3.5f, 7f, 7f, 2.5f, 2.5f));

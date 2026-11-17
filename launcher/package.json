@@ -1,7 +1,7 @@
 {
   "name": "ya-client-launcher",
   "productName": "YA CLIENT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Launcher ufficiale di YA CLIENT (Minecraft 1.8.9)",
   "main": "main.js",
   "author": "YA",
@@ -12,7 +12,8 @@
   "dependencies": {
     "minecraft-launcher-core": "^3.18.1",
     "msmc": "^5.0.0",
-    "adm-zip": "^0.5.16"
+    "adm-zip": "^0.5.16",
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^31.0.0",
@@ -29,7 +30,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "YA CLIENT"
+      "shortcutName": "YA CLIENT",
+      "runAfterFinish": true
     },
     "artifactName": "YA-CLIENT-Setup.${ext}",
     "files": [
@@ -40,6 +42,13 @@
       "mods.json",
       "renderer/**/*",
       "assets/**/*"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "adrianmaftean09-commits",
+        "repo": "yaclient"
+      }
     ]
   }
 }

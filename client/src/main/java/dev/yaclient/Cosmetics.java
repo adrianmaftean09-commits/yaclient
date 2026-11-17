@@ -1,31 +1,28 @@
 package dev.yaclient;
 
 /**
- * Cosmetics catalog and the player's selection. Items are unlocked on the website (the Beta Tester
- * bundle is free for beta testers); the selection is saved locally and synced to the store API
- * (see CosmeticsApi). Rendering is done by cosmetics/CosmeticLayer.
+ * Cosmetics catalog and the player's selection. Items are unlocked on the website; the selection is
+ * saved locally and synced to the store API (see CosmeticsApi). Rendering is done by cosmetics/CosmeticLayer.
+ * Item ids are "<bundle prefix>_<slot>", e.g. ya_cape or mono_wings.
  */
 public final class Cosmetics {
-    /** One item per slot for now. Order = order in the locker. */
+    /** One item per slot in every bundle. Order = order in the locker. */
     public static final String[] SLOTS = {"cape", "wings", "bandana", "pet"};
-    public static final String[] ITEMS = {"ya_cape", "ya_wings", "ya_bandana", "ya_pet"};
-    /** Store id of the bundle (it unlocks every item above). */
-    public static final String BUNDLE = "beta";
+    /** Store ids of the bundles and the prefix of their items. */
+    public static final String[] BUNDLES = {"beta", "mono"};
+    public static final String[] PREFIX = {"ya", "mono"};
 
     private Cosmetics() {}
 
-    public static String item(String slot) {
-        for (int i = 0; i < SLOTS.length; i++) if (SLOTS[i].equals(slot)) return ITEMS[i];
-        return "none";
-    }
+    public static String item(int bundle, String slot) { return PREFIX[bundle] + "_" + slot; }
 
     public static String slotOf(String item) {
-        for (int i = 0; i < ITEMS.length; i++) if (ITEMS[i].equals(item)) return SLOTS[i];
-        return null;
+        int i = item == null ? -1 : item.indexOf('_');
+        return i < 0 ? null : item.substring(i + 1);
     }
 
-    public static boolean ownsBundle() {
-        for (String it : ITEMS) if (!CosmeticsApi.owned(it)) return false;
+    public static boolean ownsBundle(int bundle) {
+        for (String s : SLOTS) if (!CosmeticsApi.owned(item(bundle, s))) return false;
         return true;
     }
 
@@ -44,16 +41,20 @@ public final class Cosmetics {
         CosmeticsApi.pushEquip(slot, item);
     }
 
-    /** Equips (or removes when it is already worn) one item. */
-    public static void toggle(String slot) {
-        String item = item(slot);
+    /** Equips (or removes when it is already worn) one item of a bundle. */
+    public static void toggle(int bundle, String slot) {
+        String item = item(bundle, slot);
         equip(slot, selected(slot).equals(item) ? "none" : item);
     }
 
+    public static boolean wearsBundle(int bundle) {
+        for (String s : SLOTS) if (!selected(s).equals(item(bundle, s))) return false;
+        return true;
+    }
+
     /** Equips the whole bundle, or removes everything when all of it is already worn. */
-    public static void toggleBundle() {
-        boolean all = true;
-        for (String s : SLOTS) if (!selected(s).equals(item(s))) all = false;
-        for (String s : SLOTS) equip(s, all ? "none" : item(s));
+    public static void toggleBundle(int bundle) {
+        boolean all = wearsBundle(bundle);
+        for (String s : SLOTS) equip(s, all ? "none" : item(bundle, s));
     }
 }

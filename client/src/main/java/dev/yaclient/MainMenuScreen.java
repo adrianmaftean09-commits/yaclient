@@ -14,9 +14,9 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.util.glu.Project;
 
-/** YA CLIENT title screen: dark animated backdrop, centered logo, stacked buttons and a small icon dock. */
+/** YA CLIENT title screen: panorama backdrop, centered logo only (no title text), stacked buttons and a dock of labeled icon tiles. */
 public class MainMenuScreen extends GuiScreen {
-    private static final int BW = 220, BH = 26, GAP = 7;
+    private static final int BW = 200, BH = 30, GAP = 8, TW = 56, TH = 54, DG = 8;
     private static final String[] ICONS = {"shirt", "gear", "wrench", "close"};
     private static final String[] TIPS = {"tab.cosmetics", "menu.options", "tab.settings", "menu.quit"};
 
@@ -49,41 +49,37 @@ public class MainMenuScreen extends GuiScreen {
 
         int logo = Math.min(96, height / 4);
         int cx = width / 2;
-        int total = logo + 34 + 3 * BH + 2 * GAP;
-        int top = Math.max(16, (height - total) / 2 - 12);
+        int total = logo + 18 + 3 * BH + 2 * GAP + 16 + TH;
+        int top = Math.max(12, (height - total) / 2);
         float bob = (float) Math.sin(t * 1.4f) * 1.5f;
         Logo.draw(cx - logo / 2f, top + bob, logo, logo, fadeIn);
-        int wy = top + logo + 6;
-        int yaw = Gfx.width("YA ", 14, true), clw = Gfx.width("CLIENT", 14, true);
-        Gfx.text("YA ", cx - (yaw + clw) / 2, wy, 14, true, Theme.TEXT);
-        Gfx.text("CLIENT", cx - (yaw + clw) / 2 + yaw, wy, 14, true, Theme.BRAND_RED);
 
         bx = cx - BW / 2;
-        by0 = wy + 26;
+        by0 = top + logo + 18;
         String[] labels = {Lang.t("menu.play"), Lang.t("menu.multiplayer"), Lang.t("menu.client_settings")};
         for (int i = 0; i < 3; i++) {
-            int y = btnY(i);
-            boolean over = mx >= bx && mx < bx + BW && my >= y && my < y + BH;
+            int x = bx, y = btnY(i);
+            boolean over = mx >= x && mx < x + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
             boolean primary = i == 2;
-            Gfx.rr(bx, y, BW, BH, 8, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
-            if (!primary) Gfx.rrOutline(bx, y, BW, BH, 8, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
+            Gfx.rr(x, y, BW, BH, 9, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
+            if (!primary) Gfx.rrOutline(x, y, BW, BH, 9, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
             int fg = primary ? 0xFF101014 : Theme.TEXT;
-            Gfx.textCentered(labels[i], bx + BW / 2, y + (BH - Gfx.lineHeight(12, true)) / 2, 12, true, fg);
+            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(11, true)) / 2, 11, true, fg);
         }
 
-        // icon dock
-        int dsz = 22, dg = 6;
-        dockX = cx - (ICONS.length * dsz + (ICONS.length - 1) * dg) / 2;
-        dockY = btnY(3) + 6;
+        // icon dock: four clear tiles, big icon + label
+        int dockW = ICONS.length * TW + (ICONS.length - 1) * DG;
+        dockX = cx - dockW / 2;
+        dockY = btnY(2) + BH + 16;
         for (int i = 0; i < ICONS.length; i++) {
-            int x = dockX + i * (dsz + dg);
-            boolean over = mx >= x && mx < x + dsz && my >= dockY && my < dockY + dsz;
+            int x = dockX + i * (TW + DG);
+            boolean over = mx >= x && mx < x + TW && my >= dockY && my < dockY + TH;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
-            Gfx.rr(x, dockY, dsz, dsz, 7, Ui.mix(0x90101014, 0xB0242429, dock[i]));
-            Gfx.rrOutline(x, dockY, dsz, dsz, 7, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, dock[i]));
-            Gfx.icon(ICONS[i], x + 4, dockY + 4, 14, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
-            if (over) Gfx.textCentered(Lang.t(TIPS[i]), cx, dockY + dsz + 6, 9, false, Theme.MUTED);
+            Gfx.rr(x, dockY, TW, TH, 10, Ui.mix(0x90101014, 0xC0303036, dock[i]));
+            Gfx.rrOutline(x, dockY, TW, TH, 10, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 22) / 2, dockY + 8, 22, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
+            Gfx.textCentered(Lang.t(TIPS[i]), x + TW / 2, dockY + TH - 14, 9, true, Ui.mix(Theme.MUTED, Theme.TEXT, dock[i]));
         }
 
         Gfx.text("YA CLIENT 1.8.9", 8, height - 16, 10, false, Theme.DIM);
@@ -162,10 +158,9 @@ public class MainMenuScreen extends GuiScreen {
                 return;
             }
         }
-        int dsz = 22, dg = 6;
         for (int i = 0; i < ICONS.length; i++) {
-            int x = dockX + i * (dsz + dg);
-            if (mx >= x && mx < x + dsz && my >= dockY && my < dockY + dsz) {
+            int x = dockX + i * (TW + DG);
+            if (mx >= x && mx < x + TW && my >= dockY && my < dockY + TH) {
                 if (i == 0) mc.displayGuiScreen(new MenuScreen(4));
                 else if (i == 1) mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
                 else if (i == 2) mc.displayGuiScreen(new MenuScreen(5));

@@ -32,7 +32,25 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
 const showSplash = () => {}, splashSet = () => {}, closeSplash = () => {};
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  checkLauncherUpdate();
+});
+
+// The launcher updates itself: it checks the latest GitHub release at start, downloads the new
+// installer in the background and installs it when the launcher is closed. Players never reinstall by hand.
+function checkLauncherUpdate() {
+  if (!app.isPackaged) return;
+  try {
+    const { autoUpdater } = require('electron-updater');
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.on('update-available', (i) => send('log', `Launcher update ${i.version} found, downloading...`));
+    autoUpdater.on('update-downloaded', (i) => send('log', `Launcher ${i.version} downloaded: it installs when you close the launcher.`));
+    autoUpdater.on('error', (e) => send('log', 'Launcher update check: ' + (e && e.message)));
+    autoUpdater.checkForUpdates().catch(() => {});
+  } catch (e) { /* electron-updater missing: skip */ }
+}
 app.on('window-all-closed', () => app.quit());
 
 ipcMain.on('win', (_e, a) => {

@@ -73,6 +73,8 @@ public class YAClient implements ModInitializer {
         MODULES.add(new EntityCountModule());
         MODULES.add(new FallDistanceModule());
         MODULES.add(new XpLevelModule());
+        MODULES.add(new ScoreboardModule());
+        MODULES.add(new FpsBoostModule());
         // planned (need the Mixin phase, see docs/PHASE2.md)
         MODULES.add(new SoonModule("hit_color", Category.PVP));
         MODULES.add(new SoonModule("old_animations", Category.PVP));
@@ -94,6 +96,7 @@ public class YAClient implements ModInitializer {
                 mc.displayGuiScreen(new MainMenuScreen());
             }
 
+            ScoreboardModule.afterOverlay();
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();
@@ -102,12 +105,16 @@ public class YAClient implements ModInitializer {
 
             boolean down = Keyboard.isKeyDown(MENU_KEY);
             if (down && !menuKeyWasDown && mc.currentScreen == null) {
-                mc.displayGuiScreen(new MenuScreen());
+                mc.displayGuiScreen(new HubScreen());
             }
             menuKeyWasDown = down;
         });
 
-        EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> Hud.render());
+        EventBus.subscribe(RenderGameOverlayEvent.Pre.class, e -> ScoreboardModule.beforeOverlay());
+        EventBus.subscribe(RenderGameOverlayEvent.Post.class, e -> {
+            ScoreboardModule.afterOverlay();
+            Hud.render();
+        });
 
         System.out.println("[" + NAME + "] " + VERSION + " loaded. Press Right Shift for the menu.");
     }

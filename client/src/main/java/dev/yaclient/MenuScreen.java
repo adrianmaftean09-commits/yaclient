@@ -59,17 +59,19 @@ public class MenuScreen extends GuiScreen {
     private int originX, originY, gs = 2;
     private float mxl, myl;
     private int tab = 0;
+    /** True when opened from the hub's cosmetics button: only the cosmetics page, no module tabs. */
+    private boolean cosMode;
 
     public MenuScreen() {}
 
-    public MenuScreen(int startTab) { this.tab = startTab; if (startTab == 4) CosmeticsApi.refreshAsync(true); }
+    public MenuScreen(int startTab) { this.tab = startTab; this.cosMode = startTab == 4; if (startTab == 4) CosmeticsApi.refreshAsync(true); }
     private String query = "";
     private boolean searchFocus;
     private Module drawerModule, drawerLast;
     private Action activeDrag;
 
     // ================= helpers =================
-    private static int navY(int i) { return i < 5 ? 106 + i * 38 : PH - 62; }
+    private static int navY(int i) { return i == 5 ? PH - 62 : (i == 4 ? 106 : 106 + i * 38); }
 
     private float anim(String key, float target, float dt, float speed, float initial) {
         Float cur = anim.get(key);
@@ -201,7 +203,9 @@ public class MenuScreen extends GuiScreen {
         int iy = Math.round(indY);
         Gfx.rr(10, iy, SB - 20, NAV_H, 9, Ui.alpha(Theme.accent(), 0.16f));
 
-        for (int i = 0; i < TABS.length; i++) {
+        final int[] nav = cosMode ? new int[]{4} : new int[]{0, 1, 2, 3, 5};
+        for (int ni = 0; ni < nav.length; ni++) {
+            final int i = nav[ni];
             final int idx = i;
             int y = navY(i);
             boolean active = tab == i;
@@ -215,6 +219,7 @@ public class MenuScreen extends GuiScreen {
             }, null, null);
         }
 
+        if (!cosMode) {
         // HUD editor entry
         int ey = PH - 100;
         float eh = anim("navEditor", over(10, ey, SB - 20, NAV_H) ? 1f : 0f, dt, 16f, 0f);
@@ -224,6 +229,7 @@ public class MenuScreen extends GuiScreen {
         hit(10, ey, SB - 20, NAV_H, new Action() {
             @Override public void run(float x, float y) { Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); }
         }, null, null);
+        }
 
         Gfx.text(Lang.t("ui.esc_hint"), 24, PH - 26, 10, false, Theme.DIM);
     }
@@ -306,7 +312,7 @@ public class MenuScreen extends GuiScreen {
         Gfx.rrOutline(x, y, cw, ch, 12, 1, Ui.mix(0x30FFFFFF, 0x77FFFFFF, a * 0.6f + h * 0.4f));
 
         // big icon, centered
-        Gfx.icon(m.category.icon, x + (cw - 30) / 2, y + 12, 30, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
+        Gfx.icon(m.icon(), x + (cw - 30) / 2, y + 12, 30, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
         Gfx.textCentered(Gfx.trim(m.name(), 12, true, cw - 16), x + cw / 2, y + 48, 12, true, m.available ? Theme.TEXT : Theme.MUTED);
 
         hitView(x, y, cw, ch, null, null, new Action() {
@@ -432,7 +438,7 @@ public class MenuScreen extends GuiScreen {
     }
 
     // ----- cosmetics (locker) -----
-    private static final String[] COS_CATS = {"all", "cape", "wings", "bandana", "pet", "bundle"};
+    private static final String[] COS_CATS = {"bundle", "cape", "wings", "bandana", "pet"};
     private int cosCat = 0;
 
     private static String cosIcon(String slotOrBundle) {
@@ -507,44 +513,45 @@ public class MenuScreen extends GuiScreen {
             px += w + 6;
         }
 
-        // cards
+        // cards: bundles first, or the items of one slot (from every bundle)
         List<String> entries = new ArrayList<String>();
-        if (cosCat == 0 || cosCat == 5) entries.add("bundle");
-        if (cosCat != 5) {
-            for (String slot : Cosmetics.SLOTS) if (cosCat == 0 || COS_CATS[cosCat].equals(slot)) entries.add(slot);
+        for (int bi = 0; bi < Cosmetics.BUNDLES.length; bi++) {
+            if (cosCat == 0) entries.add("bundle:" + bi);
+            else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
         int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 128;
         int gy = VY + 36;
         for (int n = 0; n < entries.size(); n++) {
-            final String key = entries.get(n);
+            final String[] kv = entries.get(n).split(":");
+            final String key = kv[0];
+            final int bi = Integer.parseInt(kv[1]);
             int cx = x0 + (n % cols) * (cw + gap), cy = gy + (n / cols) * (ch + gap);
             final boolean bundle = key.equals("bundle");
-            final String id = bundle ? Cosmetics.BUNDLE : Cosmetics.item(key);
+            final String id = bundle ? Cosmetics.BUNDLES[bi] : Cosmetics.item(bi, key);
             boolean has, on;
             if (bundle) {
-                has = Cosmetics.ownsBundle();
-                on = has;
-                for (String sl : Cosmetics.SLOTS) if (!Cosmetics.selected(sl).equals(Cosmetics.item(sl))) on = false;
+                has = Cosmetics.ownsBundle(bi);
+                on = has && Cosmetics.wearsBundle(bi);
             } else {
                 has = CosmeticsApi.owned(id);
                 on = has && Cosmetics.selected(key).equals(id);
             }
             boolean ov = over(cx, cy, cw, ch);
-            Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x1AFFFFFF : 0x0FFFFFFF));
-            Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x16FFFFFF);
+            Gfx.rr(cx, cy, cw, ch, 12, on ? Ui.alpha(Theme.accent(), 0.16f) : (ov ? 0x24FFFFFF : 0x1AFFFFFF));
+            Gfx.rrOutline(cx, cy, cw, ch, 12, 1, on ? Theme.accent() : 0x30FFFFFF);
             // thumbnail
             int th = 80;
             Gfx.rr(cx + 6, cy + 6, cw - 12, th, 9, 0x22000000);
             float ps = key.equals("cape") ? 62f : key.equals("wings") ? 40f : key.equals("bandana") ? 100f : key.equals("pet") ? 100f : 36f;
-            CosmeticPreview.draw(key, cx + cw / 2f, cy + 6 + th / 2f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+            CosmeticPreview.draw(key, bi == 0 ? "ya" : "mono", cx + cw / 2f, cy + 6 + th / 2f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             if (!has) Gfx.icon("lock", cx + 12, cy + 12, 14, Theme.MUTED);
             if (bundle) {
-                String fr = Lang.t("cos.free");
+                String fr = Lang.t(bi == 0 ? "cos.free" : "cos.exclusive");
                 int fw = Gfx.width(fr, 9, true) + 12;
-                Gfx.rr(cx + cw - fw - 12, cy + 12, fw, 15, 7, Theme.accent());
-                Gfx.text(fr, cx + cw - fw - 6, cy + 12 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, Theme.onAccent());
+                Gfx.rr(cx + cw - fw - 12, cy + 12, fw, 15, 7, bi == 0 ? Theme.accent() : 0xFFF4F4F5);
+                Gfx.text(fr, cx + cw - fw - 6, cy + 12 + (15 - Gfx.lineHeight(9, true)) / 2, 9, true, bi == 0 ? Theme.onAccent() : 0xFF101014);
             }
-            String name = Lang.t(bundle ? "cos.bundle.beta" : "cos.item." + id);
+            String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);
             Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, cy + th + 12, 11, true, Theme.TEXT);
             String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.locked"));
             if (on) {
@@ -558,7 +565,7 @@ public class MenuScreen extends GuiScreen {
             hit(cx, cy, cw, ch, new Action() {
                 @Override public void run(float mx, float my) {
                     if (!fHas) { CosmeticsApi.openStore(); return; }
-                    if (bundle) Cosmetics.toggleBundle(); else Cosmetics.toggle(key);
+                    if (bundle) Cosmetics.toggleBundle(bi); else Cosmetics.toggle(bi, key);
                 }
             }, null, null);
         }

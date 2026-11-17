@@ -46,8 +46,8 @@ Object.assign(I18N.es, { back: 'Bienvenido de nuevo', versions: 'Versiones', lat
 Object.assign(I18N.de, { session_expired: 'Die Microsoft-Sitzung ist abgelaufen. Bitte neu anmelden.', back: 'Willkommen zurück', versions: 'Versionen', latest: 'Neueste', releases: 'Releases', snapshots: 'Snapshots', old: 'Alt', search: 'Version suchen...', modsFor: 'Mods für Minecraft', avail: 'in dieser Version verfügbar',
   needs: 'Nur in', vanilla: 'Vanilla', ya: 'YA CLIENT', soon: 'Bald', vanillaNote: 'Diese Version startet ohne YA-CLIENT-Mods. Die Mods unten funktionieren in', java_missing: 'Für diese Version wird Java {n} benötigt. Installiere es (Temurin {n}) und versuche es erneut.', latestRelease: 'Neueste Release', change: 'Version ändern', noRes: 'Keine Versionen gefunden.', offlineList: 'Offline: gekürzte Versionsliste.' });
 const LANGS = { en: 'English', it: 'Italiano', es: 'Español', de: 'Deutsch' };
-const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet' };
-const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)' };
+const SLOT = { ya_cape: 'cape', ya_wings: 'wings', ya_bandana: 'bandana', ya_pet: 'pet', mono_cape: 'cape', mono_wings: 'wings', mono_bandana: 'bandana', mono_pet: 'pet' };
+const NAMES = { ya_cape: 'YA Cape', ya_wings: 'Ember Wings', ya_bandana: 'YA Bandana', ya_pet: 'Ember (pet)', mono_cape: 'Infinity Cape', mono_wings: 'Shadow Dragon Wings', mono_bandana: 'Monochrome Bandana', mono_pet: 'Yin Yang (pet)' };
 const ICON = {
   home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
   versions: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17.5l9 5 9-5"/>',
@@ -93,7 +93,7 @@ function viewHome() {
   const nm = S.account ? S.account.name : '';
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
   return `<div class="lp"><div>
-    <h1 class="wb">${esc(t('back'))}${nm ? ', <span>' + esc(nm) + '</span>' : ''}</h1>
+    <div class="welcome"><span class="wt">${esc(t('back'))}${nm ? ',' : ''}</span>${nm ? ' <b class="wn">' + esc(nm) + '</b>' : ''}</div>
     <div class="card hero2"><img class="hlogo" src="../assets/logo.png" alt="">
       <button class="launch" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b>
         <span>${esc(tag)} ${esc(S.version)}</span></button>
@@ -285,6 +285,6 @@ window.ya.on('log', (m) => {
   try { MODSTATE = await window.ya.modsGet(); } catch (_) { MODSTATE = {}; }
   try { MODS = (await window.ya.mods()).mods || []; } catch (_) { MODS = []; }
   try { VERS = await window.ya.versions(); } catch (_) { }
-  $('#ver').textContent = 'YA CLIENT';
+  $('#ver').textContent = '';
   renderNav(); render();
 })();

@@ -21,6 +21,11 @@ final class Poly {
     static final float[] DEEP = {0.45f, 0.02f, 0.02f, 0f};
     static final float[] RED = {0.88f, 0.03f, 0.02f, 0.25f};
     static final float[] HOT = {1.00f, 0.28f, 0.16f, 0.8f};
+    // black & white bundle
+    static final float[] INK = {0.015f, 0.015f, 0.020f, 0f};
+    static final float[] CHAR = {0.17f, 0.17f, 0.20f, 0.15f};
+    static final float[] WHITE = {0.96f, 0.96f, 0.98f, 0.75f};
+    static final float[] GREY = {0.52f, 0.52f, 0.56f, 0.4f};
 
     static float[] mix(float[] a, float[] b, float t) {
         t = t < 0 ? 0 : (t > 1 ? 1 : t);
