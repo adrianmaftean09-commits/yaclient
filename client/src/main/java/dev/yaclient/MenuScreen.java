@@ -370,11 +370,11 @@ public class MenuScreen extends GuiScreen {
     }
 
     private void ghostButton(int x, int y, int w, String icon, String label, boolean live, Action act) {
-        boolean ov = over(x, y, w, 30);
-        Gfx.rr(x, y, w, 30, 9, ov ? 0x1FFFFFFF : 0x0DFFFFFF);
-        Gfx.icon(icon, x + 11, y + 6, 18, ov ? Theme.TEXT : Theme.MUTED);
-        Gfx.text(label, x + 36, y + (30 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
-        if (live) hit(x, y, w, 30, act, null, null);
+        boolean ov = over(x, y, w, 28);
+        Gfx.rr(x, y, w, 28, 9, ov ? 0x1FFFFFFF : 0x0DFFFFFF);
+        Gfx.icon(icon, x + 11, y + 5, 18, ov ? Theme.TEXT : Theme.MUTED);
+        Gfx.text(label, x + 36, y + (28 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
+        if (live) hit(x, y, w, 28, act, null, null);
     }
 
     private void drawDrawer(float dt) {
@@ -408,35 +408,35 @@ public class MenuScreen extends GuiScreen {
 
         // ---- left column: preview, group list, actions
         int lx0 = 24, lw = 236;
-        Gfx.rr(lx0, PG_Y, lw, 128, 14, 0x0FFFFFFF);
-        Gfx.rrOutline(lx0, PG_Y, lw, 128, 14, 1, 0x14FFFFFF);
+        Gfx.rr(lx0, PG_Y, lw, 108, 14, 0x0FFFFFFF);
+        Gfx.rrOutline(lx0, PG_Y, lw, 108, 14, 1, 0x14FFFFFF);
         if (m instanceof dev.yaclient.modules.HudModule) {
             dev.yaclient.modules.HudModule hm = (dev.yaclient.modules.HudModule) m;
             int ew0 = Math.max(1, hm.width()), eh0 = Math.max(1, hm.height());
-            float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 96f / eh0));
-            hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((128 - eh0 * ps) / 2f), ps);
+            float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 80f / eh0));
+            hm.drawPreviewAt(lx0 + Math.round((lw - ew0 * ps) / 2f), PG_Y + Math.round((108 - eh0 * ps) / 2f), ps);
         } else {
-            Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 40, 48, Theme.DIM);
+            Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 30, 48, Theme.DIM);
         }
-        int gy = PG_Y + 128 + 14;
+        int gy = PG_Y + 108 + 12;
         for (final String g : groups) {
             int count = 0;
             for (Setting st : m.settings) if (st.group.equals(g)) count++;
-            boolean act = g.equals(pageGroup), go = over(lx0, gy, lw, 32);
+            boolean act = g.equals(pageGroup), go = over(lx0, gy, lw, 28);
             float ga = anim("pg_g" + g, act ? 1f : 0f, dt, 16f, act ? 1f : 0f);
-            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 32, 9, Ui.alpha(0x1AFFFFFF, ga));
-            else if (go) Gfx.rr(lx0, gy, lw, 32, 9, 0x0AFFFFFF);
-            if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 8, 3, 16, 2, Ui.alpha(Theme.accent(), ga));
-            Gfx.text(Lang.t("grp." + g), lx0 + 16, gy + (32 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
+            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 28, 9, Ui.alpha(0x1AFFFFFF, ga));
+            else if (go) Gfx.rr(lx0, gy, lw, 28, 9, 0x0AFFFFFF);
+            if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 6, 3, 16, 2, Ui.alpha(Theme.accent(), ga));
+            Gfx.text(Lang.t("grp." + g), lx0 + 16, gy + (28 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
             String cs = String.valueOf(count);
-            Gfx.text(cs, lx0 + lw - 12 - Gfx.width(cs, 10, false), gy + (32 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.DIM);
-            if (live) hit(lx0, gy, lw, 32, new Action() { @Override public void run(float x, float y) { pageGroup = g; pageScroll = 0f; pageTarget = 0f; } }, null, null);
-            gy += 36;
+            Gfx.text(cs, lx0 + lw - 12 - Gfx.width(cs, 10, false), gy + (28 - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.DIM);
+            if (live) hit(lx0, gy, lw, 28, new Action() { @Override public void run(float x, float y) { pageGroup = g; pageScroll = 0f; pageTarget = 0f; } }, null, null);
+            gy += 30;
         }
-        int by = PG_Y + PG_H - 30;
+        int by = PG_Y + PG_H - 28;
         ghostButton(lx0, by, lw, "reset", Lang.t("ui.reset_opts"), live, new Action() { @Override public void run(float x, float y) { m.resetSettings(); saveAll(); } });
         if (m instanceof dev.yaclient.modules.HudModule) {
-            by -= 36;
+            by -= 32;
             ghostButton(lx0, by, lw, "move", Lang.t("ui.edit_pos"), live, new Action() { @Override public void run(float x, float y) { saveAll(); Minecraft.getMinecraft().displayGuiScreen(new HudEditorScreen()); } });
         }
 
