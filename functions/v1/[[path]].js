@@ -187,6 +187,7 @@ export async function onRequest({ request, env }) {
       if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return send(403, { error: 'forbidden' });
       const f = await form(request);
       let uuid = norm(f.uuid);
+      if (!uuid && /^[0-9a-fA-F-]{32,36}$/.test(String(f.username || '').trim())) uuid = norm(String(f.username).trim());   // a UUID pasted in the name field
       if (!uuid && f.username) {
         const nm = String(f.username).trim();
         uuid = (await env.DB.get('n:' + nm.toLowerCase())) || '';   // known from the launcher/client
