@@ -31,17 +31,14 @@ public class HubScreen extends GuiScreen {
 
         int cx = width / 2;
         int logo = 72;
-        int total = logo + 8 + 18 + 18 + BH + 10 + SM;
+        int total = logo + 6 + 16 + BH + 10 + SM;
         int top = (height - total) / 2;
         Logo.draw(cx - logo / 2f, top, logo, logo, fade);
         int wy = top + logo + 6;
-        int a = Gfx.width("YA ", 14, true), b = Gfx.width("CLIENT", 14, true);
-        Gfx.text("YA ", cx - (a + b) / 2, wy, 14, true, Theme.TEXT);
-        Gfx.text("CLIENT", cx - (a + b) / 2 + a, wy, 14, true, Theme.BRAND_RED);
 
         int rowW = BW + GAP + SQ;
         x0 = cx - rowW / 2;
-        y0 = wy + 36;
+        y0 = wy + 16;
         // MODS
         button(0, x0, y0, BW, BH, mx, my, dt);
         Gfx.textCentered(Lang.t("hub.mods"), x0 + BW / 2, y0 + (BH - Gfx.lineHeight(12, true)) / 2, 12, true, Theme.TEXT);
