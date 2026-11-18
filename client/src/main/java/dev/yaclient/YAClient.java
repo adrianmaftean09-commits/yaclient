@@ -127,8 +127,9 @@ public class YAClient implements ModInitializer {
         for (Module m : MODULES) m.loadConfig();
 
         MenuBackdrop.preload();
-        // swap the vanilla title screen for ours the moment it appears: a watcher notices it within a millisecond and the
-        // swap runs at the start of the next frame (before it is drawn), so the vanilla menu is never seen
+        // The vanilla title screen would be drawn for a few frames (the game timer runs no tick on its first loop, so the
+        // tick swap comes too late). A watcher notices it within a millisecond and swaps it straight away, from its own
+        // thread: the title screen needs no OpenGL to be replaced. If that fails, the swap is queued for the next frame.
         Thread tw = new Thread(() -> {
             final Minecraft m1 = Minecraft.getMinecraft();
             while (true) {
@@ -136,9 +137,13 @@ public class YAClient implements ModInitializer {
                     Thread.sleep(1);
                     net.minecraft.client.gui.GuiScreen cs = m1.currentScreen;
                     if (cs != null && cs.getClass() == GuiMainMenu.class) {
-                        m1.addScheduledTask(() -> {
-                            if (m1.currentScreen != null && m1.currentScreen.getClass() == GuiMainMenu.class) m1.displayGuiScreen(new MainMenuScreen());
-                        });
+                        try {
+                            m1.displayGuiScreen(new MainMenuScreen());
+                        } catch (Throwable direct) {
+                            m1.addScheduledTask(() -> {
+                                if (m1.currentScreen != null && m1.currentScreen.getClass() == GuiMainMenu.class) m1.displayGuiScreen(new MainMenuScreen());
+                            });
+                        }
                         Thread.sleep(30);
                     }
                 } catch (InterruptedException ie) { return; } catch (Throwable ignored) { }
