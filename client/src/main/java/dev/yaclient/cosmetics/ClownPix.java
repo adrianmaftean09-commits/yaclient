@@ -101,10 +101,13 @@ final class ClownPix {
 
     // ------------------------------------------------------------------ cape: harlequin diamonds with a ruffle
     static void capeBase(Anime.Th t, float age, boolean plus) {
-        final int NU = 11, NV = 16;
+        final int NU = 22, NV = 32;
         for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
             float[] col;
-            col = c(WHITE);                                                                           // all white, only the clown face has color
+            // pixel white: a few close shades of white, grouped in small blotches like Minecraft wool
+            float n = noise(i, j) * 0.6f + noise(i / 3 + 40, j / 3 + 7) * 0.4f;
+            int[] shades = {0xFFFFFF, 0xF6F6F8, 0xEDEDF1, 0xF9F9FB, 0xE4E4EA};
+            col = c(shades[Math.min(shades.length - 1, (int) (n * shades.length))]);
             float k = 1f;
             float[] cc = {Math.min(1f, col[0] * k), Math.min(1f, col[1] * k), Math.min(1f, col[2] * k), col[3]};
             double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
