@@ -443,12 +443,9 @@
  "mod.streamer_mode.name": "Modalità Streamer",
  "mod.streamer_mode.desc": "Nasconde coordinate e indirizzo del server su HUD e scoreboard",
  "set.hide_zero": "Nascondi oggetti a 0",
-  "set.hide_coords": "Nascondi coordinate",
+ "set.hide_coords": "Nascondi coordinate",
  "set.hide_ip": "Nascondi indirizzo server",
  "set.hide_board_ip": "Nascondi indirizzi sulla scoreboard",
- "mod.freelook.name": "Free Look",
- "mod.freelook.desc": "Tieni premuto il tasto per guardarti attorno senza girare il personaggio (tasto in Comandi > YA Client)",
- "set.third_person": "Terza persona mentre premi",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Tieni premuto il tasto (Opzioni > Comandi > YA Client) e guardati intorno senza girare il personaggio",
  "set.third_person": "Terza persona mentre premuto",
@@ -470,5 +467,13 @@
  "set.limit": "Avvisa sotto",
  "cos.premium_only": "Solo account premium",
  "set.key": "Tasto Free Look",
- "ui.press_key": "Premi un tasto..."
+ "ui.press_key": "Premi un tasto...",
+ "set.layout": "Disposizione",
+ "opt.vertical": "Verticale",
+ "opt.horizontal": "Orizzontale",
+ "set.background": "Sfondo",
+ "set.show_pearls": "Mostra perle",
+ "set.show_gapples": "Mostra mele d'oro",
+ "set.show_potions": "Mostra pozioni splash",
+ "set.show_arrows": "Mostra frecce"
 }

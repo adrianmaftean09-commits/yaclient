@@ -443,12 +443,9 @@
  "mod.streamer_mode.name": "Streamer-Modus",
  "mod.streamer_mode.desc": "Versteckt Koordinaten und Serveradresse",
  "set.hide_zero": "Items bei 0 ausblenden",
-  "set.hide_coords": "Koordinaten verbergen",
+ "set.hide_coords": "Koordinaten verbergen",
  "set.hide_ip": "Serveradresse verbergen",
  "set.hide_board_ip": "Adressen im Scoreboard verbergen",
- "mod.freelook.name": "Free Look",
- "mod.freelook.desc": "Taste halten, um sich umzusehen ohne den Spieler zu drehen (Taste unter Steuerung > YA Client)",
- "set.third_person": "Dritte Person beim Halten",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Taste halten (Optionen > Steuerung > YA Client) und umschauen, ohne die Spielfigur zu drehen",
  "set.third_person": "Dritte Person beim Halten",
@@ -470,5 +467,13 @@
  "set.limit": "Warnen unter",
  "cos.premium_only": "Nur Premium-Konten",
  "set.key": "Free-Look-Taste",
- "ui.press_key": "Taste drücken..."
+ "ui.press_key": "Taste drücken...",
+ "set.layout": "Anordnung",
+ "opt.vertical": "Vertikal",
+ "opt.horizontal": "Horizontal",
+ "set.background": "Hintergrund",
+ "set.show_pearls": "Enderperlen anzeigen",
+ "set.show_gapples": "Goldäpfel anzeigen",
+ "set.show_potions": "Wurftränke anzeigen",
+ "set.show_arrows": "Pfeile anzeigen"
 }

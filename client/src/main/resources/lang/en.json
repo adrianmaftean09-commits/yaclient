@@ -453,12 +453,9 @@
  "mod.streamer_mode.name": "Streamer Mode",
  "mod.streamer_mode.desc": "Hides coordinates and server address on the HUD and scoreboard",
  "set.hide_zero": "Hide items at 0",
-  "set.hide_coords": "Hide coordinates",
+ "set.hide_coords": "Hide coordinates",
  "set.hide_ip": "Hide server address",
  "set.hide_board_ip": "Hide addresses on the scoreboard",
- "mod.freelook.name": "Free Look",
- "mod.freelook.desc": "Hold the key to look around without turning your player (set the key in Controls > YA Client)",
- "set.third_person": "Third person while held",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Hold the key (Options > Controls > YA Client) and look around without turning your player",
  "set.third_person": "Third person while held",
@@ -480,5 +477,13 @@
  "set.limit": "Warn below",
  "cos.premium_only": "Premium accounts only",
  "set.key": "Free Look key",
- "ui.press_key": "Press a key..."
+ "ui.press_key": "Press a key...",
+ "set.layout": "Layout",
+ "opt.vertical": "Vertical",
+ "opt.horizontal": "Horizontal",
+ "set.background": "Background",
+ "set.show_pearls": "Show ender pearls",
+ "set.show_gapples": "Show golden apples",
+ "set.show_potions": "Show splash potions",
+ "set.show_arrows": "Show arrows"
 }
