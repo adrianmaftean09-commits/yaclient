@@ -52,6 +52,13 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--s2)}
 .t{background:var(--s3);border:1px solid var(--line2);border-radius:10px;padding:10px 14px;box-shadow:0 8px 30px #0008;max-width:340px}
 .t.ok{border-color:rgba(52,210,123,.5)}.t.err{border-color:rgba(225,6,0,.6)}
 .log{max-height:260px;overflow:auto;font-size:12.5px}.log div{padding:6px 0;border-bottom:1px solid var(--line);color:var(--mute)}.log b{color:var(--text);font-weight:600}
+.pkt{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.pkt button{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--mute);font-size:12.5px}.pkt button.on{background:var(--text);color:#101014;border-color:var(--text);font-weight:600}
+.pk{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;max-height:470px;overflow:auto;padding:2px}
+.pc{background:var(--s2);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;position:relative}.pc:hover{border-color:#4a4a55}
+.pc img,.pc .ph{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0b0b0e}.pc .ph{display:grid;place-items:center;font-weight:800;font-size:22px;background:linear-gradient(135deg,#e10600,#3a3a44)}
+.pc span{display:block;padding:6px 9px;font-size:12px;line-height:1.3}.pc.on{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.pc.on:after{content:"";position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/12px no-repeat}
+.selbar{display:flex;align-items:center;gap:12px;margin:10px 0 0;color:var(--mute)}.selbar img{width:64px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line2)}.selbar b{color:var(--text)}
 @media(max-width:860px){#app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}.brand{width:100%}.sp{display:none}.cards{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}main{padding:18px 14px 50px}}
 </style></head><body>
 
@@ -74,7 +81,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--s2)}
 <div class="card"><div class="k">Online now</div><div class="v" id="c-on">-</div><div class="s">in game or launcher</div></div>
 <div class="card"><div class="k">Linked devices</div><div class="v" id="c-lk">-</div><div class="s">accounts locked to a PC</div></div>
 <div class="card"><div class="k">Database</div><div class="v" id="c-kv">-</div><div class="s" id="c-beta"></div></div></div>
-<div class="grid2"><div class="panel"><h3>Quick grant</h3><div class="row"><input class="grow" id="qg-u" placeholder="Minecraft username"><select id="qg-i" style="width:170px"></select><button class="btn pri" id="qg-go">Grant</button></div><div class="muted" style="margin-top:10px">For full control open the player from the Players tab.</div></div>
+<div class="grid2" style="grid-template-columns:1.3fr 1fr"><div class="panel"><h3>Quick grant</h3><div class="row"><input class="grow" id="qg-u" placeholder="Minecraft username"><button class="btn pri" id="qg-go">Grant</button></div><div style="height:12px"></div><div id="qg-pk"></div><div class="muted" style="margin-top:10px">For full control open the player from the Players tab.</div></div>
 <div class="panel"><h3>Recent actions <button class="btn sm" id="log-clear">Clear</button></h3><div class="log" id="log"><div>No actions yet in this session.</div></div></div></div></section>
 
 <section id="p-pl" class="hide"><div class="top"><div><h2>Players</h2><p>Search by name, open a player to manage cosmetics, YA Plus and device lock.</p></div></div>
@@ -122,8 +129,18 @@ $("rf").onclick=loadOv;
 
 /* grant helpers */
 function itemOptions(){var h="<optgroup label='Bundles'>";BUNDLES.forEach(function(b){h+="<option value='"+b+"'>"+NAMES[b]+" bundle</option>"});h+="</optgroup><optgroup label='Everything'><option value='*'>All cosmetics</option></optgroup><optgroup label='Single items'>";BUNDLES.forEach(function(b){SLOTS.forEach(function(s){h+="<option value='"+pre(b)+"_"+s+"'>"+NAMES[b]+" "+s+"</option>"})});return h+"</optgroup>"}
-function fillSel(){$("qg-i").innerHTML=itemOptions()}
-$("qg-go").onclick=function(){var u=$("qg-u").value.trim();if(!u)return toast("Enter a username",false);grant({username:u,item:$("qg-i").value},"Granted "+$("qg-i").value+" to "+u)};
+var SLN={cape:"Cape",wings:"Wings",bandana:"Bandana",pet:"Pet"};
+function imgOf(v){if(v==="*")return"";if(BUNDLES.indexOf(v)>=0)return"/b/"+v+"-2.jpg";return"/b/i/"+v+".jpg"}
+function nameOf(v){if(v==="*")return"All cosmetics";if(BUNDLES.indexOf(v)>=0)return NAMES[v]+" bundle";var p=v.split("_"),b=BUNDLES.filter(function(x){return pre(x)===p[0]})[0];return(b?NAMES[b]:v)+" "+(SLN[p[1]]||"").toLowerCase()}
+function mkPicker(el){var st={v:"beta",tab:"bundles"};var tabs=[["bundles","Bundles"],["cape","Capes"],["wings","Wings"],["bandana","Bandanas"],["pet","Pets"]];
+ function draw(){var h="<div class='pkt'>"+tabs.map(function(t){return"<button type='button' data-t='"+t[0]+"' class='"+(st.tab===t[0]?"on":"")+"'>"+t[1]+"</button>"}).join("")+"</div><div class='pk'>";
+  var list=st.tab==="bundles"?BUNDLES.concat(["*"]):BUNDLES.map(function(b){return pre(b)+"_"+st.tab});
+  h+=list.map(function(v){return"<div class='pc"+(st.v===v?" on":"")+"' data-v='"+v+"'>"+(v==="*"?"<div class='ph'>ALL</div>":"<img loading='lazy' src='"+imgOf(v)+"' alt=''>")+"<span>"+esc(nameOf(v))+"</span></div>"}).join("")+"</div>";
+  h+="<div class='selbar'>"+(st.v==="*"?"":"<img src='"+imgOf(st.v)+"' alt=''>")+"<div>Selected: <b>"+esc(nameOf(st.v))+"</b></div></div>";el.innerHTML=h;
+  el.querySelectorAll(".pkt button").forEach(function(b){b.onclick=function(){st.tab=b.dataset.t;draw()}});el.querySelectorAll(".pc").forEach(function(c){c.onclick=function(){st.v=c.dataset.v;draw()}})}
+ draw();return{get:function(){return st.v}}}
+var QPK;function fillSel(){QPK=mkPicker($("qg-pk"))}
+$("qg-go").onclick=function(){var u=$("qg-u").value.trim();if(!u)return toast("Enter a username",false);grant({username:u,item:QPK.get()},"Granted "+nameOf(QPK.get())+" to "+u)};
 function grant(o,msg){return post("/v1/admin/grant",o).then(function(d){if(d.ok){toast(d.pending?"Saved: applies when the player next opens YA CLIENT":"Done",true);addLog(msg+(d.pending?" (pending)":""));return d}toast("Error: "+(d.error||"failed"),false)}).catch(function(){toast("Network error",false)})}
 
 /* players */
@@ -141,13 +158,13 @@ function openPlayer(name,uuid){api("/v1/admin/player?"+(uuid?"uuid="+encodeURICo
  box.innerHTML="<h3><span>"+esc(p.name||name)+"</span><button class='btn sm' id='pd-x'>Close</button></h3>"+
  "<div class='kv'><span>Status</span><span>"+(p.online?"<i class='dot'></i>Online"+(p.where?" ("+esc(p.where)+")":""):"<i class='dot off'></i>Offline")+"</span><span>UUID</span><span class='mono'>"+esc(p.uuid)+"</span><span>YA Plus</span><span>"+plusTxt+"</span><span>Device lock</span><span>"+(p.linked?"<span class='chip'>Linked to a PC</span>":"<span class='chip'>Not linked</span>")+"</span><span>Friends</span><span>"+p.friends+"</span><span>Pending grants</span><span>"+esc(p.pending_grants)+"</span></div>"+
  "<div class='kv'><span>Bundles</span><span>"+(owned.map(function(b){return"<span class='chip ok'>"+NAMES[b]+"</span>"}).join("")||"<span class='muted'>none</span>")+"</span><span>Single items</span><span>"+(loose.map(function(i){return"<span class='chip'>"+esc(i)+"</span>"}).join("")||"<span class='muted'>none</span>")+"</span><span>Equipped</span><span>"+eq+"</span></div>"+
- "<div class='grid2' style='margin-top:14px'><div><div class='muted' style='margin-bottom:8px'>Cosmetics</div><div class='row'><select class='grow' id='pd-i'>"+itemOptions()+"</select></div><div class='row' style='margin-top:8px'><button class='btn pri' id='pd-g'>Grant</button><button class='btn red' id='pd-r'>Revoke</button></div></div>"+
+ "<div class='grid2' style='margin-top:14px;grid-template-columns:1.4fr 1fr'><div><div class='muted' style='margin-bottom:8px'>Cosmetics</div><div id='pd-pk'></div><div class='row' style='margin-top:10px'><button class='btn pri' id='pd-g'>Grant</button><button class='btn red' id='pd-r'>Revoke</button></div></div>"+
  "<div><div class='muted' style='margin-bottom:8px'>YA Plus</div><div class='row'><input id='pd-d' style='width:110px' value='30' inputmode='numeric'><span class='muted'>days</span><button class='btn pri' id='pd-pa'>Add Plus</button><button class='btn red' id='pd-pr'>Remove Plus</button></div>"+
  "<div class='muted' style='margin:16px 0 8px'>Account</div><div class='row'><button class='btn' id='pd-u'>Unlink device</button></div></div></div>";
- var key={uuid:p.uuid},again=function(){openPlayer(p.name||name,p.uuid)};
+ var PPK=mkPicker($("pd-pk")),again=function(){openPlayer(p.name||name,p.uuid)};
  $("pd-x").onclick=function(){box.classList.add("hide")};
- $("pd-g").onclick=function(){grant({uuid:p.uuid,item:$("pd-i").value},"Granted "+$("pd-i").value+" to "+(p.name||name)).then(again)};
- $("pd-r").onclick=function(){if(confirm("Revoke "+$("pd-i").value+" from "+(p.name||name)+"?"))grant({uuid:p.uuid,item:$("pd-i").value,revoke:"1"},"Revoked "+$("pd-i").value+" from "+(p.name||name)).then(again)};
+ $("pd-g").onclick=function(){grant({uuid:p.uuid,item:PPK.get()},"Granted "+nameOf(PPK.get())+" to "+(p.name||name)).then(again)};
+ $("pd-r").onclick=function(){if(confirm("Revoke "+nameOf(PPK.get())+" from "+(p.name||name)+"?"))grant({uuid:p.uuid,item:PPK.get(),revoke:"1"},"Revoked "+nameOf(PPK.get())+" from "+(p.name||name)).then(again)};
  $("pd-pa").onclick=function(){grant({uuid:p.uuid,item:"plus",days:$("pd-d").value||"30"},"Added "+($("pd-d").value||"30")+" days of Plus to "+(p.name||name)).then(again)};
  $("pd-pr").onclick=function(){if(confirm("Remove YA Plus from "+(p.name||name)+"?"))grant({uuid:p.uuid,item:"plus",revoke:"1"},"Removed Plus from "+(p.name||name)).then(again)};
  $("pd-u").onclick=function(){if(confirm("Unlink the device of "+(p.name||name)+"? They can log in from any PC once."))post("/v1/admin/unclaim",{uuid:p.uuid}).then(function(d){if(d.ok){toast("Device unlinked",true);addLog("Unlinked device of "+(p.name||name));again()}else toast("Error: "+(d.error||"failed"),false)})};
