@@ -14,7 +14,29 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.api}"
 }
 
+// ---- one source of truth: the 26.2 client in ../fabric is rewritten for the selected Minecraft version ----
+def rules = [
+    '1.21.11': [
+        [/GuiGraphicsExtractor/, 'GuiGraphics'],
+        [/\bextractRenderState\(/, 'render('],
+        [/\bextractBackground\(/, 'renderBackground('],
+    ],
+]
+def portedDir = layout.buildDirectory.dir("ported/java")
+tasks.register('portSources', Copy) {
+    from('../fabric/src/main/java')
+    into(portedDir)
+    def rs = rules[project.mc] ?: []
+    filter { String line -> rs.each { r -> line = line.replaceAll(r[0], r[1]) }; return line }
+    doLast {
+        copy { from("overlay/${project.mc}"); into(portedDir) }   // hand-written replacements for one version
+    }
+}
+sourceSets.main.java.srcDir(portedDir)
+tasks.named('compileJava') { dependsOn 'portSources' }
+tasks.named('sourcesJar') { dependsOn 'portSources' }
 processResources {
+    from('../fabric/src/main/resources') { exclude 'fabric.mod.json' }
     inputs.property "version", project.version
     inputs.property "mc", project.mc
     filesMatching("fabric.mod.json") {
