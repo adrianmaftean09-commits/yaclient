@@ -33,8 +33,7 @@ public final class TabBadge {
             if (want) {
                 if (mine != null && cur == mine) continue;
                 Component base = cur != null && cur != mine ? cur : PlayerTeam.formatNameForTeam(info.getTeam(), Component.literal(info.getProfile().name()));
-                MutableComponent out = Component.literal("").withStyle(LOGO).append(Component.literal(" ")).append(base);
-                if (CosmeticsApi.isPlus(id)) out.append(Component.literal(" +").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+                MutableComponent out = Badges.decorate(id, base);
                 APPLIED.put(id, out);
                 info.setTabListDisplayName(out);
             } else if (mine != null) {

@@ -51,7 +51,7 @@ final class Poly {
         double l = Math.sqrt(nx * nx + ny * ny + nz * nz);
         if (l < 1e-9) return 0.8;
         double d = Math.abs((nx * LX + ny * LY + nz * LZ) / (l * LL));
-        return 0.40 + 0.60 * d;
+        return 0.74 + 0.26 * d;
     }
 
     private static void vertex(double[] p, float[] c, double sh, float a) {
