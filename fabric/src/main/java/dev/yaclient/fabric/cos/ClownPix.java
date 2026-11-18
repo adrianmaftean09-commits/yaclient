@@ -104,13 +104,9 @@ final class ClownPix {
         final int NU = 11, NV = 16;
         for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
             float[] col;
-            if (j == 0 || j >= NV - 2) col = ((i + j) % 2 == 0) ? c(RED) : c(CREAM);                 // ruffle collar and hem: red/cream checks
-            else if (i == 0 || i == NU - 1) col = c(DRED);                                            // darker red edge
-            else {
-                int a = Math.floorDiv(i + j, 3), b = Math.floorDiv(i - j + 30, 3);
-                col = (((a + b) & 1) == 0) ? c(RED) : c(CREAM);                                       // two-color harlequin diamonds
-            }
-            float k = 0.97f + 0.03f * noise(j, i);
+            if (j == 0 || j >= NV - 2 || i == 0 || i == NU - 1) col = c(RED);                        // red trim: collar, hem and edges
+            else col = c(WHITE);                                                                      // plain white background
+            float k = 1f;
             float[] cc = {Math.min(1f, col[0] * k), Math.min(1f, col[1] * k), Math.min(1f, col[2] * k), col[3]};
             double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
             Poly.quad(CosmeticRender.capePt(u0, v0, age, plus), CosmeticRender.capePt(u1, v0, age, plus),
