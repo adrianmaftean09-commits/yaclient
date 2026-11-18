@@ -495,5 +495,11 @@
  "set.volume": "Volumen",
  "set.key_release": "Sonido al soltar",
  "set.mouse_clicks": "Clics del ratón",
- "set.in_menus": "También en chat y menús"
+ "set.in_menus": "También en chat y menús",
+ "opt.mv_blue": "Switch azul",
+ "opt.mv_brown": "Switch marrón",
+ "opt.mv_red": "Switch rojo",
+ "opt.mv_typewriter": "Máquina de escribir",
+ "opt.mv_bubble": "Burbuja",
+ "opt.mv_creamy": "Cremoso"
 }

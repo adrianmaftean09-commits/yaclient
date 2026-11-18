@@ -18,7 +18,7 @@ import java.util.Random;
  * so it works in game, in the chat and in menus and never touches the render thread.
  */
 public class MechvibesModule extends Module {
-    private static final String[] PROFILES = {"blue", "brown", "red", "typewriter", "bubble", "creamy"};
+    private static final String[] PROFILES = {"mv_blue", "mv_brown", "mv_red", "mv_typewriter", "mv_bubble", "mv_creamy"};
 
     private final Setting.Choice sound = add("general", new Setting.Choice("sound", 1, PROFILES));
     private final Setting.Num volume = add("general", new Setting.Num("volume", 0f, 100f, 5f, 60f, "%"));

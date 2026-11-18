@@ -495,5 +495,11 @@
  "set.volume": "Lautstärke",
  "set.key_release": "Loslass-Klang",
  "set.mouse_clicks": "Mausklicks",
- "set.in_menus": "Auch in Chat und Menüs"
+ "set.in_menus": "Auch in Chat und Menüs",
+ "opt.mv_blue": "Blauer Switch",
+ "opt.mv_brown": "Brauner Switch",
+ "opt.mv_red": "Roter Switch",
+ "opt.mv_typewriter": "Schreibmaschine",
+ "opt.mv_bubble": "Blase",
+ "opt.mv_creamy": "Cremig"
 }

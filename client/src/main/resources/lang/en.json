@@ -505,5 +505,11 @@
  "set.volume": "Volume",
  "set.key_release": "Key release sound",
  "set.mouse_clicks": "Mouse clicks",
- "set.in_menus": "Also in chat and menus"
+ "set.in_menus": "Also in chat and menus",
+ "opt.mv_blue": "Blue switch",
+ "opt.mv_brown": "Brown switch",
+ "opt.mv_red": "Red switch",
+ "opt.mv_typewriter": "Typewriter",
+ "opt.mv_bubble": "Bubble",
+ "opt.mv_creamy": "Creamy"
 }
