@@ -99,8 +99,7 @@ function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em>${p === 'friends' && FR.data && FR.data.incoming.length ? `<b class="bdg">${FR.data.incoming.length}</b>` : ''}</button>`).join('');
   $('#accIcon').innerHTML = ic('user');
   $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
-  $('#accPill').innerHTML = S.account ? `<i>${esc(S.account.name[0].toUpperCase())}</i>${esc(S.account.name)}` : esc(t('signIn'));
-  $('#plusChip').textContent = plusOn() ? t('chip_on') : t('chip_off');
+  $('#accPill').innerHTML = S.account ? `<img src="https://minotar.net/helm/${encodeURIComponent(S.account.name)}/48.png" alt="" onerror="this.outerHTML='<i>${esc(S.account.name[0].toUpperCase())}</i>'">${esc(S.account.name)}` : esc(t('signIn'));
   $('#ver').textContent = (isYa(S.version) ? 'YA CLIENT ' : '') + (S.version || '');
   document.body.classList.toggle('plus', plusOn());
 }
@@ -287,7 +286,8 @@ async function friendAct(a, v) {
   await loadFriends();
 }
 function viewCosmetics() {
-  return `<h1>${esc(t('cosmetics'))}</h1><p class="sub">${esc(t('storeHint'))}</p>
+  const prem = S.account && S.account.type !== 'microsoft' ? `<p class="note" style="margin-bottom:12px">${esc(t('cosPrem'))}</p>` : '';
+  return `<h1>${esc(t('cosmetics'))}</h1><p class="sub">${esc(t('storeHint'))}</p>${prem}
     <div class="playrow" style="margin-bottom:18px"><button class="btn" id="openStore">${esc(t('store'))}</button></div>
     <div class="tabs" id="ctabs"></div><div id="cmsg" class="note"></div><div class="cos" id="cgrid"></div>`;
 }
@@ -504,7 +504,7 @@ function showLogin() {
   const m = $('#modal'); m.hidden = false;
   m.innerHTML = `<div class="dlg"><div class="mark">YA</div><button class="btn" id="lMs">${esc(t('microsoft'))}</button>
     <label style="color:var(--mute);font-size:12px">${esc(t('offlineL'))}</label><input type="text" id="lName" maxlength="16" style="width:100%">
-    <button class="btn" id="lOff">${esc(t('offlineBtn'))}</button><div class="err" id="lErr"></div><button class="btn" id="lClose">${esc(t('cancel'))}</button></div>`;
+    <button class="btn" id="lOff">${esc(t('offlineBtn'))}</button><p class="note" style="margin:0">${esc(t('offHint'))}</p><div class="err" id="lErr"></div><button class="btn" id="lClose">${esc(t('cancel'))}</button></div>`;
   const done = (r) => {
     if (r && r.error) { $('#lErr').textContent = t(r.error); return; }
     S.account = r; m.hidden = true; renderNav(); render(); refreshPlus();
@@ -606,6 +606,11 @@ window.ya.on('log', (m) => {
   const c = $('#con'); if (c) { c.textContent = logBuf.join('\n'); c.scrollTop = c.scrollHeight; }
 });
 
+Object.assign(I18N.en, { offHint: 'Offline / TLauncher accounts can play, but cosmetics only work with a Microsoft (premium) account.', cosPrem: 'You are signed in offline. Cosmetics only work with a Microsoft (premium) account.' });
+Object.assign(I18N.it, { offHint: 'Gli account offline / TLauncher possono giocare, ma i cosmetici funzionano solo con un account Microsoft (premium).', cosPrem: 'Sei collegato offline. I cosmetici funzionano solo con un account Microsoft (premium).' });
+Object.assign(I18N.es, { offHint: 'Las cuentas sin conexión / TLauncher pueden jugar, pero los cosméticos solo funcionan con una cuenta Microsoft (premium).', cosPrem: 'Has iniciado sesión sin conexión. Los cosméticos solo funcionan con una cuenta Microsoft (premium).' });
+Object.assign(I18N.de, { offHint: 'Offline-/TLauncher-Konten können spielen, Kosmetik funktioniert aber nur mit einem Microsoft-Konto (Premium).', cosPrem: 'Du bist offline angemeldet. Kosmetik funktioniert nur mit einem Microsoft-Konto (Premium).' });
+
 (async function init() {
   S = { ...S, ...(await window.ya.getState()) };
   if (!I18N[S.lang]) S.lang = 'en';
@@ -615,6 +620,7 @@ window.ya.on('log', (m) => {
   try { VERS = await window.ya.versions(); } catch (_) { }
   window.ya.art().then((a) => { ART = a || {}; if (page === 'versions') render(); }).catch(() => {});
   renderNav(); render();
+  if (!S.account) showLogin();   // not signed in: ask right away
   refreshPlus();
   window.addEventListener('focus', () => { if (Date.now() - (S._pt || 0) > 60000) { S._pt = Date.now(); refreshPlus(); } });
 })();

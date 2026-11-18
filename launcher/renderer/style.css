@@ -286,3 +286,5 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .bgbtn{min-width:58px;width:58px;padding:0}
 .hero3[style*="bg/"]::before{display:none}
 .hero3[style*="bg/"] .who b{text-shadow:0 2px 12px #000}
+
+.accpill img{width:24px;height:24px;border-radius:50%;image-rendering:pixelated;object-fit:cover}
