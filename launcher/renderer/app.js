@@ -196,12 +196,14 @@ function vPanel() {
   const l = curLine(); if (!l) return '';
   const i = Math.max(0, vLines().findIndex((x) => x.key === l.key)); const a = ART[l.key] || ART[lineOf(l.vs[0].id)];
   const g = modsGrid();
-  const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${esc(v.id)}${isYa(v.id) ? ' · YA' : ''}</option>`).join('');
+  const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${isYa(v.id) ? '★ ' : ''}${esc(v.id)}${isYa(v.id) ? '  —  YA CLIENT' : ''}</option>`).join('');
+  const yaList = l.vs.filter((v) => isYa(v.id)).map((v) => v.id);
+  const yaHint = yaList.length ? `<div class="note">★ YA CLIENT: ${esc(yaList.join(', '))}</div>` : '';
   return `<div class="vart"><u style="${artStyle(l, i)}"></u><i></i></div>
     <div class="vbody"><h2>${esc(l.title)}</h2>
     <p class="vdesc">${esc(a && a.text ? a.text : '')}</p>
     <label class="vlab">${esc(t('version') || 'Version')}</label>
-    <select id="vsel" class="vsel">${opts}</select>
+    <select id="vsel" class="vsel">${opts}</select>${yaHint}
     <label class="vlab">Loaders</label><div class="vld" id="vld">${loaderBtns()}</div>
     <button class="launch2 vgo" id="play2" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(S.version)}</span></button></div>`;
 }
