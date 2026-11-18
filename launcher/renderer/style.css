@@ -279,8 +279,8 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .rad small{grid-column:2/4;color:var(--mute);font-size:12.5px}
 .rec{font-style:normal;font-size:11px;background:#10303c;color:#35c6f4;border:1px solid #1d5a70;border-radius:8px;padding:2px 8px;justify-self:start}
 #view:has(.vp2),#view:has(.smodal){overflow:hidden}
-/* side bar: grey picked from the user's screenshot (#12151d) */
-.rail{background:#12151d}
+/* side bar: grey picked from the user's screenshot (#2a2b30) */
+.rail{background:#2a2b30}
 .rail .brandbox img{background:none;padding:0;width:40px;height:40px;filter:none}
 
 .bgbtn{min-width:58px;width:58px;padding:0}
