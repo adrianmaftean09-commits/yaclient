@@ -539,7 +539,7 @@ ipcMain.handle('play', async (_e, opts) => {
       overrides: fabric ? { gameDirectory: fabric.dir } : {},
       window: { width: String(state.width || 1280), height: String(state.height || 720), fullscreen: !!state.fullscreen },
       memory: { max: `${state.ram}M`, min: '1024M' },
-      customArgs: (yaMode ? [`-javaagent:${loaderJar}`] : []).concat(JVM_TUNING)
+      customArgs: (yaMode ? [`-javaagent:${loaderJar}`] : []).concat(state.account.type === 'offline' ? ['-Dyaclient.offline=true'] : []).concat(JVM_TUNING)
     };
     if (opts && opts.server && opts.server.host) {
       launchOpts.server = { host: String(opts.server.host), port: String(opts.server.port || 25565) };

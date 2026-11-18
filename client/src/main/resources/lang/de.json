@@ -466,5 +466,6 @@
  "mod.gapple_timer.desc": "Verbleibende Absorptionsherzen",
  "mod.potion_alert.name": "Trank-Warnung",
  "mod.potion_alert.desc": "Warnt, bevor ein Trankeffekt endet",
- "set.limit": "Warnen unter"
+ "set.limit": "Warnen unter",
+ "cos.premium_only": "Nur Premium-Konten"
 }

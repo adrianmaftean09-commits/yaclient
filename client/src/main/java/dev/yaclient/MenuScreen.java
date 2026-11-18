@@ -773,7 +773,7 @@ public class MenuScreen extends GuiScreen {
             }
             String name = Lang.t(bundle ? "cos.bundle." + id : "cos.item." + id);
             Gfx.text(Gfx.trim(name, 11, true, cw - 16), cx + 8, ty + th + 7, 11, true, Theme.TEXT);
-            String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t("cos.get"));
+            String st = on ? Lang.t("cos.equipped") : (has ? Lang.t("cos.click_equip") : Lang.t(CosmeticsApi.premium() ? "cos.get" : "cos.premium_only"));
             if (on) {
                 Gfx.rr(cx + 6, cy + ch - 24, cw - 12, 18, 7, Ui.alpha(Theme.accent(), 0.30f));
                 Gfx.icon("check", cx + 10, cy + ch - 23, 16, Theme.TEXT);
@@ -785,7 +785,7 @@ public class MenuScreen extends GuiScreen {
             int hy0 = Math.max(cy, gTop), hy1 = Math.min(cy + ch, gBot);
             if (hy1 > hy0) hit(cx, hy0, cw, hy1 - hy0, new Action() {
                 @Override public void run(float mx, float my) {
-                    if (!fHas) { if (bundle) CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]); else CosmeticsApi.openItem(id); return; }
+                    if (!fHas) { if (!CosmeticsApi.premium()) return; if (bundle) CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]); else CosmeticsApi.openItem(id); return; }
                     if (bundle) Cosmetics.toggleBundle(bi); else Cosmetics.toggle(bi, key);
                 }
             }, null, null);

@@ -273,7 +273,7 @@ export async function onRequest({ request, env }) {
       const check = { id: uuid0, name: String(f.username) };
       const token = hex(24);
       await env.DB.put('s:' + token, norm(check.id), { expirationTtl: 3600 });   // required: the login itself
-      if (check.name) {   // friends: remember who this account is (written only when it changes)
+      if (check.name && f.offline !== '1') {   // friends (never for non-premium players, so they cannot take a premium name): remember who this account is (written only when it changes)
         const id = norm(check.id), low = String(check.name).toLowerCase();
         try {
           const fr = await getF(env, id);

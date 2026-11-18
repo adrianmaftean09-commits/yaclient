@@ -466,5 +466,6 @@
  "mod.gapple_timer.desc": "Cuori di assorbimento rimasti dopo una mela d'oro",
  "mod.potion_alert.name": "Avviso Pozioni",
  "mod.potion_alert.desc": "Avvisa prima che finisca l'effetto di una pozione",
- "set.limit": "Avvisa sotto"
+ "set.limit": "Avvisa sotto",
+ "cos.premium_only": "Solo account premium"
 }

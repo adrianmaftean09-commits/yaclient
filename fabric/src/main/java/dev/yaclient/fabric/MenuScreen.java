@@ -499,10 +499,11 @@ public class MenuScreen extends Screen {
                 Gfx.textCentered(tag, x + cw - 12 - tw / 2, y + imgH + 14 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, owned ? ON_ACC : Theme.MUTED);
                 int fy = y + ch - 12 - 28;
                 boolean fo = inView && over(x + 12, fy, cw - 24, 28);
-                String fl = owned ? (wearing ? "Remove all" : "Equip all") : "Get in store";
+                String fl = owned ? (wearing ? "Remove all" : "Equip all") : (CosmeticsApi.premium() ? "Get in store" : "Premium accounts only");
                 Gfx.rr(x + 12, fy, cw - 24, 28, 5, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
                 Gfx.textCentered(fl, x + cw / 2, fy + (28 - Gfx.lineHeight(11, true)) / 2, 11, true, owned ? ON_ACC : Theme.TEXT);
                 bodyHit(x + 12, fy, cw - 24, 28, (px, py) -> {
+                    if (!CosmeticsApi.premium()) return;
                     if (Cosmetics.ownsBundle(bi)) Cosmetics.toggleBundle(bi); else CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]);
                 });
             } else {
@@ -517,10 +518,11 @@ public class MenuScreen extends Screen {
                 Gfx.text(Gfx.trim(Cosmetics.NAMES[bi], 12, true, cw - 20), x + 10, y + imgH + 10, 12, true, Theme.TEXT);
                 int fy = y + ch - 8 - 22;
                 boolean fo = inView && over(x + 10, fy, cw - 20, 22);
-                String fl = has ? (on ? "Remove" : "Equip") : "Get in store";
+                String fl = has ? (on ? "Remove" : "Equip") : (CosmeticsApi.premium() ? "Get in store" : "Premium only");
                 Gfx.rr(x + 10, fy, cw - 20, 22, 4, has ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
                 Gfx.textCentered(fl, x + cw / 2, fy + (22 - Gfx.lineHeight(10, true)) / 2, 10, true, has ? ON_ACC : Theme.TEXT);
                 bodyHit(x + 10, fy, cw - 20, 22, (px, py) -> {
+                    if (!CosmeticsApi.premium()) return;
                     if (CosmeticsApi.owned(item)) Cosmetics.toggle(bi, slot); else CosmeticsApi.openItem(item);
                 });
             }

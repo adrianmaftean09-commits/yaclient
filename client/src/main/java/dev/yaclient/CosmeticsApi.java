@@ -57,7 +57,10 @@ public final class CosmeticsApi {
     public static boolean enabled() { return !base().isEmpty(); }
 
     /** True if the item can be equipped (always true in dev mode). */
-    public static boolean owned(String item) { return !enabled() || owned.contains(item); }
+    public static boolean owned(String item) { return !enabled() || (premium() && owned.contains(item)); }
+
+    /** False for non-premium (SP) players: the launcher starts them with -Dyaclient.offline=true. They see the cosmetics of premium players but cannot own or wear any. */
+    public static boolean premium() { return System.getProperty("yaclient.offline") == null; }
 
     /** YA Plus subscription (animated cape movement). Always true in dev mode. */
     public static boolean plus() { return !enabled() || plus; }
@@ -141,7 +144,7 @@ public final class CosmeticsApi {
                 Config.save();
             }
             Map<String, String> r = Lang.parse(http("POST", base() + "/v1/auth",
-                    "username=" + enc(s.getUsername()) + "&uuid=" + enc(s.getPlayerID().replace("-", "")) + "&secret=" + enc(secret)));
+                    "username=" + enc(s.getUsername()) + "&uuid=" + enc(s.getPlayerID().replace("-", "")) + "&secret=" + enc(secret) + (premium() ? "" : "&offline=1")));
             authToken = r.get("token");
             authExpiry = System.currentTimeMillis() + 50L * 60L * 1000L;
             return authToken;
@@ -212,7 +215,7 @@ public final class CosmeticsApi {
 
     /** Several slots in a single request, so a bundle is applied (or removed) atomically on the server. */
     public static void pushEquipAll(Map<String, String> items) {
-        if (!enabled() || items.isEmpty()) return;
+        if (!enabled() || !premium() || items.isEmpty()) return;
         final StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> e : items.entrySet()) { if (sb.length() > 0) sb.append(','); sb.append(e.getKey()).append(':').append(e.getValue()); }
         PUSH.execute(new Runnable() {
@@ -273,6 +276,7 @@ public final class CosmeticsApi {
             Map<String, String> ov = previewOverride;
             if (ov != null) return ov;
             Map<String, String> m = new HashMap<String, String>();
+            if (!premium()) { for (String slot : Cosmetics.SLOTS) m.put(slot, "none"); m.put("plus", "0"); return m; }
             for (String slot : Cosmetics.SLOTS) m.put(slot, Cosmetics.equipped(slot));
             m.put("plus", plus() ? "1" : "0");
             return m;

@@ -476,5 +476,6 @@
  "mod.gapple_timer.desc": "Absorption hearts left after a golden apple",
  "mod.potion_alert.name": "Potion Alert",
  "mod.potion_alert.desc": "Warns before a potion effect runs out",
- "set.limit": "Warn below"
+ "set.limit": "Warn below",
+ "cos.premium_only": "Premium accounts only"
 }
