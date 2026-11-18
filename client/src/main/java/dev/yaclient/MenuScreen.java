@@ -379,7 +379,7 @@ public class MenuScreen extends GuiScreen {
         Gfx.fade = fade * p;
 
         if (live) hits.add(new Hit(0, 0, PW, PH, null, null, null));   // the page swallows every click behind it
-        Gfx.rr(0, 0, PW, PH, 10, 0xA00F1012);
+        Gfx.rr(0, 0, PW, PH, 10, 0xFF0F1012);
         Gfx.rrOutline(0, 0, PW, PH, 10, 1, 0x24FFFFFF);
 
         // ---- header: breadcrumb, title, enable switch
