@@ -11,7 +11,22 @@ import org.lwjgl.opengl.GL11;
 final class Nametag {
     private static final float LOGO = 10f, GAP = 3f;
 
+    private static final float PLUS = 8f;
+
     private Nametag() {}
+
+    /** The same translucent dark box vanilla puts behind a name, so the logo and the + sit inside one label. */
+    private static void box(float x0, float x1) {
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableDepth();
+        GL11.glColor4f(0f, 0f, 0f, 0.25f);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2f(x0, 8f); GL11.glVertex2f(x1, 8f); GL11.glVertex2f(x1, -1f); GL11.glVertex2f(x0, -1f);
+        GL11.glEnd();
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GL11.glColor4f(1f, 1f, 1f, 1f);
+    }
 
     private static float lerpYaw(float a, float b, float t) {
         float d = b - a;
@@ -32,7 +47,8 @@ final class Nametag {
         float textW = fr.getStringWidth(name);
         boolean plus = CosmeticsApi.plus();
         float badgeW = LOGO;
-        float x0 = -(badgeW + GAP + textW) / 2f;
+        float groupW = badgeW + GAP + textW + (plus ? GAP + PLUS : 0f);
+        float x0 = -groupW / 2f;
 
         float bodyYaw = lerpYaw(p.prevRenderYawOffset, p.renderYawOffset, pt);
         GlStateManager.pushMatrix();
@@ -52,6 +68,7 @@ final class Nametag {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        box(x0 - 1f, x0 + groupW + 1f);
         // logo
         LogoTexture.bind();
         Poly.beginTex();
@@ -61,8 +78,8 @@ final class Nametag {
         Poly.tex(x0 + LOGO, -1f, 0, 1f, 0f, 1f, 1f, 1f, 1f);
         Poly.end();
         // name, normal Minecraft font
-        if (plus) PlusBadge.draw(x0 + LOGO - 3.4f, -0.4f, 3.4f);   // exponent on the A
         fr.drawStringWithShadow(name, x0 + badgeW + GAP, 0f, 0xFFFFFFFF);
+        if (plus) PlusBadge.draw(x0 + badgeW + GAP + textW + GAP, -0.5f, PLUS);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
@@ -78,6 +95,7 @@ final class Nametag {
         float textW = fr.getStringWidth(p.getDisplayName().getFormattedText());
         float groupW = LOGO;
         float x0 = -textW / 2f - GAP - groupW;
+        float rx = textW / 2f + GAP;
         float bodyYaw = lerpYaw(p.prevRenderYawOffset, p.renderYawOffset, pt);
         GlStateManager.pushMatrix();
         GlStateManager.translate(0f, 1.5078125f, 0f);
@@ -94,6 +112,8 @@ final class Nametag {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        box(x0 - 1f, -textW / 2f - 1f);                 // joins the vanilla box on the left
+        if (plus) box(textW / 2f + 1f, rx + PLUS + 1f);   // and on the right for the +
         LogoTexture.bind();
         Poly.beginTex();
         Poly.tex(x0, -1f, 0, 0f, 0f, 1f, 1f, 1f, 1f);
@@ -101,7 +121,7 @@ final class Nametag {
         Poly.tex(x0 + LOGO, -1f + LOGO, 0, 1f, 1f, 1f, 1f, 1f, 1f);
         Poly.tex(x0 + LOGO, -1f, 0, 1f, 0f, 1f, 1f, 1f, 1f);
         Poly.end();
-        if (plus) PlusBadge.draw(x0 + LOGO - 3.4f, -0.4f, 3.4f);   // exponent on the A
+        if (plus) PlusBadge.draw(rx, -0.5f, PLUS);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
