@@ -61,9 +61,21 @@ public final class Extra {
         return "Light " + l + (l < 8 ? " (mobs)" : "");
     }
 
+    private static java.lang.reflect.Method dayM;
+    private static boolean dayTried;
+
+    /** getDayTime() was renamed / moved in newer versions: look it up at runtime, fall back to the game time. */
+    private static long dayTime(net.minecraft.world.level.Level lv) {
+        try {
+            if (!dayTried) { dayTried = true; try { dayM = lv.getClass().getMethod("getDayTime"); } catch (Exception ignored) { } }
+            if (dayM != null) return ((Number) dayM.invoke(lv)).longValue();
+        } catch (Exception ignored) { }
+        return lv.getGameTime();
+    }
+
     public static String day(Minecraft mc) {
         if (mc.level == null) return "";
-        long t = mc.level.getDayTime();
+        long t = dayTime(mc.level);
         long tod = t % 24000L;
         return "Day " + (t / 24000L + 1) + String.format("  %02d:%02d", (tod / 1000 + 6) % 24, (tod % 1000) * 60 / 1000);
     }
