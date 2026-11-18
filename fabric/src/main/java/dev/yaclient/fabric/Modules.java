@@ -178,6 +178,53 @@ public final class Modules {
         text("dropcount", "Dropped Items", "[SkyBlock] Item entities lying around you, for farms and drops", Category.INFO, 0.9f, 0.61f, Extra::dropCount);
         text("sprintstate", "Sprint State", "Shows when you are sprinting or sneaking", Category.INFO, 0.008f, 0.75f, mc ->
             mc.player == null ? "" : (mc.player.isSprinting() ? "Sprinting" : mc.player.isShiftKeyDown() ? "Sneaking" : "Walking"));
+        // ---- Crystal PvP ----
+        text("crystalsnear", "Crystals Nearby", "[Crystal] End crystals within 12 blocks", Category.CRYSTAL, 0.75f, 0.05f, mc -> Extra.crystals(mc, false));
+        text("crystaldist", "Crystal Distance", "[Crystal] Distance to the nearest end crystal", Category.CRYSTAL, 0.75f, 0.10f, mc -> Extra.crystals(mc, true));
+        text("obsidiancount", "Obsidian Count", "[Crystal] Obsidian in your inventory", Category.CRYSTAL, 0.75f, 0.15f, mc -> mc.player == null ? "" : "Obsidian " + Extra.count(mc, Items.OBSIDIAN));
+        text("anchorcount", "Anchor Count", "[Crystal] Respawn anchors and glowstone", Category.CRYSTAL, 0.75f, 0.20f, mc -> mc.player == null ? "" : "Anchors " + Extra.count(mc, Items.RESPAWN_ANCHOR) + "  Glow " + Extra.count(mc, Items.GLOWSTONE));
+        text("totemcount", "Totem Count", "[Crystal] Totems of undying in your inventory", Category.CRYSTAL, 0.75f, 0.25f, mc -> mc.player == null ? "" : "Totems " + Extra.count(mc, Items.TOTEM_OF_UNDYING));
+        text("offhandinfo", "Offhand Item", "[Crystal] What you hold in your off hand", Category.CRYSTAL, 0.75f, 0.30f, mc -> {
+            if (mc.player == null) return "";
+            var st = mc.player.getOffhandItem();
+            return st.isEmpty() ? "Offhand empty" : st.getHoverName().getString() + " x" + st.getCount();
+        });
+        text("hitcooldown", "Hit Cooldown", "[PvP] How charged your next attack is", Category.PVP, 0.75f, 0.35f, mc -> mc.player == null ? "" : "Attack " + Math.round(mc.player.getAttackStrengthScale(0f) * 100f) + "%");
+        text("armorvalue", "Armor Value", "[PvP] Your total armor points", Category.PVP, 0.75f, 0.40f, mc -> mc.player == null ? "" : "Armor " + mc.player.getArmorValue());
+        text("lastdamage", "Last Damage", "[PvP] Damage of the last hit you took", Category.PVP, 0.75f, 0.45f, mc -> Extra.lastDamage());
+        text("shieldstate", "Shield State", "[PvP] Shows when you are blocking", Category.PVP, 0.75f, 0.50f, mc -> mc.player != null && mc.player.isBlocking() ? "Blocking" : "");
+        text("burning", "Burning Alert", "[PvP / SMP] Warns while you are on fire", Category.PVP, 0.42f, 0.25f, mc -> mc.player != null && mc.player.isOnFire() ? "BURNING!" : "");
+        // ---- BedWars / SkyWars ----
+        text("blocksleft", "Blocks Left", "[BedWars / SkyWars] How many of the block in your hand you carry", Category.PVP, 0.75f, 0.55f, mc -> {
+            int n = Extra.countAll(mc, true);
+            return n < 0 ? "" : "Blocks " + n;
+        });
+        text("resources", "Resources", "[BedWars] Iron, gold, diamonds and emeralds you carry", Category.PVP, 0.75f, 0.60f, mc -> mc.player == null ? "" :
+            "Iron " + Extra.count(mc, Items.IRON_INGOT) + "\nGold " + Extra.count(mc, Items.GOLD_INGOT) + "\nDiamond " + Extra.count(mc, Items.DIAMOND) + "\nEmerald " + Extra.count(mc, Items.EMERALD));
+        text("bwitems", "BedWars Items", "[BedWars] Fireballs, TNT and water buckets", Category.PVP, 0.75f, 0.68f, mc -> mc.player == null ? "" :
+            "Fireballs " + Extra.count(mc, Items.FIRE_CHARGE) + "\nTNT " + Extra.count(mc, Items.TNT) + "\nWater " + Extra.count(mc, Items.WATER_BUCKET));
+        text("buckets", "Bucket Count", "[SkyBlock / SkyWars] Water and lava buckets", Category.INFO, 0.75f, 0.75f, mc -> mc.player == null ? "" : "Water " + Extra.count(mc, Items.WATER_BUCKET) + "  Lava " + Extra.count(mc, Items.LAVA_BUCKET));
+        text("lookangles", "Look Angles", "[BedWars / Bridging] Your exact yaw and pitch", Category.INFO, 0.42f, 0.45f, mc -> mc.player == null ? "" :
+            String.format("Yaw %.1f  Pitch %.1f", mc.player.getViewYRot(1f), mc.player.getViewXRot(1f)));
+        text("pingwarn", "Lag Warning", "Warns when your ping is high", Category.INFO, 0.42f, 0.5f, mc -> {
+            if (mc.player == null || mc.getConnection() == null) return "";
+            PlayerInfo pi = mc.getConnection().getPlayerInfo(mc.player.getUUID());
+            return pi != null && pi.getLatency() > 150 ? "HIGH PING " + pi.getLatency() + " ms" : "";
+        });
+        // ---- Vanilla / SMP ----
+        text("mountspeed", "Mount Speed", "[SMP] Speed of your horse, boat or minecart", Category.INFO, 0.75f, 0.80f, Extra::mountSpeed);
+        text("elytrainfo", "Elytra Info", "[SMP] Elytra durability and flight speed", Category.INFO, 0.75f, 0.85f, Extra::elytra);
+        text("fireworks", "Firework Count", "[SMP] Firework rockets in your inventory", Category.INFO, 0.75f, 0.90f, mc -> mc.player == null ? "" : "Rockets " + Extra.count(mc, Items.FIREWORK_ROCKET));
+        text("breath", "Breath", "[SMP] Air left while underwater", Category.INFO, 0.42f, 0.55f, mc -> mc.player == null || mc.player.getAirSupply() >= mc.player.getMaxAirSupply() ? "" : "Air " + Math.max(0, mc.player.getAirSupply() / 20) + "s");
+        text("xpprogress", "XP Progress", "[SMP] Percent to the next level", Category.INFO, 0.42f, 0.6f, mc -> mc.player == null ? "" : "XP " + Math.round(mc.player.experienceProgress * 100f) + "% to " + (mc.player.experienceLevel + 1));
+        text("gamemodeinfo", "Game Mode", "Creative, Spectator or Survival", Category.INFO, 0.42f, 0.65f, mc -> mc.player == null ? "" : (mc.player.isCreative() ? "Creative" : mc.player.isSpectator() ? "Spectator" : "Survival"));
+        text("walked", "Distance Walked", "[SMP] Blocks walked this session", Category.INFO, 0.42f, 0.7f, mc -> Extra.walkedText());
+        text("hungerwarn", "Hunger Warning", "[SMP] Warns when your food is low", Category.INFO, 0.42f, 0.75f, mc -> mc.player != null && mc.player.getFoodData().getFoodLevel() <= 6 ? "HUNGRY (" + mc.player.getFoodData().getFoodLevel() + ")" : "");
+        text("toolwarn", "Tool Warning", "[SMP / SkyBlock] Warns when your held tool is about to break", Category.INFO, 0.42f, 0.8f, Extra::toolWarn);
+        ALL.add(new Tweaks.Opt<Boolean>("togglesneak", "Toggle Sneak", "[SMP / BedWars] Press sneak once to stay crouched", Category.UTILITY, o -> o.toggleCrouch(), Boolean.TRUE));
+        ALL.add(new Tweaks.Opt<Boolean>("noautojump", "No Auto Jump", "Turns off auto jump", Category.UTILITY, o -> o.autoJump(), Boolean.FALSE));
+        ALL.add(new Tweaks.Opt<Integer>("unlimitedfps", "Unlimited FPS", "Removes the FPS limit", Category.UTILITY, o -> o.framerateLimit(), Integer.valueOf(260)));
+        ALL.add(new Tweaks.Opt<Boolean>("vsyncoff", "VSync Off", "Turns VSync off for lower input delay", Category.UTILITY, o -> o.enableVsync(), Boolean.FALSE));
         // ---- YA Plus only ----
         ALL.add(new Plus.Trail().plus());
         ALL.add(new Plus.HitSparks().plus());
