@@ -99,7 +99,7 @@ function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em>${p === 'friends' && FR.data && FR.data.incoming.length ? `<b class="bdg">${FR.data.incoming.length}</b>` : ''}</button>`).join('');
   $('#accIcon').innerHTML = ic('user');
   $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
-  $('#accPill').innerHTML = S.account ? `<img src="https://minotar.net/helm/${encodeURIComponent(S.account.name)}/48.png" alt="" onerror="this.outerHTML='<i>${esc(S.account.name[0].toUpperCase())}</i>'">${esc(S.account.name)}` : esc(t('signIn'));
+  $('#accPill').innerHTML = S.account ? `<img class="face" data-ini="${esc(S.account.name[0].toUpperCase())}" src="https://minotar.net/helm/${encodeURIComponent(S.account.name)}/48.png" alt="">${esc(S.account.name)}` : esc(t('signIn'));
   $('#ver').textContent = (isYa(S.version) ? 'YA CLIENT ' : '') + (S.version || '');
   document.body.classList.toggle('plus', plusOn());
 }
@@ -194,7 +194,7 @@ const fabricSup = (v) => /^\d+\.\d+(\.\d+)?$/.test(v) && (() => { const p = v.sp
 const isYa18 = (v) => v === (S.ya || '1.8.9');
 function vPanel() {
   const l = curLine(); if (!l) return '';
-  const i = vLines().indexOf(l); const a = ART[l.key] || ART[lineOf(l.vs[0].id)];
+  const i = Math.max(0, vLines().findIndex((x) => x.key === l.key)); const a = ART[l.key] || ART[lineOf(l.vs[0].id)];
   const g = modsGrid();
   const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${esc(v.id)}${isYa(v.id) ? ' · YA' : ''}</option>`).join('');
   return `<div class="vart"><u style="${artStyle(l, i)}"></u><i></i></div>
@@ -207,7 +207,7 @@ function vPanel() {
 }
 function vCards() {
   return vLines().map((l, i) => {
-    const on = curLine() === l;
+    const on = curLine().key === l.key;
     return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" ><u style="${artStyle(l, i)}"></u><i></i><b>${esc(l.title)}</b>${l.vs.some((v) => isYa(v.id)) ? `<em>${esc(t('ya'))}</em>` : ''}</button>`;
   }).join('');
 }
@@ -610,6 +610,10 @@ Object.assign(I18N.en, { offHint: 'Offline / TLauncher accounts can play, but co
 Object.assign(I18N.it, { offHint: 'Gli account offline / TLauncher possono giocare, ma i cosmetici funzionano solo con un account Microsoft (premium).', cosPrem: 'Sei collegato offline. I cosmetici funzionano solo con un account Microsoft (premium).' });
 Object.assign(I18N.es, { offHint: 'Las cuentas sin conexión / TLauncher pueden jugar, pero los cosméticos solo funcionan con una cuenta Microsoft (premium).', cosPrem: 'Has iniciado sesión sin conexión. Los cosméticos solo funcionan con una cuenta Microsoft (premium).' });
 Object.assign(I18N.de, { offHint: 'Offline-/TLauncher-Konten können spielen, Kosmetik funktioniert aber nur mit einem Microsoft-Konto (Premium).', cosPrem: 'Du bist offline angemeldet. Kosmetik funktioniert nur mit einem Microsoft-Konto (Premium).' });
+
+document.addEventListener('error', (e) => {   // inline onerror is blocked by the CSP, so listen here
+  const im = e.target; if (im && im.classList && im.classList.contains('face')) { const i = document.createElement('i'); i.textContent = im.dataset.ini || '?'; im.replaceWith(i); }
+}, true);
 
 (async function init() {
   S = { ...S, ...(await window.ya.getState()) };

@@ -288,3 +288,7 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .hero3[style*="bg/"] .who b{text-shadow:0 2px 12px #000}
 
 .accpill img{width:24px;height:24px;border-radius:50%;image-rendering:pixelated;object-fit:cover}
+.vbody h2{text-transform:none;color:var(--text);letter-spacing:0;font-size:20px}
+.sright h2{text-transform:none;color:var(--text);letter-spacing:-.3px;font-size:26px}
+.ssec input[type=range]{width:100%}
+.res input{width:80px}
