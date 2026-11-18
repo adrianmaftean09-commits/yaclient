@@ -108,7 +108,6 @@ public class YAClient implements ModInitializer {
         MODULES.add(new VoidAlertModule());
         MODULES.add(new GappleTimerModule());
         MODULES.add(new PotionAlertModule());
-        MODULES.add(new FreeLookModule());
 
         // Plus-only mods (free players see them locked)
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
