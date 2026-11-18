@@ -184,7 +184,7 @@ public final class Modules {
         ALL.add(new Plus.RainbowHud().plus());
         text("fallalert", "Fall Alert", "[Plus] Big warning when a fall would hurt", Category.INFO, 0.42f, 0.4f, mc ->
             mc.player != null && mc.player.fallDistance > 3.5f ? String.format("FALL %.0f blocks!", mc.player.fallDistance) : "").plus();
-        text("plusstats", "Session Stats", "[Plus] Hits, combo and best combo this session", Category.PVP, 0.9f, 0.7f, Extra::stats).plus();
+        text("plusstats", "Session Stats", "[Plus] Hits, combo and best combo this session", Category.PVP, 0.9f, 0.7f, mc -> Extra.stats()).plus();
         ALL.add(new Utility.NoFovEffects());
         ALL.add(new Utility.NoScreenEffects());
         ALL.add(new Utility.NoBobbing());
