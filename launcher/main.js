@@ -260,7 +260,7 @@ function resolveJava(major) {
 }
 
 // ---------- state / account ----------
-ipcMain.handle('state', () => ({ ...state, version: state.version || cfg.minecraftVersion, ya: cfg.minecraftVersion, yaFabric: ['26.2'], gameDir }));
+ipcMain.handle('state', () => ({ ...state, version: state.version || cfg.minecraftVersion, ya: cfg.minecraftVersion, yaFabric: ['26.2', '1.21.11', '1.21.8', '1.21.4', '1.21.1'], gameDir }));
 ipcMain.handle('settings', (_e, s) => { state = { ...state, ...s }; save(); return state; });
 ipcMain.handle('logout', () => { state.account = null; save(); return true; });
 ipcMain.handle('detect-java', () => findJava8());
