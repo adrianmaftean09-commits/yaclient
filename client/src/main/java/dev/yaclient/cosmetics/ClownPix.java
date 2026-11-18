@@ -102,22 +102,15 @@ final class ClownPix {
     // ------------------------------------------------------------------ cape: harlequin diamonds with a ruffle
     static void capeBase(Anime.Th t, float age, boolean plus) {
         final int NU = 11, NV = 16;
-        int[] pal = {RED, YEL, BLUE, WHITE};
         for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
             float[] col;
-            float n = noise(i, j);
-            if (j == 0) col = (i % 2 == 0) ? c(WHITE) : c(CREAM);                                   // ruffle collar
-            else if (j >= NV - 3) {                                                                  // ruffled hem with pompoms
-                int[] pp = {RED, BLUE, GRN, YEL, MAG};
-                col = (i % 2 == 0) ? c(pp[(i / 2) % pp.length]) : (j == NV - 1 ? c(CREAM) : c(WHITE));
-            } else if (i == 0 || i == NU - 1) col = c(INK);                                          // dark outline
+            if (j == 0 || j >= NV - 2) col = ((i + j) % 2 == 0) ? c(RED) : c(CREAM);                 // ruffle collar and hem: red/cream checks
+            else if (i == 0 || i == NU - 1) col = c(DRED);                                            // darker red edge
             else {
                 int a = Math.floorDiv(i + j, 3), b = Math.floorDiv(i - j + 30, 3);
-                int idx = ((a + 2 * b) % 4 + 4) % 4;
-                col = c(pal[idx]);
-                if (idx == 3 && n > 0.5f) col = c(CREAM);
+                col = (((a + b) & 1) == 0) ? c(RED) : c(CREAM);                                       // two-color harlequin diamonds
             }
-            float k = 0.96f + 0.04f * noise(j, i);
+            float k = 0.97f + 0.03f * noise(j, i);
             float[] cc = {Math.min(1f, col[0] * k), Math.min(1f, col[1] * k), Math.min(1f, col[2] * k), col[3]};
             double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
             Poly.quad(CosmeticRender.capePt(u0, v0, age, plus), CosmeticRender.capePt(u1, v0, age, plus),
