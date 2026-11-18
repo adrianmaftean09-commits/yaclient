@@ -162,39 +162,64 @@ function specOk(spec, v) {
 const modOk = (m, v) => !m.soon && (m.versions || []).some((sp) => specOk(sp, v));
 const isYa = (v) => v === (S.ya || '1.8.9') || (S.yaFabric || []).includes(v);
 
-function versionRows() {
-  const q = vq.trim().toLowerCase();
-  let list = VERS.versions.filter((v) => (vtab === 'release' ? v.type === 'release' : vtab === 'snapshot' ? v.type === 'snapshot' : (v.type === 'old_beta' || v.type === 'old_alpha')));
-  if (q) list = list.filter((v) => v.id.toLowerCase().indexOf(q) >= 0);
-  const lat = VERS.latest && VERS.latest.release;
-  const rows = [];
-  const row = (v) => `<button class="vrow ${v.id === S.version ? 'on' : ''}" data-ver="${esc(v.id)}"><b>${esc(v.id)}</b>
-    ${v.id === lat ? `<span class="badge">${esc(t('latest'))}</span>` : ''}${isYa(v.id) ? `<span class="badge ya">${esc(t('ya'))}</span>` : ''}
-    <small>${esc((v.time || '').slice(0, 10))}</small></button>`;
-  list.slice(0, 250).forEach((v) => rows.push(row(v)));
-  return rows.join('') || `<div class="note" style="padding:14px">${esc(t('noRes'))}</div>`;
+let ART = {}; let vline = null;
+const lineOf = (id) => { const m = /^(\d+\.\d+)/.exec(id); return m ? m[1] : id; };
+function vLines() {
+  const map = new Map();
+  VERS.versions.filter((v) => v.type === 'release').forEach((v) => { const l = lineOf(v.id); if (!map.has(l)) map.set(l, []); map.get(l).push(v); });
+  const out = [...map.entries()].map(([k, vs]) => ({ key: k, title: 'Minecraft ' + k, vs }));
+  const sn = VERS.versions.filter((v) => v.type === 'snapshot').slice(0, 120);
+  const old = VERS.versions.filter((v) => v.type === 'old_beta' || v.type === 'old_alpha');
+  if (sn.length) out.push({ key: 'snap', title: t('snapshots'), vs: sn });
+  if (old.length) out.push({ key: 'old', title: t('old'), vs: old });
+  return out;
+}
+const HUES = [212, 150, 28, 280, 350, 190, 60, 320];
+function artStyle(l, i) {
+  const a = ART[l.key]; const h = HUES[(i * 3 + 1) % HUES.length];
+  const g = `linear-gradient(135deg,hsl(${h} 40% 22%),hsl(${(h + 40) % 360} 45% 10%))`;
+  return a ? `background:url('${esc(a.img)}') center/cover,${g}` : `background:${g}`;
+}
+function curLine() {
+  const ls = vLines();
+  return ls.find((l) => l.key === vline) || ls.find((l) => l.vs.some((v) => v.id === S.version)) || ls[0];
+}
+function loaderBtns() {
+  const ok = fabricSup(S.version) && !isYa18(S.version);
+  const cur = S.loader || 'fabric';
+  if (isYa18(S.version)) return `<div class="note">${esc(t('vanillaNote').replace(/.*/, 'YA CLIENT (Weave)'))}</div>`;
+  const opts = [['vanilla', 'Vanilla'], ['fabric', 'Fabric'], ['sodium', 'Fabric + Sodium']];
+  return opts.map((o) => `<button class="ldb ${cur === o[0] ? 'on' : ''} ${ok || o[0] === 'vanilla' ? '' : 'off'}" data-ld="${o[0]}" ${ok || o[0] === 'vanilla' ? '' : 'disabled'}>${o[1]}</button>`).join('');
+}
+const fabricSup = (v) => /^\d+\.\d+(\.\d+)?$/.test(v) && (() => { const p = v.split('.').map(Number); return p[0] > 1 || p[1] > 16 || (p[1] === 16 && (p[2] || 0) >= 0); })() && !/^1\.16(\.[0-4])?$/.test(v);
+const isYa18 = (v) => v === (S.ya || '1.8.9');
+function vPanel() {
+  const l = curLine(); if (!l) return '';
+  const i = vLines().indexOf(l); const a = ART[l.key];
+  const g = modsGrid();
+  const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${esc(v.id)}${isYa(v.id) ? ' · YA' : ''}</option>`).join('');
+  return `<div class="vart" style="${artStyle(l, i)}"><span>${esc(l.title)}</span></div>
+    <div class="vbody"><h2>${esc(l.title)}</h2>
+    <p class="vdesc">${esc(a && a.text ? a.text : '')}</p>
+    <label class="vlab">${esc(t('version') || 'Version')}</label>
+    <select id="vsel" class="vsel">${opts}</select>
+    <label class="vlab">Loaders</label><div class="vld" id="vld">${loaderBtns()}</div>
+    <p class="sub" id="vsub">${esc(g.ok + ' / ' + MODS.length + ' ' + t('avail'))}${isYa(S.version) ? '' : ' · ' + esc(t('vanillaNote')) + ' ' + esc(S.ya || '1.8.9')}</p>
+    <button class="launch2 vgo" id="play2" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(S.version)}</span></button></div>`;
+}
+function vCards() {
+  return vLines().map((l, i) => {
+    const on = curLine() === l;
+    return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" style="${artStyle(l, i)}"><i></i><b>${esc(l.title)}</b>${l.vs.some((v) => isYa(v.id)) ? `<em>${esc(t('ya'))}</em>` : ''}</button>`;
+  }).join('');
 }
 function modsGrid() {
   const v = S.version;
   const ok = MODS.filter((m) => modOk(m, v)).length;
-  const items = MODS.slice().sort((a, b) => (modOk(b, v) ? 1 : 0) - (modOk(a, v) ? 1 : 0));
-  return { ok, html: items.map((m) => {
-    const on = modOk(m, v);
-    const need = m.soon ? t('soon') : t('needs') + ' ' + (m.versions || []).join(', ');
-    return `<div class="card mod ${on ? '' : 'off'}"><div><span>${esc(m.name)}</span><small>${esc(on ? m.desc : need)}</small></div>
-      ${on ? `<button class="sw ${MODSTATE[m.id] === false ? '' : 'on'}" data-mod="${esc(m.id)}" aria-label="${esc(m.name)}"></button>` : '<span class="lockic">' + ic('lock') + '</span>'}</div>`;
-  }).join('') };
+  return { ok, html: '' };
 }
 function viewVersions() {
-  const g = modsGrid();
-  const tabs = [['release', 'releases'], ['snapshot', 'snapshots'], ['old', 'old']];
-  return `<div class="vp"><div class="card vl"><input type="text" id="vq" placeholder="${esc(t('search'))}" value="${esc(vq)}">
-    <div class="tabs" id="vtabs" style="margin:10px 0">${tabs.map((x) => `<button class="tab ${vtab === x[0] ? 'on' : ''}" data-vt="${x[0]}">${esc(t(x[1]))}</button>`).join('')}</div>
-    ${VERS.online ? '' : `<div class="note">${esc(t('offlineList'))}</div>`}
-    <div class="vlist" id="vlist">${versionRows()}</div></div>
-    <div><h1>${esc(t('modsFor'))} ${esc(S.version)}</h1>
-    <p class="sub" id="vsub">${esc(g.ok + ' / ' + MODS.length + ' ' + t('avail'))}${isYa(S.version) ? '' : ' · ' + esc(t('vanillaNote')) + ' ' + esc(S.ya || '1.8.9')}</p>
-    <div class="mods" id="mgrid">${g.html}</div></div></div>`;
+  return `<div class="vp2"><div class="vgrid" id="vgrid">${vCards()}</div><div class="card vpanel" id="vpanel">${vPanel()}</div></div>`;
 }
 function viewServers() {
   const list = C.servers || [];
@@ -294,15 +319,36 @@ async function fillCosmetics() {
   }
   S._store = r.store || '';
 }
+let stab = 'game'; let sq = '';
+const ST_TABS = [['game', 'Game'], ['general', 'General'], ['account', 'Account']];
+function sRadio(name, cur, opts) {
+  return opts.map((o) => `<button class="rad ${String(cur) === String(o[0]) ? 'on' : ''}" data-rad="${name}" data-val="${o[0]}"><i></i><b>${esc(o[1])}</b>${o[3] ? '<em class="rec">Recommended</em>' : ''}<small>${esc(o[2])}</small></button>`).join('');
+}
+function sSec(title, desc, body) { return `<section class="ssec"><h3>${esc(title)}</h3>${desc ? `<p>${esc(desc)}</p>` : ''}${body}</section>`; }
+function settingsBody() {
+  const q = sq.trim().toLowerCase(); const parts = [];
+  const W = S.width || 1280, H = S.height || 720;
+  const game = [
+    sSec('Allocated Memory', 'How much memory should we allocate to the game instance', `<div class="ramv"><b id="ramv">${S.ram} MB</b></div><input type="range" id="sRam" min="1024" max="16384" step="256" value="${S.ram}"><div class="rr"><span>1 GB</span><span>16 GB</span></div>`),
+    sSec('Game Resolution', 'Set the resolution of the game instance', `<div class="res"><span>W</span><input type="number" id="sW" value="${W}"><span>&times;</span><span>H</span><input type="number" id="sH" value="${H}"></div>
+      <label class="chk"><button class="sw ${S.fullscreen ? 'on' : ''}" id="sFull"></button> Launch in fullscreen mode</label>`),
+    sSec('Java', t('javaHint'), `<div style="display:flex;gap:8px"><input type="text" id="sJava" value="${esc(S.javaPath || 'java')}"><button class="btn sm" id="sDet">${esc(t('detect'))}</button></div>`),
+    sSec('Launcher visibility on Game Launch', 'Select which option the Launcher should take after the game has launched', sRadio('min', !!S.minimizeOnLaunch, [[false, 'Keep Open', 'Launcher will remain open in background', true], [true, 'Hide', 'Launcher will hide when the game instance spawns']])),
+  ];
+  const general = [
+    sSec(t('language'), 'Select the language of the launcher', `<select id="sLang" class="vsel">${Object.keys(LANGS).map((k) => `<option value="${k}" ${k === S.lang ? 'selected' : ''}>${LANGS[k]}</option>`).join('')}</select>`),
+    sSec(t('folder'), 'Open the folder where game files are stored', '<button class="btn sm" id="sFolder">Open &#8594;</button>'),
+  ];
+  const account = [S.account ? sSec(S.account.name, S.account.type === 'microsoft' ? 'Microsoft account' : 'Offline account', `<button class="btn sm" id="sOut">${esc(t('logout'))}</button>`) : sSec('Account', 'Not signed in', '')];
+  const sets = { game, general, account };
+  if (q) Object.values(sets).forEach((l) => l.forEach((h) => { if (h.toLowerCase().replace(/<[^>]+>/g, ' ').indexOf(q) >= 0) parts.push(h); }));
+  else (sets[stab] || game).forEach((h) => parts.push(h));
+  return parts.join('') || '<p class="sub">No results</p>';
+}
 function viewSettings() {
-  return `<h1>${esc(t('settings'))}</h1><p class="sub"></p><div class="set">
-   <div class="card row"><label>${esc(t('language'))}</label><select id="sLang">${Object.keys(LANGS).map((k) => `<option value="${k}" ${k === S.lang ? 'selected' : ''}>${LANGS[k]}</option>`).join('')}</select></div>
-   <div class="card row"><label>${esc(t('ram'))}<small id="ramv">${S.ram} MB</small></label><input type="range" id="sRam" min="1024" max="8192" step="256" value="${S.ram}"></div>
-   <div class="card row"><label>${esc(t('java'))}<small>${esc(t('javaHint'))}</small></label><div style="display:flex;gap:8px"><input type="text" id="sJava" value="${esc(S.javaPath || 'java')}"><button class="btn sm" id="sDet">${esc(t('detect'))}</button></div></div>
-   <div class="card row"><label>${esc(t('minimize'))}</label><button class="sw ${S.minimizeOnLaunch ? 'on' : ''}" id="sMin"></button></div>
-   <div class="card row"><label>${esc(t('folder'))}</label><button class="btn sm" id="sFolder">&#8594;</button></div>
-   ${S.account ? `<div class="card row"><label>${esc(S.account.name)}</label><button class="btn sm" id="sOut">${esc(t('logout'))}</button></div>` : ''}
-   </div>`;
+  return `<div class="smodal"><div class="snav"><input type="text" id="sSearch" placeholder="Search settings..." value="${esc(sq)}">
+    ${ST_TABS.map((x) => `<button class="snb ${stab === x[0] && !sq ? 'on' : ''}" data-st="${x[0]}">${x[1]}</button>`).join('')}</div>
+    <div class="sright"><h2>${esc(sq ? 'Search' : ST_TABS.find((x) => x[0] === stab)[1] + ' Settings')}</h2><div class="sbody" id="sbody">${settingsBody()}</div></div></div>`;
 }
 function viewConsole() {
   return `<h1>${esc(t('console'))}</h1><p class="sub"></p><div class="con conp" id="con">${esc(logBuf.join('\n'))}</div>`;
@@ -512,13 +558,12 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'play') return launch();
   if (el.dataset.srv != null) { const s = (C.servers || [])[+el.dataset.srv]; if (s) launch({ host: s.host, port: s.port || 25565 }); return; }
   if (el.dataset.url) return window.ya.openExternal(el.dataset.url);
-  if (el.dataset.ver) {
-    S.version = el.dataset.ver; window.ya.saveSettings({ version: S.version });
-    const g = modsGrid(); $('#vlist').innerHTML = versionRows(); $('#mgrid').innerHTML = g.html;
-    $('#vsub').textContent = g.ok + ' / ' + MODS.length + ' ' + t('avail') + (isYa(S.version) ? '' : ' · ' + t('vanillaNote') + ' ' + (S.ya || '1.8.9'));
-    $('#view h1').textContent = t('modsFor') + ' ' + S.version; return;
-  }
-  if (el.dataset.vt) { vtab = el.dataset.vt; document.querySelectorAll('#vtabs .tab').forEach((b) => b.classList.toggle('on', b.dataset.vt === vtab)); $('#vlist').innerHTML = versionRows(); return; }
+  if (el.dataset.st) { stab = el.dataset.st; sq = ''; return render(); }
+  if (el.dataset.rad) { if (el.dataset.rad === 'min') { S.minimizeOnLaunch = el.dataset.val === 'true'; window.ya.saveSettings({ minimizeOnLaunch: S.minimizeOnLaunch }); } $('#sbody').innerHTML = settingsBody(); return; }
+  if (el.id === 'sFull') { S.fullscreen = !S.fullscreen; el.classList.toggle('on', S.fullscreen); return window.ya.saveSettings({ fullscreen: S.fullscreen }); }
+  if (el.dataset.vl) { vline = el.dataset.vl; const l = curLine(); if (l && !l.vs.some((v) => v.id === S.version)) { S.version = l.vs[0].id; window.ya.saveSettings({ version: S.version }); renderNav(); } $('#vgrid').innerHTML = vCards(); $('#vpanel').innerHTML = vPanel(); return; }
+  if (el.dataset.ld) { S.loader = el.dataset.ld; window.ya.saveSettings({ loader: S.loader }); $('#vld').innerHTML = loaderBtns(); return; }
+  if (el.id === 'play2') return launch();
   if (el.dataset.mod) {
     const id = el.dataset.mod; const on = MODSTATE[id] === false; MODSTATE[id] = on;
     el.classList.toggle('on', on); return window.ya.modsSet(id, on);
@@ -532,13 +577,15 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'sOut') { await window.ya.logout(); S.account = null; S.plus = false; window.ya.saveSettings({ plus: false }); renderNav(); render(); }
 });
 document.addEventListener('change', async (e) => {
+  if (e.target.id === 'vsel') { S.version = e.target.value; window.ya.saveSettings({ version: S.version }); renderNav(); $('#vgrid').innerHTML = vCards(); $('#vpanel').innerHTML = vPanel(); }
+  if (e.target.id === 'sW' || e.target.id === 'sH') { S.width = +$('#sW').value || 1280; S.height = +$('#sH').value || 720; window.ya.saveSettings({ width: S.width, height: S.height }); }
   if (e.target.id === 'sLang') { S.lang = e.target.value; await window.ya.setLang(S.lang); renderNav(); render(); }
   if (e.target.id === 'sJava') { S.javaPath = e.target.value || 'java'; window.ya.saveSettings({ javaPath: S.javaPath }); }
   if (e.target.id === 'sRam') window.ya.saveSettings({ ram: S.ram });
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'frName') $('#frAdd').click(); });
 document.addEventListener('input', (e) => {
-  if (e.target.id === 'vq') { vq = e.target.value; $('#vlist').innerHTML = versionRows(); }
+  if (e.target.id === 'sSearch') { sq = e.target.value; $('#sbody').innerHTML = settingsBody(); }
   if (e.target.id === 'obRam') { obRam = +e.target.value; $('#obRamV').textContent = obRam + ' MB · ' + t('ram_d'); }
   if (e.target.id === 'sRam') { S.ram = +e.target.value; $('#ramv').textContent = S.ram + ' MB'; }
 });
@@ -564,6 +611,7 @@ window.ya.on('log', (m) => {
   try { MODSTATE = await window.ya.modsGet(); } catch (_) { MODSTATE = {}; }
   try { MODS = (await window.ya.mods()).mods || []; } catch (_) { MODS = []; }
   try { VERS = await window.ya.versions(); } catch (_) { }
+  window.ya.art().then((a) => { ART = a || {}; if (page === 'versions') render(); }).catch(() => {});
   renderNav(); render();
   refreshPlus();
   window.addEventListener('focus', () => { if (Date.now() - (S._pt || 0) > 60000) { S._pt = Date.now(); refreshPlus(); } });

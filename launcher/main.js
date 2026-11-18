@@ -154,6 +154,22 @@ ipcMain.handle('versions', async () => {
   }
   return versionsCache;
 });
+// official key art for each Minecraft line (Mojang launcher patch notes), fetched at runtime
+let artCache = null;
+ipcMain.handle('art', async () => {
+  if (artCache) return artCache;
+  try {
+    const j = await getJson('https://launchercontent.mojang.com/v2/javaPatchNotes.json');
+    const out = {};
+    (j.entries || []).forEach((e) => {
+      if (e.type !== 'release' || !e.image || !e.image.url) return;
+      const m = /^(\d+\.\d+)/.exec(e.version || '');
+      if (!m || out[m[1]]) return;
+      out[m[1]] = { img: 'https://launchercontent.mojang.com' + e.image.url, title: e.title || '', text: e.shortText || '' };
+    });
+    artCache = out; return out;
+  } catch (_) { return {}; }
+});
 ipcMain.handle('mods', () => {
   try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'mods.json'), 'utf8')); } catch (_) { return { mods: [] }; }
 });
@@ -403,7 +419,7 @@ const vcmp = (a, b) => {
 const fabricSupported = (v) => /^\d+\.\d+(\.\d+)?$/.test(v) && vcmp(v, '1.16') >= 0;
 
 // Installs the Fabric profile for this Minecraft version and, when published, the YA CLIENT Fabric jar.
-async function setupFabric(mc) {
+async function setupFabric(mc, withSodium) {
   const loaders = await getJson(`https://meta.fabricmc.net/v2/versions/loader/${mc}`);
   const pick = (Array.isArray(loaders) ? loaders : []).find((l) => l.loader && l.loader.stable) || (Array.isArray(loaders) ? loaders[0] : null);
   if (!pick) throw new Error(`Fabric is not available for Minecraft ${mc}`);
@@ -433,6 +449,16 @@ async function setupFabric(mc) {
     send('log', `YA CLIENT for ${mc} is not published yet (${e.message}). Starting Fabric without it.`);
     try { fs.unlinkSync(path.join(mods, 'YAClient-fabric.jar')); } catch (_) {}
   }
+  // optional performance mod
+  try {
+    fs.readdirSync(mods).filter((n) => /^sodium/i.test(n)).forEach((n) => fs.unlinkSync(path.join(mods, n)));
+    if (withSodium) {
+      const so = await getJson(`https://api.modrinth.com/v2/project/sodium/version?game_versions=${encodeURIComponent(JSON.stringify([mc]))}&loaders=${encodeURIComponent(JSON.stringify(['fabric']))}`);
+      const sf = Array.isArray(so) && so[0] && so[0].files && (so[0].files.find((x) => x.primary) || so[0].files[0]);
+      if (sf) await download(sf.url, path.join(mods, sf.filename));
+      else send('log', `Sodium for ${mc} not found.`);
+    }
+  } catch (e) { send('log', `Sodium: ${e.message}`); }
   return { id, dir: inst, hasYa };
 }
 
@@ -474,9 +500,9 @@ ipcMain.handle('play', async (_e, opts) => {
         await fetchRelease(cfg.weaveRepo,
           (a) => /\.jar$/.test(a.name) && !/sources|javadoc/i.test(a.name), loaderJar);
       }
-    } else if (fabricSupported(version)) {
+    } else if (fabricSupported(version) && (state.loader || 'fabric') !== 'vanilla') {
       send('status', { k: 'loader', pct: 6 });
-      fabric = await setupFabric(version);
+      fabric = await setupFabric(version, state.loader === 'sodium');
     } else {
       send('log', `Minecraft ${version}: vanilla launch (YA CLIENT mods are available on ${cfg.minecraftVersion}).`);
     }
@@ -511,6 +537,7 @@ ipcMain.handle('play', async (_e, opts) => {
       javaPath,
       version: fabric ? { number: version, type: versionType(version), custom: fabric.id } : { number: version, type: versionType(version) },
       overrides: fabric ? { gameDirectory: fabric.dir } : {},
+      window: { width: String(state.width || 1280), height: String(state.height || 720), fullscreen: !!state.fullscreen },
       memory: { max: `${state.ram}M`, min: '1024M' },
       customArgs: (yaMode ? [`-javaagent:${loaderJar}`] : []).concat(JVM_TUNING)
     };
