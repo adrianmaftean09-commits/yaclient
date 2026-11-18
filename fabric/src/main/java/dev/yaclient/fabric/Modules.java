@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -141,6 +142,35 @@ public final class Modules {
         text("combo", "Combo", "Consecutive hits without being hit", Category.PVP, 0.42f, 0.7f, mc -> "Combo " + Hits.combo);
         text("reach", "Reach", "Distance of your last hit", Category.PVP, 0.42f, 0.75f, mc -> String.format("Reach %.2f", Hits.reach));
         text("totempops", "Totem Pops", "Totems you have popped this session (counted from your inventory)", Category.CRYSTAL, 0.008f, 0.45f, mc -> "Pops " + Hits.pops(mc));
+        // ---- SMP / BoxPvP / SkyBlock helpers ----
+        text("netherxyz", "Nether Coords", "[SMP] Matching Nether / Overworld coordinates for portals", Category.INFO, 0.008f, 0.32f, Extra::netherCoords);
+        text("deathpos", "Death Location", "[SMP] Where you died last, so you can go back for your items", Category.INFO, 0.008f, 0.37f, mc -> Extra.deathText());
+        text("daycount", "Day Counter", "[SMP] World day and in-game time", Category.INFO, 0.9f, 0.36f, Extra::day);
+        text("lightlevel", "Light Level", "[SMP / SkyBlock] Light at your feet, below 8 mobs can spawn", Category.INFO, 0.008f, 0.42f, Extra::light);
+        text("freeslots", "Free Slots", "[SkyBlock / SMP] Empty inventory slots left", Category.INFO, 0.9f, 0.46f, mc -> mc.player == null ? "" : Extra.freeSlots(mc) + " free slots");
+        text("potcount", "Potion Count", "[BoxPvP] Splash potions in your inventory", Category.PVP, 0.008f, 0.55f, mc -> mc.player == null ? "" : "Pots " + Extra.count(mc, Items.SPLASH_POTION));
+        text("gapcount", "Gapple Count", "[BoxPvP] Golden apples in your inventory", Category.PVP, 0.008f, 0.6f, mc -> mc.player == null ? "" : "Gapples " + Extra.count(mc, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE));
+        text("pearlcount", "Pearl Count", "[BoxPvP] Ender pearls in your inventory", Category.PVP, 0.008f, 0.65f, mc -> mc.player == null ? "" : "Pearls " + Extra.count(mc, Extra.PEARL));
+        text("xpbottles", "XP Bottles", "[SkyBlock / SMP] Bottles o' enchanting in your inventory", Category.INFO, 0.9f, 0.51f, mc -> mc.player == null ? "" : "XP bottles " + Extra.count(mc, Items.EXPERIENCE_BOTTLE));
+        text("handcount", "Held Item Count", "[SkyBlock] How many of the item in your hand you carry in total", Category.INFO, 0.42f, 0.84f, mc -> {
+            if (mc.player == null) return "";
+            var st = mc.player.getMainHandItem();
+            if (st.isEmpty()) return "";
+            return st.getHoverName().getString() + " x" + Extra.count(mc, st.getItem());
+        });
+        text("armorwarn", "Armor Warning", "[BoxPvP] Warns when a piece of armor is almost broken", Category.PVP, 0.42f, 0.3f, mc -> {
+            if (mc.player == null) return "";
+            StringBuilder b = new StringBuilder();
+            for (var st : new net.minecraft.world.item.ItemStack[] {mc.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD), mc.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST), mc.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.LEGS), mc.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET)}) {
+                if (st.isEmpty() || !st.isDamageableItem()) continue;
+                int left = st.getMaxDamage() - st.getDamageValue();
+                if (left * 10 < st.getMaxDamage()) b.append(st.getHoverName().getString()).append(" low (").append(left).append(")\n");
+            }
+            return b.length() == 0 ? "" : "! " + b.substring(0, b.length() - 1);
+        });
+        ALL.add(new Utility.NoFovEffects());
+        ALL.add(new Utility.NoScreenEffects());
+        ALL.add(new Utility.NoBobbing());
         ALL.add(new CrystalCounterModule());
         ALL.add(new TargetHud());
         ALL.add(new ItemsHud());
@@ -164,5 +194,6 @@ public final class Modules {
     public static void tick() {
         for (Module m : ALL) if (m.enabled) m.onTick();
         Hits.tick(Minecraft.getInstance());
+        Extra.tick(Minecraft.getInstance());
     }
 }

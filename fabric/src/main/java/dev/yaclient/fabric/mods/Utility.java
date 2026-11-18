@@ -74,6 +74,30 @@ public final class Utility {
         }
     }
 
+    /** Keeps the field of view steady while sprinting or under speed effects. */
+    public static class NoFovEffects extends Module {
+        private Double saved;
+        public NoFovEffects() { super("nofoveffects", "No FOV Effects", "[PvP] The view does not stretch when you sprint or have speed", Category.UTILITY, false); }
+        @Override public void onTick() { var o = mc().options.fovEffectScale(); if (saved == null) saved = o.get(); if (o.get() != 0.0) o.set(0.0); }
+        @Override public void onToggle() { if (!enabled && saved != null) { mc().options.fovEffectScale().set(saved); saved = null; } }
+    }
+
+    /** Removes the wobble of nausea / portal effects on screen. */
+    public static class NoScreenEffects extends Module {
+        private Double saved;
+        public NoScreenEffects() { super("noscreeneffects", "No Screen Effects", "Less screen wobble from nausea and portals", Category.UTILITY, false); }
+        @Override public void onTick() { var o = mc().options.screenEffectScale(); if (saved == null) saved = o.get(); if (o.get() != 0.0) o.set(0.0); }
+        @Override public void onToggle() { if (!enabled && saved != null) { mc().options.screenEffectScale().set(saved); saved = null; } }
+    }
+
+    /** Turns off view bobbing while walking. */
+    public static class NoBobbing extends Module {
+        private Boolean saved;
+        public NoBobbing() { super("nobobbing", "No Bobbing", "Steady camera while walking", Category.UTILITY, false); }
+        @Override public void onTick() { var o = mc().options.bobView(); if (saved == null) saved = o.get(); if (o.get()) o.set(false); }
+        @Override public void onToggle() { if (!enabled && saved != null) { mc().options.bobView().set(saved); saved = null; } }
+    }
+
     /** Fixed field of view, independent of the vanilla slider (zoom still works on top). */
     public static class Fov extends Module {
         private int saved = -1;

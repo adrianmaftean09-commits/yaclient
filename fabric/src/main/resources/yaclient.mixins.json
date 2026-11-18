@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.yaclient.fabric.mixin",
   "compatibilityLevel": "JAVA_21",
-  "client": ["AvatarRendererMixin", "CapeLayerMixin"],
+  "client": ["AvatarRendererMixin", "CapeLayerMixin", "GuiCrosshairMixin"],
   "injectors": { "defaultRequire": 1 }
 }
