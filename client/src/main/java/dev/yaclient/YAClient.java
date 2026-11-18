@@ -130,6 +130,7 @@ public class YAClient implements ModInitializer {
             FriendsApi.tick();
             HitTracker.tick(mc);
             KeyGuard.tick(mc);
+            HotbarGuard.tick(mc);
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();
