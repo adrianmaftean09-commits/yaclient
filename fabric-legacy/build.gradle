@@ -71,6 +71,9 @@ def r4 = [
     [/DynamicTexture\(\(\) -> label, ni\)/, 'DynamicTexture(ni)'],
 ]
 def r1 = [
+    [/net\.minecraft\.server\.level\.ParticleStatus/, 'net.minecraft.client.ParticleStatus'],
+    [/ni\.setPixel\(x, y, img\.getRGB\(x, y\)\)/, 'ni.setPixelRGBA(x, y, dev.yaclient.fabric.Blit.abgr(img.getRGB(x, y)))'],
+    [/getYRot\(1f\)/, 'getYRot()'],
     [/g\.blit\(RenderPipelines\.GUI_TEXTURED, (.*)\);/, 'dev.yaclient.fabric.Blit.blit(g, $1);'],
 ]
 def rules = [
