@@ -36,8 +36,15 @@ public final class FreeLook {
             savedCode = Config.getInt("freelook.key", Keyboard.KEY_V);
             key = new KeyBinding("Free Look", savedCode, "YA Client");
             GameSettings gs = mc.gameSettings;
+            // the array that holds every control (not the 9-slot hotbar array, which is also a KeyBinding[]): it contains the sneak key
             Field f = null;
-            for (Field c : GameSettings.class.getDeclaredFields()) if (c.getType() == KeyBinding[].class && !java.lang.reflect.Modifier.isStatic(c.getModifiers())) { f = c; break; }
+            for (Field c : GameSettings.class.getDeclaredFields()) {
+                if (c.getType() != KeyBinding[].class || java.lang.reflect.Modifier.isStatic(c.getModifiers())) continue;
+                c.setAccessible(true);
+                KeyBinding[] arr = (KeyBinding[]) c.get(gs);
+                if (arr != null && arr.length > 20 && java.util.Arrays.asList(arr).contains(gs.keyBindSneak)) { f = c; break; }
+            }
+            if (f == null) throw new IllegalStateException("controls array not found");
             f.setAccessible(true);
             KeyBinding[] old = (KeyBinding[]) f.get(gs);
             KeyBinding[] n = java.util.Arrays.copyOf(old, old.length + 1);
