@@ -457,7 +457,7 @@ public class MenuScreen extends Screen {
         int gridTop = ty + 38;
         boolean bundles = cosTab.equals("bundles");
         int gap = 12, cols = bundles ? 4 : 5, cw = (VW - (cols - 1) * gap) / cols;
-        int imgH = bundles ? 150 : 120, ch = imgH + (bundles ? 86 : 62);
+        int imgH = cw - 8, ch = imgH + (bundles ? 86 : 62);
         java.util.List<int[]> cells = new java.util.ArrayList<int[]>();   // {bundle}
         if (bundles) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
         else if (cosTab.equals("partner")) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) if (Cosmetics.PARTNER[b]) cells.add(new int[] {b}); }

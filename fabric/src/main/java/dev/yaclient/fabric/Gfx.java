@@ -130,7 +130,7 @@ public final class Gfx {
         }
         float ar = (float) w / h, tr = (float) t.w / t.h;
         int uw = t.w, vh = t.h, u = 0, v = 0;
-        if (tr > ar) { uw = Math.round(t.h * ar); u = (t.w - uw) / 2; } else { vh = Math.round(t.w / ar); v = 0; }
+        if (tr > ar) { uw = Math.round(t.h * ar); u = (t.w - uw) / 2; } else { vh = Math.round(t.w / ar); v = (t.h - vh) / 2; }
         g.blit(RenderPipelines.GUI_TEXTURED, t.id, x, y, (float) u, (float) v, w, h, uw, vh, t.w, t.h, faded(color));
     }
 
