@@ -2,6 +2,7 @@
 window.YA = {
   paypalMe: "",   // your PayPal.Me name, e.g. "mario.rossi" (https://paypal.me/mario.rossi). Leave empty to hide the pay button.
   hidden: ["qlux"],   // bundles temporarily off the store (remove the name to bring it back)
+  downloadSoon: true,   // true = the Download buttons show "Soon" (set to false to bring the download back)
   discord: "https://discord.gg/yaproject",
   github: "https://github.com/adrianmaftean09-commits/yaclient",
   currency: "EUR",

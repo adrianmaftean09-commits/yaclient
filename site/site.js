@@ -1,7 +1,10 @@
 (function () {
   var Y = window.YA || {};
   document.querySelectorAll('[data-dc]').forEach(function (a) { a.href = Y.discord; a.target = '_blank'; a.rel = 'noopener'; });
-  document.querySelectorAll('[data-dl]').forEach(function (a) { a.href = '/download'; a.removeAttribute('target'); });
+  document.querySelectorAll('[data-dl]').forEach(function (a) {
+    if (Y.downloadSoon) { a.textContent = 'Soon'; a.removeAttribute('href'); a.style.pointerEvents = 'none'; a.style.opacity = '.6'; a.setAttribute('aria-disabled', 'true'); return; }
+    a.href = '/download'; a.removeAttribute('target');
+  });
   var eur = function (n) { return '€' + (Math.round(n * 100) / 100).toFixed(n % 1 ? 2 : 0); };
   window.YAeur = eur;
 
