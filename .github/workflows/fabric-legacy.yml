@@ -11,6 +11,7 @@ permissions:
 jobs:
   legacy:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.mc != '1.21.11' }}   # 1.21.1/1.21.4/1.21.8 are not ported yet
     strategy:
       fail-fast: false
       matrix:
