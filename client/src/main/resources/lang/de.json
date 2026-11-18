@@ -444,5 +444,8 @@
  "mod.streamer_mode.desc": "Versteckt Koordinaten und Serveradresse",
  "set.hide_coords": "Koordinaten verbergen",
  "set.hide_ip": "Serveradresse verbergen",
- "set.hide_board_ip": "Adressen im Scoreboard verbergen"
+ "set.hide_board_ip": "Adressen im Scoreboard verbergen",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Taste halten, um sich umzusehen ohne den Spieler zu drehen (Taste unter Steuerung > YA Client)",
+ "set.third_person": "Dritte Person beim Halten"
 }

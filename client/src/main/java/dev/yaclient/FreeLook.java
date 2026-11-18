@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
 /**
- * Built-in Free Look (not a module). Hold the key (set it in Options > Controls > "YA Client") and move the mouse: the
+ * Free Look (the FreeLookModule switches it on and off). Hold the key (set it in Options > Controls > "YA Client") and move the mouse: the
  * camera turns around you while the direction your player faces (and aims) stays frozen. It switches to third person
  * while held and goes back when released.
  *
@@ -79,13 +79,13 @@ public final class FreeLook {
             Config.save();
         }
         EntityPlayer p = mc.thePlayer;
-        boolean want = hooked && p != null && !p.isDead && mc.currentScreen == null && held();
+        boolean want = hooked && dev.yaclient.modules.FreeLookModule.on() && p != null && !p.isDead && mc.currentScreen == null && held();
         if (want && !active) {
             active = true;
             camYaw = fYaw = p.rotationYaw;
             camPitch = fPitch = p.rotationPitch;
             prevView = mc.gameSettings.thirdPersonView;
-            if (prevView == 0) mc.gameSettings.thirdPersonView = 1;
+            if (prevView == 0 && dev.yaclient.modules.FreeLookModule.thirdPerson()) mc.gameSettings.thirdPersonView = 1;
         } else if (!want && active) {
             stop(mc);
         }

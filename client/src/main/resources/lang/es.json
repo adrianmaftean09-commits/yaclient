@@ -444,5 +444,8 @@
  "mod.streamer_mode.desc": "Oculta coordenadas y dirección del servidor",
  "set.hide_coords": "Ocultar coordenadas",
  "set.hide_ip": "Ocultar dirección del servidor",
- "set.hide_board_ip": "Ocultar direcciones en el marcador"
+ "set.hide_board_ip": "Ocultar direcciones en el marcador",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Mantén la tecla para mirar sin girar al jugador (tecla en Controles > YA Client)",
+ "set.third_person": "Tercera persona al mantener"
 }

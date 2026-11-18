@@ -100,6 +100,7 @@ public class YAClient implements ModInitializer {
         MODULES.add(new BwBlocksModule());
         MODULES.add(new BwThreatModule());
         MODULES.add(new StreamerModeModule());
+        MODULES.add(new FreeLookModule());
 
         // Plus-only mods (free players see them locked)
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(

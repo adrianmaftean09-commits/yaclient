@@ -444,5 +444,8 @@
  "mod.streamer_mode.desc": "Nasconde coordinate e indirizzo del server su HUD e scoreboard",
  "set.hide_coords": "Nascondi coordinate",
  "set.hide_ip": "Nascondi indirizzo server",
- "set.hide_board_ip": "Nascondi indirizzi sulla scoreboard"
+ "set.hide_board_ip": "Nascondi indirizzi sulla scoreboard",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Tieni premuto il tasto per guardarti attorno senza girare il personaggio (tasto in Comandi > YA Client)",
+ "set.third_person": "Terza persona mentre premi"
 }

@@ -454,5 +454,8 @@
  "mod.streamer_mode.desc": "Hides coordinates and server address on the HUD and scoreboard",
  "set.hide_coords": "Hide coordinates",
  "set.hide_ip": "Hide server address",
- "set.hide_board_ip": "Hide addresses on the scoreboard"
+ "set.hide_board_ip": "Hide addresses on the scoreboard",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Hold the key to look around without turning your player (set the key in Controls > YA Client)",
+ "set.third_person": "Third person while held"
 }
