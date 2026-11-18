@@ -48,7 +48,7 @@ function items(){var f=K();document.getElementById('its').innerHTML=b.it.map(fun
 var lb=document.getElementById('lb');lb.onclick=function(){lb.className='lb'};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){lb.className='lb';document.getElementById('cartdr').className='cartdr'}});
 /* other bundles */
-document.getElementById('og').innerHTML=Object.keys(B).filter(function(k){return k!==key}).map(function(k){var o=B[k],ix={sakura:1,shinobi:1,kitsune:1,santa:1,frost:1,mono:1};return '<a class="ob" href="/bundle?b='+k+'" style="--c:'+o.c+'"><img src="/b/'+k+'-2.jpg" alt=""><b>'+o.n.replace(' Bundle','')+'</b><span>BUNDLE</span><em>'+(k==='beta'?'Free':eur(setPrice(k)))+'</em></a>'}).join('');
+document.getElementById('og').innerHTML=Object.keys(B).filter(function(k){return k!==key}).map(function(k){var o=B[k],ix={sakura:1,shinobi:1,kitsune:1,santa:1,frost:1,clown:1,mono:1};return '<a class="ob" href="/bundle?b='+k+'" style="--c:'+o.c+'"><img src="/b/'+k+'-2.jpg" alt=""><b>'+o.n.replace(' Bundle','')+'</b><span>BUNDLE</span><em>'+(k==='beta'?'Free':eur(setPrice(k)))+'</em></a>'}).join('');
 document.addEventListener('click',function(e){var t=e.target.closest('[data-add],[data-now],[data-rm],#addb,#buyb,#cartfab,#cx,#cbuy,#cclr');if(!t)return;
  if(t.dataset.add){var i=t.dataset.add;var j=cart.indexOf(i);if(j>=0)cart.splice(j,1);else cart.push(i);save();drawCart();return}
  if(t.dataset.now){YABuy(orderFor([t.dataset.now]));return}

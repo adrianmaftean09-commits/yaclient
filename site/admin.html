@@ -99,8 +99,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--s2)}
 <div id="toast"></div>
 
 <script>
-var KEY="",$=function(i){return document.getElementById(i)},BUNDLES=["beta","mono","qlux","sakura","shinobi","kitsune","santa","frost"],PREF={beta:"ya"},SLOTS=["cape","wings","bandana","pet"];
-var NAMES={beta:"Beta Tester",mono:"Monochrome",qlux:"Qlux (partner)",sakura:"Sakura",shinobi:"Shinobi",kitsune:"Kitsune",santa:"Santa",frost:"Frost"};
+var KEY="",$=function(i){return document.getElementById(i)},BUNDLES=["beta","mono","qlux","sakura","shinobi","kitsune","santa","frost","clown"],PREF={beta:"ya"},SLOTS=["cape","wings","bandana","pet"];
+var NAMES={beta:"Beta Tester",mono:"Monochrome",qlux:"Qlux (partner)",sakura:"Sakura",shinobi:"Shinobi",kitsune:"Kitsune",santa:"Santa",frost:"Frost",clown:"Clown"};
 function pre(b){return PREF[b]||b}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function toast(m,ok){var d=document.createElement("div");d.className="t "+(ok?"ok":"err");d.textContent=m;$("toast").appendChild(d);setTimeout(function(){d.remove()},4200)}

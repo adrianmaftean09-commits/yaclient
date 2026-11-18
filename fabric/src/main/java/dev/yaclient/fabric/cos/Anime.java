@@ -59,7 +59,10 @@ final class Anime {
     static final Th FROST = new Th("frost", 5,
             new float[]{0.74f, 0.90f, 1.00f, 0.3f}, new float[]{1f, 1f, 1f, 0.4f}, new float[]{0.36f, 0.70f, 0.96f, 0.6f},
             new float[]{0.90f, 0.97f, 1.00f, 0.7f}, new float[]{0.30f, 0.55f, 0.85f, 0f}, PETAL, true);
-    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE, SANTA, FROST};
+    static final Th CLOWN = new Th("clown", 6,
+            new float[]{0.91f, 0.15f, 0.17f, 0.25f}, new float[]{1f, 0.82f, 0.12f, 0.4f}, new float[]{0.18f, 0.44f, 0.91f, 0.6f},
+            new float[]{0.18f, 0.70f, 0.29f, 0.3f}, new float[]{0.66f, 0.10f, 0.13f, 0f}, PETAL, true);
+    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE, SANTA, FROST, CLOWN};
 
     static Th byStyle(String id) { for (Th t : ALL) if (t.id.equals(id)) return t; return null; }
 
@@ -193,7 +196,7 @@ final class Anime {
     }
 
     // ------------------------------------------------------------------ emblem textures
-    private static final DynamicTexture[] TEX = new DynamicTexture[6];
+    private static final DynamicTexture[] TEX = new DynamicTexture[7];
 
     static void bind(int i) {
         if (TEX[i] == null) {

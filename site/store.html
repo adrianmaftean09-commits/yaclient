@@ -39,7 +39,11 @@ var P={
  frost_cape:{n:'Snowflake Cape',cat:'cape',slot:'cape',d:'Icy pixel cape with a snowflake and icicle hem.',set:'frost'},
  frost_wings:{n:'Ice Wings',cat:'wings',slot:'wings',d:'Pixel wings of ice with glinting crystals.',set:'frost'},
  frost_bandana:{n:'Frost Band',cat:'bandana',slot:'bandana',d:'Icy band with a snowflake and scarf tails.',set:'frost'},
- frost_pet:{n:'Frosty (pet)',cat:'pet',slot:'pet',d:'A pixel snowman with a top hat and a carrot nose.',set:'frost'}};
+ frost_pet:{n:'Frosty (pet)',cat:'pet',slot:'pet',d:'A pixel snowman with a top hat and a carrot nose.',set:'frost'},
+ clown_cape:{n:'Clown Cape',cat:'cape',slot:'cape',d:'Harlequin pixel cape with a clown face and a ruffled hem.',set:'clown'},
+ clown_wings:{n:'Balloon Wings',cat:'wings',slot:'wings',d:'A pixel bouquet of colorful balloons on strings.',set:'clown'},
+ clown_bandana:{n:'Clown Band',cat:'bandana',slot:'bandana',d:'Candy-striped band with pompoms and rainbow tails.',set:'clown'},
+ clown_pet:{n:'Bozo (pet)',cat:'pet',slot:'pet',d:'A pixel clown with a red nose that juggles three balls.',set:'clown'}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle},
           qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1},
@@ -47,13 +51,14 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           shinobi:{n:'Shinobi Bundle',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',items:['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'],price:PR.animeBundle||10},
           kitsune:{n:'Kitsune Bundle',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',items:['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'],price:PR.animeBundle||10},
           santa:{n:'Santa Bundle',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',items:['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'],price:PR.animeBundle||10},
-          frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10}};
+          frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10},
+          clown:{n:'Clown Bundle',d:'Pixel circus bundle: balloon wings, harlequin cape, striped pompom band and Bozo the juggling clown.',items:['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'],price:PR.animeBundle||10}};
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
-var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
-var PAGES=['sakura','shinobi','kitsune','santa','frost','mono','beta','qlux'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
+var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',clown:'#ffd21f',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
+var PAGES=['sakura','shinobi','kitsune','santa','frost','clown','mono','beta','qlux'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
-function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
+function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost','clown'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
 function card(key,isSet){
  var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:R(d.price*K())):priceOf(key);
@@ -68,7 +73,7 @@ function render(){
  var h='';
  var HID=(Y.hidden||[]);
  if(cat==='partner'&&HID.indexOf('qlux')<0){h+=card('qlux',true)}
- if(cat==='bundle'){h+=card('mono',true)+(HID.indexOf('qlux')<0?card('qlux',true):'')+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('santa',true)+card('frost',true)+card('beta',true)}
+ if(cat==='bundle'){h+=card('mono',true)+(HID.indexOf('qlux')<0?card('qlux',true):'')+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('santa',true)+card('frost',true)+card('clown',true)+card('beta',true)}
  if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(P[id].cat===cat&&HID.indexOf(P[id].set)<0)h+=card(id,false)});
  if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner&&HID.indexOf(P[id].set)<0)h+=card(id,false)});
  if(cat==='partner'&&!h)h='<p style="color:#8b8b95">No partner bundles at the moment. Check back soon.</p>';

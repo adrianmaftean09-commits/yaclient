@@ -85,6 +85,7 @@ final class XmasPix {
     }
 
     static void wing(Anime.Th t, float age) {
+        if (t.index == 6) { ClownPix.wing(t, age); return; }
         W.clear();
         if (t.index == 4) santaWing(); else frostWing();
         final double hz = 0.013;
@@ -110,6 +111,7 @@ final class XmasPix {
 
     // ------------------------------------------------------------------ cape: pixel grid with a fur border
     static void capeBase(Anime.Th t, float age, boolean plus) {
+        if (t.index == 6) { ClownPix.capeBase(t, age, plus); return; }
         final int NU = 11, NV = 16;
         boolean santa = t.index == 4;
         for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
@@ -137,6 +139,7 @@ final class XmasPix {
 
     // ------------------------------------------------------------------ band (head space: y down, front -z)
     static void band(Anime.Th t, float age, float limbSwing) {
+        if (t.index == 6) { ClownPix.band(t, age, limbSwing); return; }
         final boolean santa = t.index == 4;
         Vox.TEXEL = 0.025; Vox.yo = 0; Vox.reset();
         Vox.marker = new Vox.Marker() {
@@ -173,6 +176,7 @@ final class XmasPix {
 
     // ------------------------------------------------------------------ pets
     static void pet(Anime.Th t, float age) {
+        if (t.index == 6) { ClownPix.pet(t, age); return; }
         Vox.TEXEL = 0.0185; Vox.reset();
         Vox.marker = null;
         if (t.index == 4) reindeer(age); else snowman(age);

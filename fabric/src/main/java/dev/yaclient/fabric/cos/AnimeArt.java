@@ -21,6 +21,7 @@ final class AnimeArt {
             case 2: neon(px); break;
             case 4: gift(px); break;
             case 5: snowflake(px); break;
+            case 6: clown(px); break;
             default: kitsune(px); break;
         }
         BufferedImage img = new BufferedImage(G * SCALE, G * SCALE, BufferedImage.TYPE_INT_ARGB);
@@ -71,6 +72,20 @@ final class AnimeArt {
         rect(p, 3, 13, 10, 1, dred);
         p[1][1] = white; p[2][14] = white; p[12][1] = white; p[14][13] = white; p[0][8] = white;
         p[11][14] = green; p[12][14] = green; p[12][13] = green;
+    }
+
+    /** Clown face: rainbow hair, white face, red nose, smile and a little party hat. */
+    private static void clown(int[][] p) {
+        int white = 0xFFFFF1DC, red = 0xFFE8262B, yel = 0xFFFFD21F, blue = 0xFF2F6FE8, grn = 0xFF2FB34A, ink = 0xFF20203A, pink = 0xFFFF8FB0;
+        rect(p, 4, 4, 8, 9, white); rect(p, 5, 13, 6, 1, white); rect(p, 3, 6, 1, 5, white); rect(p, 12, 6, 1, 5, white);
+        rect(p, 2, 4, 2, 3, red); rect(p, 1, 6, 2, 3, yel); rect(p, 12, 4, 2, 3, blue); rect(p, 13, 6, 2, 3, grn);      // hair tufts
+        rect(p, 6, 3, 4, 1, yel); rect(p, 7, 2, 2, 1, blue); p[1][7] = red; p[1][8] = red; p[0][7] = red; p[0][8] = red;   // hat + pompom
+        p[7][5] = ink; p[7][6] = ink; p[7][9] = ink; p[7][10] = ink; p[8][5] = blue; p[8][10] = blue;                    // eyes
+        p[6][5] = ink; p[6][10] = ink;
+        rect(p, 7, 9, 2, 2, red);                                                                                         // nose
+        p[10][5] = pink; p[10][10] = pink;
+        p[12][5] = red; p[12][10] = red; rect(p, 6, 13, 4, 1, red);                                                        // smile
+        p[11][6] = red; p[11][9] = red;
     }
 
     /** Snowflake. */

@@ -6,10 +6,10 @@ package dev.yaclient.fabric;
  */
 public final class Cosmetics {
     public static final String[] SLOTS = {"cape", "wings", "bandana", "pet"};
-    public static final String[] BUNDLES = {"beta", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost"};
-    public static final String[] PREFIX = {"ya", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost"};
-    public static final String[] NAMES = {"Beta Tester", "Monochrome", "Qlux", "Sakura", "Shinobi", "Kitsune", "Santa", "Frost"};
-    public static final boolean[] PARTNER = {false, false, true, false, false, false, false, false};
+    public static final String[] BUNDLES = {"beta", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown"};
+    public static final String[] PREFIX = {"ya", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown"};
+    public static final String[] NAMES = {"Beta Tester", "Monochrome", "Qlux", "Sakura", "Shinobi", "Kitsune", "Santa", "Frost", "Clown"};
+    public static final boolean[] PARTNER = {false, false, true, false, false, false, false, false, false};
 
     private Cosmetics() {}
 
