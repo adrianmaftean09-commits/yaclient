@@ -21,6 +21,7 @@ var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math
 var B=window.YA_B;
 
 var key=(new URLSearchParams(location.search).get('b')||location.hash.slice(1)||'').toLowerCase();
+if((window.YA.hidden||[]).some(function(h){return key===h||key.indexOf(h+'_')===0}))location.replace('/store');
 if(!B[key]){location.replace('/store?c=bundle');return}
 var b=B[key],ids=b.it.map(function(x){return x[0]});
 function setPrice(k){return k==='beta'?0:k==='qlux'?(PR.qluxBundle||8):k==='mono'?(PR.monoBundle||10):(PR.animeBundle||10)}

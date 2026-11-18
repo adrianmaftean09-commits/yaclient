@@ -19,6 +19,7 @@
 var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math.round(x*100)/100},K=function(){return window.YAplusOn?.3:1};
 var B=window.YA_B;
 var id=(new URLSearchParams(location.search).get('i')||location.hash.slice(1)||'').toLowerCase();
+if((window.YA.hidden||[]).some(function(h){return id===h||id.indexOf(h+'_')===0}))location.replace('/store');
 var ITEM={},SETOF={};Object.keys(B).forEach(function(k){B[k].it.forEach(function(x){ITEM[x[0]]={n:x[1],d:x[2],s:k};SETOF[x[0]]=k})});
 if(!ITEM[id]){location.replace('/store');return}
 var key=ITEM[id].s,b=B[key],it=ITEM[id];

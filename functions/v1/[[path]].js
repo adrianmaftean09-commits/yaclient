@@ -77,6 +77,7 @@ async function applyGrant(env, uuid, f) {
 // ---------- automatic card payments (Stripe Checkout) ----------
 // Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
 const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, plus: 4.99 };
+const DISABLED = ['qlux'];   // sets that cannot be bought for now
 const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost'];
 async function resolveName(env, nm) {
   nm = String(nm || '').trim();
@@ -106,6 +107,7 @@ async function stripeCheckout(env, request, url, f) {
   else {
     items = String(f.ids || '').split(',').filter(Boolean);
     if (!items.length || items.length > 40 || items.some((i) => !ITEMS[i])) return send(400, { error: 'unknown item' });
+    if (items.some((i) => DISABLED.some((d) => i.startsWith(d + '_')))) return send(400, { error: 'This bundle is not available right now.' });
     const p = await loadPlayer(env, uuid);
     items = items.filter((i) => !p.owned.includes(i));
     if (!items.length) return send(400, { error: 'You already own these items.' });

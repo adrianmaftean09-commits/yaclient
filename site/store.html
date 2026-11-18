@@ -66,10 +66,12 @@ function card(key,isSet){
 function render(){
  document.getElementById('chips').innerHTML=CATS.map(function(c){return '<button class="fchip '+(c[0]===cat?'on':'')+'" data-c="'+c[0]+'">'+c[1]+'</button>'}).join('');
  var h='';
- if(cat==='partner'){h+=card('qlux',true)}
- if(cat==='bundle'){h+=card('mono',true)+card('qlux',true)+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('santa',true)+card('frost',true)+card('beta',true)}
- if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(P[id].cat===cat)h+=card(id,false)});
- if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner)h+=card(id,false)});
+ var HID=(Y.hidden||[]);
+ if(cat==='partner'&&HID.indexOf('qlux')<0){h+=card('qlux',true)}
+ if(cat==='bundle'){h+=card('mono',true)+(HID.indexOf('qlux')<0?card('qlux',true):'')+card('sakura',true)+card('shinobi',true)+card('kitsune',true)+card('santa',true)+card('frost',true)+card('beta',true)}
+ if(cat!=='bundle'&&cat!=='partner')Object.keys(P).forEach(function(id){if(P[id].cat===cat&&HID.indexOf(P[id].set)<0)h+=card(id,false)});
+ if(cat==='partner')Object.keys(P).forEach(function(id){if(P[id].partner&&HID.indexOf(P[id].set)<0)h+=card(id,false)});
+ if(cat==='partner'&&!h)h='<p style="color:#8b8b95">No partner bundles at the moment. Check back soon.</p>';
  document.getElementById('grid').innerHTML=h;
  }
 function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1)}else{worn=worn.filter(function(x){return P[x].slot!==s});worn.push(id)}}
