@@ -32,7 +32,7 @@ public class MenuScreen extends Screen {
     private int tab;
     private String query = "";
     private boolean searchFocus, editing;
-    private float scroll, scrollTarget, contentH, scale;
+    private float scroll, scrollTarget, contentH, scale, viewH;
     private int originX, originY;
     private float mxl, myl;
     private final Map<String, Float> anims = new HashMap<String, Float>();
@@ -190,6 +190,7 @@ public class MenuScreen extends Screen {
         List<Module> list = visible();
         int gap = 12, cw = (VW - 2 * gap) / 3, ch = 120;
         contentH = list.isEmpty() ? 0 : ((list.size() + 2) / 3) * (ch + gap);
+        viewH = VH;
         scrollTarget = Ui.clamp(scrollTarget, 0f, Math.max(0f, contentH - VH));
         g.enableScissor(CX - 6, VY - 2, CX + VW + 6, VY + VH + 2);
         if (list.isEmpty()) {
@@ -464,7 +465,8 @@ public class MenuScreen extends Screen {
         else { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
         int rows = (cells.size() + cols - 1) / cols;
         int areaH = VY + VH - gridTop;
-        contentH = rows * (ch + gap);
+        contentH = rows * (ch + gap) + 6;
+        viewH = areaH;
         scrollTarget = Ui.clamp(scrollTarget, 0f, Math.max(0f, contentH - areaH));
         g.enableScissor(CX - 6, gridTop, CX + VW + 6, VY + VH + 2);
         int top = gridTop - Math.round(scroll);
@@ -671,7 +673,7 @@ public class MenuScreen extends Screen {
             return true;
         }
         if (pageFor != null) { pageTarget = Ui.clamp(pageTarget - (float) sy * 40f, 0f, Math.max(0f, pageContentH - PG_H)); return true; }
-        scrollTarget = Ui.clamp(scrollTarget - (float) sy * 60f / Math.max(0.3f, scale) * 0.6f, 0f, Math.max(0f, contentH - VH));
+        scrollTarget = Ui.clamp(scrollTarget - (float) sy * 60f / Math.max(0.3f, scale) * 0.6f, 0f, Math.max(0f, contentH - (viewH > 0 ? viewH : VH)));
         return true;
     }
 
