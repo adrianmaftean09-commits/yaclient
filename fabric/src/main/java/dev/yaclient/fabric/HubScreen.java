@@ -42,7 +42,7 @@ public class HubScreen extends Screen {
         last = now;
         float fade = Ui.ease((now - opened) / 220f);
         Gfx.g = g;
-        g.fill(0, 0, width, height, Ui.alpha(0x99000000, fade));
+        g.fill(0, 0, width, height, Ui.alpha(0x40000000, fade));
         int gs = Math.max(1, mc.getWindow().getGuiScale());
         float phys = Math.max(1.4f, mc.getWindow().getHeight() / 1080f * 1.85f);   // same physical size on every GUI scale
         sc = Math.min(phys / gs, Math.min((height - 16f) / PH, (width - 16f) / PW));

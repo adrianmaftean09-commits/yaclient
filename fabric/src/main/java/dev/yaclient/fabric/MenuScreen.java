@@ -115,7 +115,7 @@ public class MenuScreen extends Screen {
         myl = (my - height / 2f) / sc + PH / 2f;
         scroll = Ui.approach(scroll, scrollTarget, dtMs, 16f);
 
-        g.fill(0, 0, width, height, Ui.alpha(0x99000000, fade));
+        g.fill(0, 0, width, height, Ui.alpha(0x40000000, fade));
         g.pose().pushMatrix();
         g.pose().translate(width / 2f, height / 2f);
         g.pose().scale(sc, sc);
