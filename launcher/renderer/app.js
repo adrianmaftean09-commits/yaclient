@@ -175,7 +175,7 @@ const HUES = [212, 150, 28, 280, 350, 190, 60, 320];
 function artStyle(l, i) {
   const a = ART[l.key] || ART[lineOf(l.vs[0].id)]; const h = HUES[(i * 3 + 1) % HUES.length];
   const g = `linear-gradient(135deg,hsl(${h} 40% 22%),hsl(${(h + 40) % 360} 45% 10%))`;
-  return `background:${a ? `url('${esc(a.img)}') center/cover,` : ''}url('art/${esc(l.key)}.jpg') center/cover,${g}`;
+  return `background:url('art/${esc(l.key)}.jpg') center/cover,${a ? `url('${esc(a.img)}') center/cover,` : ''}${g}`;
 }
 function curLine() {
   const ls = vLines();
