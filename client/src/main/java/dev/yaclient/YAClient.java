@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.weavemc.api.ModInitializer;
 import net.weavemc.api.event.EventBus;
 import net.weavemc.api.event.RenderGameOverlayEvent;
-import net.weavemc.api.event.GuiOpenEvent;
 import net.weavemc.api.event.TickEvent;
 import org.lwjgl.input.Keyboard;
 
@@ -128,10 +127,25 @@ public class YAClient implements ModInitializer {
         for (Module m : MODULES) m.loadConfig();
 
         MenuBackdrop.preload();
-        // swap the vanilla title screen for ours at the moment it is opened, so not even one vanilla frame is drawn
-        EventBus.subscribe(GuiOpenEvent.class, e -> {
-            if (e.gui != null && e.gui.getClass() == GuiMainMenu.class) e.gui = new MainMenuScreen();
-        });
+        // swap the vanilla title screen for ours the moment it appears: a watcher notices it within a millisecond and the
+        // swap runs at the start of the next frame (before it is drawn), so the vanilla menu is never seen
+        Thread tw = new Thread(() -> {
+            final Minecraft m1 = Minecraft.getMinecraft();
+            while (true) {
+                try {
+                    Thread.sleep(1);
+                    net.minecraft.client.gui.GuiScreen cs = m1.currentScreen;
+                    if (cs != null && cs.getClass() == GuiMainMenu.class) {
+                        m1.addScheduledTask(() -> {
+                            if (m1.currentScreen != null && m1.currentScreen.getClass() == GuiMainMenu.class) m1.displayGuiScreen(new MainMenuScreen());
+                        });
+                        Thread.sleep(30);
+                    }
+                } catch (InterruptedException ie) { return; } catch (Throwable ignored) { }
+            }
+        }, "YA-TitleSwap");
+        tw.setDaemon(true);
+        tw.start();
         EventBus.subscribe(TickEvent.Pre.class, e -> {
             Minecraft m0 = Minecraft.getMinecraft();
             if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMainMenu.class) m0.displayGuiScreen(new MainMenuScreen());
