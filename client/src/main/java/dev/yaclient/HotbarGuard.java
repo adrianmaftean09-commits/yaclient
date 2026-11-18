@@ -21,16 +21,48 @@ public final class HotbarGuard {
 
     private HotbarGuard() {}
 
+    /** When a key or mouse button bound to a hotbar slot last went down (a thread watches them, so a quick tap is never missed). */
+    private static volatile long lastKeyNs = -1;
+    private static Thread watcher;
+
+    private static void startWatcher(final Minecraft mc) {
+        if (watcher != null) return;
+        watcher = new Thread(new Runnable() {
+            public void run() {
+                boolean[] down = new boolean[9];
+                while (true) {
+                    try {
+                        Thread.sleep(2);
+                        if (mc.gameSettings == null) continue;
+                        for (int i = 0; i < 9; i++) {
+                            int code = mc.gameSettings.keyBindsHotbar[i].getKeyCode();
+                            boolean d = code < 0 ? org.lwjgl.input.Mouse.isButtonDown(code + 100)
+                                    : code > 0 && code < 256 && org.lwjgl.input.Keyboard.isKeyDown(code);
+                            if (d && !down[i]) lastKeyNs = System.nanoTime();
+                            down[i] = d;
+                        }
+                    } catch (InterruptedException e) { return; } catch (Throwable ignored) { }
+                }
+            }
+        }, "YA-HotbarKeys");
+        watcher.setDaemon(true);
+        watcher.start();
+    }
+
     /** A switch the client itself made on purpose (mouse side buttons): never revert it. */
     public static void accept(int slot) { prev = slot; lastChange = tick; }
 
     public static void tick(Minecraft mc) {
         tick++;
+        if (mc != null) startWatcher(mc);
         EntityPlayer p = mc == null ? null : mc.thePlayer;
         if (p == null || p.isDead || !Config.getBool("hotbar.guard", true)) { prev = -1; return; }
         int cur = p.inventory.currentItem;
         if (prev < 0 || mc.currentScreen != null) { prev = cur; return; }
         if (cur != prev) {
+            // a slot key or mouse button (side buttons too) was pressed just now: that is on purpose, whatever you are doing
+            // (attacking, blocking, eating) and whichever slot it picks, so it always goes through
+            if (lastKeyNs > 0 && System.nanoTime() - lastKeyNs < 250000000L) { prev = cur; lastChange = tick; return; }
             boolean busy = p.isUsingItem();
             boolean tooFast = tick - lastChange < 2;
             if (busy || tooFast) {

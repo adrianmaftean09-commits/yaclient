@@ -145,7 +145,6 @@ public class YAClient implements ModInitializer {
             FriendsApi.tick();
             HitTracker.tick(mc);
             KeyGuard.tick(mc);
-            SideSlot.tick(mc);
             HotbarGuard.tick(mc);
             FreeLook.post(mc);
             for (Module m : MODULES) {
