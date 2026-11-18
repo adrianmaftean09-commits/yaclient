@@ -152,7 +152,13 @@ public final class Modules {
         ALL.add(new Utility.FpsBoost());
         ALL.add(new Utility.ToggleSprint());
         ALL.add(new Utility.Zoom());
+        ALL.add(new Utility.Fov());
         for (Module m : ALL) m.load();
+    }
+
+    public static Module byId(String id) {
+        for (Module m : ALL) if (m.id.equals(id)) return m;
+        return null;
     }
 
     public static void tick() {

@@ -19,6 +19,10 @@ public final class Overlays {
 
         @Override public int width(Minecraft mc) { return span(); }
 
+        @Override public float screenX(int sw, Minecraft mc) { return (float) Math.floor((sw - screenW(mc)) / 2f); }
+
+        @Override public float screenY(int sh, Minecraft mc) { return (float) Math.floor((sh - screenH(mc)) / 2f); }
+
         @Override public int height(Minecraft mc) { return span(); }
 
         @Override

@@ -53,6 +53,7 @@ public final class Utility {
     /** Hold the key to zoom in (FOV 30), release to restore. */
     public static class Zoom extends Module {
         private int saved = -1;
+        static volatile boolean holding;
         private final Setting.Num fov = add("general", new Setting.Num("zoom_fov", 10f, 60f, 1f, 30f, ""));
 
         public Zoom() { super("zoom", "Zoom", "Hold C to zoom in", Category.PVP, false); }
@@ -61,6 +62,7 @@ public final class Utility {
         public void onTick() {
             Minecraft mc = mc();
             boolean down = mc.mouseHandler.isMouseGrabbed() && org.lwjgl.glfw.GLFW.glfwGetKey(mc.getWindow().handle(), org.lwjgl.glfw.GLFW.GLFW_KEY_C) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+            holding = down;
             if (down && saved < 0) { saved = mc.options.fov().get(); mc.options.fov().set(Math.round(fov.value)); }
             else if (!down && saved >= 0) { mc.options.fov().set(saved); saved = -1; }
         }
@@ -69,6 +71,28 @@ public final class Utility {
         public void onToggle() {
             Minecraft mc = mc();
             if (!enabled && saved >= 0) { mc.options.fov().set(saved); saved = -1; }
+        }
+    }
+
+    /** Fixed field of view, independent of the vanilla slider (zoom still works on top). */
+    public static class Fov extends Module {
+        private int saved = -1;
+        private final Setting.Num fov = add("general", new Setting.Num("fov_value", 30f, 110f, 1f, 90f, ""));
+        public Fov() { super("fov", "FOV", "Set your field of view quickly (30 - 110)", Category.UTILITY, false); }
+
+        @Override
+        public void onTick() {
+            Minecraft mc = mc();
+            if (Zoom.holding) return;
+            if (saved < 0) saved = mc.options.fov().get();
+            int v = Math.round(fov.value);
+            if (mc.options.fov().get() != v) mc.options.fov().set(v);
+        }
+
+        @Override
+        public void onToggle() {
+            if (!enabled && saved >= 0 && !Zoom.holding) { mc().options.fov().set(saved); }
+            if (!enabled) saved = -1;
         }
     }
 
@@ -97,6 +121,9 @@ public final class Utility {
             put("entdist", mc.options.entityDistanceScaling(), Double.valueOf(0.5));
             put("biome", mc.options.biomeBlendRadius(), Integer.valueOf(0));
             put("bob", mc.options.bobView(), Boolean.FALSE);
+            put("ao", mc.options.ambientOcclusion(), Boolean.FALSE);
+            put("rd", mc.options.renderDistance(), Integer.valueOf(Math.min(12, mc.options.renderDistance().get())));
+            put("sd", mc.options.simulationDistance(), Integer.valueOf(Math.min(8, mc.options.simulationDistance().get())));
         }
 
         @Override public void onTick() { if (t++ % 100 == 0) apply(); }
@@ -107,6 +134,9 @@ public final class Utility {
             if (enabled) { t = 0; apply(); return; }
             restore("particles", mc.options.particles());
             restore("clouds", mc.options.cloudStatus());
+            restore("ao", mc.options.ambientOcclusion());
+            restore("rd", mc.options.renderDistance());
+            restore("sd", mc.options.simulationDistance());
             restore("shadows", mc.options.entityShadows());
             restore("entdist", mc.options.entityDistanceScaling());
             restore("biome", mc.options.biomeBlendRadius());

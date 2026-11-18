@@ -286,14 +286,20 @@ public final class CosmeticsApi {
     }
 
     /** Cosmetics worn by a player: your own selection, or what the server says for others. */
+    private static Map<String, String> ownCache;
+    private static long ownAt;
+
     public static Map<String, String> equippedFor(Player p) {
         Minecraft mc = Minecraft.getInstance();
         if (p == mc.player) {
             Map<String, String> ov = previewOverride;
             if (ov != null) return ov;
+            long now = System.currentTimeMillis();
+            if (ownCache != null && now - ownAt < 400) return ownCache;
             Map<String, String> m = new HashMap<String, String>();
             for (String slot : Cosmetics.SLOTS) m.put(slot, Cosmetics.equipped(slot));
             m.put("plus", plus() ? "1" : "0");
+            ownCache = m; ownAt = now;
             return m;
         }
         if (!enabled()) return null;
