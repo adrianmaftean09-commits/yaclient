@@ -68,7 +68,7 @@ def r4 = [
     [/mc\.getWindow\(\)\.getGuiScale\(\)/, '((int) mc.getWindow().getGuiScale())'],
     [/net\.minecraft\.client\.renderer\.RenderPipelines;/, 'net.minecraft.client.renderer.RenderType;'],
     [/RenderPipelines\.GUI_TEXTURED/, 'RenderType::guiTextured'],
-    [/new DynamicTexture\(\(\) -> label, ni\)/, 'new DynamicTexture(ni)'],
+    [/DynamicTexture\(\(\) -> label, ni\)/, 'DynamicTexture(ni)'],
 ]
 def rules = [
     '1.21.11': base,
