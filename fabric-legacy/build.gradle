@@ -20,6 +20,15 @@ def rules = [
         [/GuiGraphicsExtractor/, 'GuiGraphics'],
         [/\bextractRenderState\(/, 'render('],
         [/\bextractBackground\(/, 'renderBackground('],
+        [/net\.fabricmc\.fabric\.api\.client\.keymapping\.v1\.KeyMappingHelper/, 'net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper'],
+        [/KeyMappingHelper\.registerKeyMapping/, 'KeyBindingHelper.registerKeyBinding'],
+        [/LivingEntityRenderLayerRegistrationCallback/, 'LivingEntityFeatureRendererRegistrationCallback'],
+        [/net\.minecraft\.util\.LightCoordsUtil/, 'net.minecraft.client.renderer.LightTexture'],
+        [/\bLightCoordsUtil\b/, 'LightTexture'],
+        [/\bg\.outline\(/, 'g.renderOutline('],
+        [/\bg\.itemDecorations\(/, 'g.renderItemDecorations('],
+        [/\bg\.item\(/, 'g.renderItem('],
+        [/\bg\.text\(/, 'g.drawString('],
     ],
 ]
 def portedDir = layout.buildDirectory.dir("ported/java")
