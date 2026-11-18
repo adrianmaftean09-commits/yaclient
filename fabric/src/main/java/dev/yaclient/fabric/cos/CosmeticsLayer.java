@@ -130,6 +130,7 @@ public class CosmeticsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
         float f1 = s.capeFlap, f2 = s.capeLean, f3 = s.capeLean2;
         float back = s.chestEquipment != null && !s.chestEquipment.isEmpty() ? 0.0625f : 0f;
         GlStateManager.reset();
+        GlStateManager.scale(-1f, 1f, 1f);   // this render space is mirrored compared to 1.8.9: keeps cape text readable
         GlStateManager.translate(0f, 0f, 0.125f + back);
         if (s.isCrouching) {
             f1 += 25f;

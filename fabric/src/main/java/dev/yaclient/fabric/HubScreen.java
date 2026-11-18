@@ -63,7 +63,7 @@ public class HubScreen extends Screen {
 
         g.blit(RenderPipelines.GUI_TEXTURED, LOGO, px + PAD, py + 14, 0f, 0f, 34, 34, 128, 128, 128, 128, Ui.alpha(0xFFFFFFFF, fade));
         Gfx.text("CLIENT", px + PAD + 42, py + 16, 14, true, Theme.BRAND_RED);
-        Gfx.text("Minecraft 26.2", px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
+        Gfx.text("Minecraft " + Minecraft.getInstance().getLaunchedVersion(), px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
         if (CosmeticsApi.enabled() && CosmeticsApi.plus()) {
             int w = Gfx.width("PLUS", 8, true) + 16;
             Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 5, 0xFFFFC21A);

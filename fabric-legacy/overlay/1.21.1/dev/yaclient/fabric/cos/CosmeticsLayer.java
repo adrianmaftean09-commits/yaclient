@@ -138,6 +138,7 @@ public class CosmeticsLayer extends RenderLayer<AbstractClientPlayer, PlayerMode
         f1 += Mth.sin(Mth.lerp(pt, p.walkDistO, p.walkDist) * 6f) * 32f * Mth.lerp(pt, p.oBob, p.bob);
         float back = !p.getItemBySlot(EquipmentSlot.CHEST).isEmpty() ? 0.0625f : 0f;
         GlStateManager.reset();
+        GlStateManager.scale(-1f, 1f, 1f);
         GlStateManager.translate(0f, 0f, 0.125f + back);
         if (p.isCrouching()) {
             f1 += 25f;

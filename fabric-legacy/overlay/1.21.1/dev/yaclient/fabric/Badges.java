@@ -14,6 +14,9 @@ import java.util.Map;
 public final class Badges {
     private Badges() {}
 
+    /** Player whose name tag is being rendered right now (set by the mixin). */
+    public static AbstractClientPlayer current;
+
     public static final Style LOGO = Style.EMPTY.withFont(ResourceLocation.fromNamespaceAndPath("yaclient", "badge")).withColor(0xFFFFFF);
 
     public static MutableComponent decorate(java.util.UUID id, Component base) {

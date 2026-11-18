@@ -61,6 +61,7 @@ def r8 = [
     [/public void submit\(PoseStack/, 'public void render(PoseStack'],
 ]
 def r4 = [
+    [/g\.enableScissor\(/, 'dev.yaclient.fabric.Blit.scissor(g, '],
     [/g\.pose\(\)\.pushMatrix\(\)/, 'g.pose().pushPose()'],
     [/g\.pose\(\)\.popMatrix\(\)/, 'g.pose().popPose()'],
     [/g\.pose\(\)\.translate\((.*)\);/, 'g.pose().translate($1, 0f);'],
@@ -96,7 +97,11 @@ tasks.register('portSources', Copy) {
 sourceSets.main.java.srcDir(portedDir)
 tasks.named('compileJava') { dependsOn 'portSources' }
 processResources {
-    from('../fabric/src/main/resources') { exclude 'fabric.mod.json' }
+    from('../fabric/src/main/resources') {
+        exclude 'fabric.mod.json'
+        if (file("res/${project.mc}/yaclient.mixins.json").exists()) exclude 'yaclient.mixins.json'
+    }
+    from("res/${project.mc}")
     inputs.property "version", project.version
     inputs.property "mc", project.mc
     filesMatching("fabric.mod.json") {
