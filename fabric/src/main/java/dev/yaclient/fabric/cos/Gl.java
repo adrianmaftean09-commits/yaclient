@@ -50,7 +50,7 @@ final class Gl {
             o[2] = (float) (m[8] * x + m[9] * y + m[10] * z + m[11]);
             out.add(o);
         }
-        RenderType rt = RenderTypes.entityTranslucent(id);
+        RenderType rt = RenderTypes.entityTranslucentEmissive(id);
         collector.submitCustomGeometry(stack, rt, (pose, vc) -> {
             for (float[] v : out) {
                 vc.addVertex(pose, v[0], v[1], v[2])
