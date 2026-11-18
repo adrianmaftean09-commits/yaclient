@@ -101,6 +101,13 @@ public class YAClient implements ModInitializer {
         MODULES.add(new BwBlocksModule());
         MODULES.add(new BwThreatModule());
         MODULES.add(new StreamerModeModule());
+        MODULES.add(new CritCounterModule());
+        MODULES.add(new HitRatioModule());
+        MODULES.add(new KillStreakModule());
+        MODULES.add(new ArmorWarningModule());
+        MODULES.add(new VoidAlertModule());
+        MODULES.add(new GappleTimerModule());
+        MODULES.add(new PotionAlertModule());
         MODULES.add(new FreeLookModule());
 
         // Plus-only mods (free players see them locked)

@@ -15,7 +15,9 @@ public final class HitTracker {
     private static long lastHit;
     private static int combo;
     private static EntityLivingBase target;
-    private static boolean wasHurt;
+    private static boolean wasHurt, clickCrit;
+    private static int hits, crits, taken, kills, streak;
+    private static EntityLivingBase lastKilled;
 
     public static void tick(Minecraft mc) {
         tick++;
@@ -26,6 +28,8 @@ public final class HitTracker {
             if (m != null && m.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY && m.entityHit instanceof EntityLivingBase) {
                 clickTarget = (EntityLivingBase) m.entityHit;
                 clickTick = tick;
+                net.minecraft.entity.player.EntityPlayer pl = mc.thePlayer;
+                clickCrit = pl.fallDistance > 0f && !pl.onGround && !pl.isOnLadder() && !pl.isInWater() && pl.ridingEntity == null;
                 target = clickTarget;
                 lastTargetTime = System.currentTimeMillis();
             } else {
@@ -38,12 +42,17 @@ public final class HitTracker {
                 clickTarget = null;
             } else if (clickTarget.hurtTime > 0 && clickTarget.hurtTime >= clickTarget.maxHurtTime - 1) {
                 combo++;
+                hits++;
+                if (clickCrit) crits++;
                 lastHit = System.currentTimeMillis();
                 clickTarget = null;
             }
         }
         boolean hurt = mc.thePlayer.hurtTime > 0 && mc.thePlayer.hurtTime >= mc.thePlayer.maxHurtTime - 1;
-        if (hurt && !wasHurt) combo = 0;
+        if (hurt && !wasHurt) { combo = 0; taken++; streak = 0; }
+        if (target != null && target != lastKilled && (target.isDead || target.getHealth() <= 0f) && System.currentTimeMillis() - lastTargetTime < 4000) {
+            lastKilled = target; kills++; streak++;
+        }
         wasHurt = hurt;
         if (System.currentTimeMillis() - lastHit > 3000) combo = 0;
     }
@@ -51,6 +60,16 @@ public final class HitTracker {
     private static long lastTargetTime;
 
     public static int combo() { return combo; }
+
+    public static int hits() { return hits; }
+
+    public static int crits() { return crits; }
+
+    public static int taken() { return taken; }
+
+    public static int kills() { return kills; }
+
+    public static int streak() { return streak; }
 
     public static long lastHitTime() { return lastHit; }
 
