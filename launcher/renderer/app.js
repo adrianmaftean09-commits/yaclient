@@ -164,21 +164,18 @@ const isYa = (v) => v === (S.ya || '1.8.9') || (S.yaFabric || []).includes(v);
 
 let ART = {}; let vline = null;
 const lineOf = (id) => { const m = /^(\d+\.\d+)/.exec(id); return m ? m[1] : id; };
+const SHOWN = ['26', '1.21', '1.16', '1.8', '1.7'];
+const groupOf = (id) => { const m = /^(\d+)\.(\d+)/.exec(id); if (!m) return ''; return +m[1] >= 26 ? '26' : m[1] + '.' + m[2]; };
 function vLines() {
   const map = new Map();
-  VERS.versions.filter((v) => v.type === 'release').forEach((v) => { const l = lineOf(v.id); if (!map.has(l)) map.set(l, []); map.get(l).push(v); });
-  const out = [...map.entries()].map(([k, vs]) => ({ key: k, title: 'Minecraft ' + k, vs }));
-  const sn = VERS.versions.filter((v) => v.type === 'snapshot').slice(0, 120);
-  const old = VERS.versions.filter((v) => v.type === 'old_beta' || v.type === 'old_alpha');
-  if (sn.length) out.push({ key: 'snap', title: t('snapshots'), vs: sn });
-  if (old.length) out.push({ key: 'old', title: t('old'), vs: old });
-  return out;
+  VERS.versions.filter((v) => v.type === 'release').forEach((v) => { const l = groupOf(v.id); if (SHOWN.indexOf(l) < 0) return; if (!map.has(l)) map.set(l, []); map.get(l).push(v); });
+  return SHOWN.filter((k) => map.has(k)).map((k) => ({ key: k, title: k === '26' ? 'Minecraft 26.x' : 'Minecraft ' + k, vs: map.get(k) }));
 }
 const HUES = [212, 150, 28, 280, 350, 190, 60, 320];
 function artStyle(l, i) {
-  const a = ART[l.key]; const h = HUES[(i * 3 + 1) % HUES.length];
+  const a = ART[l.key] || ART[lineOf(l.vs[0].id)]; const h = HUES[(i * 3 + 1) % HUES.length];
   const g = `linear-gradient(135deg,hsl(${h} 40% 22%),hsl(${(h + 40) % 360} 45% 10%))`;
-  return a ? `background:url('${esc(a.img)}') center/cover,${g}` : `background:${g}`;
+  return `background:${a ? `url('${esc(a.img)}') center/cover,` : ''}url('art/${esc(l.key)}.jpg') center/cover,${g}`;
 }
 function curLine() {
   const ls = vLines();
@@ -195,7 +192,7 @@ const fabricSup = (v) => /^\d+\.\d+(\.\d+)?$/.test(v) && (() => { const p = v.sp
 const isYa18 = (v) => v === (S.ya || '1.8.9');
 function vPanel() {
   const l = curLine(); if (!l) return '';
-  const i = vLines().indexOf(l); const a = ART[l.key];
+  const i = vLines().indexOf(l); const a = ART[l.key] || ART[lineOf(l.vs[0].id)];
   const g = modsGrid();
   const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${esc(v.id)}${isYa(v.id) ? ' · YA' : ''}</option>`).join('');
   return `<div class="vart" style="${artStyle(l, i)}"><span>${esc(l.title)}</span></div>
@@ -219,6 +216,8 @@ function modsGrid() {
   return { ok, html: '' };
 }
 function viewVersions() {
+  const ls0 = vLines();
+  if (ls0.length && !ls0.some((l) => l.vs.some((v) => v.id === S.version))) { S.version = ls0[0].vs[0].id; window.ya.saveSettings({ version: S.version }); }
   return `<div class="vp2"><div class="vgrid" id="vgrid">${vCards()}</div><div class="card vpanel" id="vpanel">${vPanel()}</div></div>`;
 }
 function viewServers() {
