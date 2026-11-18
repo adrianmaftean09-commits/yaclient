@@ -1,6 +1,7 @@
 package dev.yaclient.modules;
 
 import dev.yaclient.Gfx;
+import dev.yaclient.Setting;
 import dev.yaclient.Theme;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -11,6 +12,8 @@ import net.minecraft.item.ItemStack;
 /** How many ender pearls, golden apples, splash potions and arrows you carry. */
 public class ItemCounterModule extends HudModule {
     public ItemCounterModule() { super("item_counter", Category.PVP, false, 0.008f, 0.62f); }
+
+    private final Setting.Bool hideZero = add(new Setting.Bool("hide_zero", false));
 
     private static final int ROW = 20, W = 52;
 
@@ -27,7 +30,7 @@ public class ItemCounterModule extends HudModule {
             switch (kind) {
                 case 0: m = s.getItem() == Items.ender_pearl; break;
                 case 1: m = s.getItem() == Items.golden_apple; break;
-                case 2: m = s.getItem() instanceof ItemPotion && ItemPotion.isSplash(s.getMetadata()); break;
+                case 2: m = s.getItem() instanceof ItemPotion && (s.getMetadata() & 16384) != 0; break;
                 default: m = s.getItem() == Items.arrow; break;
             }
             if (m) n += s.stackSize;
@@ -36,6 +39,7 @@ public class ItemCounterModule extends HudModule {
     }
 
     private int rows() {
+        if (!hideZero.value) return 4;
         int r = 0;
         for (int i = 0; i < 4; i++) if (count(i) > 0) r++;
         return preview && r == 0 ? 4 : r;
@@ -54,11 +58,13 @@ public class ItemCounterModule extends HudModule {
         int y = 0;
         for (int i = 0; i < 4; i++) {
             int n = fake ? 8 + i : count(i);
-            if (n <= 0) continue;
+            if (n <= 0 && hideZero.value) continue;
             Gfx.rr(0, y, W, ROW, 6, Theme.HUD_BG);
             Gfx.rrOutline(0, y, W, ROW, 6, 1, 0x1AFFFFFF);
-            Gfx.text(String.valueOf(n), 24, y + (ROW - Gfx.lineHeight(10, false)) / 2, 10, false, Theme.TEXT);
+            Gfx.text(String.valueOf(n), 24, y + (ROW - Gfx.lineHeight(10, false)) / 2, 10, false, n > 0 ? Theme.TEXT : 0x80FFFFFF);
             GlStateManager.pushMatrix();
+            GlStateManager.enableDepth();
+            GlStateManager.color(1f, 1f, 1f, 1f);
             RenderHelper.enableGUIStandardItemLighting();
             mc.getRenderItem().renderItemAndEffectIntoGUI(ic[i], 4, y + 2);
             RenderHelper.disableStandardItemLighting();
