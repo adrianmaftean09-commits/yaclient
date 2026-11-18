@@ -34,5 +34,9 @@ java {
 }
 
 jar {
+    archiveClassifier = 'dev'
+}
+
+remapJar {
     archiveFileName = "yaclient-fabric-${project.mc}.jar"
 }
