@@ -27,6 +27,13 @@ public abstract class PillModule extends HudModule {
         super(id, category, enabledByDefault, defX, defY);
     }
 
+    /** Optional picture at the left of the text (server icon, pack icon). Subclasses opt in. */
+    protected boolean iconOn() { return false; }
+    protected int iconPx() { return 12; }
+    protected void drawIcon(int x, int y, int size) { }
+    /** False = icon only (the text is still what hides the element when empty). */
+    protected boolean textOn() { return true; }
+
     /** Current text. Return an empty string to hide the element. */
     protected abstract String text();
 
@@ -55,21 +62,26 @@ public abstract class PillModule extends HudModule {
 
     private int size() { return Math.round(textSize.value); }
 
-    @Override
-    public int width() {
-        String t = shown();
-        return t.isEmpty() ? 0 : Gfx.width(t, size(), bold.value) + 2 * Math.round(padding.value);
+    private int contentW(String t) {
+        boolean tx = textOn(), ic = iconOn();
+        return (tx ? Gfx.width(t, size(), bold.value) : 0) + (ic ? iconPx() + (tx ? 4 : 0) : 0);
     }
 
     @Override
-    public int height() { return Math.round(boxHeight.value); }
+    public int width() {
+        String t = shown();
+        return t.isEmpty() ? 0 : contentW(t) + 2 * Math.round(padding.value);
+    }
+
+    @Override
+    public int height() { return Math.max(Math.round(boxHeight.value), iconOn() ? iconPx() + 4 : 0); }
 
     @Override
     protected void draw() {
         String t = shown();
         if (t.isEmpty()) return;
         int pad = Math.round(padding.value), h = height(), r = Math.max(1, Math.round(radius.value));
-        int w = Gfx.width(t, size(), bold.value) + 2 * pad;
+        int w = contentW(t) + 2 * pad;
         if (background.value) {
             int rgb = BG[Ui.clamp(bgColor.index, 0, BG.length - 1)];
             int c = (rgb < 0 ? Theme.accent() : (0xFF000000 | rgb)) & 0xFFFFFF;
@@ -83,7 +95,10 @@ public abstract class PillModule extends HudModule {
         int col = autoColor();
         if (col == 0) col = textColor.rgb();
         int ty = (h - Gfx.lineHeight(size(), bold.value)) / 2;
-        if (shadow.value) Gfx.text(t, pad + 1, ty + 1, size(), bold.value, 0x99000000);
-        Gfx.text(t, pad, ty, size(), bold.value, col);
+        int tx0 = pad;
+        if (iconOn()) { drawIcon(pad, (h - iconPx()) / 2, iconPx()); tx0 += iconPx() + 4; }
+        if (!textOn()) return;
+        if (shadow.value) Gfx.text(t, tx0 + 1, ty + 1, size(), bold.value, 0x99000000);
+        Gfx.text(t, tx0, ty, size(), bold.value, col);
     }
 }

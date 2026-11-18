@@ -475,5 +475,14 @@
  "set.show_pearls": "Mostrar perlas",
  "set.show_gapples": "Mostrar manzanas doradas",
  "set.show_potions": "Mostrar pociones splash",
- "set.show_arrows": "Mostrar flechas"
+ "set.show_arrows": "Mostrar flechas",
+ "mod.pack_info.name": "Info Pack",
+ "mod.pack_info.desc": "Nombre y logo de tu resource pack",
+ "set.show_icon": "Mostrar logo",
+ "set.show_name": "Mostrar nombre",
+ "set.icon_size": "Tamaño del logo",
+ "set.pack_which": "Packs mostrados",
+ "opt.top": "Pack principal",
+ "opt.all_packs": "Todos los packs",
+ "set.hide_default": "Ocultar sin pack"
 }

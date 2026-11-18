@@ -475,5 +475,14 @@
  "set.show_pearls": "Enderperlen anzeigen",
  "set.show_gapples": "Goldäpfel anzeigen",
  "set.show_potions": "Wurftränke anzeigen",
- "set.show_arrows": "Pfeile anzeigen"
+ "set.show_arrows": "Pfeile anzeigen",
+ "mod.pack_info.name": "Pack-Info",
+ "mod.pack_info.desc": "Name und Logo deines Resourcepacks",
+ "set.show_icon": "Logo anzeigen",
+ "set.show_name": "Namen anzeigen",
+ "set.icon_size": "Logo-Größe",
+ "set.pack_which": "Angezeigte Packs",
+ "opt.top": "Oberstes Pack",
+ "opt.all_packs": "Alle Packs",
+ "set.hide_default": "Ohne Pack ausblenden"
 }

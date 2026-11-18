@@ -475,5 +475,14 @@
  "set.show_pearls": "Mostra perle",
  "set.show_gapples": "Mostra mele d'oro",
  "set.show_potions": "Mostra pozioni splash",
- "set.show_arrows": "Mostra frecce"
+ "set.show_arrows": "Mostra frecce",
+ "mod.pack_info.name": "Info Pack",
+ "mod.pack_info.desc": "Nome e logo del resource pack che usi",
+ "set.show_icon": "Mostra logo",
+ "set.show_name": "Mostra nome",
+ "set.icon_size": "Dimensione logo",
+ "set.pack_which": "Pack mostrati",
+ "opt.top": "Pack principale",
+ "opt.all_packs": "Tutti i pack",
+ "set.hide_default": "Nascondi senza pack"
 }

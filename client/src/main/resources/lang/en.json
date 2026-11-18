@@ -485,5 +485,14 @@
  "set.show_pearls": "Show ender pearls",
  "set.show_gapples": "Show golden apples",
  "set.show_potions": "Show splash potions",
- "set.show_arrows": "Show arrows"
+ "set.show_arrows": "Show arrows",
+ "mod.pack_info.name": "Pack Info",
+ "mod.pack_info.desc": "Name and logo of your resource pack",
+ "set.show_icon": "Show logo",
+ "set.show_name": "Show name",
+ "set.icon_size": "Logo size",
+ "set.pack_which": "Packs shown",
+ "opt.top": "Top pack",
+ "opt.all_packs": "All packs",
+ "set.hide_default": "Hide when no pack"
 }
