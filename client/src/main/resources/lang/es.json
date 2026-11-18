@@ -451,5 +451,20 @@
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Mantén la tecla (Opciones > Controles > YA Client) y mira alrededor sin girar al jugador",
  "set.third_person": "Tercera persona al mantener",
- "set.height": "Altura del chat"
+ "set.height": "Altura del chat",
+ "mod.crit_counter.name": "Contador de Críticos",
+ "mod.crit_counter.desc": "Golpes críticos y porcentaje",
+ "mod.hit_ratio.name": "Ratio de Golpes",
+ "mod.hit_ratio.desc": "Golpes dados contra recibidos",
+ "mod.kill_streak.name": "Racha de Kills",
+ "mod.kill_streak.desc": "Kills de la sesión y racha actual",
+ "mod.armor_warning.name": "Aviso de Armadura",
+ "mod.armor_warning.desc": "Avisa cuando una pieza está a punto de romperse",
+ "mod.void_alert.name": "Aviso de Vacío",
+ "mod.void_alert.desc": "Muestra VOID si no hay bloque bajo ti",
+ "mod.gapple_timer.name": "Absorción",
+ "mod.gapple_timer.desc": "Corazones de absorción restantes",
+ "mod.potion_alert.name": "Aviso de Pociones",
+ "mod.potion_alert.desc": "Avisa antes de que acabe un efecto",
+ "set.limit": "Avisar por debajo de"
 }

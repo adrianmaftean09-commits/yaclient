@@ -461,5 +461,20 @@
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Hold the key (Options > Controls > YA Client) and look around without turning your player",
  "set.third_person": "Third person while held",
- "set.height": "Chat height"
+ "set.height": "Chat height",
+ "mod.crit_counter.name": "Crit Counter",
+ "mod.crit_counter.desc": "Critical hits you landed and the percentage",
+ "mod.hit_ratio.name": "Hit Ratio",
+ "mod.hit_ratio.desc": "Hits landed against hits taken (green when winning)",
+ "mod.kill_streak.name": "Kill Streak",
+ "mod.kill_streak.desc": "Kills this session and your current streak",
+ "mod.armor_warning.name": "Armor Warning",
+ "mod.armor_warning.desc": "Warns when an armor piece is about to break",
+ "mod.void_alert.name": "Void Alert",
+ "mod.void_alert.desc": "Shows VOID when there is no block under you",
+ "mod.gapple_timer.name": "Absorption",
+ "mod.gapple_timer.desc": "Absorption hearts left after a golden apple",
+ "mod.potion_alert.name": "Potion Alert",
+ "mod.potion_alert.desc": "Warns before a potion effect runs out",
+ "set.limit": "Warn below"
 }

@@ -451,5 +451,20 @@
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Taste halten (Optionen > Steuerung > YA Client) und umschauen, ohne die Spielfigur zu drehen",
  "set.third_person": "Dritte Person beim Halten",
- "set.height": "Chat-Höhe"
+ "set.height": "Chat-Höhe",
+ "mod.crit_counter.name": "Crit-Zähler",
+ "mod.crit_counter.desc": "Kritische Treffer und Prozent",
+ "mod.hit_ratio.name": "Trefferverhältnis",
+ "mod.hit_ratio.desc": "Treffer gegen erhaltene Treffer",
+ "mod.kill_streak.name": "Kill-Serie",
+ "mod.kill_streak.desc": "Kills der Sitzung und aktuelle Serie",
+ "mod.armor_warning.name": "Rüstungswarnung",
+ "mod.armor_warning.desc": "Warnt, wenn ein Rüstungsteil bald bricht",
+ "mod.void_alert.name": "Void-Warnung",
+ "mod.void_alert.desc": "Zeigt VOID, wenn kein Block unter dir ist",
+ "mod.gapple_timer.name": "Absorption",
+ "mod.gapple_timer.desc": "Verbleibende Absorptionsherzen",
+ "mod.potion_alert.name": "Trank-Warnung",
+ "mod.potion_alert.desc": "Warnt, bevor ein Trankeffekt endet",
+ "set.limit": "Warnen unter"
 }

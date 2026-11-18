@@ -451,5 +451,20 @@
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Tieni premuto il tasto (Opzioni > Comandi > YA Client) e guardati intorno senza girare il personaggio",
  "set.third_person": "Terza persona mentre premuto",
- "set.height": "Altezza chat"
+ "set.height": "Altezza chat",
+ "mod.crit_counter.name": "Contatore Critici",
+ "mod.crit_counter.desc": "Colpi critici messi a segno e percentuale",
+ "mod.hit_ratio.name": "Rapporto Colpi",
+ "mod.hit_ratio.desc": "Colpi dati contro colpi presi (verde se stai vincendo)",
+ "mod.kill_streak.name": "Serie di Kill",
+ "mod.kill_streak.desc": "Kill della sessione e serie attuale",
+ "mod.armor_warning.name": "Avviso Armatura",
+ "mod.armor_warning.desc": "Avvisa quando un pezzo di armatura sta per rompersi",
+ "mod.void_alert.name": "Avviso Vuoto",
+ "mod.void_alert.desc": "Mostra VOID quando non c'è nessun blocco sotto di te",
+ "mod.gapple_timer.name": "Assorbimento",
+ "mod.gapple_timer.desc": "Cuori di assorbimento rimasti dopo una mela d'oro",
+ "mod.potion_alert.name": "Avviso Pozioni",
+ "mod.potion_alert.desc": "Avvisa prima che finisca l'effetto di una pozione",
+ "set.limit": "Avvisa sotto"
 }
