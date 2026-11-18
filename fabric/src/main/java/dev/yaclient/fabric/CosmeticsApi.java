@@ -303,7 +303,7 @@ public final class CosmeticsApi {
             return m;
         }
         if (!enabled()) return null;
-        return lookup(p.getUUID().toString().replace("-", ""));
+        return lookup(key(p.getUUID()));
     }
 
     /** True if that player runs YA CLIENT (always true for yourself; others come from the server). */
@@ -311,7 +311,7 @@ public final class CosmeticsApi {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && id.equals(mc.player.getUUID())) return true;
         if (!enabled()) return false;
-        Map<String, String> m = lookup(id.toString().replace("-", ""));
+        Map<String, String> m = lookup(key(id));
         return m != null && "1".equals(m.get("client"));
     }
 
@@ -320,8 +320,17 @@ public final class CosmeticsApi {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && id.equals(mc.player.getUUID())) return plus();
         if (!enabled()) return false;
-        Map<String, String> m = lookup(id.toString().replace("-", ""));
+        Map<String, String> m = lookup(key(id));
         return m != null && "1".equals(m.get("plus"));
+    }
+
+    private static final Map<UUID, String> KEYS = new java.util.concurrent.ConcurrentHashMap<UUID, String>();
+
+    /** Dashless uuid string, built once per player instead of every frame. */
+    private static String key(UUID id) {
+        String k = KEYS.get(id);
+        if (k == null) { k = id.toString().replace("-", ""); KEYS.put(id, k); }
+        return k;
     }
 
     private static Map<String, String> lookup(final String uuid) {
