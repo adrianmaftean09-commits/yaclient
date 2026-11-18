@@ -60,10 +60,20 @@ def r8 = [
     [/"submit\(L/, '"render(L'],
     [/public void submit\(PoseStack/, 'public void render(PoseStack'],
 ]
+def r4 = [
+    [/g\.pose\(\)\.pushMatrix\(\)/, 'g.pose().pushPose()'],
+    [/g\.pose\(\)\.popMatrix\(\)/, 'g.pose().popPose()'],
+    [/g\.pose\(\)\.translate\((.*)\);/, 'g.pose().translate($1, 0f);'],
+    [/g\.pose\(\)\.scale\((.*)\);/, 'g.pose().scale($1, 1f);'],
+    [/mc\.getWindow\(\)\.getGuiScale\(\)/, '((int) mc.getWindow().getGuiScale())'],
+    [/net\.minecraft\.client\.renderer\.RenderPipelines;/, 'net.minecraft.client.renderer.RenderType;'],
+    [/RenderPipelines\.GUI_TEXTURED/, 'RenderType::guiTextured'],
+    [/new DynamicTexture\(\(\) -> label, ni\)/, 'new DynamicTexture(ni)'],
+]
 def rules = [
     '1.21.11': base,
     '1.21.8': base + r8,
-    '1.21.4': base + r8,
+    '1.21.4': base + r8 + r4,
 ]
 def portedDir = layout.buildDirectory.dir("ported/java")
 tasks.register('portSources', Copy) {
