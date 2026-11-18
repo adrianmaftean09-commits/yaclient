@@ -195,19 +195,18 @@ function vPanel() {
   const i = vLines().indexOf(l); const a = ART[l.key] || ART[lineOf(l.vs[0].id)];
   const g = modsGrid();
   const opts = l.vs.map((v) => `<option value="${esc(v.id)}" ${v.id === S.version ? 'selected' : ''}>${esc(v.id)}${isYa(v.id) ? ' · YA' : ''}</option>`).join('');
-  return `<div class="vart" style="${artStyle(l, i)}"><span>${esc(l.title)}</span></div>
+  return `<div class="vart"><u style="${artStyle(l, i)}"></u><i></i></div>
     <div class="vbody"><h2>${esc(l.title)}</h2>
     <p class="vdesc">${esc(a && a.text ? a.text : '')}</p>
     <label class="vlab">${esc(t('version') || 'Version')}</label>
     <select id="vsel" class="vsel">${opts}</select>
     <label class="vlab">Loaders</label><div class="vld" id="vld">${loaderBtns()}</div>
-    <p class="sub" id="vsub">${esc(g.ok + ' / ' + MODS.length + ' ' + t('avail'))}${isYa(S.version) ? '' : ' · ' + esc(t('vanillaNote')) + ' ' + esc(S.ya || '1.8.9')}</p>
     <button class="launch2 vgo" id="play2" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(S.version)}</span></button></div>`;
 }
 function vCards() {
   return vLines().map((l, i) => {
     const on = curLine() === l;
-    return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" style="${artStyle(l, i)}"><i></i><b>${esc(l.title)}</b>${l.vs.some((v) => isYa(v.id)) ? `<em>${esc(t('ya'))}</em>` : ''}</button>`;
+    return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" ><u style="${artStyle(l, i)}"></u><i></i><b>${esc(l.title)}</b>${l.vs.some((v) => isYa(v.id)) ? `<em>${esc(t('ya'))}</em>` : ''}</button>`;
   }).join('');
 }
 function modsGrid() {
