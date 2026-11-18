@@ -104,8 +104,7 @@ final class ClownPix {
         final int NU = 11, NV = 16;
         for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
             float[] col;
-            if (j == 0 || j >= NV - 2 || i == 0 || i == NU - 1) col = c(RED);                        // red trim: collar, hem and edges
-            else col = c(WHITE);                                                                      // plain white background
+            col = c(WHITE);                                                                           // all white, only the clown face has color
             float k = 1f;
             float[] cc = {Math.min(1f, col[0] * k), Math.min(1f, col[1] * k), Math.min(1f, col[2] * k), col[3]};
             double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
