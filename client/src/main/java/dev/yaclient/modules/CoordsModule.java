@@ -15,6 +15,7 @@ public class CoordsModule extends PillModule {
     @Override
     protected String text() {
         if (mc == null || mc.thePlayer == null) return "";
+        if (StreamerModeModule.hideCoords()) return "XYZ ???";
         String sp = new String[]{" ", ", ", " / "}[sep.index];
         double x = mc.thePlayer.posX, y = mc.thePlayer.posY, z = mc.thePlayer.posZ;
         String pre = label.value ? "XYZ " : "";

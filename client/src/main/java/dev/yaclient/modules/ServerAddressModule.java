@@ -7,6 +7,7 @@ public class ServerAddressModule extends PillModule {
     protected String text() {
         if (mc == null || mc.theWorld == null) return "";
         if (mc.getCurrentServerData() == null) return "Singleplayer";
+        if (StreamerModeModule.hideIp()) return "hidden";
         return mc.getCurrentServerData().serverIP;
     }
 

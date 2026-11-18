@@ -443,5 +443,16 @@
  "cos.item.frost_cape": "Snowflake Cape",
  "cos.item.frost_wings": "Ice Wings",
  "cos.item.frost_bandana": "Frost Band",
- "cos.item.frost_pet": "Frosty (pet)"
+ "cos.item.frost_pet": "Frosty (pet)",
+ "mod.bw_resources.name": "BedWars Resources",
+ "mod.bw_resources.desc": "Iron, gold, diamonds and emeralds you carry",
+ "mod.bw_blocks.name": "BedWars Blocks",
+ "mod.bw_blocks.desc": "How many blocks you can still place (red when low)",
+ "mod.bw_threat.name": "BedWars Threat",
+ "mod.bw_threat.desc": "Closest enemy with his weapon and armor",
+ "mod.streamer_mode.name": "Streamer Mode",
+ "mod.streamer_mode.desc": "Hides coordinates and server address on the HUD and scoreboard",
+ "set.hide_coords": "Hide coordinates",
+ "set.hide_ip": "Hide server address",
+ "set.hide_board_ip": "Hide addresses on the scoreboard"
 }

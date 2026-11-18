@@ -433,5 +433,16 @@
  "cos.item.frost_cape": "Snowflake Capa",
  "cos.item.frost_wings": "Ice Alas",
  "cos.item.frost_bandana": "Frost Cinta",
- "cos.item.frost_pet": "Frosty (mascota)"
+ "cos.item.frost_pet": "Frosty (mascota)",
+ "mod.bw_resources.name": "Recursos BedWars",
+ "mod.bw_resources.desc": "Hierro, oro, diamantes y esmeraldas que llevas",
+ "mod.bw_blocks.name": "Bloques BedWars",
+ "mod.bw_blocks.desc": "Cuántos bloques puedes colocar (rojo si quedan pocos)",
+ "mod.bw_threat.name": "Amenaza BedWars",
+ "mod.bw_threat.desc": "Enemigo más cercano con su arma y armadura",
+ "mod.streamer_mode.name": "Modo Streamer",
+ "mod.streamer_mode.desc": "Oculta coordenadas y dirección del servidor",
+ "set.hide_coords": "Ocultar coordenadas",
+ "set.hide_ip": "Ocultar dirección del servidor",
+ "set.hide_board_ip": "Ocultar direcciones en el marcador"
 }

@@ -75,7 +75,7 @@ public class ScoreboardModule extends HudModule {
         for (int i = list.size() - 1; i >= 0; i--) {
             Score s = list.get(i);
             ScorePlayerTeam team = sb.getPlayersTeam(s.getPlayerName());
-            out.add(new String[]{ScorePlayerTeam.formatPlayerName(team, s.getPlayerName()), String.valueOf(s.getScorePoints())});
+            out.add(new String[]{StreamerModeModule.maskBoard(ScorePlayerTeam.formatPlayerName(team, s.getPlayerName())), String.valueOf(s.getScorePoints())});
         }
         return out;
     }

@@ -96,6 +96,10 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ItemCounterModule());
         MODULES.add(new InventoryHudModule());
         MODULES.add(new NearbyPlayersModule());
+        MODULES.add(new BwResourcesModule());
+        MODULES.add(new BwBlocksModule());
+        MODULES.add(new BwThreatModule());
+        MODULES.add(new StreamerModeModule());
 
         // Plus-only mods (free players see them locked)
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
@@ -130,7 +134,9 @@ public class YAClient implements ModInitializer {
             FriendsApi.tick();
             HitTracker.tick(mc);
             KeyGuard.tick(mc);
+            SideSlot.tick(mc);
             HotbarGuard.tick(mc);
+            FreeLook.tick(mc);
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();

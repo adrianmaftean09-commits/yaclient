@@ -21,6 +21,9 @@ public final class HotbarGuard {
 
     private HotbarGuard() {}
 
+    /** A switch the client itself made on purpose (mouse side buttons): never revert it. */
+    public static void accept(int slot) { prev = slot; lastChange = tick; }
+
     public static void tick(Minecraft mc) {
         tick++;
         EntityPlayer p = mc == null ? null : mc.thePlayer;

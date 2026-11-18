@@ -36,8 +36,18 @@ public abstract class PillModule extends HudModule {
     /** Modules can override the text color (e.g. green/red by value). Return 0 to use the chosen color. */
     protected int autoColor() { return 0; }
 
+    private String cached = "";
+    private long cachedAt;
+
+    /** text() at most 10 times a second: width(), height() and draw() would otherwise rebuild it several times per frame. */
+    private String cachedText() {
+        long now = System.currentTimeMillis();
+        if (now - cachedAt >= 100 || now < cachedAt) { cachedAt = now; cached = text(); }
+        return cached;
+    }
+
     private String shown() {
-        String t = text();
+        String t = cachedText();
         if ((t == null || t.isEmpty()) && preview) t = sample();
         if (t == null) return "";
         return upper.value ? t.toUpperCase(java.util.Locale.ROOT) : t;
