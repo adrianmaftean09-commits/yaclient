@@ -31,6 +31,7 @@ public final class CosmeticsApi {
     private static volatile Map<String, String> catalog = new HashMap<String, String>();
     private static volatile String storeUrl = "";
     private static volatile boolean plus;
+    private static volatile boolean staff;
     private static volatile String status = "";
     private static volatile String detail = "";
     private static volatile boolean refreshing;
@@ -202,6 +203,7 @@ public final class CosmeticsApi {
                         String list = me.get("owned");
                         owned = new HashSet<String>(Arrays.asList(list == null ? new String[0] : list.split(",")));
                         plus = "1".equals(me.get("plus"));
+                        staff = "1".equals(me.get("staff"));
                         for (String slot : Cosmetics.SLOTS) {
                             String v = me.get(slot);
                             if (v != null) Config.set("cos." + slot, v);
@@ -320,6 +322,15 @@ public final class CosmeticsApi {
     }
 
     /** True if that player has YA Plus (always the real value for yourself; others come from the server). */
+    public static int rank(UUID id) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && id.equals(mc.player.getUUID())) return !enabled() ? 0 : staff ? 2 : plus ? 1 : 0;
+        if (!enabled()) return 0;
+        Map<String, String> m = lookup(key(id));
+        if (m == null) return 0;
+        return "1".equals(m.get("staff")) ? 2 : "1".equals(m.get("plus")) ? 1 : 0;
+    }
+
     public static boolean isPlus(UUID id) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && id.equals(mc.player.getUUID())) return plus();

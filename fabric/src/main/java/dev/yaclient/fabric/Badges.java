@@ -24,10 +24,10 @@ public final class Badges {
     /** Logo glyph, then the name, then the gold plus glyph for Plus members. */
     public static MutableComponent decorate(java.util.UUID id, Component base) {
         MutableComponent out = Component.literal("");
-        out.append(Component.literal("\uE000").withStyle(LOGO));
+        int rank = CosmeticsApi.rank(id);   // 0 normal, 1 YA Plus, 2 staff (set from the admin panel)
+        out.append(Component.literal(rank == 2 ? "\uE003" : rank == 1 ? "\uE002" : "\uE000").withStyle(LOGO));
         out.append(Component.literal(" "));
         out.append(base);
-        if (CosmeticsApi.isPlus(id)) { out.append(Component.literal(" ")); out.append(Component.literal("\uE001").withStyle(LOGO)); }
         return out;
     }
 
