@@ -16,7 +16,11 @@ public final class Hits {
 
     public static void init() {
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
-            if (world.isClientSide()) { combo++; reach = player.distanceTo(entity); }
+            if (world.isClientSide()) {
+                combo++; reach = player.distanceTo(entity);
+                Module hs = Modules.byId("plushit");
+                if (hs != null && hs.active()) dev.yaclient.fabric.mods.Plus.HitSparks.spark(entity);
+            }
             return InteractionResult.PASS;
         });
     }

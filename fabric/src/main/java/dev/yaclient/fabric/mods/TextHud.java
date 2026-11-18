@@ -32,6 +32,7 @@ public class TextHud extends HudModule {
     public void draw(GuiGraphicsExtractor g, Minecraft mc) {
         g.fill(0, 0, width(mc), height(mc), 0x90101014);
         int y = 4;
-        for (String l : lines(mc)) { g.text(mc.font, l, 5, y, 0xFFFFFFFF, true); y += 11; }
+        int i = 0;
+        for (String l : lines(mc)) { g.text(mc.font, l, 5, y, Extra.rainbow ? Extra.rainbowRgb(i++) : 0xFFFFFFFF, true); y += 11; }
     }
 }

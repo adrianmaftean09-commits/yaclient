@@ -168,6 +168,23 @@ public final class Modules {
             }
             return b.length() == 0 ? "" : "! " + b.substring(0, b.length() - 1);
         });
+        text("chunkpos", "Chunk Position", "Chunk you are in and your place inside it", Category.INFO, 0.008f, 0.47f, mc -> mc.player == null ? "" :
+            "Chunk " + ((int) Math.floor(mc.player.getX()) >> 4) + " " + ((int) Math.floor(mc.player.getZ()) >> 4) + "  (" + ((int) Math.floor(mc.player.getX()) & 15) + ", " + ((int) Math.floor(mc.player.getZ()) & 15) + ")");
+        text("targetdist", "Target Distance", "[SMP / PvP] Distance to the block or entity you look at", Category.INFO, 0.42f, 0.06f, Extra::targetDistance);
+        text("arrowcount", "Arrow Count", "[BoxPvP] Arrows in your inventory", Category.PVP, 0.008f, 0.7f, mc -> mc.player == null ? "" : "Arrows " + Extra.count(mc, Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW));
+        text("totemwarn", "Totem Warning", "[Crystal / BoxPvP] Warns when you hold no totem in your off hand", Category.CRYSTAL, 0.42f, 0.2f, mc ->
+            mc.player == null || mc.player.getOffhandItem().is(Items.TOTEM_OF_UNDYING) ? "" : "NO TOTEM IN OFF HAND");
+        text("mobcount", "Mob Counter", "[SkyBlock] Hostile mobs within 32 blocks, handy for mob farms", Category.INFO, 0.9f, 0.56f, Extra::mobCount);
+        text("dropcount", "Dropped Items", "[SkyBlock] Item entities lying around you, for farms and drops", Category.INFO, 0.9f, 0.61f, Extra::dropCount);
+        text("sprintstate", "Sprint State", "Shows when you are sprinting or sneaking", Category.INFO, 0.008f, 0.75f, mc ->
+            mc.player == null ? "" : (mc.player.isSprinting() ? "Sprinting" : mc.player.isShiftKeyDown() ? "Sneaking" : "Walking"));
+        // ---- YA Plus only ----
+        ALL.add(new Plus.Trail().plus());
+        ALL.add(new Plus.HitSparks().plus());
+        ALL.add(new Plus.RainbowHud().plus());
+        text("fallalert", "Fall Alert", "[Plus] Big warning when a fall would hurt", Category.INFO, 0.42f, 0.4f, mc ->
+            mc.player != null && mc.player.fallDistance > 3.5f ? String.format("FALL %.0f blocks!", mc.player.fallDistance) : "").plus();
+        text("plusstats", "Session Stats", "[Plus] Hits, combo and best combo this session", Category.PVP, 0.9f, 0.7f, Extra::stats).plus();
         ALL.add(new Utility.NoFovEffects());
         ALL.add(new Utility.NoScreenEffects());
         ALL.add(new Utility.NoBobbing());
@@ -192,7 +209,7 @@ public final class Modules {
     }
 
     public static void tick() {
-        for (Module m : ALL) if (m.enabled) m.onTick();
+        for (Module m : ALL) if (m.active()) m.onTick();
         Hits.tick(Minecraft.getInstance());
         Extra.tick(Minecraft.getInstance());
     }

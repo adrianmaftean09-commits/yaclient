@@ -13,7 +13,45 @@ public final class Extra {
     private static int[] last;      // last position while alive
     private static String death = "";
 
+    public static boolean rainbow;
+
+    public static int rainbowRgb(int line) {
+        float h = ((System.currentTimeMillis() % 4000L) / 4000f + line * 0.07f) % 1f;
+        return 0xFF000000 | (java.awt.Color.HSBtoRGB(h, 0.55f, 1f) & 0xFFFFFF);
+    }
+
+    public static int bestCombo;
+
+    public static String stats() {
+        if (dev.yaclient.fabric.Hits.combo > bestCombo) bestCombo = dev.yaclient.fabric.Hits.combo;
+        return "Combo " + dev.yaclient.fabric.Hits.combo + "\nBest " + bestCombo + "\nTotem pops " + dev.yaclient.fabric.Hits.pops(Minecraft.getInstance());
+    }
+
+    public static String targetDistance(Minecraft mc) {
+        if (mc.player == null || mc.hitResult == null || mc.hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return "";
+        double d = mc.hitResult.getLocation().distanceTo(mc.player.getEyePosition());
+        return String.format("Target %.1f m", d);
+    }
+
+    public static String mobCount(Minecraft mc) {
+        if (mc.level == null || mc.player == null) return "";
+        int n = 0;
+        for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering())
+            if (e instanceof net.minecraft.world.entity.monster.Enemy && e.distanceToSqr(mc.player) < 1024.0) n++;
+        return "Mobs " + n;
+    }
+
+    public static String dropCount(Minecraft mc) {
+        if (mc.level == null || mc.player == null) return "";
+        int n = 0;
+        for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering())
+            if (e instanceof net.minecraft.world.entity.item.ItemEntity && e.distanceToSqr(mc.player) < 1024.0) n += ((net.minecraft.world.entity.item.ItemEntity) e).getItem().getCount();
+        return "Drops " + n;
+    }
+
     public static void tick(Minecraft mc) {
+        dev.yaclient.fabric.Module rb = dev.yaclient.fabric.Modules.byId("rainbowhud");
+        rainbow = rb != null && rb.active();
         Player p = mc.player;
         if (p == null) { last = null; return; }
         if (p.getHealth() <= 0f || p.isDeadOrDying()) {

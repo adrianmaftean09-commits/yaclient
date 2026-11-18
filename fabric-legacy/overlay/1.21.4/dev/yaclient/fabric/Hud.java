@@ -11,7 +11,7 @@ public final class Hud {
         HudRenderCallback.EVENT.register((g, delta) -> {
             Minecraft mc = Minecraft.getInstance();
             for (Module m : Modules.ALL) {
-                if (m.enabled && m instanceof HudModule h) h.render(g, mc);
+                if (m.active() && m instanceof HudModule h) h.render(g, mc);
             }
         });
     }

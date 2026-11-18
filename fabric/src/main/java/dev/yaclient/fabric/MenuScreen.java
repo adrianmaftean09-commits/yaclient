@@ -218,11 +218,20 @@ public class MenuScreen extends Screen {
         Gfx.rrOutline(x, y, cw, ch, 6, 1, Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
         Gfx.rr(x + 14, y + 14, 36, 36, 6, Ui.mix(SURF3, 0xFF3A3B42, Math.max(a * 0.7f, h * 0.5f)));
         Gfx.icon(m.icon(), x + 14 + 8, y + 14 + 8, 20, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
-        Gfx.text(Gfx.trim(m.name, 14, true, cw - 74), x + 60, y + 14 + (36 - Gfx.lineHeight(14, true)) / 2, 14, true, Theme.TEXT);
+        boolean lockedPlus = m.plusOnly && !CosmeticsApi.plus();
+        if (m.plusOnly) {
+            int tw = Gfx.width("PLUS", 8, true) + 12;
+            Gfx.rr(x + cw - 14 - tw, y + 14, tw, 16, 4, 0xFF3A3220);
+            Gfx.textCentered("PLUS", x + cw - 14 - tw / 2, y + 14 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFFE0B040);
+        }
+        Gfx.text(Gfx.trim(m.name, 14, true, cw - 74 - (m.plusOnly ? 44 : 0)), x + 60, y + 14 + (36 - Gfx.lineHeight(14, true)) / 2, 14, true, Theme.TEXT);
         Gfx.text(Gfx.trim(m.description, 10, false, cw - 28), x + 14, y + 58, 10, false, Theme.MUTED);
         int sx = x + cw - 14 - 38, sy = y + ch - 14 - 26 + 3;
-        Gfx.rr(sx, sy, 38, 20, 6, Ui.mix(OFF, ACC, a));
-        Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 4, Ui.mix(0xFF9A9BA3, ON_ACC, a));
+        if (lockedPlus) { Gfx.rr(sx - 22, sy, 60, 20, 6, 0xFF3A3220); Gfx.textCentered("Get Plus", sx + 8, sy + (20 - Gfx.lineHeight(9, true)) / 2, 9, true, 0xFFE0B040); }
+        else {
+            Gfx.rr(sx, sy, 38, 20, 6, Ui.mix(OFF, ACC, a));
+            Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 4, Ui.mix(0xFF9A9BA3, ON_ACC, a));
+        }
         int bx = x + 14, by = y + ch - 14 - 26, bw = Gfx.width("Options", 10, true) + 30;
         boolean gear = !m.settings.isEmpty();
         boolean oo = gear && inView && over(bx, by, bw, 26);

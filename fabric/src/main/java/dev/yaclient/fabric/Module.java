@@ -12,6 +12,8 @@ public abstract class Module {
     public final String description;
     public final Category category;
     public boolean enabled;
+    /** Only YA Plus members can switch this module on. */
+    public boolean plusOnly;
     public final List<Setting> settings = new ArrayList<Setting>();
 
     public enum Category { INFO, PVP, CRYSTAL, UTILITY }
@@ -73,7 +75,13 @@ public abstract class Module {
         for (Setting s : settings) s.save();
     }
 
+    public Module plus() { plusOnly = true; return this; }
+
+    /** On, and allowed for this account. */
+    public boolean active() { return enabled && (!plusOnly || CosmeticsApi.plus()); }
+
     public void toggle() {
+        if (plusOnly && !enabled && !CosmeticsApi.plus()) return;
         enabled = !enabled;
         save();
         Config.save();
