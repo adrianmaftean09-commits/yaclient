@@ -73,3 +73,14 @@ net.minecraft.client.renderer.GameRenderer
 net.minecraft.client.renderer.entity.EntityRenderDispatcher
 net.minecraft.client.renderer.state.level.CameraRenderState
 net.minecraft.client.gui.components.PlayerTabOverlay
+net.minecraft.client.renderer.entity.player.AvatarRenderer
+net.minecraft.client.renderer.entity.layers.CapeLayer
+net.minecraft.client.renderer.entity.EntityRenderer
+net.minecraft.client.renderer.entity.LivingEntityRenderer
+net.minecraft.client.renderer.entity.state.EntityRenderState
+net.minecraft.client.Options
+net.minecraft.client.ParticleStatus
+net.minecraft.client.CloudStatus
+net.minecraft.client.GraphicsStatus
+net.minecraft.client.OptionInstance
+net.minecraft.client.gui.screens.inventory.InventoryScreen
