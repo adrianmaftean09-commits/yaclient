@@ -22,6 +22,7 @@ public class MainMenuScreen extends GuiScreen {
     private static final ResourceLocation[] PANO = new ResourceLocation[6];
     static { for (int i = 0; i < 6; i++) PANO[i] = new ResourceLocation("textures/gui/title/background/panorama_" + i + ".png"); }
 
+    private static boolean readySent;
     private final float[] hover = new float[3];
     private final float[] dock = new float[ICONS.length];
     private final long opened = System.currentTimeMillis();
@@ -34,6 +35,7 @@ public class MainMenuScreen extends GuiScreen {
 
     @Override
     public void drawScreen(int mx, int my, float pt) {
+        if (!readySent) { readySent = true; System.out.println("[YA-READY]"); }   // tells the launcher to close its loading card
         long now = System.currentTimeMillis();
         float dt = Math.min(100, now - last);
         last = now;

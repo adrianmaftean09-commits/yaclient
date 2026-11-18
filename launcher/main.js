@@ -33,7 +33,30 @@ function createWindow() {
   win.removeMenu();
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
-const showSplash = () => {}, splashSet = () => {}, closeSplash = () => {};
+// Loading card shown while the game starts: logo and a moving white progress bar, closed when the title screen is up.
+let splashWin = null, splashTimer = null;
+function showSplash() {
+  if (splashWin) return;
+  try {
+    splashWin = new BrowserWindow({ width: 470, height: 360, frame: false, transparent: true, resizable: false, movable: false, skipTaskbar: true,
+      alwaysOnTop: true, focusable: false, show: false, hasShadow: false, icon: path.join(__dirname, 'assets', 'icon.png') });
+    splashWin.setAlwaysOnTop(true, 'screen-saver');
+    splashWin.setIgnoreMouseEvents(true);
+    splashWin.loadFile(path.join(__dirname, 'renderer', 'splash.html'));
+    splashWin.once('ready-to-show', () => { try { splashWin.center(); splashWin.showInactive(); } catch (e) { } });
+    splashTimer = setTimeout(closeSplash, 90000);   // never stays forever
+  } catch (e) { splashWin = null; }
+}
+const splashJs = (code) => { try { if (splashWin && !splashWin.isDestroyed()) splashWin.webContents.executeJavaScript(code).catch(() => { }); } catch (e) { } };
+const splashSet = (label, pct) => splashJs('window.setP&&window.setP(' + (Number(pct) || 0) + ')');
+const splashCreep = () => splashJs('window.startCreep&&window.startCreep()');
+function closeSplash() {
+  if (splashTimer) { clearTimeout(splashTimer); splashTimer = null; }
+  const w = splashWin; splashWin = null;
+  if (!w || w.isDestroyed()) return;
+  try { w.webContents.executeJavaScript('window.finish&&window.finish()').catch(() => { }); } catch (e) { }
+  setTimeout(() => { if (!w.isDestroyed()) w.close(); }, 450);
+}
 app.whenReady().then(() => {
   createWindow();
   checkLauncherUpdate();
@@ -513,12 +536,13 @@ ipcMain.handle('play', async (_e, opts) => {
     send('log', `Java ${major}: ${javaPath}`);
 
     const launcher = new Client();
-    showSplash(); splashSet('Starting Minecraft', 8);
+    if (yaMode) { showSplash(); splashSet('Starting Minecraft', 8); }
     const startedAt = Date.now();
     launcher.on('progress', (p) => { splashSet(p.type === 'assets' ? 'Downloading assets' : 'Downloading Minecraft', 8 + Math.round((p.task / p.total) * 60)); send('status', { k: 'download', arg: p.type, pct: 6 + Math.round((p.task / p.total) * 70) }); });
     launcher.on('debug', (m) => send('log', clean(m)));
     launcher.on('data', (m) => {
       const l = clean(m); send('log', l);
+      if (l.indexOf('[YA-READY]') >= 0) closeSplash();   // the YA CLIENT title screen is up
     });
     launcher.on('arguments', () => {
       if (!yaMode) return;
@@ -545,6 +569,7 @@ ipcMain.handle('play', async (_e, opts) => {
       launchOpts.server = { host: String(opts.server.host), port: String(opts.server.port || 25565) };
     }
     send('status', { k: 'starting', pct: 80 });
+    splashSet('Starting', 70); splashCreep();
     const proc = await launcher.launch(launchOpts);
     if (!proc) { closeSplash(); return { error: 'launch_failed' }; }
     send('status', { k: 'ingame', pct: 100, playing: true });
