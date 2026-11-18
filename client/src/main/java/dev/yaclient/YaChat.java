@@ -55,8 +55,22 @@ public class YaChat extends GuiNewChat {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void drawChat(int updateCounter) {
+        int lift = ChatModule.lift();
+        if (lift == 0) { draw(updateCounter); return; }
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0f, -lift, 0f);
+        draw(updateCounter);
+        GlStateManager.popMatrix();
+    }
+
+    @Override
+    public net.minecraft.util.IChatComponent getChatComponent(int mouseX, int mouseY) {
+        return super.getChatComponent(mouseX, mouseY + ChatModule.lift());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void draw(int updateCounter) {
         if (!ChatModule.bgHidden()) { super.drawChat(updateCounter); return; }
         if (!searched) find();
         if (!ok) { super.drawChat(updateCounter); return; }

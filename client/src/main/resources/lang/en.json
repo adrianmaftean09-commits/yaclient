@@ -457,5 +457,9 @@
  "set.hide_board_ip": "Hide addresses on the scoreboard",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Hold the key to look around without turning your player (set the key in Controls > YA Client)",
- "set.third_person": "Third person while held"
+ "set.third_person": "Third person while held",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Hold the key (Options > Controls > YA Client) and look around without turning your player",
+ "set.third_person": "Third person while held",
+ "set.height": "Chat height"
 }

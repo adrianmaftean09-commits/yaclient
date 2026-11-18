@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
 /**
- * Free Look (the FreeLookModule switches it on and off). Hold the key (set it in Options > Controls > "YA Client") and move the mouse: the
+ * Free Look (the FreeLookModule switches it on and off). Module "Free Look". Hold the key (set it in Options > Controls > "YA Client") and move the mouse: the
  * camera turns around you while the direction your player faces (and aims) stays frozen. It switches to third person
  * while held and goes back when released.
  *

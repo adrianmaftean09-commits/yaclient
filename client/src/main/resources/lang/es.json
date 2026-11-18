@@ -447,5 +447,9 @@
  "set.hide_board_ip": "Ocultar direcciones en el marcador",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Mantén la tecla para mirar sin girar al jugador (tecla en Controles > YA Client)",
- "set.third_person": "Tercera persona al mantener"
+ "set.third_person": "Tercera persona al mantener",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Mantén la tecla (Opciones > Controles > YA Client) y mira alrededor sin girar al jugador",
+ "set.third_person": "Tercera persona al mantener",
+ "set.height": "Altura del chat"
 }

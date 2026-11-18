@@ -13,12 +13,17 @@ public class ChatModule extends Module {
     private final Setting.Bool hideBg = add(new Setting.Bool("hide_bg", true));
     private final Setting.Num scale = add(new Setting.Num("scale", 30f, 250f, 5f, 100f, "%"));
 
+    private final Setting.Num height = add(new Setting.Num("height", -60f, 300f, 5f, 0f, ""));
+
     private static ChatModule inst;
     private boolean failed;
 
     public ChatModule() { super("chat", Category.UTILITY, false); inst = this; }
 
     public static boolean bgHidden() { return inst != null && inst.enabled && inst.hideBg.value; }
+
+    /** How many GUI pixels the chat is lifted (negative = lower). */
+    public static int lift() { return inst != null && inst.enabled ? Math.round(inst.height.value) : 0; }
 
     public static float userScale() { return inst != null && inst.enabled ? inst.scale.value / 100f : 1f; }
 

@@ -447,5 +447,9 @@
  "set.hide_board_ip": "Adressen im Scoreboard verbergen",
  "mod.freelook.name": "Free Look",
  "mod.freelook.desc": "Taste halten, um sich umzusehen ohne den Spieler zu drehen (Taste unter Steuerung > YA Client)",
- "set.third_person": "Dritte Person beim Halten"
+ "set.third_person": "Dritte Person beim Halten",
+ "mod.freelook.name": "Free Look",
+ "mod.freelook.desc": "Taste halten (Optionen > Steuerung > YA Client) und umschauen, ohne die Spielfigur zu drehen",
+ "set.third_person": "Dritte Person beim Halten",
+ "set.height": "Chat-Höhe"
 }
