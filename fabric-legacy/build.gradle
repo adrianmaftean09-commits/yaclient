@@ -1,0 +1,38 @@
+plugins {
+    id 'fabric-loom' version '1.11-SNAPSHOT'
+}
+
+version = project.mod_version
+group = 'dev.yaclient'
+
+base { archivesName = 'yaclient-fabric' }
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.mc}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.api}"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mc", project.mc
+    filesMatching("fabric.mod.json") {
+        expand "version": inputs.properties.version, "mc": inputs.properties.mc
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    archiveFileName = "yaclient-fabric-${project.mc}.jar"
+}

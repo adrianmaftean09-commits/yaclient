@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "yaclient",
+  "version": "${version}",
+  "name": "YA CLIENT",
+  "description": "YA CLIENT for Minecraft ${mc}",
+  "authors": ["YA CLIENT"],
+  "environment": "client",
+  "entrypoints": { "client": ["dev.yaclient.legacy.YaLegacy"] },
+  "depends": { "fabricloader": ">=0.16.0", "minecraft": "${mc}", "java": ">=21", "fabric-api": "*" }
+}
