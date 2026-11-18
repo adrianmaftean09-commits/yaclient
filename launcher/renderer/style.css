@@ -294,3 +294,22 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .res input{width:80px}
 /* YA Plus: red glow in the side bar (like behind the skin) */
 body.plus .rail{background:radial-gradient(130% 26% at 50% 0%,rgba(225,6,0,.22),transparent 72%),#2a2b30}
+
+/* changelog overlay */
+.clov{position:fixed;inset:0;z-index:60;background:rgba(6,6,8,.72);backdrop-filter:blur(6px);display:grid;place-items:center;padding:26px}
+.clbox{position:relative;width:min(860px,100%);max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line2);border-radius:20px;padding:0 0 24px;box-shadow:0 30px 100px rgba(0,0,0,.6)}
+.clx{position:absolute;right:14px;top:12px;width:36px;height:36px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(9,9,11,.6);color:#fff;font-size:22px;cursor:pointer;z-index:2}
+.clx:hover{background:rgba(255,255,255,.18)}
+.clban{aspect-ratio:1520/600;background-size:cover;background-position:center;border-radius:20px 20px 0 0;border-bottom:1px solid var(--line)}
+.clhead{display:flex;align-items:center;gap:12px;padding:20px 26px 0}
+.clhead h2{font-size:28px;margin:0;color:#fff;text-transform:none;letter-spacing:0}
+.cllead{padding:4px 26px 6px;color:var(--mute);font-size:15px}
+.cls{padding:6px 26px 0}.cls h4{margin:16px 0 10px}
+.clchip{display:inline-flex;height:24px;align-items:center;padding:0 11px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:1px;background:#202026;border:1px solid var(--line2);color:var(--mute)}
+.clchip.new{color:#86efac;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)}
+.clchip.imp{color:#93c5fd;border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.clchip.fix{color:#fcd34d;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+.clgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.clit{background:#16161b;border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:12px;padding:13px 15px}
+.cls.new .clit{border-left-color:rgba(34,197,94,.7)}.cls.imp .clit{border-left-color:rgba(96,165,250,.7)}.cls.fix .clit{border-left-color:rgba(245,158,11,.7)}
+.clit b{display:block;font-size:14px;margin-bottom:3px}.clit span{color:var(--mute);font-size:12.5px;line-height:1.45}

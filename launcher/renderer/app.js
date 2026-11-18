@@ -112,12 +112,31 @@ function adHtml(a) {
 }
 function newsHtml(list) {
   if (!list || !list.length) return '';
-  return `<h2>${esc(t('news'))}</h2><div class="news">` + list.map((n) => {
+  return `<h2>${esc(t('news'))}</h2><div class="news">` + list.map((n, i) => {
     const im = safeImg(n.image);
-    return `<div class="card nc ${n.url ? 'link' : ''}" data-url="${esc(n.url || '')}"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}></div>
+    return `<div class="card nc ${n.url || n.sections ? 'link' : ''}" data-url="${esc(n.url || '')}" ${n.sections ? `data-ci="${i}"` : ''}><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}></div>
       <div class="tx"><b>${esc(n.title)}</b><p>${esc(n.text)}</p><small>${esc(n.date || '')}</small></div></div>`;
   }).join('') + '</div>';
 }
+
+function showChangelog(i) {
+  const n = (C.news || [])[i];
+  if (!n || !n.sections) return;
+  closeChangelog();
+  const im = safeImg(n.image);
+  const secs = n.sections.map((sec) => `<div class="cls ${esc(sec.k)}"><h4><span class="clchip ${esc(sec.k)}">${esc(sec.t)}</span></h4><div class="clgrid">` +
+    sec.list.map((it) => `<div class="clit"><b>${esc(it.b)}</b><span>${esc(it.s)}</span></div>`).join('') + '</div></div>').join('');
+  const d = document.createElement('div');
+  d.className = 'clov'; d.id = 'clov';
+  d.innerHTML = `<div class="clbox"><button class="clx" data-clx="1" aria-label="Close">&times;</button>
+    ${im ? `<div class="clban" style="background-image:url('${esc(im)}')"></div>` : ''}
+    <div class="clhead"><h2>Update ${esc(n.ver || '')}</h2><span class="clchip date">${esc(n.date || '')}</span></div>
+    <p class="cllead">${esc((n.title || '').replace(/^Update [\d.]+ - /, ''))}</p>${secs}</div>`;
+  d.addEventListener('click', (e) => { if (e.target === d) closeChangelog(); });
+  document.body.appendChild(d);
+}
+function closeChangelog() { const o = document.getElementById('clov'); if (o) o.remove(); }
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChangelog(); });
 
 function plusCard() {
   if (plusOn()) return `<div class="card pcard"><span class="tag">PLUS</span><b>${esc(t('p_active_t'))}</b><p>${esc(t('p_active_d'))}</p><button class="btn sm" data-p="plus">${esc(t('plus_nav'))}</button></div>`;
@@ -549,6 +568,8 @@ document.addEventListener('click', async (e) => {
     if (a === 'min') { S.minimizeOnLaunch = !S.minimizeOnLaunch; el.classList.toggle('on', S.minimizeOnLaunch); return; }
     if (a === 'finish') return finishOb();
   }
+  if (el.dataset.clx) return closeChangelog();
+  if (el.dataset.ci) return showChangelog(+el.dataset.ci);
   if (el.dataset.preset) { obPreset = el.dataset.preset; return drawOb(); }
   if (el.id === 'plusChip') return go('plus');
   if (el.id === 'frAdd') { const v = ($('#frName').value || '').trim(); if (v.length < 3) return; FR.ok = true; FR.msg = t('fr_sending'); $('#frMsg').textContent = FR.msg; $('#frMsg').className = 'frmsg ok'; return friendAct('add', v); }
