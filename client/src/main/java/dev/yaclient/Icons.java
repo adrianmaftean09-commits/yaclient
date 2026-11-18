@@ -23,6 +23,11 @@ final class Icons {
     // M x y | L x y | B x1 y1 x2 y2 x y | Q x1 y1 x y | Z | C cx cy r | D cx cy r (filled) | E cx cy rx ry | R x y w h r | A cx cy r start extent
     private static final java.util.Map<String, String> DSL = new java.util.HashMap<String, String>();
     static {
+        DSL.put("freelook", "M 2 12 B 6 6 18 6 22 12 B 18 18 6 18 2 12 Z C 12 12 3 D 12 12 1 M 4 4 L 2.5 2.5");
+        DSL.put("bw_resources", "M 12 3 L 20 9 L 12 21 L 4 9 Z M 4 9 L 20 9 M 9 9 L 12 3 L 15 9 M 9 9 L 12 21 L 15 9");
+        DSL.put("bw_blocks", "R 3 12 8 8 1.5 R 13 12 8 8 1.5 R 8 4 8 8 1.5");
+        DSL.put("bw_threat", "C 12 12 9 M 12 3 L 12 7 M 12 17 L 12 21 M 3 12 L 7 12 M 17 12 L 21 12 D 12 12 2");
+        DSL.put("streamer_mode", "M 2 12 B 6 6 18 6 22 12 B 18 18 6 18 2 12 Z C 12 12 3 M 4 20 L 20 4");
         DSL.put("friends", "C 9 8 3.5 M 2.5 20 B 2.5 14 6 13.5 9 13.5 B 12 13.5 15.5 14 15.5 20 M 16 4.5 B 19 4.8 19.5 8.5 17.2 10.4 M 18 13.8 B 20.8 14.2 21.8 16.5 21.8 19.5");
         DSL.put("combo", "M 12 2.5 B 13 6 18 8 18 14 B 18 18 15.5 21 12 21 B 8.5 21 6 18.5 6 15 B 6 12 7.5 10.5 9 9 B 9.5 11 10.5 11.5 11.5 11 B 11 8 11 5 12 2.5 Z");
         DSL.put("bow_charge", "M 8 3 B 18 7 18 17 8 21 M 8 3 L 8 21 M 3 12 L 17 12 M 14 9 L 17 12 L 14 15");

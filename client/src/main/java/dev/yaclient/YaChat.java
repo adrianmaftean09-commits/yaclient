@@ -56,17 +56,19 @@ public class YaChat extends GuiNewChat {
 
     @Override
     public void drawChat(int updateCounter) {
-        int lift = ChatModule.lift();
-        if (lift == 0) { draw(updateCounter); return; }
+        net.minecraft.client.gui.ScaledResolution sr = new net.minecraft.client.gui.ScaledResolution(Minecraft.getMinecraft());
+        int lift = ChatModule.lift(sr.getScaledHeight()), dx = ChatModule.shiftX(sr.getScaledWidth());
+        if (lift == 0 && dx == 0) { draw(updateCounter); return; }
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0f, -lift, 0f);
+        GlStateManager.translate((float) dx, (float) -lift, 0f);
         draw(updateCounter);
         GlStateManager.popMatrix();
     }
 
     @Override
     public net.minecraft.util.IChatComponent getChatComponent(int mouseX, int mouseY) {
-        return super.getChatComponent(mouseX, mouseY + ChatModule.lift());
+        net.minecraft.client.gui.ScaledResolution sr = new net.minecraft.client.gui.ScaledResolution(Minecraft.getMinecraft());
+        return super.getChatComponent(mouseX - ChatModule.shiftX(sr.getScaledWidth()), mouseY + ChatModule.lift(sr.getScaledHeight()));
     }
 
     @SuppressWarnings("unchecked")
