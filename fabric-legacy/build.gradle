@@ -70,10 +70,14 @@ def r4 = [
     [/RenderPipelines\.GUI_TEXTURED/, 'RenderType::guiTextured'],
     [/DynamicTexture\(\(\) -> label, ni\)/, 'DynamicTexture(ni)'],
 ]
+def r1 = [
+    [/g\.blit\(RenderPipelines\.GUI_TEXTURED, (.*)\);/, 'dev.yaclient.fabric.Blit.blit(g, $1);'],
+]
 def rules = [
     '1.21.11': base,
     '1.21.8': base + r8,
     '1.21.4': base + r8 + r4,
+    '1.21.1': base + r8 + r1 + r4,
 ]
 def portedDir = layout.buildDirectory.dir("ported/java")
 tasks.register('portSources', Copy) {
