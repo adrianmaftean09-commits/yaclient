@@ -10,8 +10,8 @@ import net.minecraft.resources.Identifier;
 
 /** The small menu in the middle of the screen (Right Shift): a wide Mods tile, then Cosmetics, HUD editor and Store. Same as 1.8.9. */
 public class HubScreen extends Screen {
-    private static final int PW = 320, PH = 190, PAD = 16, GAP = 8, R = 10;
-    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF3 = 0xFF2D2E34;
+    private static final int PW = 320, PH = 190, PAD = 16, GAP = 8, R = 6;
+    private static final int PANEL = 0x700F1012, SURF = 0x701A1B1F, SURF3 = 0x902D2E34;
     private static final String[] ICONS = {"grid", "shirt", "move", "gear"};
     private static final String[] LABELS = {"Mods", "Cosmetics", "HUD editor", "Store"};
     private static final Identifier LOGO = Identifier.fromNamespaceAndPath("yaclient", "textures/gui/logo.png");
@@ -20,6 +20,7 @@ public class HubScreen extends Screen {
     private final long opened = System.currentTimeMillis();
     private long last = opened;
     private int px, py;
+    private float sc = 1f;
 
     public HubScreen() { super(Component.literal("YA CLIENT")); }
 
@@ -42,21 +43,30 @@ public class HubScreen extends Screen {
         float fade = Ui.ease((now - opened) / 220f);
         Gfx.g = g;
         g.fill(0, 0, width, height, Ui.alpha(0x99000000, fade));
-        Gfx.setScale(Math.max(1, mc.getWindow().getGuiScale()));
+        int gs = Math.max(1, mc.getWindow().getGuiScale());
+        float phys = Math.max(1.4f, mc.getWindow().getHeight() / 1080f * 1.85f);   // same physical size on every GUI scale
+        sc = Math.min(phys / gs, Math.min((height - 16f) / PH, (width - 16f) / PW));
+        Gfx.setScale(Math.max(1, Math.round(phys * 2f)));
         Gfx.fade = fade;
-        px = (width - PW) / 2;
-        py = (height - PH) / 2 + Math.round((1f - fade) * 6f);
+        px = 0;
+        py = Math.round((1f - fade) * 6f);
+        mx = Math.round((mx - width / 2f) / sc + PW / 2f);
+        my = Math.round((my - height / 2f) / sc + PH / 2f);
+        g.pose().pushMatrix();
+        g.pose().translate(width / 2f, height / 2f);
+        g.pose().scale(sc, sc);
+        g.pose().translate(-PW / 2f, -PH / 2f);
 
-        Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 16, 0x22000000);
-        Gfx.rr(px, py, PW, PH, 14, PANEL);
-        Gfx.rrOutline(px, py, PW, PH, 14, 1, 0x24FFFFFF);
+        Gfx.rr(px - 2, py - 2, PW + 4, PH + 4, 9, 0x22000000);
+        Gfx.rr(px, py, PW, PH, 8, PANEL);
+        Gfx.rrOutline(px, py, PW, PH, 8, 1, 0x24FFFFFF);
 
         g.blit(RenderPipelines.GUI_TEXTURED, LOGO, px + PAD, py + 14, 0f, 0f, 34, 34, 128, 128, 128, 128, Ui.alpha(0xFFFFFFFF, fade));
         Gfx.text("CLIENT", px + PAD + 42, py + 16, 14, true, Theme.BRAND_RED);
         Gfx.text("Minecraft 26.2", px + PAD + 42, py + 16 + Gfx.lineHeight(14, true) + 2, 8, false, Theme.DIM);
         if (CosmeticsApi.enabled() && CosmeticsApi.plus()) {
             int w = Gfx.width("PLUS", 8, true) + 16;
-            Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 9, 0xFFFFC21A);
+            Gfx.rr(px + PW - PAD - w, py + 20, w, 18, 5, 0xFFFFC21A);
             Gfx.text("PLUS", px + PW - PAD - w + 8, py + 20 + (18 - Gfx.lineHeight(8, true)) / 2, 8, true, 0xFF101014);
         }
 
@@ -69,7 +79,7 @@ public class HubScreen extends Screen {
             int fg = Ui.mix(0xFFD8D8DC, Theme.TEXT, hover[i]);
             String ic = Gfx.hasIcon(ICONS[i]) ? ICONS[i] : "grid";
             if (i == 0) {
-                Gfx.rr(r[0] + 10, r[1] + 8, 36, 36, 10, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.rr(r[0] + 10, r[1] + 8, 36, 36, 6, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
                 Gfx.icon(ic, r[0] + 18, r[1] + 16, 20, fg);
                 Gfx.text(LABELS[0], r[0] + 56, r[1] + 11, 12, true, Theme.TEXT);
                 int total = 0, on = 0;
@@ -77,21 +87,23 @@ public class HubScreen extends Screen {
                 Gfx.text(total + " mods  -  " + on + " on", r[0] + 56, r[1] + 11 + Gfx.lineHeight(12, true) + 3, 8, false, Theme.MUTED);
                 Gfx.icon("arrow_right", r[0] + r[2] - 28, r[1] + (r[3] - 14) / 2, 14, Ui.mix(Theme.DIM, Theme.TEXT, hover[i]));
             } else {
-                Gfx.rr(r[0] + (r[2] - 28) / 2, r[1] + 6, 28, 28, 8, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
+                Gfx.rr(r[0] + (r[2] - 28) / 2, r[1] + 6, 28, 28, 4, Ui.mix(SURF3, 0xFF3A3B42, hover[i]));
                 Gfx.icon(ic, r[0] + (r[2] - 16) / 2, r[1] + 12, 16, fg);
                 Gfx.textCentered(LABELS[i], r[0] + r[2] / 2, r[1] + 40, 8, false, Ui.mix(Theme.MUTED, Theme.TEXT, hover[i]));
             }
         }
         Gfx.textCentered("Esc to close", px + PW / 2, py + PH - 16, 7, false, Theme.DIM);
+        g.pose().popMatrix();
         Gfx.fade = 1f;
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent e, boolean dbl) {
         Minecraft mc = Minecraft.getInstance();
+        double ex = (e.x() - width / 2f) / sc + PW / 2f, ey = (e.y() - height / 2f) / sc + PH / 2f;
         for (int i = 0; i < 4; i++) {
             int[] r = rect(i);
-            if (e.x() >= r[0] && e.x() < r[0] + r[2] && e.y() >= r[1] && e.y() < r[1] + r[3]) {
+            if (ex >= r[0] && ex < r[0] + r[2] && ey >= r[1] && ey < r[1] + r[3]) {
                 if (i == 0) mc.setScreenAndShow(new MenuScreen(0, false));
                 else if (i == 1) mc.setScreenAndShow(new MenuScreen(5, false));
                 else if (i == 2) mc.setScreenAndShow(new MenuScreen(0, true));

@@ -20,7 +20,7 @@ import java.util.Map;
 public class MenuScreen extends Screen {
     private static final int PW = 780, PH = 450;
     private static final int CX = 24, VY = 124, VW = PW - 48, VH = PH - VY - 18;
-    private static final int PANEL = 0xFC0F1012, SURF = 0xFF1A1B1F, SURF2 = 0xFF222328, SURF3 = 0xFF2D2E34;
+    private static final int PANEL = 0x700F1012, SURF = 0x781A1B1F, SURF2 = 0x84222328, SURF3 = 0x962D2E34;
     private static final int ACC = 0xFFE8E8E8, ON_ACC = 0xFF101014, OFF = 0xFF3A3B42;
     private static final String[] TABS = {"All", "Info", "PvP", "Crystal", "Utility", "Cosmetics"};
     private static final int COS = 5;
@@ -103,10 +103,12 @@ public class MenuScreen extends Screen {
 
         float fade = 0.05f + 0.95f * Ui.ease((now - opened) / 200f);
         float open = Ui.ease((now - opened) / 240f);
-        scale = Math.min(0.62f, Math.min((height - 16f) / PH, (width - 16f) / PW));
+        // same physical size on every GUI scale
+        float phys = Math.max(0.5f, mc.getWindow().getHeight() / 1080f * 1.3f);
+        scale = Math.min(phys / gs, Math.min((height - 16f) / PH, (width - 16f) / PW));
         float sc = scale * (0.95f + 0.05f * open);
         curSc = sc;
-        Gfx.setScale(Math.max(1, Math.round(gs * sc)));
+        Gfx.setScale(Math.max(1, Math.round(2f * gs * sc)));
         originX = Math.round(width / 2f - PW * scale / 2f);
         originY = Math.round(height / 2f - PH * scale / 2f);
         mxl = (mx - width / 2f) / sc + PW / 2f;
@@ -121,8 +123,8 @@ public class MenuScreen extends Screen {
         Gfx.fade = fade;
 
         for (int i = 5; i >= 1; i--) Gfx.rr(-i * 3, -i * 3 + 10, PW + i * 6, PH + i * 6, 18 + i * 3, 0x12000000);
-        Gfx.rr(0, 0, PW, PH, 18, PANEL);
-        Gfx.rrOutline(0, 0, PW, PH, 18, 1, 0x24FFFFFF);
+        Gfx.rr(0, 0, PW, PH, 10, PANEL);
+        Gfx.rrOutline(0, 0, PW, PH, 10, 1, 0x24FFFFFF);
         hits.clear();
         if (pageFor != null) {
             drawPage(g, mc, gs, sc);
@@ -141,12 +143,12 @@ public class MenuScreen extends Screen {
         int total = 0;
         for (int i = 0; i < TABS.length; i++) { ws[i] = Gfx.width(TABS[i], 12, true) + 46; total += ws[i]; }
         int y = 70, x = CX;
-        Gfx.rr(x, y, total + 8, 38, 11, SURF);
+        Gfx.rr(x, y, total + 8, 38, 6, SURF);
         int px = x + 4;
         for (int i = 0; i < TABS.length; i++) {
             boolean active = tab == i;
             float h = anim("nav" + i, active ? 1f : (over(px, y + 4, ws[i], 30) ? 0.5f : 0f), 16f);
-            if (h > 0.01f) Gfx.rr(px, y + 4, ws[i], 30, 8, Ui.alpha(active ? SURF3 : SURF2, Math.min(1f, h)));
+            if (h > 0.01f) Gfx.rr(px, y + 4, ws[i], 30, 4, Ui.alpha(active ? SURF3 : SURF2, Math.min(1f, h)));
             int fg = active ? Theme.TEXT : Ui.mix(Theme.MUTED, Theme.TEXT, h);
             Gfx.icon(TAB_ICONS[i], px + 13, y + 4 + 6, 18, fg);
             Gfx.text(TABS[i], px + 36, y + 4 + (30 - Gfx.lineHeight(12, true)) / 2, 12, true, fg);
@@ -155,7 +157,7 @@ public class MenuScreen extends Screen {
         String lab = "HUD editor";
         int w = Gfx.width(lab, 11, false) + 48, bx = PW - 24 - w;
         boolean ov = over(bx, y, w, 38);
-        Gfx.rr(bx, y, w, 38, 11, ov ? SURF2 : SURF);
+        Gfx.rr(bx, y, w, 38, 6, ov ? SURF2 : SURF);
         Gfx.icon("move", bx + 14, y + 10, 18, ov ? Theme.TEXT : Theme.MUTED);
         Gfx.text(lab, bx + 38, y + (38 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
     }
@@ -172,8 +174,8 @@ public class MenuScreen extends Screen {
         if (tab == COS) return;
         final int x = PW - 24 - 230, y = 18, w = 230, h = 34;
         boolean ov = over(x, y, w, h);
-        Gfx.rr(x, y, w, h, 10, searchFocus ? SURF3 : (ov ? SURF2 : SURF));
-        if (searchFocus) Gfx.rrOutline(x, y, w, h, 10, 1, 0x66FFFFFF);
+        Gfx.rr(x, y, w, h, 6, searchFocus ? SURF3 : (ov ? SURF2 : SURF));
+        if (searchFocus) Gfx.rrOutline(x, y, w, h, 6, 1, 0x66FFFFFF);
         Gfx.icon("search", x + 11, y + (h - 16) / 2, 16, Theme.MUTED);
         int ty = y + (h - Gfx.lineHeight(12, false)) / 2;
         if (query.isEmpty()) Gfx.text("Search mods...", x + 34, ty, 12, false, Theme.DIM);
@@ -211,19 +213,19 @@ public class MenuScreen extends Screen {
         boolean inView = myl >= VY && myl < VY + VH;
         float h = anim("h" + m.id, inView && over(x, y, cw, ch) ? 1f : 0f, 16f);
         float a = anim("e" + m.id, m.enabled ? 1f : 0f, 14f);
-        Gfx.rr(x, y, cw, ch, 10, Ui.mix(SURF, SURF2, h));
-        Gfx.rrOutline(x, y, cw, ch, 10, 1, Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
-        Gfx.rr(x + 14, y + 14, 36, 36, 10, Ui.mix(SURF3, 0xFF3A3B42, Math.max(a * 0.7f, h * 0.5f)));
+        Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
+        Gfx.rrOutline(x, y, cw, ch, 6, 1, Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
+        Gfx.rr(x + 14, y + 14, 36, 36, 6, Ui.mix(SURF3, 0xFF3A3B42, Math.max(a * 0.7f, h * 0.5f)));
         Gfx.icon(m.icon(), x + 14 + 8, y + 14 + 8, 20, Ui.mix(Theme.MUTED, Theme.TEXT, Math.max(a, h)));
         Gfx.text(Gfx.trim(m.name, 14, true, cw - 74), x + 60, y + 14 + (36 - Gfx.lineHeight(14, true)) / 2, 14, true, Theme.TEXT);
         Gfx.text(Gfx.trim(m.description, 10, false, cw - 28), x + 14, y + 58, 10, false, Theme.MUTED);
         int sx = x + cw - 14 - 38, sy = y + ch - 14 - 26 + 3;
-        Gfx.rr(sx, sy, 38, 20, 10, Ui.mix(OFF, ACC, a));
-        Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 8, Ui.mix(0xFF9A9BA3, ON_ACC, a));
+        Gfx.rr(sx, sy, 38, 20, 6, Ui.mix(OFF, ACC, a));
+        Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 4, Ui.mix(0xFF9A9BA3, ON_ACC, a));
         int bx = x + 14, by = y + ch - 14 - 26, bw = Gfx.width("Options", 10, true) + 30;
         boolean gear = !m.settings.isEmpty();
         boolean oo = gear && inView && over(bx, by, bw, 26);
-        Gfx.rr(bx, by, bw, 26, 8, gear ? (oo ? SURF3 : 0xFF26272C) : 0xFF1F2024);
+        Gfx.rr(bx, by, bw, 26, 4, gear ? (oo ? SURF3 : 0xFF26272C) : 0xFF1F2024);
         Gfx.textCentered("Options", bx + bw / 2, by + (26 - Gfx.lineHeight(10, true)) / 2, 10, true, gear ? Theme.TEXT : Theme.DIM);
     }
 
@@ -247,13 +249,13 @@ public class MenuScreen extends Screen {
     private boolean pageOver(int x, int y, int w, int h) { return over(x, y, w, h) && myl >= PG_Y + 4 && myl < PG_Y + PG_H - 4; }
 
     private void toggleSwitch(int sx, int sy, float a) {
-        Gfx.rr(sx, sy, 38, 20, 10, Ui.mix(OFF, ACC, a));
-        Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 8, Ui.mix(0xFF9A9BA3, ON_ACC, a));
+        Gfx.rr(sx, sy, 38, 20, 6, Ui.mix(OFF, ACC, a));
+        Gfx.rr(sx + 2 + Math.round(18 * a), sy + 2, 16, 16, 4, Ui.mix(0xFF9A9BA3, ON_ACC, a));
     }
 
     private void ghostButton(int x, int y, int w, String icon, String label, Act act) {
         boolean ov = over(x, y, w, 28);
-        Gfx.rr(x, y, w, 28, 8, ov ? SURF3 : SURF2);
+        Gfx.rr(x, y, w, 28, 4, ov ? SURF3 : SURF2);
         Gfx.icon(icon, x + 11, y + 5, 18, ov ? Theme.TEXT : Theme.MUTED);
         Gfx.text(label, x + 36, y + (28 - Gfx.lineHeight(11, false)) / 2, 11, false, ov ? Theme.TEXT : Theme.MUTED);
         hit(x, y, w, 28, act, null);
@@ -263,13 +265,13 @@ public class MenuScreen extends Screen {
         final Module m = pageFor;
         List<String> groups = groupsOf(m);
         if (pageGroup == null || !groups.contains(pageGroup)) pageGroup = groups.isEmpty() ? "general" : groups.get(0);
-        Gfx.rr(0, 0, PW, PH, 18, 0xFF0F1012);
-        Gfx.rrOutline(0, 0, PW, PH, 18, 1, 0x24FFFFFF);
+        Gfx.rr(0, 0, PW, PH, 10, 0xFF0F1012);
+        Gfx.rrOutline(0, 0, PW, PH, 10, 1, 0x24FFFFFF);
 
         boolean bo = over(24, 18, 90, 22);
         Gfx.text("<  Back", 24, 22, 11, false, bo ? Theme.TEXT : Theme.MUTED);
         hit(20, 16, 100, 26, (x, y) -> { saveAll(); pageFor = null; }, null);
-        Gfx.rr(24, 40, 40, 40, 11, SURF3);
+        Gfx.rr(24, 40, 40, 40, 6, SURF3);
         Gfx.icon(m.icon(), 34, 50, 20, Theme.TEXT);
         Gfx.text(Gfx.trim(m.name, 20, true, PW - 24 - 90 - 220), 76, 50, 20, true, Theme.TEXT);
         float ea = anim("pe" + m.id, m.enabled ? 1f : 0f, 14f);
@@ -280,13 +282,13 @@ public class MenuScreen extends Screen {
         hit(sx0 - 90, 40, 130, 32, (x, y) -> m.toggle(), null);
 
         int lx0 = 24, lw = 236;
-        Gfx.rr(lx0, PG_Y, lw, 108, 10, SURF);
-        Gfx.rrOutline(lx0, PG_Y, lw, 108, 10, 1, 0x14FFFFFF);
+        Gfx.rr(lx0, PG_Y, lw, 108, 6, SURF);
+        Gfx.rrOutline(lx0, PG_Y, lw, 108, 6, 1, 0x14FFFFFF);
         if (m instanceof HudModule hm) {
             hm.measure(mc);
             int ew0 = Math.max(1, hm.width(mc)), eh0 = Math.max(1, hm.height(mc));
             float ps = Math.min(1.8f, Math.min((lw - 28f) / ew0, 80f / eh0));
-            Gfx.setScale(Math.max(1, Math.round(gs * sc * ps)));
+            Gfx.setScale(Math.max(1, Math.round(2f * gs * sc * ps)));
             g.pose().pushMatrix();
             g.pose().translate((float) (lx0 + Math.round((lw - ew0 * ps) / 2f)), (float) (PG_Y + Math.round((108 - eh0 * ps) / 2f)));
             g.pose().scale(ps, ps);
@@ -295,7 +297,7 @@ public class MenuScreen extends Screen {
             hm.draw(g, mc);
             Gfx.fade = f0;
             g.pose().popMatrix();
-            Gfx.setScale(Math.max(1, Math.round(gs * sc)));
+            Gfx.setScale(Math.max(1, Math.round(2f * gs * sc)));
         } else {
             Gfx.icon(m.icon(), lx0 + (lw - 48) / 2, PG_Y + 30, 48, Theme.DIM);
         }
@@ -305,8 +307,8 @@ public class MenuScreen extends Screen {
             for (Setting st : m.settings) if (st.group.equals(gr)) count++;
             boolean act = gr.equals(pageGroup), go = over(lx0, gy, lw, 28);
             float ga = anim("pg_g" + gr, act ? 1f : 0f, 16f);
-            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 28, 8, Ui.alpha(SURF3, ga));
-            else if (go) Gfx.rr(lx0, gy, lw, 28, 8, SURF);
+            if (ga > 0.01f) Gfx.rr(lx0, gy, lw, 28, 4, Ui.alpha(SURF3, ga));
+            else if (go) Gfx.rr(lx0, gy, lw, 28, 4, SURF);
             if (ga > 0.01f) Gfx.rr(lx0 + 2, gy + 6, 3, 16, 2, Ui.alpha(ACC, ga));
             Gfx.text(Setting.pretty(gr), lx0 + 16, gy + (28 - Gfx.lineHeight(12, act)) / 2, 12, act, act ? Theme.TEXT : Theme.MUTED);
             String cs = String.valueOf(count);
@@ -338,7 +340,7 @@ public class MenuScreen extends Screen {
         }
     }
 
-    private void rowBg(int y, int h) { Gfx.rr(PG_X + 4, y + 1, PG_W - 8, h - 5, 10, SURF); }
+    private void rowBg(int y, int h) { Gfx.rr(PG_X + 4, y + 1, PG_W - 8, h - 5, 6, SURF); }
 
     private int drawOptionRow(final Module m, final Setting st, int y) {
         final int x = PG_X + PAD, w = PG_W - 2 * PAD;
@@ -379,7 +381,7 @@ public class MenuScreen extends Screen {
             int sy = inline ? y + (rh - 28) / 2 : y + 38, sx = inline ? x + w - total - 4 : x;
             Gfx.text(Gfx.trim(st.label(), 12, false, w), x, inline ? y + (rh - Gfx.lineHeight(12, false)) / 2 : y + 12, 12, false, Theme.TEXT);
             int cx = sx;
-            Gfx.rr(sx - 2, sy - 2, Math.min(total, w) + 4, 32, 9, SURF3);
+            Gfx.rr(sx - 2, sy - 2, Math.min(total, w) + 4, 32, 5, SURF3);
             for (int i = 0; i < ws.length; i++) {
                 final int idx = i;
                 boolean sel = c.index == i, cov = pageOver(cx, sy, ws[i], 28);
@@ -402,9 +404,9 @@ public class MenuScreen extends Screen {
                 final int idx = i;
                 int sx = x + i * step + (step - 24) / 2;
                 boolean sel = pal.index == i, cov = pageOver(sx, sy, 24, 24);
-                if (sel) Gfx.rrOutline(sx - 4, sy - 4, 32, 32, 16, 2, 0xFFF5F5F5);
-                else if (cov) Gfx.rrOutline(sx - 3, sy - 3, 30, 30, 15, 1, 0x77FFFFFF);
-                Gfx.rr(sx, sy, 24, 24, 12, Setting.Palette.color(i));
+                if (sel) Gfx.rrOutline(sx - 4, sy - 4, 32, 32, 9, 2, 0xFFF5F5F5);
+                else if (cov) Gfx.rrOutline(sx - 3, sy - 3, 30, 30, 8, 1, 0x77FFFFFF);
+                Gfx.rr(sx, sy, 24, 24, 7, Setting.Palette.color(i));
                 pageHit(sx - 4, sy - 4, 32, 32, (px, py) -> { pal.index = idx; saveAll(); }, null);
             }
             return y + rh;
@@ -441,13 +443,13 @@ public class MenuScreen extends Screen {
             boolean owned = Cosmetics.ownsBundle(b), wearing = Cosmetics.wearsBundle(b);
             boolean inView = myl >= VY && myl < VY + VH;
             float h = anim("cb" + b, inView && over(x, y, cw, ch) ? 1f : 0f, 16f);
-            Gfx.rr(x, y, cw, ch, 10, Ui.mix(SURF, SURF2, h));
-            Gfx.rrOutline(x, y, cw, ch, 10, 1, wearing ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
+            Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
+            Gfx.rrOutline(x, y, cw, ch, 6, 1, wearing ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
             Gfx.rr(x + 14, y + 14, 8, 8, 4, BUNDLE_ACC[b]);
             Gfx.text(Gfx.trim(Cosmetics.NAMES[b], 13, true, cw - 90), x + 28, y + 11, 13, true, Theme.TEXT);
             String tag = Cosmetics.PARTNER[b] ? "PARTNER" : owned ? "OWNED" : "LOCKED";
             int tw = Gfx.width(tag, 8, true) + 14;
-            Gfx.rr(x + cw - 14 - tw, y + 12, tw, 16, 8, owned ? 0xFFE8E8E8 : 0xFF2D2E34);
+            Gfx.rr(x + cw - 14 - tw, y + 12, tw, 16, 4, owned ? 0xFFE8E8E8 : 0xFF2D2E34);
             Gfx.textCentered(tag, x + cw - 14 - tw / 2, y + 12 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, owned ? ON_ACC : Theme.MUTED);
             int bw = (cw - 28 - 8) / 2;
             for (int sIdx = 0; sIdx < 4; sIdx++) {
@@ -456,7 +458,7 @@ public class MenuScreen extends Screen {
                 int bx = x + 14 + (sIdx % 2) * (bw + 8), by = y + 42 + (sIdx / 2) * 34;
                 boolean has = CosmeticsApi.owned(item), on = Cosmetics.selected(slot).equals(item);
                 boolean ov = inView && over(bx, by, bw, 28);
-                Gfx.rr(bx, by, bw, 28, 8, on ? 0xFFE8E8E8 : (ov ? SURF3 : SURF2));
+                Gfx.rr(bx, by, bw, 28, 4, on ? 0xFFE8E8E8 : (ov ? SURF3 : SURF2));
                 Gfx.text(SLOT_NAMES[sIdx], bx + 10, by + (28 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? ON_ACC : (has ? Theme.TEXT : Theme.DIM));
                 if (!has) Gfx.icon("lock", bx + bw - 22, by + 7, 14, Theme.DIM);
                 bodyHit(bx, by, bw, 28, (px, py) -> {
@@ -466,7 +468,7 @@ public class MenuScreen extends Screen {
             int fy = y + ch - 14 - 30;
             boolean fo = inView && over(x + 14, fy, cw - 28, 30);
             String fl = owned ? (wearing ? "Remove all" : "Equip all") : "Get in store";
-            Gfx.rr(x + 14, fy, cw - 28, 30, 9, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
+            Gfx.rr(x + 14, fy, cw - 28, 30, 5, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
             Gfx.textCentered(fl, x + cw / 2, fy + (30 - Gfx.lineHeight(11, true)) / 2, 11, true, owned ? ON_ACC : Theme.TEXT);
             bodyHit(x + 14, fy, cw - 28, 30, (px, py) -> {
                 if (Cosmetics.ownsBundle(bi)) Cosmetics.toggleBundle(bi); else CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]);
@@ -501,9 +503,9 @@ public class MenuScreen extends Screen {
         mxl = mx;
         myl = my;
         boolean od = over(x0, y, dw, 24), or = over(x0 + dw + 10, y, rw, 24);
-        Gfx.rr(x0, y, dw, 24, 8, od ? 0xFFF4F4F5 : 0xFFE8E8E8);
+        Gfx.rr(x0, y, dw, 24, 4, od ? 0xFFF4F4F5 : 0xFFE8E8E8);
         Gfx.textCentered(done, x0 + dw / 2, y + (24 - Gfx.lineHeight(11, true)) / 2, 11, true, ON_ACC);
-        Gfx.rr(x0 + dw + 10, y, rw, 24, 8, or ? SURF3 : SURF2);
+        Gfx.rr(x0 + dw + 10, y, rw, 24, 4, or ? SURF3 : SURF2);
         Gfx.textCentered(reset, x0 + dw + 10 + rw / 2, y + (24 - Gfx.lineHeight(11, false)) / 2, 11, false, Theme.TEXT);
         Gfx.textCentered(hint, width / 2, y - 18, 10, false, Theme.MUTED);
     }
