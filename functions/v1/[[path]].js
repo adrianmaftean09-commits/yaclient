@@ -73,6 +73,78 @@ async function applyGrant(env, uuid, f) {
       return { status: 200, body: { ok: 1, uuid, owned: p.owned.join(',') } };
 }
 
+
+// ---------- automatic card payments (Stripe Checkout) ----------
+// Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
+const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, plus: 4.99 };
+const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost'];
+async function resolveName(env, nm) {
+  nm = String(nm || '').trim();
+  if (!/^[A-Za-z0-9_]{3,16}$/.test(nm)) return '';
+  let uuid = (await env.DB.get('n:' + nm.toLowerCase())) || '';
+  if (!uuid) { const prof = await getJson('https://api.mojang.com/users/profiles/minecraft/' + encodeURIComponent(nm)); if (prof && prof.id) uuid = norm(prof.id); }
+  if (!uuid) { const pdb = await getJson('https://playerdb.co/api/player/minecraft/' + encodeURIComponent(nm)); const id = pdb && pdb.data && pdb.data.player && pdb.data.player.raw_id; if (id) uuid = norm(id); }
+  return uuid;
+}
+// price in cents, computed here so the browser can never choose it
+function orderCents(items, plusOn) {
+  let t = 0;
+  const left = items.filter((i) => !i.startsWith('ya_'));
+  for (const st of PAID_SETS) {
+    const m = left.filter((i) => i.startsWith(st + '_')).length;
+    t += m === 4 ? PRICE[st] : m * PRICE.item;
+  }
+  return Math.round(t * (plusOn ? 0.3 : 1) * 100);
+}
+async function stripeCheckout(env, request, url, f) {
+  if (!env.STRIPE_SECRET) return send(501, { error: 'not_configured' });
+  const uuid = await resolveName(env, f.username);
+  if (!uuid) return send(400, { error: 'Minecraft username not found' });
+  const isPlus = f.ids === 'plus';
+  let items = [], cents, name;
+  if (isPlus) { cents = Math.round(PRICE.plus * 100); name = 'YA Plus (30 days)'; }
+  else {
+    items = String(f.ids || '').split(',').filter(Boolean);
+    if (!items.length || items.length > 40 || items.some((i) => !ITEMS[i])) return send(400, { error: 'unknown item' });
+    const p = await loadPlayer(env, uuid);
+    items = items.filter((i) => !p.owned.includes(i));
+    if (!items.length) return send(400, { error: 'You already own these items.' });
+    cents = orderCents(items, plusActive(p));
+    name = items.length === 1 ? items[0] : items.length + ' YA CLIENT cosmetics';
+  }
+  if (cents < 50) return send(400, { error: 'nothing to pay' });
+  const body = new URLSearchParams({
+    mode: 'payment', 'line_items[0][quantity]': '1', 'line_items[0][price_data][currency]': 'eur',
+    'line_items[0][price_data][unit_amount]': String(cents), 'line_items[0][price_data][product_data][name]': name + ' - ' + f.username,
+    success_url: url.origin + '/store?paid=1', cancel_url: url.origin + '/store',
+    'metadata[uuid]': uuid, 'metadata[items]': isPlus ? 'plus' : items.join(','), 'metadata[username]': String(f.username).slice(0, 16)
+  });
+  const r = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { authorization: 'Bearer ' + env.STRIPE_SECRET, 'content-type': 'application/x-www-form-urlencoded' }, body });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.url) return send(502, { error: (j.error && j.error.message) || 'payment provider error' });
+  return send(200, { ok: 1, url: j.url });
+}
+async function stripeWebhook(env, request) {
+  const raw = await request.text();
+  const sig = request.headers.get('stripe-signature') || '';
+  const parts = Object.fromEntries(sig.split(',').map((x) => x.split('=')).filter((x) => x.length === 2));
+  if (!env.STRIPE_WEBHOOK_SECRET || !parts.t || !parts.v1) return send(400, { error: 'bad signature' });
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(env.STRIPE_WEBHOOK_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(parts.t + '.' + raw)));
+  const good = [...mac].map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (good !== parts.v1 || Math.abs(Date.now() / 1000 - Number(parts.t)) > 600) return send(400, { error: 'bad signature' });
+  const ev = JSON.parse(raw);
+  if (ev.type !== 'checkout.session.completed') return send(200, { ok: 1 });
+  const s = ev.data.object;
+  if (s.payment_status !== 'paid') return send(200, { ok: 1 });
+  if (await env.DB.get('o:' + s.id)) return send(200, { ok: 1, dup: 1 });   // already delivered
+  const m = s.metadata || {};
+  const res = await applyGrant(env, m.uuid, m.items === 'plus' ? { item: 'plus', days: '30' } : { item: m.items });
+  if (res.status !== 200) return send(500, { error: 'grant failed' });   // Stripe retries
+  await env.DB.put('o:' + s.id, JSON.stringify({ uuid: m.uuid, items: m.items, user: m.username, amount: s.amount_total, at: Date.now() }));
+  return send(200, { ok: 1 });
+}
+
 function plusActive(p) { return !!p.plusUntil && p.plusUntil > Date.now(); }
 function equippedMap(p) {
   const out = { plus: plusActive(p) ? '1' : '0' };   // YA Plus subscription: animated cape movement
@@ -171,6 +243,8 @@ export async function onRequest({ request, env }) {
   const url = new URL(request.url);
   const route = request.method + ' ' + url.pathname.replace(/\/+$/, '');
   try {
+    if (route === 'POST /v1/checkout') return stripeCheckout(env, request, url, await form(request));
+    if (route === 'POST /v1/stripe/webhook') return stripeWebhook(env, request);
     if (route === 'GET /v1/catalog') {
       const out = { _store: url.origin + '/store' };
       for (const [id, it] of Object.entries(ITEMS)) out[id] = it.price;

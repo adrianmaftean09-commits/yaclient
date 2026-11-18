@@ -14,6 +14,11 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') mo.classList.remove('show'); });
 
   /* order = { title, lines:[names], total:number, ids:'mono_cape,...' | 'plus', note } */
+  if (/[?&]paid=1/.test(location.search)) document.addEventListener('DOMContentLoaded', function () {
+    var d = document.createElement('div'); d.textContent = 'Payment received. Your items are unlocked on your account within a few seconds: open YA CLIENT to use them.';
+    d.style.cssText = 'position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#fff;color:#000;padding:12px 18px;border-radius:12px;font-weight:600;z-index:99;max-width:90vw;text-align:center';
+    document.body.appendChild(d); setTimeout(function () { d.remove(); }, 9000);
+  });
   window.YABuy = function (order) {
     var b = mo.querySelector('#mdb');
     var free = !order.total;
@@ -26,6 +31,17 @@
     function go() {
       var name = u.value.trim();
       if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) { b.querySelector('#mde').textContent = 'Enter your exact Minecraft username (3-16 letters, numbers or _).'; return; }
+      if (!free) {
+        var btn = b.querySelector('#mdgo'); btn.disabled = true; btn.textContent = 'Opening secure payment...';
+        fetch('/v1/checkout', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ username: name, ids: order.ids }).toString() })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { if (j && j.url) { location.href = j.url; return; } if (j && j.error && j.error !== 'not_configured') { btn.disabled = false; btn.textContent = 'Continue'; b.querySelector('#mde').textContent = j.error; return; } manual(name); })
+          .catch(function () { manual(name); });
+        return;
+      }
+      manual(name);
+    }
+    function manual(name) {
       var ticket = 'Order: ' + order.title + '\nItems: ' + order.ids + '\nMinecraft username: ' + name + '\nTotal: ' + (free ? 'Free' : eur(order.total)) + (order.note ? '\n' + order.note : '');
       var pay = '';
       if (!free && Y.paypalMe) pay = '<a class="btn pri block" target="_blank" rel="noopener" href="https://paypal.me/' + encodeURIComponent(Y.paypalMe) + '/' + order.total.toFixed(2) + (Y.currency || 'EUR') + '">1. Pay ' + eur(order.total) + ' with PayPal</a>';
