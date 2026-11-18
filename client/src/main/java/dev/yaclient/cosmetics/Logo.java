@@ -10,14 +10,17 @@ import org.lwjgl.opengl.GL11;
 public final class Logo {
     private Logo() {}
 
-    public static void draw(float x, float y, float w, float h, float alpha) {
+    public static void draw(float x, float y, float w, float h, float alpha) { draw(x, y, w, h, alpha, 0); }
+
+    /** rank: 0 normal, 1 YA Plus, 2 staff. */
+    public static void draw(float x, float y, float w, float h, float alpha, int rank) {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.enableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.color(1f, 1f, 1f, alpha);
-        LogoTexture.bind();
+        LogoTexture.bind(rank);
         Tessellator t = Tessellator.getInstance();
         WorldRenderer wr = t.getWorldRenderer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

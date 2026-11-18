@@ -33,6 +33,7 @@ public final class CosmeticsApi {
     private static volatile Map<String, String> catalog = new HashMap<String, String>();
     private static volatile String storeUrl = "";
     private static volatile boolean plus;
+    private static volatile boolean staff;
     private static volatile String status = "";
     private static volatile String detail = "";
     private static volatile boolean refreshing;
@@ -182,6 +183,7 @@ public final class CosmeticsApi {
                         String list = me.get("owned");
                         owned = new HashSet<String>(Arrays.asList(list == null ? new String[0] : list.split(",")));
                         plus = "1".equals(me.get("plus"));
+                        staff = "1".equals(me.get("staff"));
                         Theme.enforcePlus(plus);
                         for (String slot : Cosmetics.SLOTS) {
                             String v = me.get(slot);
@@ -292,6 +294,19 @@ public final class CosmeticsApi {
         if (!enabled()) return false;
         Map<String, String> m = lookup(id.toString().replace("-", ""));
         return m != null && "1".equals(m.get("client"));
+    }
+
+    /** Your own logo rank: 2 staff, 1 YA Plus, 0 normal. */
+    public static int ownRank() { return !enabled() ? 0 : staff ? 2 : plus ? 1 : 0; }
+
+    /** Logo rank of a player, visible to everyone: 2 staff (set from the admin panel), 1 YA Plus, 0 normal. */
+    public static int rank(UUID id) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer != null && id.equals(mc.thePlayer.getUniqueID())) return ownRank();
+        if (!enabled()) return 0;
+        Map<String, String> m = lookup(id.toString().replace("-", ""));
+        if (m == null) return 0;
+        return "1".equals(m.get("staff")) ? 2 : "1".equals(m.get("plus")) ? 1 : 0;
     }
 
     /** True if that player has YA Plus (always the real value for yourself; others come from the server). */

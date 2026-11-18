@@ -45,9 +45,9 @@ final class Nametag {
         if (name == null || name.isEmpty()) return;
         FontRenderer fr = mc.fontRendererObj;
         float textW = fr.getStringWidth(name);
-        boolean plus = CosmeticsApi.plus();
+        int rank = CosmeticsApi.ownRank();
         float badgeW = LOGO;
-        float groupW = badgeW + GAP + textW + (plus ? GAP + PLUS : 0f);
+        float groupW = badgeW + GAP + textW;
         float x0 = -groupW / 2f;
 
         float bodyYaw = lerpYaw(p.prevRenderYawOffset, p.renderYawOffset, pt);
@@ -70,7 +70,7 @@ final class Nametag {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
         box(x0 - 1f, x0 + groupW + 1f);
         // logo
-        LogoTexture.bind();
+        LogoTexture.bind(rank);
         Poly.beginTex();
         Poly.tex(x0, -1f, 0, 0f, 0f, 1f, 1f, 1f, 1f);
         Poly.tex(x0, -1f + LOGO, 0, 0f, 1f, 1f, 1f, 1f, 1f);
@@ -79,7 +79,6 @@ final class Nametag {
         Poly.end();
         // name, normal Minecraft font
         fr.drawStringWithShadow(name, x0 + badgeW + GAP, 0f, 0xFFFFFFFF);
-        if (plus) PlusBadge.draw(x0 + badgeW + GAP + textW + GAP, -0.5f, PLUS);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
@@ -88,7 +87,7 @@ final class Nametag {
     }
 
     /** Other YA CLIENT players: the logo (and the gold plus for YA Plus) just left of their vanilla nametag. */
-    static void renderOther(AbstractClientPlayer p, float pt, boolean plus) {
+    static void renderOther(AbstractClientPlayer p, float pt, int rank) {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.gameSettings.hideGUI || p.isInvisible() || p.isSneaking() || p.getDistanceSqToEntity(mc.thePlayer) > 48 * 48) return;
         FontRenderer fr = mc.fontRendererObj;
@@ -113,15 +112,13 @@ final class Nametag {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
         box(x0 - 1f, -textW / 2f - 1f);                 // joins the vanilla box on the left
-        if (plus) box(textW / 2f + 1f, rx + PLUS + 1f);   // and on the right for the +
-        LogoTexture.bind();
+        LogoTexture.bind(rank);
         Poly.beginTex();
         Poly.tex(x0, -1f, 0, 0f, 0f, 1f, 1f, 1f, 1f);
         Poly.tex(x0, -1f + LOGO, 0, 0f, 1f, 1f, 1f, 1f, 1f);
         Poly.tex(x0 + LOGO, -1f + LOGO, 0, 1f, 1f, 1f, 1f, 1f, 1f);
         Poly.tex(x0 + LOGO, -1f, 0, 1f, 0f, 1f, 1f, 1f, 1f);
         Poly.end();
-        if (plus) PlusBadge.draw(rx, -0.5f, PLUS);
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();

@@ -53,6 +53,12 @@ async function loadPlayer(env, uuid) {
 }
 const savePlayer = (env, uuid, p) => env.DB.put('p:' + uuid, JSON.stringify(p));
 async function applyGrant(env, uuid, f) {
+      if (f.item === 'staff') {   // staff logo: only the admin panel can set it
+        const p0 = await loadPlayer(env, uuid);
+        p0.staff = f.revoke === '1' ? 0 : 1;
+        await savePlayer(env, uuid, p0);
+        return { status: 200, body: { ok: 1, uuid, staff: p0.staff } };
+      }
       if (f.item === 'plus') {
         const p0 = await loadPlayer(env, uuid);
         const days = Math.max(1, Math.min(3650, parseInt(f.days || '30', 10) || 30));
@@ -151,7 +157,7 @@ async function stripeWebhook(env, request) {
 
 function plusActive(p) { return !!p.plusUntil && p.plusUntil > Date.now(); }
 function equippedMap(p) {
-  const out = { plus: plusActive(p) ? '1' : '0' };   // YA Plus subscription: animated cape movement
+  const out = { plus: plusActive(p) ? '1' : '0', staff: p.staff ? '1' : '0' };   // YA Plus subscription / staff badge (staff is only set from the admin panel)
   for (const s of SLOTS) { const i = p.equipped[s]; out[s] = i && p.owned.includes(i) ? i : 'none'; }
   return out;
 }
@@ -396,7 +402,7 @@ export async function onRequest({ request, env }) {
       if (!uuid) return J({ found: false });
       const p = await loadPlayer(env, uuid), f = await getF(env, uuid);
       const pr = await presenceOf(env, uuid);
-      return J({ found: true, uuid, name: f.name || nm, owned: p.owned, equipped: p.equipped || {}, plus: plusActive(p), plus_until: p.plusUntil ? new Date(p.plusUntil).toISOString() : '',
+      return J({ found: true, uuid, name: f.name || nm, owned: p.owned, equipped: p.equipped || {}, plus: plusActive(p), staff: !!p.staff, plus_until: p.plusUntil ? new Date(p.plusUntil).toISOString() : '',
         linked: !!(await env.DB.get('k:' + uuid)), online: !!pr, where: pr || '', friends: f.friends.length, pending_grants: (await env.DB.get('g:' + (f.name || nm).toLowerCase())) ? 'yes' : 'no' });
     }
     if (route === 'POST /v1/admin/unclaim') {   // forget which device owns an account (lost PC, reinstall)

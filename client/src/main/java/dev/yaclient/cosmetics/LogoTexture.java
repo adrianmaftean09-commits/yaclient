@@ -19,35 +19,41 @@ import java.io.InputStream;
  * background, 256x256 or bigger). If the file is missing a simple "YA" mark is drawn instead.
  */
 final class LogoTexture {
-    private static BufferedImage image;
-    private static DynamicTexture texture;
+    private static final String[] FILES = {"logo.png", "logo_plus.png", "logo_staff.png"};   // rank 0 = normal, 1 = YA Plus, 2 = staff
+    private static final BufferedImage[] IMG = new BufferedImage[3];
+    private static final DynamicTexture[] TEX = new DynamicTexture[3];
 
     private LogoTexture() {}
 
-    static BufferedImage image() {
-        if (image == null) {
+    static BufferedImage image() { return image(0); }
+
+    static BufferedImage image(int rank) {
+        if (IMG[rank] == null) {
             try {
-                InputStream in = LogoTexture.class.getResourceAsStream("/assets/yaclient/logo.png");
+                InputStream in = LogoTexture.class.getResourceAsStream("/assets/yaclient/" + FILES[rank]);
                 if (in != null) {
-                    try { image = ImageIO.read(in); } finally { in.close(); }
+                    try { IMG[rank] = ImageIO.read(in); } finally { in.close(); }
                 }
             } catch (Throwable ignored) { }
-            if (image == null) image = fallback();
+            if (IMG[rank] == null) IMG[rank] = rank == 0 ? fallback() : image(0);
         }
-        return image;
+        return IMG[rank];
     }
 
-    /** Binds the logo as the current OpenGL texture (smooth filtering). */
-    static void bind() {
-        if (texture == null) {
-            texture = new DynamicTexture(image());
-            GlStateManager.bindTexture(texture.getGlTextureId());
+    static void bind() { bind(0); }
+
+    /** Binds the logo of that rank (0 normal, 1 YA Plus, 2 staff) as the current OpenGL texture (smooth filtering). */
+    static void bind(int rank) {
+        rank = Math.max(0, Math.min(2, rank));
+        if (TEX[rank] == null) {
+            TEX[rank] = new DynamicTexture(image(rank));
+            GlStateManager.bindTexture(TEX[rank].getGlTextureId());
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
         }
-        GlStateManager.bindTexture(texture.getGlTextureId());
+        GlStateManager.bindTexture(TEX[rank].getGlTextureId());
     }
 
     private static BufferedImage fallback() {
