@@ -279,3 +279,8 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .rad small{grid-column:2/4;color:var(--mute);font-size:12.5px}
 .rec{font-style:normal;font-size:11px;background:#10303c;color:#35c6f4;border:1px solid #1d5a70;border-radius:8px;padding:2px 8px;justify-self:start}
 #view:has(.vp2),#view:has(.smodal){overflow:hidden}
+/* light grey side bar */
+.rail{--text:#0d0d10;--mute:#4c4c55;--dim:#6b6b74;--surface2:rgba(0,0,0,.08);--line:rgba(0,0,0,.14);--glow2:rgba(0,0,0,.09);--glow3:transparent;--accent:#0d0d10;--accent-hi:#0d0d10;--accent-ink:#fff;background:#d4d4d9;border-right:1px solid rgba(0,0,0,.2)}
+.rail .brandbox img{filter:invert(1) hue-rotate(180deg)}
+.rail .nav.on{background:rgba(0,0,0,.1);box-shadow:none}
+.rail .nav.on::before{box-shadow:none}
