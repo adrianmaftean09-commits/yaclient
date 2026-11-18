@@ -28,6 +28,14 @@ final class Nametag {
         GL11.glColor4f(1f, 1f, 1f, 1f);
     }
 
+    /** Vanilla raises the name by 1.15 line heights while it also shows the below-name score (within 10 blocks). */
+    private static float scoreLift(AbstractClientPlayer p, Minecraft mc) {
+        if (mc.thePlayer == null || p.getDistanceSqToEntity(mc.thePlayer) >= 100.0) return 0f;
+        net.minecraft.scoreboard.Scoreboard sb = p.getWorldScoreboard();
+        if (sb == null || sb.getObjectiveInDisplaySlot(2) == null) return 0f;
+        return -mc.fontRendererObj.FONT_HEIGHT * 1.15f;
+    }
+
     private static float lerpYaw(float a, float b, float t) {
         float d = b - a;
         while (d < -180f) d += 360f;
@@ -111,6 +119,7 @@ final class Nametag {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+        GlStateManager.translate(0f, scoreLift(p, mc), 0f);
         box(x0 - 1f, -textW / 2f - 1f);                 // joins the vanilla box on the left
         LogoTexture.bind(rank);
         Poly.beginTex();
