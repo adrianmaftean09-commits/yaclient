@@ -1,6 +1,6 @@
 (function () {
   // Launch gate: shows a countdown instead of the home until LAUNCH. Add ?preview to the URL to see the real home.
-  var LAUNCH = Date.parse('2026-11-25T18:15:00+01:00');
+  var LAUNCH = Date.parse('2026-12-18T18:20:00+01:00');
   try { if (/[?&]preview\b/.test(location.search)) sessionStorage.setItem('ya_preview', '1'); if (sessionStorage.getItem('ya_preview')) return; } catch (e) {}
   if (Date.now() >= LAUNCH) return;
   var dc = (window.YA && window.YA.discord) || 'https://discord.gg/yaproject';
