@@ -54,6 +54,7 @@ public class YAClient implements ModInitializer {
         MODULES.add(new LightLevelModule());
         MODULES.add(new ServerAddressModule());
         MODULES.add(new PackInfoModule());
+        MODULES.add(new MechvibesModule());
         MODULES.add(new SessionTimeModule());
         MODULES.add(new RotationModule());
         MODULES.add(new ItemInfoModule());

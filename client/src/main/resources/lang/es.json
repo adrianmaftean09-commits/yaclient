@@ -484,5 +484,16 @@
  "set.pack_which": "Packs mostrados",
  "opt.top": "Pack principal",
  "opt.all_packs": "Todos los packs",
- "set.hide_default": "Ocultar sin pack"
+ "set.hide_default": "Ocultar sin pack",
+ "mod.mechvibes.name": "Mechvibes",
+ "mod.mechvibes.desc": "Sonidos de teclado mecánico al pulsar cada tecla",
+ "set.sound": "Sonido",
+ "opt.brown": "Switch marrón",
+ "opt.typewriter": "Máquina de escribir",
+ "opt.bubble": "Burbuja",
+ "opt.creamy": "Cremoso",
+ "set.volume": "Volumen",
+ "set.key_release": "Sonido al soltar",
+ "set.mouse_clicks": "Clics del ratón",
+ "set.in_menus": "También en chat y menús"
 }

@@ -484,5 +484,16 @@
  "set.pack_which": "Pack mostrati",
  "opt.top": "Pack principale",
  "opt.all_packs": "Tutti i pack",
- "set.hide_default": "Nascondi senza pack"
+ "set.hide_default": "Nascondi senza pack",
+ "mod.mechvibes.name": "Mechvibes",
+ "mod.mechvibes.desc": "Suoni da tastiera meccanica a ogni tasto premuto",
+ "set.sound": "Suono",
+ "opt.brown": "Switch marrone",
+ "opt.typewriter": "Macchina da scrivere",
+ "opt.bubble": "Bolla",
+ "opt.creamy": "Cremoso",
+ "set.volume": "Volume",
+ "set.key_release": "Suono al rilascio",
+ "set.mouse_clicks": "Click del mouse",
+ "set.in_menus": "Anche in chat e menu"
 }

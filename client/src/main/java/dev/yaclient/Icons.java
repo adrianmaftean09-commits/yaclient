@@ -65,6 +65,7 @@ final class Icons {
         DSL.put("biome", "M 5 19 B 5 9 10 4 20 4 B 20 14 15 19 5 19 Z M 5 19 L 13 11");
         DSL.put("light", "M 9 17 L 15 17 M 10 20.5 L 14 20.5 M 9 17 B 9 14 6 13 6 9.5 B 6 6 8.7 3.5 12 3.5 B 15.3 3.5 18 6 18 9.5 B 18 13 15 14 15 17");
         DSL.put("pack_info", "R 4 4 16 16 3 R 7 7 4 4 1 M 7 17 L 11 13 L 14 16 L 17 12");
+        DSL.put("mechvibes", "R 2 7 20 11 2 M 5 10 L 7 10 M 9 10 L 11 10 M 13 10 L 15 10 M 17 10 L 19 10 M 6 14 L 18 14");
         DSL.put("server_ip", "C 12 12 9 E 12 12 4 9 M 3 12 L 21 12");
         DSL.put("session", "M 6 3 L 18 3 M 6 21 L 18 21 M 7 3 B 7 9 11 10 12 12 B 11 14 7 15 7 21 M 17 3 B 17 9 13 10 12 12 B 13 14 17 15 17 21");
         DSL.put("rotation", "A 12 12 8 40 270 M 19 4 L 19 9 L 14 9");
