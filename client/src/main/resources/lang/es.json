@@ -467,5 +467,7 @@
  "mod.potion_alert.name": "Aviso de Pociones",
  "mod.potion_alert.desc": "Avisa antes de que acabe un efecto",
  "set.limit": "Avisar por debajo de",
- "cos.premium_only": "Solo cuentas premium"
+ "cos.premium_only": "Solo cuentas premium",
+ "set.key": "Tecla Free Look",
+ "ui.press_key": "Pulsa una tecla..."
 }

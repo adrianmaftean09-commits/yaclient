@@ -1,18 +1,13 @@
 package dev.yaclient;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.weavemc.api.event.EventBus;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
-import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
 /**
- * Free Look (the FreeLookModule switches it on and off). Module "Free Look". Hold the key (set it in Options > Controls > "YA Client") and move the mouse: the
+ * Free Look (the FreeLookModule switches it on and off; the key is set in the options of that mod). Hold the key and move the mouse: the
  * camera turns around you while the direction your player faces (and aims) stays frozen. It switches to third person
  * while held and goes back when released.
  *
@@ -20,47 +15,20 @@ import java.util.function.Consumer;
  * camera angles are put on the player for the draw, and right after the draw the frozen angles are put back.
  */
 public final class FreeLook {
-    private static KeyBinding key;
-    private static int savedCode = Keyboard.KEY_V;
     private static boolean hooked;
     private static boolean active;
+    private static boolean subscribed;
     private static float camYaw, camPitch, fYaw, fPitch;
     private static int prevView;
 
     private FreeLook() {}
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void init() {
-        Minecraft mc = Minecraft.getMinecraft();
+    private static void init() {
         try {
-            savedCode = Config.getInt("freelook.key", Keyboard.KEY_V);
-            key = new KeyBinding("Free Look", savedCode, "YA Client");
-            GameSettings gs = mc.gameSettings;
-            // the array that holds every control (not the 9-slot hotbar array, which is also a KeyBinding[]): it contains the sneak key
-            Field f = null;
-            for (Field c : GameSettings.class.getDeclaredFields()) {
-                if (c.getType() != KeyBinding[].class || java.lang.reflect.Modifier.isStatic(c.getModifiers())) continue;
-                c.setAccessible(true);
-                KeyBinding[] arr = (KeyBinding[]) c.get(gs);
-                if (arr != null && arr.length > 20 && java.util.Arrays.asList(arr).contains(gs.keyBindSneak)) { f = c; break; }
-            }
-            if (f == null) throw new IllegalStateException("controls array not found");
-            f.setAccessible(true);
-            KeyBinding[] old = (KeyBinding[]) f.get(gs);
-            KeyBinding[] n = java.util.Arrays.copyOf(old, old.length + 1);
-            n[old.length] = key;
-            f.set(gs, n);
-            KeyBinding.resetKeyBindingArrayAndHash();
-        } catch (Throwable t) {
-            System.out.println("[YA CLIENT] free look key: " + t);
-            key = null;
-        }
-        String[] pre = {"net.weavemc.api.event.RenderWorldEvent$Pre"};
-        String[] post = {"net.weavemc.api.event.RenderWorldEvent$Post"};
-        try {
-            Class c = Class.forName(pre[0]);
+            Class c = Class.forName("net.weavemc.api.event.RenderWorldEvent$Pre");
             EventBus.subscribe(c, (Consumer) new Consumer<Object>() { @Override public void accept(Object e) { before(); } });
-            Class d = Class.forName(post[0]);
+            Class d = Class.forName("net.weavemc.api.event.RenderWorldEvent$Post");
             EventBus.subscribe(d, (Consumer) new Consumer<Object>() { @Override public void accept(Object e) { after(); } });
             hooked = true;
         } catch (Throwable t) {
@@ -68,25 +36,11 @@ public final class FreeLook {
         }
     }
 
-    private static boolean held() {
-        if (key == null) return false;
-        int c = key.getKeyCode();
-        try { return c < 0 ? Mouse.isButtonDown(c + 100) : Keyboard.isKeyDown(c); } catch (Throwable t) { return false; }
-    }
-
     /** Every tick: remember the key the player picked, start / stop free look. */
-    private static boolean tried;
-
     public static void tick(Minecraft mc) {
-        if (!tried && mc.gameSettings != null) { tried = true; init(); }
-        if (key == null) return;
-        if (key.getKeyCode() != savedCode) {
-            savedCode = key.getKeyCode();
-            Config.setInt("freelook.key", savedCode);
-            Config.save();
-        }
+        if (!subscribed) { subscribed = true; init(); }
         EntityPlayer p = mc.thePlayer;
-        boolean want = hooked && dev.yaclient.modules.FreeLookModule.on() && p != null && !p.isDead && mc.currentScreen == null && held();
+        boolean want = hooked && dev.yaclient.modules.FreeLookModule.on() && p != null && !p.isDead && mc.currentScreen == null && dev.yaclient.modules.FreeLookModule.held();
         if (want && !active) {
             active = true;
             camYaw = fYaw = p.rotationYaw;

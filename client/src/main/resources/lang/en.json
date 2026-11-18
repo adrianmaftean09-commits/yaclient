@@ -477,5 +477,7 @@
  "mod.potion_alert.name": "Potion Alert",
  "mod.potion_alert.desc": "Warns before a potion effect runs out",
  "set.limit": "Warn below",
- "cos.premium_only": "Premium accounts only"
+ "cos.premium_only": "Premium accounts only",
+ "set.key": "Free Look key",
+ "ui.press_key": "Press a key..."
 }

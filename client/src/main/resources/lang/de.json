@@ -467,5 +467,7 @@
  "mod.potion_alert.name": "Trank-Warnung",
  "mod.potion_alert.desc": "Warnt, bevor ein Trankeffekt endet",
  "set.limit": "Warnen unter",
- "cos.premium_only": "Nur Premium-Konten"
+ "cos.premium_only": "Nur Premium-Konten",
+ "set.key": "Free-Look-Taste",
+ "ui.press_key": "Taste drücken..."
 }

@@ -70,6 +70,7 @@ public class MenuScreen extends GuiScreen {
     private String query = "";
     private boolean searchFocus;
     private Setting.Text focusText;
+    private Setting.Key focusKey;
     private boolean paint;
     private Module drawerModule, drawerLast;
     private Action activeDrag;
@@ -566,6 +567,21 @@ public class MenuScreen extends GuiScreen {
             }
             return y + rh;
         }
+        if (st instanceof Setting.Key) {
+            final Setting.Key kk = (Setting.Key) st;
+            int rh = 46;
+            rowBg(y, rh);
+            boolean cap = focusKey == kk;
+            Gfx.text(Gfx.trim(st.label(), 12, false, w - 150), x, y + (rh - Gfx.lineHeight(12, false)) / 2, 12, false, Theme.TEXT);
+            String val = cap ? Lang.t("ui.press_key") : kk.text();
+            int vw = Math.max(70, Gfx.width(val, 11, true) + 24);
+            int bx = x + w - vw, by = y + (rh - 26) / 2;
+            Gfx.rr(bx, by, vw, 26, 7, cap ? 0xFF4A4B53 : SURF3);
+            Gfx.rrOutline(bx, by, vw, 26, 7, 1, cap ? 0x88FFFFFF : 0x1AFFFFFF);
+            Gfx.textCentered(val, bx + vw / 2, by + (26 - Gfx.lineHeight(11, true)) / 2, 11, true, Theme.TEXT);
+            if (live) pageHit(bx, by, vw, 26, new Action() { @Override public void run(float px, float py) { focusKey = kk; focusText = null; } }, null);
+            return y + rh;
+        }
         if (st instanceof Setting.Text) {
             final Setting.Text tx = (Setting.Text) st;
             int rh = 62;
@@ -915,6 +931,8 @@ public class MenuScreen extends GuiScreen {
     // ================= input (no "throws": compatible with any mapping) =================
     @Override
     protected void mouseClicked(int mx, int my, int button) {
+        if (focusKey != null && button >= 2) { focusKey.code = -100 + button; focusKey = null; saveAll(); return; }
+        if (button == 0 || button == 1) focusKey = null;
         float x = lx(mx), y = ly(my);
         for (int i = hits.size() - 1; i >= 0; i--) {
             Hit h = hits.get(i);
@@ -954,6 +972,11 @@ public class MenuScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typed, int key) {
+        if (focusKey != null) {
+            if (key != Keyboard.KEY_ESCAPE) { focusKey.code = key == Keyboard.KEY_DELETE ? 0 : key; saveAll(); }
+            focusKey = null;
+            return;
+        }
         if (focusText != null) {
             if (key == Keyboard.KEY_ESCAPE || key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) { focusText = null; saveAll(); return; }
             if (key == Keyboard.KEY_BACK) {

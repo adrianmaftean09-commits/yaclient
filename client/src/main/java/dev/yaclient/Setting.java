@@ -159,4 +159,29 @@ public abstract class Setting {
 
         @Override public void save() { Config.set(key(), encode()); }
     }
+
+    /** A key or mouse button picked by the player (LWJGL key code; mouse buttons are stored as -100 + button). */
+    public static final class Key extends Setting {
+        public int code;
+        private final int def;
+
+        public Key(String id, int def) { super(id); this.def = def; this.code = def; }
+
+        public boolean down() {
+            try { return code < 0 ? org.lwjgl.input.Mouse.isButtonDown(code + 100) : code > 0 && org.lwjgl.input.Keyboard.isKeyDown(code); } catch (Throwable t) { return false; }
+        }
+
+        public String text() {
+            if (code == 0) return "-";
+            if (code < 0) { int b = code + 100; return b == 2 ? "Mouse 3 (wheel)" : "Mouse " + (b + 1); }
+            String n = org.lwjgl.input.Keyboard.getKeyName(code);
+            return n == null ? "?" : n;
+        }
+
+        @Override public void load() { code = Config.getInt(key(), def); }
+
+        @Override public void reset() { code = def; }
+
+        @Override public void save() { Config.setInt(key(), code); }
+    }
 }
