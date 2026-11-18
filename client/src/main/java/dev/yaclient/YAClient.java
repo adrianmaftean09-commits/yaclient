@@ -130,7 +130,7 @@ public class YAClient implements ModInitializer {
         MenuBackdrop.preload();
         // swap the vanilla title screen for ours at the moment it is opened, so not even one vanilla frame is drawn
         EventBus.subscribe(GuiOpenEvent.class, e -> {
-            if (e.getGui() != null && e.getGui().getClass() == GuiMainMenu.class) e.setGui(new MainMenuScreen());
+            if (e.gui != null && e.gui.getClass() == GuiMainMenu.class) e.gui = new MainMenuScreen();
         });
         EventBus.subscribe(TickEvent.Pre.class, e -> {
             Minecraft m0 = Minecraft.getMinecraft();
