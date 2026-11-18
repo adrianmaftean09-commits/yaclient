@@ -23,6 +23,8 @@ public final class HotbarGuard {
 
     /** When a key or mouse button bound to a hotbar slot last went down (a thread watches them, so a quick tap is never missed). */
     private static volatile long lastKeyNs = -1;
+    /** Slot picked with a mouse button (e.g. a side button), applied on the next tick even if the game missed the click. */
+    private static volatile int pending = -1;
     private static Thread watcher;
 
     private static void startWatcher(final Minecraft mc) {
@@ -38,7 +40,7 @@ public final class HotbarGuard {
                             int code = mc.gameSettings.keyBindsHotbar[i].getKeyCode();
                             boolean d = code < 0 ? org.lwjgl.input.Mouse.isButtonDown(code + 100)
                                     : code > 0 && code < 256 && org.lwjgl.input.Keyboard.isKeyDown(code);
-                            if (d && !down[i]) lastKeyNs = System.nanoTime();
+                            if (d && !down[i]) { lastKeyNs = System.nanoTime(); if (code < 0) pending = i; }
                             down[i] = d;
                         }
                     } catch (InterruptedException e) { return; } catch (Throwable ignored) { }
@@ -58,6 +60,13 @@ public final class HotbarGuard {
         EntityPlayer p = mc == null ? null : mc.thePlayer;
         if (p == null || p.isDead || !Config.getBool("hotbar.guard", true)) { prev = -1; return; }
         int cur = p.inventory.currentItem;
+        int want = pending;
+        pending = -1;
+        if (want >= 0 && mc.currentScreen == null) {   // a slot bound to a mouse button: always switch, also while attacking
+            p.inventory.currentItem = want;
+            prev = want; lastChange = tick;
+            return;
+        }
         if (prev < 0 || mc.currentScreen != null) { prev = cur; return; }
         if (cur != prev) {
             // a slot key or mouse button (side buttons too) was pressed just now: that is on purpose, whatever you are doing
