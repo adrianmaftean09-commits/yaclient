@@ -4,6 +4,8 @@ import dev.yaclient.fabric.Module;
 import dev.yaclient.fabric.Setting;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.ParticleStatus;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 
@@ -67,6 +69,49 @@ public final class Utility {
         public void onToggle() {
             Minecraft mc = mc();
             if (!enabled && saved >= 0) { mc.options.fov().set(saved); saved = -1; }
+        }
+    }
+
+    /** Lowers the heaviest video options while on and restores them when switched off. */
+    public static class FpsBoost extends Module {
+        private final java.util.Map<String, Object> saved = new java.util.HashMap<String, Object>();
+        private int t;
+        public FpsBoost() { super("fpsboost", "FPS Boost", "Fewer particles, no clouds, no shadows and less entity detail for more FPS", Category.UTILITY, false); }
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        private void put(String key, OptionInstance opt, Object value) {
+            if (!saved.containsKey(key)) saved.put(key, opt.get());
+            if (!opt.get().equals(value)) opt.set(value);
+        }
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        private void restore(String key, OptionInstance opt) {
+            if (saved.containsKey(key)) opt.set(saved.get(key));
+        }
+
+        private void apply() {
+            Minecraft mc = mc();
+            put("particles", mc.options.particles(), ParticleStatus.MINIMAL);
+            put("clouds", mc.options.cloudStatus(), CloudStatus.OFF);
+            put("shadows", mc.options.entityShadows(), Boolean.FALSE);
+            put("entdist", mc.options.entityDistanceScaling(), Double.valueOf(0.5));
+            put("biome", mc.options.biomeBlendRadius(), Integer.valueOf(0));
+            put("bob", mc.options.bobView(), Boolean.FALSE);
+        }
+
+        @Override public void onTick() { if (t++ % 100 == 0) apply(); }
+
+        @Override
+        public void onToggle() {
+            Minecraft mc = mc();
+            if (enabled) { t = 0; apply(); return; }
+            restore("particles", mc.options.particles());
+            restore("clouds", mc.options.cloudStatus());
+            restore("shadows", mc.options.entityShadows());
+            restore("entdist", mc.options.entityDistanceScaling());
+            restore("biome", mc.options.biomeBlendRadius());
+            restore("bob", mc.options.bobView());
+            saved.clear();
         }
     }
 }

@@ -424,60 +424,100 @@ public class MenuScreen extends Screen {
         if (y1 > y0) hits.add(new Hit(x, y0, w, y1 - y0, click, null));
     }
 
+    private String cosTab = "bundles";
+    private static final String[][] COS_TABS = {{"bundles", "Bundles"}, {"cape", "Cloaks"}, {"wings", "Wings"}, {"bandana", "Bandanas"}, {"pet", "Pets"}, {"partner", "Partner"}};
+
     private void drawCosmetics(GuiGraphicsExtractor g) {
-        int gap = 12, cols = 4, cw = (VW - (cols - 1) * gap) / cols, ch = 168;
-        int rows = (Cosmetics.BUNDLES.length + cols - 1) / cols;
-        contentH = 34 + rows * (ch + gap);
-        scrollTarget = Ui.clamp(scrollTarget, 0f, Math.max(0f, contentH - VH));
-        g.enableScissor(CX - 6, VY - 2, CX + VW + 6, VY + VH + 2);
-        int top = VY - Math.round(scroll);
         boolean plus = CosmeticsApi.plus();
         String st = CosmeticsApi.status();
-        String line = (CosmeticsApi.enabled() ? (st.equals("ok") ? "Synced with your account" : st.equals("login") ? "Sign in with Microsoft in the launcher to unlock your items" : st.equals("offline") ? "Store offline" : "Loading...") : "Dev mode: everything is unlocked")
+        String line = (CosmeticsApi.enabled() ? (st.equals("ok") ? "Synced with your account" : st.equals("login") ? "Sign in with Microsoft in the launcher to unlock your items" : st.equals("linked") ? "This account is linked to another device" : st.equals("offline") ? "Store offline" : "Loading...") : "Dev mode: everything is unlocked")
                 + (plus ? "   -   YA Plus active" : "");
-        Gfx.text(line, CX, top + 4, 11, false, Theme.MUTED);
-        for (int b = 0; b < Cosmetics.BUNDLES.length; b++) {
-            final int bi = b;
-            int x = CX + (b % cols) * (cw + gap), y = top + 30 + (b / cols) * (ch + gap);
-            if (y + ch < VY - 2 || y > VY + VH + 2) continue;
-            boolean owned = Cosmetics.ownsBundle(b), wearing = Cosmetics.wearsBundle(b);
-            boolean inView = myl >= VY && myl < VY + VH;
-            float h = anim("cb" + b, inView && over(x, y, cw, ch) ? 1f : 0f, 16f);
-            Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
-            Gfx.rrOutline(x, y, cw, ch, 6, 1, wearing ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
-            Gfx.rr(x + 14, y + 14, 8, 8, 4, BUNDLE_ACC[b]);
-            Gfx.text(Gfx.trim(Cosmetics.NAMES[b], 13, true, cw - 90), x + 28, y + 11, 13, true, Theme.TEXT);
-            String tag = Cosmetics.PARTNER[b] ? "PARTNER" : owned ? "OWNED" : "LOCKED";
-            int tw = Gfx.width(tag, 8, true) + 14;
-            Gfx.rr(x + cw - 14 - tw, y + 12, tw, 16, 4, owned ? 0xFFE8E8E8 : 0xFF2D2E34);
-            Gfx.textCentered(tag, x + cw - 14 - tw / 2, y + 12 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, owned ? ON_ACC : Theme.MUTED);
-            int bw = (cw - 28 - 8) / 2;
-            for (int sIdx = 0; sIdx < 4; sIdx++) {
-                final String slot = Cosmetics.SLOTS[sIdx];
-                final String item = Cosmetics.item(b, slot);
-                int bx = x + 14 + (sIdx % 2) * (bw + 8), by = y + 42 + (sIdx / 2) * 34;
+        // fixed header: status, loadout, tabs
+        Gfx.text(line, CX, VY + 2, 11, false, Theme.MUTED);
+        int ly = VY + 22;
+        Gfx.text("LOADOUT", CX, ly + 14, 10, true, Theme.DIM);
+        for (int i = 0; i < 4; i++) {
+            int x = CX + 70 + i * 52;
+            String it = Cosmetics.equipped(Cosmetics.SLOTS[i]);
+            Gfx.rr(x, ly, 44, 44, 6, SURF2);
+            if (!it.equals("none")) Gfx.image("/assets/yaclient/cos/" + it + ".jpg", x + 2, ly + 2, 40, 40, 0xFFFFFFFF);
+            else Gfx.textCentered(SLOT_NAMES[i].substring(0, 1), x + 22, ly + 14, 14, true, Theme.DIM);
+        }
+        int ty = ly + 54, tx = CX;
+        for (String[] tb : COS_TABS) {
+            int tw = Gfx.width(tb[1], 11, true) + 24;
+            boolean on = cosTab.equals(tb[0]);
+            boolean ov = over(tx, ty, tw, 26);
+            Gfx.rr(tx, ty, tw, 26, 13, on ? 0xFFE8E8E8 : (ov ? SURF3 : SURF2));
+            Gfx.textCentered(tb[1], tx + tw / 2, ty + (26 - Gfx.lineHeight(11, true)) / 2, 11, true, on ? ON_ACC : Theme.TEXT);
+            final String key = tb[0];
+            bodyHit(tx, ty, tw, 26, (px, py) -> { cosTab = key; scrollTarget = 0; scroll = 0; });
+            tx += tw + 8;
+        }
+        int gridTop = ty + 38;
+        boolean bundles = cosTab.equals("bundles");
+        int gap = 12, cols = bundles ? 4 : 5, cw = (VW - (cols - 1) * gap) / cols;
+        int imgH = bundles ? 150 : 120, ch = imgH + (bundles ? 86 : 62);
+        java.util.List<int[]> cells = new java.util.ArrayList<int[]>();   // {bundle}
+        if (bundles) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
+        else if (cosTab.equals("partner")) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) if (Cosmetics.PARTNER[b]) cells.add(new int[] {b}); }
+        else { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
+        int rows = (cells.size() + cols - 1) / cols;
+        int areaH = VY + VH - gridTop;
+        contentH = rows * (ch + gap);
+        scrollTarget = Ui.clamp(scrollTarget, 0f, Math.max(0f, contentH - areaH));
+        g.enableScissor(CX - 6, gridTop, CX + VW + 6, VY + VH + 2);
+        int top = gridTop - Math.round(scroll);
+        boolean partnerTab = cosTab.equals("partner");
+        for (int c = 0; c < cells.size(); c++) {
+            final int bi = cells.get(c)[0];
+            int x = CX + (c % cols) * (cw + gap), y = top + (c / cols) * (ch + gap);
+            if (y + ch < gridTop - 2 || y > VY + VH + 2) continue;
+            boolean inView = myl >= gridTop && myl < VY + VH;
+            boolean hov = inView && over(x, y, cw, ch);
+            if (bundles || partnerTab) {
+                boolean owned = Cosmetics.ownsBundle(bi), wearing = Cosmetics.wearsBundle(bi);
+                float h = anim("cb" + bi + cosTab, hov ? 1f : 0f, 16f);
+                Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
+                Gfx.image("/assets/yaclient/cos/b_" + Cosmetics.BUNDLES[bi] + ".jpg", x + 4, y + 4, cw - 8, imgH, 0xFFFFFFFF);
+                Gfx.rrOutline(x, y, cw, ch, 6, 1, wearing ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
+                Gfx.text(Gfx.trim(Cosmetics.NAMES[bi], 13, true, cw - 80), x + 12, y + imgH + 14, 13, true, Theme.TEXT);
+                String tag = Cosmetics.PARTNER[bi] ? "PARTNER" : owned ? "OWNED" : "LOCKED";
+                int tw = Gfx.width(tag, 8, true) + 14;
+                Gfx.rr(x + cw - 12 - tw, y + imgH + 14, tw, 16, 4, owned ? 0xFFE8E8E8 : 0xFF2D2E34);
+                Gfx.textCentered(tag, x + cw - 12 - tw / 2, y + imgH + 14 + (16 - Gfx.lineHeight(8, true)) / 2, 8, true, owned ? ON_ACC : Theme.MUTED);
+                int fy = y + ch - 12 - 28;
+                boolean fo = inView && over(x + 12, fy, cw - 24, 28);
+                String fl = owned ? (wearing ? "Remove all" : "Equip all") : "Get in store";
+                Gfx.rr(x + 12, fy, cw - 24, 28, 5, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
+                Gfx.textCentered(fl, x + cw / 2, fy + (28 - Gfx.lineHeight(11, true)) / 2, 11, true, owned ? ON_ACC : Theme.TEXT);
+                bodyHit(x + 12, fy, cw - 24, 28, (px, py) -> {
+                    if (Cosmetics.ownsBundle(bi)) Cosmetics.toggleBundle(bi); else CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]);
+                });
+            } else {
+                final String slot = cosTab;
+                final String item = Cosmetics.item(bi, slot);
                 boolean has = CosmeticsApi.owned(item), on = Cosmetics.selected(slot).equals(item);
-                boolean ov = inView && over(bx, by, bw, 28);
-                Gfx.rr(bx, by, bw, 28, 4, on ? 0xFFE8E8E8 : (ov ? SURF3 : SURF2));
-                Gfx.text(SLOT_NAMES[sIdx], bx + 10, by + (28 - Gfx.lineHeight(10, true)) / 2, 10, true, on ? ON_ACC : (has ? Theme.TEXT : Theme.DIM));
-                if (!has) Gfx.icon("lock", bx + bw - 22, by + 7, 14, Theme.DIM);
-                bodyHit(bx, by, bw, 28, (px, py) -> {
+                float h = anim("ci" + item, hov ? 1f : 0f, 16f);
+                Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
+                Gfx.image("/assets/yaclient/cos/" + item + ".jpg", x + 4, y + 4, cw - 8, imgH, has ? 0xFFFFFFFF : 0xFF777777);
+                Gfx.rrOutline(x, y, cw, ch, 6, 1, on ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
+                if (!has) Gfx.icon("lock", x + cw - 24, y + 10, 14, Theme.TEXT);
+                Gfx.text(Gfx.trim(Cosmetics.NAMES[bi], 12, true, cw - 20), x + 10, y + imgH + 10, 12, true, Theme.TEXT);
+                int fy = y + ch - 8 - 22;
+                boolean fo = inView && over(x + 10, fy, cw - 20, 22);
+                String fl = has ? (on ? "Remove" : "Equip") : "Get in store";
+                Gfx.rr(x + 10, fy, cw - 20, 22, 4, has ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
+                Gfx.textCentered(fl, x + cw / 2, fy + (22 - Gfx.lineHeight(10, true)) / 2, 10, true, has ? ON_ACC : Theme.TEXT);
+                bodyHit(x + 10, fy, cw - 20, 22, (px, py) -> {
                     if (CosmeticsApi.owned(item)) Cosmetics.toggle(bi, slot); else CosmeticsApi.openItem(item);
                 });
             }
-            int fy = y + ch - 14 - 30;
-            boolean fo = inView && over(x + 14, fy, cw - 28, 30);
-            String fl = owned ? (wearing ? "Remove all" : "Equip all") : "Get in store";
-            Gfx.rr(x + 14, fy, cw - 28, 30, 5, owned ? (fo ? 0xFFF4F4F5 : 0xFFE8E8E8) : (fo ? SURF3 : 0xFF26272C));
-            Gfx.textCentered(fl, x + cw / 2, fy + (30 - Gfx.lineHeight(11, true)) / 2, 11, true, owned ? ON_ACC : Theme.TEXT);
-            bodyHit(x + 14, fy, cw - 28, 30, (px, py) -> {
-                if (Cosmetics.ownsBundle(bi)) Cosmetics.toggleBundle(bi); else CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]);
-            });
         }
         g.disableScissor();
-        if (contentH > VH) {
-            float kh = Math.max(24f, VH * VH / contentH);
-            float ky = VY + (scroll / (contentH - VH)) * (VH - kh);
+        if (contentH > areaH) {
+            float kh = Math.max(24f, areaH * areaH / contentH);
+            float ky = gridTop + (scroll / (contentH - areaH)) * (areaH - kh);
             Gfx.rr(PW - 12, Math.round(ky), 4, Math.round(kh), 2, 0x33FFFFFF);
         }
     }

@@ -114,6 +114,26 @@ public final class Gfx {
         }
     }
 
+    private static final java.util.Set<String> MISSING = new java.util.HashSet<String>();
+
+    /** Bundled picture (classpath resource) covering a w x h box, cropped to fit. */
+    public static void image(String res, int x, int y, int w, int h, int color) {
+        if (g == null || MISSING.contains(res)) return;
+        String key = "img:" + res;
+        Tex t = TEX.get(key);
+        if (t == null) {
+            try (java.io.InputStream in = Gfx.class.getResourceAsStream(res)) {
+                if (in == null) { MISSING.add(res); return; }
+                t = upload(key, javax.imageio.ImageIO.read(in));
+            } catch (Throwable e) { MISSING.add(res); return; }
+            if (t == null) { MISSING.add(res); return; }
+        }
+        float ar = (float) w / h, tr = (float) t.w / t.h;
+        int uw = t.w, vh = t.h, u = 0, v = 0;
+        if (tr > ar) { uw = Math.round(t.h * ar); u = (t.w - uw) / 2; } else { vh = Math.round(t.w / ar); v = 0; }
+        g.blit(RenderPipelines.GUI_TEXTURED, t.id, x, y, (float) u, (float) v, w, h, uw, vh, t.w, t.h, faded(color));
+    }
+
     private static int faded(int color) {
         int a = Math.round(((color >>> 24) & 255) * fade);
         return (Math.max(0, Math.min(255, a)) << 24) | (color & 0xFFFFFF);

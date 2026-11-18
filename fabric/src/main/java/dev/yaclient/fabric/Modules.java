@@ -149,6 +149,7 @@ public final class Modules {
         ALL.add(new Overlays.LowHealth());
         ALL.add(new Utility.Fullbright());
         ALL.add(new Utility.NoClouds());
+        ALL.add(new Utility.FpsBoost());
         ALL.add(new Utility.ToggleSprint());
         ALL.add(new Utility.Zoom());
         for (Module m : ALL) m.load();
