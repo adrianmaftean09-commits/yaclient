@@ -125,6 +125,7 @@ public class YAClient implements ModInitializer {
         if (!Config.getBool("perf.v2", false)) { Config.setBool("mod.fps_boost.enabled", true); Config.setBool("perf.v2", true); Config.save(); }
         for (Module m : MODULES) m.loadConfig();
 
+        EventBus.subscribe(TickEvent.Pre.class, e -> FreeLook.pre(Minecraft.getMinecraft()));
         EventBus.subscribe(TickEvent.Post.class, e -> {
             Minecraft mc = Minecraft.getMinecraft();
 
@@ -145,7 +146,7 @@ public class YAClient implements ModInitializer {
             KeyGuard.tick(mc);
             SideSlot.tick(mc);
             HotbarGuard.tick(mc);
-            FreeLook.tick(mc);
+            FreeLook.post(mc);
             for (Module m : MODULES) {
                 m.bind();
                 m.onAlwaysTick();
