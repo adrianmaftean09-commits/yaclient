@@ -16,12 +16,14 @@
     '#soon .cd b{display:block;font-size:clamp(30px,7vw,52px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1}' +
     '#soon .cd span{display:block;margin-top:8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6b6b76;font-weight:700}' +
     '#soon a.b{display:inline-block;padding:15px 30px;border-radius:12px;background:#f4f4f5;color:#09090b;font-weight:800;text-decoration:none;font-size:16px}#soon a.b:hover{background:#fff}' +
+    '#soon .cp{position:absolute;left:0;right:0;bottom:22px;font-size:12px;color:#6b6b76;letter-spacing:.04em}' +
     '#soon small{display:block;margin-top:16px;color:#6b6b76;font-size:13px}';
   document.head.appendChild(st);
   var d = document.createElement('div'); d.id = 'soon';
-  d.innerHTML = '<div class="in"><img src="/logo.png" alt="YA CLIENT"><h1>YA <b>CLIENT</b></h1><p>Something big is coming. The new PvP client opens soon.</p>' +
+  d.innerHTML = '<div class="in"><h1>YA <b>CLIENT</b></h1><p>Something big is coming. The new PvP client opens soon.</p>' +
     '<div class="cd"><div><b id="sd">00</b><span>Days</span></div><div><b id="sh">00</b><span>Hours</span></div><div><b id="sm">00</b><span>Minutes</span></div><div><b id="ss">00</b><span>Seconds</span></div></div>' +
-    '<a class="b" href="' + dc + '" target="_blank" rel="noopener">Join the Discord</a><small>Join the Discord in the meantime to get the news first.</small></div>';
+    '<a class="b" href="' + dc + '" target="_blank" rel="noopener">Join the Discord</a><small>Join the Discord in the meantime to get the news first.</small></div>' +
+    '<div class="cp">© ' + new Date().getFullYear() + ' YA CLIENT · Powered by YA Projects · All rights reserved.</div>';
   document.body.appendChild(d);
   document.documentElement.style.overflow = 'hidden';
   function p(n) { return n < 10 ? '0' + n : '' + n; }
