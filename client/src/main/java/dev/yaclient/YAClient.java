@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.weavemc.api.ModInitializer;
 import net.weavemc.api.event.EventBus;
 import net.weavemc.api.event.RenderGameOverlayEvent;
+import net.weavemc.api.event.GuiOpenEvent;
 import net.weavemc.api.event.TickEvent;
 import org.lwjgl.input.Keyboard;
 
@@ -126,7 +127,16 @@ public class YAClient implements ModInitializer {
         if (!Config.getBool("perf.v2", false)) { Config.setBool("mod.fps_boost.enabled", true); Config.setBool("perf.v2", true); Config.save(); }
         for (Module m : MODULES) m.loadConfig();
 
-        EventBus.subscribe(TickEvent.Pre.class, e -> FreeLook.pre(Minecraft.getMinecraft()));
+        MenuBackdrop.preload();
+        // swap the vanilla title screen for ours at the moment it is opened, so not even one vanilla frame is drawn
+        EventBus.subscribe(GuiOpenEvent.class, e -> {
+            if (e.getGui() != null && e.getGui().getClass() == GuiMainMenu.class) e.setGui(new MainMenuScreen());
+        });
+        EventBus.subscribe(TickEvent.Pre.class, e -> {
+            Minecraft m0 = Minecraft.getMinecraft();
+            if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMainMenu.class) m0.displayGuiScreen(new MainMenuScreen());
+            FreeLook.pre(m0);
+        });
         EventBus.subscribe(TickEvent.Post.class, e -> {
             Minecraft mc = Minecraft.getMinecraft();
 
