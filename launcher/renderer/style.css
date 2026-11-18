@@ -293,4 +293,4 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .ssec input[type=range]{width:100%}
 .res input{width:80px}
 /* YA Plus: red glow in the side bar (like behind the skin) */
-body.plus .rail{background:radial-gradient(130% 34% at 50% 0%,rgba(225,6,0,.38),transparent 72%),radial-gradient(120% 30% at 50% 100%,rgba(225,6,0,.26),transparent 70%),radial-gradient(60% 40% at 0% 50%,rgba(225,6,0,.12),transparent 70%),#2a2b30;box-shadow:inset -1px 0 0 rgba(225,6,0,.25),8px 0 40px rgba(225,6,0,.14)}
+body.plus .rail{background:radial-gradient(130% 26% at 50% 0%,rgba(225,6,0,.22),transparent 72%),#2a2b30}
