@@ -34,6 +34,7 @@ final class CosmeticRender {
     /** One wing in its own plane (x out, y up, z thickness). The caller mirrors it for the other side. */
     static void wing(float age) {
         if (anime != null && anime.pixel) { XmasPix.wing(anime, age); return; }
+        if (anime != null && anime.index == 7) { LuckPix.wing(anime, age); return; }
         int k = 0;
         for (int row = 2; row >= 0; row--) {          // long feathers first, short covert feathers on top
             double[] r = (anime != null ? anime.rows : ROWS)[row];

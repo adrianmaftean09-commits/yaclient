@@ -66,7 +66,14 @@ final class Anime {
     static final Th CLOWN = new Th("clown", 6,
             new float[]{0.91f, 0.15f, 0.17f, 0.25f}, new float[]{1f, 0.82f, 0.12f, 0.4f}, new float[]{0.18f, 0.44f, 0.91f, 0.6f},
             new float[]{0.18f, 0.70f, 0.29f, 0.3f}, new float[]{0.66f, 0.10f, 0.13f, 0f}, PETAL, true);
-    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE, SANTA, FROST, CLOWN};
+    private static final double[][] LEAF = {       // broad, rounded leaf-like feathers, finer than the petals
+            {10, 0.20, 1.00, -86, -6, 0.26, 0.34, 0.082, 0.000},
+            {9, 0.12, 0.92, -90, -24, 0.20, 0.20, 0.074, 0.006},
+            {8, 0.05, 0.94, -86, -14, 0.12, 0.10, 0.064, 0.012}};
+    static final Th LUCK = new Th("luck", 7,
+            new float[]{0.05f, 0.45f, 0.20f, 0.25f}, new float[]{0.55f, 0.92f, 0.60f, 0.40f}, new float[]{1.00f, 0.83f, 0.29f, 0.70f},
+            new float[]{1.00f, 0.95f, 0.65f, 0.80f}, new float[]{0.02f, 0.22f, 0.10f, 0.00f}, LEAF);
+    static final Th[] ALL = {SAKURA, SHINOBI, KITSUNE, SANTA, FROST, CLOWN, LUCK};
 
     static Th byStyle(String id) { for (Th t : ALL) if (t.id.equals(id)) return t; return null; }
 
@@ -153,6 +160,7 @@ final class Anime {
 
     static void capeBase(Th t, float age, boolean plus) {
         if (t.pixel) { XmasPix.capeBase(t, age, plus); return; }
+        if (t.index == 7) { LuckPix.capeBase(t, age, plus); return; }
         if (t.index == 3) { pixelCape(age, plus); return; }
         for (int i = 0; i < CosmeticRender.CAPE_C; i++) {
             for (int j = 0; j < CosmeticRender.CAPE_R; j++) {
@@ -171,6 +179,7 @@ final class Anime {
 
     /** The emblem (textured square) with a soft pulse. */
     static void emblem(Th t, float age, boolean plus) {
+        if (t.index == 7) return;      // Luck: the clover is part of the cape itself
         final int N = 12;
         float pulse = 0.90f + 0.10f * (float) Math.sin(age * 0.08);
         float tr = 1f, tg = 1f, tb = 1f;
@@ -200,7 +209,7 @@ final class Anime {
     }
 
     // ------------------------------------------------------------------ emblem textures
-    private static final DynamicTexture[] TEX = new DynamicTexture[7];
+    private static final DynamicTexture[] TEX = new DynamicTexture[8];
 
     static void bind(int i) {
         if (TEX[i] == null) {

@@ -59,6 +59,7 @@ final class AnimePets {
     };
 
     static void pet(Anime.Th th, float age) {
+        if (th.index == 7) { LuckPix.pet(th, age); return; }
         if (th.pixel) { XmasPix.pet(th, age); return; }
         T = th.index;
         Vox.marker = MARK;

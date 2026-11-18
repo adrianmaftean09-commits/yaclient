@@ -9,12 +9,12 @@ public final class Cosmetics {
     /** One item per slot in every bundle. Order = order in the locker. */
     public static final String[] SLOTS = {"cape", "wings", "bandana", "pet"};
     /** Store ids of the bundles and the prefix of their items. */
-    public static final String[] BUNDLES = {"beta", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown"};
-    public static final String[] PREFIX = {"ya", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown"};
+    public static final String[] BUNDLES = {"beta", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown", "luck"};
+    public static final String[] PREFIX = {"ya", "mono", "qlux", "sakura", "shinobi", "kitsune", "santa", "frost", "clown", "luck"};
     /** Partner (streamer) bundles are listed in their own "Partner" section. */
-    public static final boolean[] PARTNER = {false, false, true, false, false, false, false, false, false};
+    public static final boolean[] PARTNER = {false, false, true, false, false, false, false, false, false, false};
     /** Streamer name shown on a partner bundle. */
-    public static final String[] PARTNER_NAME = {"", "", "Qlux", "", "", "", "", "", ""};
+    public static final String[] PARTNER_NAME = {"", "", "Qlux", "", "", "", "", "", "", ""};
 
     public static boolean isPartner(int bundle) { return PARTNER[bundle]; }
 

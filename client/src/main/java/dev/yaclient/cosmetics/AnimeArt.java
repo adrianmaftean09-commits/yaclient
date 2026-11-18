@@ -22,6 +22,7 @@ final class AnimeArt {
             case 4: gift(px); break;
             case 5: snowflake(px); break;
             case 6: clown(px); break;
+            case 7: break;
             default: kitsune(px); break;
         }
         BufferedImage img = new BufferedImage(G * SCALE, G * SCALE, BufferedImage.TYPE_INT_ARGB);

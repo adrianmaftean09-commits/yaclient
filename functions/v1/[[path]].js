@@ -18,7 +18,9 @@ const ITEMS = {
   frost_cape: { slot: 'cape', price: 'Exclusive' }, frost_wings: { slot: 'wings', price: 'Exclusive' },
   frost_bandana: { slot: 'bandana', price: 'Exclusive' }, frost_pet: { slot: 'pet', price: 'Exclusive' },
   clown_cape: { slot: 'cape', price: 'Exclusive' }, clown_wings: { slot: 'wings', price: 'Exclusive' },
-  clown_bandana: { slot: 'bandana', price: 'Exclusive' }, clown_pet: { slot: 'pet', price: 'Exclusive' }
+  clown_bandana: { slot: 'bandana', price: 'Exclusive' }, clown_pet: { slot: 'pet', price: 'Exclusive' },
+  luck_cape: { slot: 'cape', price: 'Exclusive' }, luck_wings: { slot: 'wings', price: 'Exclusive' },
+  luck_bandana: { slot: 'bandana', price: 'Exclusive' }, luck_pet: { slot: 'pet', price: 'Exclusive' }
 };
 // Bundles unlock several items at once. "beta" = Beta Tester bundle (free, granted by the admin to testers).
 const BUNDLES = {
@@ -31,7 +33,8 @@ const BUNDLES = {
   kitsune: { price: 'Exclusive', items: ['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'] },
   santa: { price: 'Exclusive', items: ['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'] },
   frost: { price: 'Exclusive', items: ['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'] },
-  clown: { price: 'Exclusive', items: ['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'] }
+  clown: { price: 'Exclusive', items: ['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'] },
+  luck: { price: 'Exclusive', items: ['luck_cape', 'luck_wings', 'luck_bandana', 'luck_pet'] }
 };
 const SLOTS = ['cape', 'wings', 'bandana', 'pet'];
 const norm = (u) => String(u || '').replace(/-/g, '').toLowerCase();
@@ -85,10 +88,10 @@ async function applyGrant(env, uuid, f) {
 
 // ---------- automatic card payments (Stripe Checkout) ----------
 // Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
-const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, clown: 10, plus: 4.99 };
+const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, clown: 10, luck: 10, plus: 4.99 };
 const DISABLED = ['qlux'];   // sets that cannot be bought for now
 const STORE_HIDDEN = ['qlux'];   // bundles switched off in the store (keep in sync with site/config.js 'hidden')
-const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost', 'clown'];
+const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost', 'clown', 'luck'];
 async function resolveName(env, nm) {
   nm = String(nm || '').trim();
   if (!/^[A-Za-z0-9_]{3,16}$/.test(nm)) return '';
