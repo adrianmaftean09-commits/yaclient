@@ -52,7 +52,7 @@ final class Gl {
               .setUv(v[7], v[8])
               .setOverlay(OverlayTexture.NO_OVERLAY)
               .setLight(LightTexture.FULL_BRIGHT)
-              .setNormal(pose, 0f, 1f, 0f);
+              .setNormal(0f, 1f, 0f);
         }
     }
 
