@@ -284,3 +284,7 @@ body:not(.plus) .pluschip:hover{filter:brightness(1.1)}
 .rail .brandbox img{filter:invert(1) hue-rotate(180deg)}
 .rail .nav.on{background:rgba(0,0,0,.1);box-shadow:none}
 .rail .nav.on::before{box-shadow:none}
+
+.bgbtn{min-width:58px;width:58px;padding:0}
+.hero3[style*="bg/"]::before{display:none}
+.hero3[style*="bg/"] .who b{text-shadow:0 2px 12px #000}

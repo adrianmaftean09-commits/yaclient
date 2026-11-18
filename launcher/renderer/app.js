@@ -124,14 +124,17 @@ function plusCard() {
   if (plusOn()) return `<div class="card pcard"><span class="tag">PLUS</span><b>${esc(t('p_active_t'))}</b><p>${esc(t('p_active_d'))}</p><button class="btn sm" data-p="plus">${esc(t('plus_nav'))}</button></div>`;
   return `<div class="card pcard"><span class="tag">PLUS</span><b>${esc(t('p_promo_t'))}</b><p>${esc(t('p_promo_d'))}</p><button class="btn sm hi" data-p="plus">${esc(t('p_buy'))}</button></div>`;
 }
+const BGS = 4;
+const bgCss = (n) => (n > 0 ? `background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.6)),url('bg/bg${n}.jpg') center/cover no-repeat` : '');
+const BG_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M3.5 17l5-4.5 4 3.5 3-2.5 5 4"/></svg>';
 function viewHome() {
   const ads = C.ads || [];
   const nm = S.account ? S.account.name : '';
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
   const av = nm ? `<div class="mc3d" id="mc3d"></div>` : `<img class="logo" src="../assets/logo.png" alt="">`;
   return `<div class="lp"><div>
-    <div class="card hero3"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
-      <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
+    <div class="card hero3" id="hero" style="${bgCss(S.bg || 0)}"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
+      <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button><button class="launch2 bgbtn" id="bgBtn" aria-label="Background" title="Background">${BG_ICON}</button>
 </div>
       <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
     ${newsHtml(C.news)}</div>
@@ -553,6 +556,7 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'buyPlus') { const u = C.storeUrl; if (u) window.ya.openExternal(u); return; }
   if (el.dataset.p) return go(el.dataset.p);
   if (el.id === 'btnAcc' || el.id === 'accBtn') return showLogin();
+  if (el.id === 'bgBtn') { S.bg = ((S.bg || 0) + 1) % (BGS + 1); window.ya.saveSettings({ bg: S.bg }); const h = $('#hero'); if (h) h.setAttribute('style', bgCss(S.bg)); return; }
   if (el.id === 'play') return launch();
   if (el.dataset.srv != null) { const s = (C.servers || [])[+el.dataset.srv]; if (s) launch({ host: s.host, port: s.port || 25565 }); return; }
   if (el.dataset.url) return window.ya.openExternal(el.dataset.url);
