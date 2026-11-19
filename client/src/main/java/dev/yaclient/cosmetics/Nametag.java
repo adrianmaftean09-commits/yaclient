@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 /** Vanilla-style nametag above your own head in third person (F5), with the YA logo next to the name. */
 final class Nametag {
-    private static final float LOGO = 10f, GAP = 3f;
+    private static final float LOGO = 9f, GAP = 3f;   // 9 = exactly the height of the vanilla name box
 
     private static final float PLUS = 8f;
 
@@ -30,7 +30,8 @@ final class Nametag {
 
     /** Vanilla raises the name by 1.15 line heights while it also shows the below-name score (within 10 blocks). */
     private static float scoreLift(AbstractClientPlayer p, Minecraft mc) {
-        if (mc.thePlayer == null || p.getDistanceSqToEntity(mc.thePlayer) >= 100.0) return 0f;
+        net.minecraft.entity.Entity view = mc.getRenderViewEntity() != null ? mc.getRenderViewEntity() : mc.thePlayer;   // vanilla measures from the camera entity (spectating!)
+        if (view == null || p.getDistanceSqToEntity(view) >= 100.0) return 0f;
         net.minecraft.scoreboard.Scoreboard sb = p.getWorldScoreboard();
         if (sb == null || sb.getObjectiveInDisplaySlot(2) == null) return 0f;
         return -mc.fontRendererObj.FONT_HEIGHT * 1.15f;
@@ -68,7 +69,7 @@ final class Nametag {
         // billboard above the head, same height and size as a vanilla nametag
         GlStateManager.translate(0f, p.height + (p.isSneaking() ? 0.25f : 0.5f), 0f);
         GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0f, 1f, 0f);
-        GlStateManager.rotate(mc.getRenderManager().playerViewX, 1f, 0f, 0f);
+        GlStateManager.rotate((mc.gameSettings.thirdPersonView == 2 ? -1f : 1f) * mc.getRenderManager().playerViewX, 1f, 0f, 0f);   // same as vanilla in front view
         float s = 0.016666668f * 1.6f;
         GlStateManager.scale(-s, -s, s);
         GlStateManager.disableLighting();
@@ -97,7 +98,7 @@ final class Nametag {
     /** Other YA CLIENT players: the logo (and the gold plus for YA Plus) just left of their vanilla nametag. */
     static void renderOther(AbstractClientPlayer p, float pt, int rank) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.gameSettings.hideGUI || p.isInvisible() || p.isSneaking() || p.getDistanceSqToEntity(mc.thePlayer) > 48 * 48) return;
+        if (mc.gameSettings.hideGUI || p.isInvisible() || p.isSneaking() || p.getDistanceSqToEntity(mc.getRenderViewEntity() != null ? mc.getRenderViewEntity() : mc.thePlayer) > 48 * 48) return;
         FontRenderer fr = mc.fontRendererObj;
         float textW = fr.getStringWidth(p.getDisplayName().getFormattedText());
         float groupW = LOGO;
@@ -111,7 +112,7 @@ final class Nametag {
         GlStateManager.rotate(-(180f - bodyYaw), 0f, 1f, 0f);
         GlStateManager.translate(0f, p.height + 0.5f, 0f);
         GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0f, 1f, 0f);
-        GlStateManager.rotate(mc.getRenderManager().playerViewX, 1f, 0f, 0f);
+        GlStateManager.rotate((mc.gameSettings.thirdPersonView == 2 ? -1f : 1f) * mc.getRenderManager().playerViewX, 1f, 0f, 0f);   // same as vanilla in front view
         float s = 0.016666668f * 1.6f;
         GlStateManager.scale(-s, -s, s);
         GlStateManager.disableLighting();
