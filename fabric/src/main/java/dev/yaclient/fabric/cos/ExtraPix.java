@@ -30,12 +30,12 @@ final class ExtraPix {
         return false;
     }
 
-    static final String[] CAPES = {"sky", "sunset", "forest", "ocean", "space"};
+    static final String[] CAPES = {"sky", "sunset", "forest", "ocean", "space", "storm"};
 
     static void cape(String id, float age, boolean plus) { ExtraCape.draw(id, age, plus); }
 
     // ================================================================== WINGS (pixel cells in the wing plane)
-    static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly"};
+    static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly", "vampire"};
 
     private static double CELL = 0.020, HZ = 0.011;
     private static final Map<Long, float[]> W = new LinkedHashMap<Long, float[]>();
@@ -98,11 +98,12 @@ final class ExtraPix {
     private static boolean outline = true;
 
     static void wing(String id, float age) {
-        CELL = 0.020; HZ = 0.011; W.clear(); WA = 1f; outline = true; SC = (id.equals("dragon") || id.equals("azure") || id.equals("venom")) ? 1.32 : 1.0; DEF = id.equals("azure") || id.equals("venom"); AGE = age; if (DEF) { CELL = id.equals("azure") ? 0.034 : 0.045; HZ = 0.022; SC = 1.0; }
+        CELL = 0.020; HZ = 0.011; W.clear(); WA = 1f; outline = true; SC = (id.equals("dragon") || id.equals("azure") || id.equals("venom")) ? 1.32 : (id.equals("vampire") ? 0.95 : 1.0); DEF = id.equals("azure") || id.equals("venom"); AGE = age; if (DEF) { CELL = id.equals("azure") ? 0.034 : 0.045; HZ = 0.022; SC = 1.0; }
         if (id.equals("dragon")) dragonWing(age);
         else if (id.equals("butterfly")) butterflyWing(age);
         else if (id.equals("azure")) bigDragon(age, true);
         else if (id.equals("venom")) bigDragon(age, false);
+        else if (id.equals("vampire")) vampireWing(age);
         else dragonflyWing(age);
         emitWing();
     }
@@ -156,6 +157,29 @@ final class ExtraPix {
         float[] ember = g(0xFF8A1F, (float) (0.7 + 0.3 * glow));
         for (double[] t : tips) seg(0.74, 0.54, t[0] * 0.97 + 0.02, t[1] * 0.97 + 0.01, 0.0055, ember);       // glowing veins
         seg(0.12, 0.30, 0.36, 0.62, 0.006, ember); seg(0.36, 0.62, 0.74, 0.54, 0.006, ember);
+    }
+
+
+    // --- vampire: tall, sharp bat wing; near-black violet membrane, three long fingers, crimson edge glow that breathes
+    private static void vampireWing(float age) {
+        final double fl = Math.sin(age * 0.2) * 0.012;
+        final double[][] mem = {{0.02, 0.02}, {0.06, 0.40}, {0.22, 0.74}, {0.50, 0.92}, {0.80, 0.80 + fl}, {0.97, 0.52 + fl}, {0.76, 0.46}, {0.84, 0.16 + fl},
+                {0.60, 0.30}, {0.58, -0.12 + fl}, {0.40, 0.18}, {0.28, -0.16}, {0.16, 0.08}};
+        fill(0, -0.3, 1.05, 1.0, new Fn() { public float[] at(double x, double y) {
+            if (!inPoly(x, y, mem)) return null;
+            float t = (float) sm((0.90 - y) / 1.1);
+            float[] col = Poly.mix(c(0x3B1F5C), c(0x140A24), t);
+            if (noise((int) (x / CELL), (int) (y / CELL)) > 0.92) col = Poly.mix(col, c(0x5C2F8A), 0.5f);
+            return col; } });
+        float[] bone = c(0x0C0612), claw = c(0xE9E2F2);
+        double[][] tips = {{0.97, 0.52 + fl}, {0.84, 0.16 + fl}, {0.58, -0.12 + fl}, {0.28, -0.16}};
+        for (double[] t : tips) seg(0.50, 0.92, t[0], t[1], 0.010, bone);
+        seg(0.02, 0.02, 0.06, 0.40, 0.020, bone); seg(0.06, 0.40, 0.22, 0.74, 0.018, bone); seg(0.22, 0.74, 0.50, 0.92, 0.016, bone);
+        seg(0.50, 0.92, 0.56, 1.02, 0.011, claw); seg(0.22, 0.74, 0.17, 0.84, 0.009, claw);              // claws
+        double glow = 0.6 + 0.4 * Math.sin(age * 0.10);
+        float[] red = g(0xFF2A4A, (float) (0.6 + 0.4 * glow));
+        for (double[] t : tips) seg(0.50, 0.92, t[0] * 0.96 + 0.02, t[1] * 0.96 + 0.02, 0.0055, red);      // glowing veins
+        seg(0.06, 0.40, 0.22, 0.74, 0.006, red); seg(0.22, 0.74, 0.50, 0.92, 0.006, red);
     }
 
     // --- butterfly: two rounded lobes with a dark border, white dots and blue eyespots
@@ -278,16 +302,15 @@ final class ExtraPix {
             }
             Vox.box(0, BY, -0.282, 0.032, 0.028, 0.010, g(0xFF3B5C, 0.7f), g(0xFF9AAE, 0.7f), 1);   // front ruby
         } else if (id.equals("halo")) {
-            ring(BY, 0.04, c(0xFFFFFF), c(0xE4E8F4));
-            ring(BY - 0.034, 0.008, c(0xFFD84A), c(0xE0B000));
-            double bob = Math.sin(age * 0.12) * 0.012;
-            for (int i = 0; i < 20; i++) {                                                 // floating golden halo
-                double a = i * Math.PI / 10, x = Math.sin(a) * 0.17, z = Math.cos(a) * 0.17;
-                Vox.box(x, BY - 0.34 + bob, z, 0.030, 0.012, 0.030, g(0xFFE680, 0.95f), g(0xFFC21F, 0.9f), 1);
-            }
-            for (int s2 = -1; s2 <= 1; s2 += 2) {                                          // tiny feather wings on the band
-                Vox.box(s2 * 0.30, BY - 0.02, 0.0, 0.020, 0.030, 0.06, c(0xFFFFFF), c(0xDDE4FA), 1);
-                Vox.box(s2 * 0.34, BY - 0.05 + Math.sin(age * 0.3) * 0.008, 0.0, 0.016, 0.022, 0.045, c(0xFFFFFF), c(0xDDE4FA), 1);
+            // thick golden halo floating above the head: it bobs, tilts and drifts slowly, with a light running around it
+            double bob = Math.sin(age * 0.10) * 0.020, tx = Math.sin(age * 0.07) * 0.13, tz = Math.cos(age * 0.055) * 0.13;
+            int n = 28;
+            for (int i = 0; i < n; i++) {
+                double a = i * 2 * Math.PI / n, x = Math.sin(a) * 0.22, z = Math.cos(a) * 0.22;
+                double y = BY - 0.33 + bob + tx * z + tz * x;
+                double run = Math.max(0, Math.cos(a - age * 0.12));                          // bright spot travelling around the ring
+                float[] top = g(0xFFE06A, (float) (0.85 + 0.15 * run)), bot = g(0xE0A800, (float) (0.8 + 0.2 * run));
+                Vox.box(x, y, z, 0.058, 0.042, 0.058, top, bot, 1);
             }
         } else if (id.equals("cat")) {
             ring(BY, 0.04, c(0xFF8FB8), c(0xE0608F));
@@ -313,7 +336,7 @@ final class ExtraPix {
     }
 
     // ================================================================== PETS
-    static final String[] PETS = {"drake", "bunny", "penguin", "panda", "axolotl"};
+    static final String[] PETS = {"drake", "bunny", "penguin", "panda", "axolotl", "puppy"};
 
     static void pet(String id, float age) {
         Vox.TEXEL = 0.0185; Vox.reset(); Vox.marker = null; Vox.yo = -0.05;
@@ -321,6 +344,7 @@ final class ExtraPix {
         else if (id.equals("bunny")) bunny(age);
         else if (id.equals("penguin")) penguin(age);
         else if (id.equals("panda")) panda(age);
+        else if (id.equals("puppy")) puppy(age);
         else axolotl(age);
         Vox.TEXEL = 0.0125; Vox.yo = 0;
     }
@@ -422,6 +446,36 @@ final class ExtraPix {
         }
         Vox.box(0, hy + 0.020, -0.062, 0.016, 0.012, 0.008, bl, bl, 0);                                          // nose
         Vox.box(0, hy + 0.040, -0.058, 0.014, 0.004, 0.004, bl, bl, 0);
+    }
+
+
+    private static void puppy(float age) {
+        double bob = Math.sin(age * 0.10) * 0.006;
+        Vox.yo = -0.05 + bob;
+        float[] gd = c(0xE6B25E), gl = c(0xB5803A), cr = c(0xFBE6B8), cd = c(0xE8CC96), ear = c(0xA8702C), dk = c(0x2A1A10), pk = c(0xFF7A9A);
+        for (int s = -1; s <= 1; s += 2) {
+            Vox.box(s * 0.040, 0.098, 0.036, 0.022, 0.028, 0.030, gd, gl, 3);                                    // sitting back legs
+            Vox.box(s * 0.036, 0.094, -0.040, 0.016, 0.034, 0.016, cr, cd, 2);                                   // front legs
+            Vox.box(s * 0.036, 0.124, -0.044, 0.018, 0.006, 0.022, cr, cd, 3);                                   // paws
+        }
+        Vox.box(0, 0.050, 0.014, 0.052, 0.042, 0.062, gd, gl, 1);                                                // body
+        Vox.box(0, 0.062, -0.034, 0.040, 0.034, 0.020, cr, cd, 1);                                               // cream chest
+        double wag = Math.sin(age * 0.55);
+        for (int i = 0; i < 4; i++) {                                                                            // wagging tail
+            Vox.box(wag * 0.022 * (i + 1) * 0.5, 0.040 - i * 0.026, 0.086 + i * 0.010, 0.012, 0.016, 0.012, i == 3 ? cr : gd, i == 3 ? cd : gl, 4);
+        }
+        double hy = -0.030 + Math.sin(age * 0.10 + 0.8) * 0.004;
+        Vox.box(0, hy, -0.052, 0.050, 0.040, 0.042, gd, gl, 0);                                                  // head
+        Vox.box(0, hy + 0.024, -0.098, 0.027, 0.018, 0.022, cr, cd, 0);                                          // muzzle
+        Vox.box(0, hy + 0.010, -0.122, 0.013, 0.008, 0.004, dk, dk, 0);                                          // nose
+        double pant = (Math.sin(age * 0.45) * 0.5 + 0.5) * 0.008;
+        Vox.box(0, hy + 0.046 + pant * 0.5, -0.102, 0.009, 0.006 + pant, 0.006, pk, pk, 0);                      // tongue
+        for (int s = -1; s <= 1; s += 2) {
+            Vox.box(s * 0.025, hy - 0.006, -0.096, 0.007, 0.010, 0.002, dk, dk, 0);                              // eyes
+            Vox.box(s * 0.027, hy - 0.010, -0.098, 0.003, 0.003, 0.001, c(0xFFFFFF), c(0xFFFFFF), 0);
+            double sw = Math.sin(age * 0.18 + s) * 0.006;
+            Vox.box(s * 0.060 + sw, hy + 0.004, -0.046, 0.010, 0.036, 0.020, ear, ear, 0);                       // floppy ears
+        }
     }
 
     private static void axolotl(float age) {

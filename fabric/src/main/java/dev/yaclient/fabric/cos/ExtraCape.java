@@ -22,6 +22,7 @@ final class ExtraCape {
             else if (id.equals("sunset")) col = sunset(i, j, age);
             else if (id.equals("forest")) col = forest(i, j, age);
             else if (id.equals("ocean")) col = ocean(i, j, age);
+            else if (id.equals("storm")) col = storm(i, j, age);
             else col = space(i, j, age);
             double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
             Poly.quad(CosmeticRender.capePt(u0, v0, age, plus), CosmeticRender.capePt(u1, v0, age, plus),
@@ -124,6 +125,45 @@ final class ExtraCape {
             int bx = 3 + b * 4 + (int) Math.round(Math.sin(age * 0.05 + b)), by = mod((int) (30 - age * (0.05 + b * 0.01) + b * 7), 30);
             if (i == bx && j == by) col = c(0xE8FAFF);
         }
+        return col;
+    }
+
+
+    // ---- storm: night clouds with a pixel lightning bolt that strikes, flashes and fades, then strikes somewhere else
+    private static int boltEpoch = -1;
+    private static final int[] BX = new int[NV], BR = new int[NV];
+
+    private static void makeBolt(int epoch) {
+        boltEpoch = epoch;
+        java.util.Arrays.fill(BX, -99); java.util.Arrays.fill(BR, -99);
+        int x = 4 + (int) (noise(epoch, 7) * 14), br = 9 + (int) (noise(epoch, 3) * 6), bx = x;
+        int dir = noise(epoch, 5) > 0.5 ? 1 : -1;
+        for (int j = 0; j < NV; j++) {
+            BX[j] = Math.max(1, Math.min(NU - 2, x));
+            float r = noise(epoch * 31 + j, 11);
+            x += r < 0.33 ? -1 : (r < 0.66 ? 0 : 1);
+            if (j % 5 == 2) x += dir;                                                    // diagonal jags
+            if (j == br) { bx = x; }
+            if (j > br && j < br + 9) { bx += (j % 2 == 0) ? -dir : 0; BR[j] = Math.max(0, Math.min(NU - 1, bx)); bx += -dir; }
+        }
+    }
+
+    private static float[] storm(int i, int j, float age) {
+        int epoch = (int) (age / 48f);
+        if (epoch != boltEpoch) makeBolt(epoch);
+        float ph = age - epoch * 48f;
+        float flash = ph < 3 ? 1f : (ph < 14 ? 1f - (ph - 3) / 11f * 0.8f : Math.max(0f, 0.2f - (ph - 14) * 0.006f));
+        float n = noise((i + (int) (age * 0.03)) / 2, j / 2);
+        float[] col = mix(c(0x07070D), c(0x181A30), 0.25 + 0.55 * n * (0.4 + j / 31.0));
+        if (j < 8 && noise(i, j + 40) > 0.95) col = c(0x2B2F55);
+        col = mix(col, c(0x3A4A8A), flash * 0.22);                                       // the whole sky flashes
+        boolean core = BX[j] == i || (BR[j] == i) || (j > 0 && BX[j - 1] == i && flash > 0.05f && ((i + j) & 1) == 0);
+        boolean glow = Math.abs(BX[j] - i) == 1 || (BR[j] >= 0 && Math.abs(BR[j] - i) == 1);
+        if (flash > 0.01f) {
+            if (core) col = mix(col, g(0xFFFFFF, 1f), Math.min(1f, flash * 1.6f));
+            else if (glow) col = mix(col, g(0x9FB4FF, 0.9f), flash * 0.7f);
+        }
+        if (j >= 30) col = mix(col, c(0x3A4A8A), 0.12 + 0.2 * flash);                      // little rim at the hem
         return col;
     }
 
