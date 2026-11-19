@@ -16,6 +16,18 @@ public final class Cosmetics {
     /** Streamer name shown on a partner bundle. */
     public static final String[] PARTNER_NAME = {"", "", "Qlux", "", "", "", "", "", "", ""};
 
+    /** Single items (sold one by one, outside the bundles): "<style>_<slot>". */
+    public static final String[] EXTRAS = {
+            "galaxy_cape", "ocean_cape", "inferno_cape", "matrix_cape", "royal_cape",
+            "dragon_wings", "butterfly_wings", "angel_wings", "phoenix_wings", "dragonfly_wings",
+            "ninja_bandana", "crown_bandana", "flame_bandana", "cat_bandana", "rainbow_bandana",
+            "drake_pet", "ghost_pet", "slime_pet", "panda_pet", "axolotl_pet"};
+
+    public static boolean isExtra(String item) { for (String e : EXTRAS) if (e.equals(item)) return true; return false; }
+
+    /** Equips (or removes when it is already worn) a single item. */
+    public static void toggleItem(String slot, String item) { equip(slot, selected(slot).equals(item) ? "none" : item); }
+
     public static boolean isPartner(int bundle) { return PARTNER[bundle]; }
 
     private Cosmetics() {}

@@ -20,7 +20,27 @@ const ITEMS = {
   clown_cape: { slot: 'cape', price: 'Exclusive' }, clown_wings: { slot: 'wings', price: 'Exclusive' },
   clown_bandana: { slot: 'bandana', price: 'Exclusive' }, clown_pet: { slot: 'pet', price: 'Exclusive' },
   luck_cape: { slot: 'cape', price: 'Exclusive' }, luck_wings: { slot: 'wings', price: 'Exclusive' },
-  luck_bandana: { slot: 'bandana', price: 'Exclusive' }, luck_pet: { slot: 'pet', price: 'Exclusive' }
+  luck_bandana: { slot: 'bandana', price: 'Exclusive' }, luck_pet: { slot: 'pet', price: 'Exclusive' },
+  galaxy_cape: { slot: 'cape', price: 'Exclusive' },
+  ocean_cape: { slot: 'cape', price: 'Exclusive' },
+  inferno_cape: { slot: 'cape', price: 'Exclusive' },
+  matrix_cape: { slot: 'cape', price: 'Exclusive' },
+  royal_cape: { slot: 'cape', price: 'Exclusive' },
+  dragon_wings: { slot: 'wings', price: 'Exclusive' },
+  butterfly_wings: { slot: 'wings', price: 'Exclusive' },
+  angel_wings: { slot: 'wings', price: 'Exclusive' },
+  phoenix_wings: { slot: 'wings', price: 'Exclusive' },
+  dragonfly_wings: { slot: 'wings', price: 'Exclusive' },
+  ninja_bandana: { slot: 'bandana', price: 'Exclusive' },
+  crown_bandana: { slot: 'bandana', price: 'Exclusive' },
+  flame_bandana: { slot: 'bandana', price: 'Exclusive' },
+  cat_bandana: { slot: 'bandana', price: 'Exclusive' },
+  rainbow_bandana: { slot: 'bandana', price: 'Exclusive' },
+  drake_pet: { slot: 'pet', price: 'Exclusive' },
+  ghost_pet: { slot: 'pet', price: 'Exclusive' },
+  slime_pet: { slot: 'pet', price: 'Exclusive' },
+  panda_pet: { slot: 'pet', price: 'Exclusive' },
+  axolotl_pet: { slot: 'pet', price: 'Exclusive' }
 };
 // Bundles unlock several items at once. "beta" = Beta Tester bundle (free, granted by the admin to testers).
 const BUNDLES = {
@@ -89,6 +109,7 @@ async function applyGrant(env, uuid, f) {
 // ---------- automatic card payments (Stripe Checkout) ----------
 // Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
 const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, clown: 10, luck: 10, plus: 4.99 };
+const EXTRA_IDS = ['galaxy_cape', 'ocean_cape', 'inferno_cape', 'matrix_cape', 'royal_cape', 'dragon_wings', 'butterfly_wings', 'angel_wings', 'phoenix_wings', 'dragonfly_wings', 'ninja_bandana', 'crown_bandana', 'flame_bandana', 'cat_bandana', 'rainbow_bandana', 'drake_pet', 'ghost_pet', 'slime_pet', 'panda_pet', 'axolotl_pet'];   // single items (3 each, not in a bundle)
 const DISABLED = ['qlux'];   // sets that cannot be bought for now
 const STORE_HIDDEN = ['qlux'];   // bundles switched off in the store (keep in sync with site/config.js 'hidden')
 const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost', 'clown', 'luck'];
@@ -108,6 +129,7 @@ function orderCents(items, plusOn) {
     const m = left.filter((i) => i.startsWith(st + '_')).length;
     t += m === 4 ? PRICE[st] : m * PRICE.item;
   }
+  for (const i of left) if (EXTRA_IDS.includes(i)) t += PRICE.item;
   return Math.round(t * (plusOn ? 0.3 : 1) * 100);
 }
 async function stripeCheckout(env, request, url, f) {

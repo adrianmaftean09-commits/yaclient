@@ -683,10 +683,13 @@ public class MenuScreen extends GuiScreen {
     private static final int[] BCOL = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF, 0xFFFFD21F, 0xFF3DDC6A};
 
     /** One locker card picture: the player (own skin) wearing the item, or the whole bundle, swaying gently. */
-    private void drawWornCard(String key, int bi, boolean bundle, int cx, int baseY, int size) {
+    private void drawWornCard(String key, int bi, boolean bundle, int cx, int baseY, int size) { drawWornCard(key, bi, bundle, null, cx, baseY, size); }
+
+    private void drawWornCard(String key, int bi, boolean bundle, String single, int cx, int baseY, int size) {
         java.util.Map<String, String> ov = new java.util.HashMap<String, String>();
         for (String sl : Cosmetics.SLOTS) ov.put(sl, "none");
-        if (bundle) { for (String sl : Cosmetics.SLOTS) ov.put(sl, Cosmetics.item(bi, sl)); }
+        if (single != null) ov.put(key, single);
+        else if (bundle) { for (String sl : Cosmetics.SLOTS) ov.put(sl, Cosmetics.item(bi, sl)); }
         else ov.put(key, Cosmetics.item(bi, key));
         ov.put("plus", CosmeticsApi.plus() ? "1" : "0");
         boolean front = key.equals("bandana") || key.equals("pet");
@@ -735,6 +738,10 @@ public class MenuScreen extends GuiScreen {
             if (cosCat == 0) entries.add("bundle:" + bi);
             else entries.add(COS_CATS[cosCat] + ":" + bi);
         }
+        if (!partnerTab && cosCat > 0) {          // single items of this slot (not part of any bundle)
+            String suffix = "_" + COS_CATS[cosCat];
+            for (String ex : Cosmetics.EXTRAS) if (ex.endsWith(suffix)) entries.add("x:" + COS_CATS[cosCat] + ":" + ex);
+        }
         if (partnerTab) Gfx.text(Lang.t("cos.partner_hint"), x0, VY + 36, 10, false, Theme.MUTED);
         int gap = 10, cols = 3, cw = (wRight - gap * (cols - 1)) / cols, ch = 206;
         int gy = VY + (partnerTab ? 54 : 40);
@@ -746,12 +753,13 @@ public class MenuScreen extends GuiScreen {
         clip(x0 - 2, gTop, wRight + 4, gH);
         for (int n = 0; n < entries.size(); n++) {
             final String[] kv = entries.get(n).split(":");
-            final String key = kv[0];
-            final int bi = Integer.parseInt(kv[1]);
+            final boolean single = kv[0].equals("x");
+            final String key = single ? kv[1] : kv[0];
+            final int bi = single ? 0 : Integer.parseInt(kv[1]);
             int cx = x0 + (n % cols) * (cw + gap), cy = gy - gScroll + (n / cols) * (ch + gap);
             if (cy + ch < gTop || cy > gBot) continue;
-            final boolean bundle = key.equals("bundle");
-            final String id = bundle ? Cosmetics.BUNDLES[bi] : Cosmetics.item(bi, key);
+            final boolean bundle = !single && key.equals("bundle");
+            final String id = single ? kv[2] : (bundle ? Cosmetics.BUNDLES[bi] : Cosmetics.item(bi, key));
             boolean has, on;
             if (bundle) {
                 has = Cosmetics.ownsBundle(bi);
@@ -774,15 +782,15 @@ public class MenuScreen extends GuiScreen {
             if (!has) Gfx.icon("lock", cx + cw - 24, cy + 6, 14, Theme.MUTED);
             // thumbnail (3D preview is clipped to its box)
             Gfx.rr(cx + 6, ty, cw - 12, th, 5, 0x22000000);
-            Gfx.rr(cx + 6, ty, cw - 12, th, 5, Ui.alpha(BCOL[bi], 0.16f));
+            Gfx.rr(cx + 6, ty, cw - 12, th, 5, Ui.alpha(single ? 0xFFB8B8C8 : BCOL[bi], 0.16f));
             float ps = key.equals("cape") ? 56f : key.equals("wings") ? 34f : key.equals("bandana") ? 90f : key.equals("pet") ? 90f : 30f;
             int cy0 = Math.max(ty, gTop), cy1 = Math.min(ty + th, gBot);
             if (cy1 > cy0) {
             clip(cx + 6, cy0, cw - 12, cy1 - cy0);
             if (Minecraft.getMinecraft().thePlayer != null) {
-                drawWornCard(key, bi, bundle, cx + cw / 2, ty + th - 8, 56);
+                drawWornCard(key, bi, bundle, single ? id : null, cx + cw / 2, ty + th - 8, 56);
             } else {   // no world yet (title screen): standalone preview of the item
-                CosmeticPreview.draw(key, Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+                CosmeticPreview.draw(key, single ? id.substring(0, id.indexOf('_')) : Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             }
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             clip(x0 - 2, gTop, wRight + 4, gH);
@@ -802,7 +810,7 @@ public class MenuScreen extends GuiScreen {
             if (hy1 > hy0) hit(cx, hy0, cw, hy1 - hy0, new Action() {
                 @Override public void run(float mx, float my) {
                     if (!fHas) { if (!CosmeticsApi.premium()) return; if (bundle) CosmeticsApi.openBundle(Cosmetics.BUNDLES[bi]); else CosmeticsApi.openItem(id); return; }
-                    if (bundle) Cosmetics.toggleBundle(bi); else Cosmetics.toggle(bi, key);
+                    if (bundle) Cosmetics.toggleBundle(bi); else if (single) Cosmetics.toggleItem(key, id); else Cosmetics.toggle(bi, key);
                 }
             }, null, null);
         }

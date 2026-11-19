@@ -60,9 +60,11 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             CosmeticRender.mono = bs.equals("mono");
             CosmeticRender.qlux = bs.equals("qlux");
             CosmeticRender.anime = Anime.byStyle(bs);
+            CosmeticRender.extra = ExtraPix.has("bandana", bs) ? bs : null;
             Poly.begin();
             CosmeticRender.bandana(age, limbSwingAmount);
             Poly.end();
+            CosmeticRender.extra = null;
             CosmeticRender.mono = false;
             CosmeticRender.qlux = false;
             CosmeticRender.anime = null;
@@ -105,6 +107,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
     static String style(Map<String, String> eq, String slot) {
         String v = eq.get(slot);
         if (v == null) return "ya";
+        { int u = v.indexOf('_'); if (u > 0 && ExtraPix.has(slot, v.substring(0, u))) return v.substring(0, u); }
         if (v.startsWith("mono_")) return "mono";
         if (v.startsWith("qlux_")) return "qlux";
         for (Anime.Th t : Anime.ALL) if (v.startsWith(t.id + "_")) return t.id;
@@ -134,7 +137,9 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             Poly.begin();
             CosmeticRender.qlux = style.equals("qlux");
             CosmeticRender.anime = Anime.byStyle(style);
+            CosmeticRender.extra = ExtraPix.has("wings", style) ? style : null;
             if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
+            CosmeticRender.extra = null;
             CosmeticRender.qlux = false;
             CosmeticRender.anime = null;
             Poly.end();
@@ -167,7 +172,11 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.rotate(6f + f2 / 2f + f1, 1f, 0f, 0f);
         GlStateManager.rotate(f3 / 2f, 0f, 0f, 1f);
         GlStateManager.rotate(-f3 / 2f, 0f, 1f, 0f);
-        if (Anime.byStyle(style) != null) {
+        if (ExtraPix.has("cape", style)) {
+            Poly.begin();
+            ExtraPix.cape(style, age, plus);
+            Poly.end();
+        } else if (Anime.byStyle(style) != null) {
             Anime.drawCape(Anime.byStyle(style), age, plus);
         } else if (style.equals("qlux")) {
             CosmeticQlux.drawCape(age, plus);
@@ -200,7 +209,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         if (mono) GlStateManager.rotate(age * 6f, 0f, 1f, 0f);
         else GlStateManager.rotate((float) (Math.sin(age * 0.05) * 12.0), 0f, 1f, 0f);
         Poly.begin();
-        if (Anime.byStyle(style) != null) AnimePets.pet(Anime.byStyle(style), age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+        if (ExtraPix.has("pet", style)) ExtraPix.pet(style, age); else if (Anime.byStyle(style) != null) AnimePets.pet(Anime.byStyle(style), age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
         Poly.end();
         GlStateManager.popMatrix();
     }

@@ -47,7 +47,27 @@ var P={
  luck_cape:{n:'Clover Cape',cat:'cape',slot:'cape',d:'Plain white cape with a single animated four-leaf clover.',set:'luck'},
  luck_wings:{n:'Clover Wings',cat:'wings',slot:'wings',d:'Smooth wings made of golden-rimmed clover leaves.',set:'luck'},
  luck_bandana:{n:'Lucky Band',cat:'bandana',slot:'bandana',d:'Emerald band with a gold ribbon.',set:'luck'},
- luck_pet:{n:'Lucky (pet)',cat:'pet',slot:'pet',d:'A little ladybug with a lucky gold antenna.',set:'luck'}};
+ luck_pet:{n:'Lucky (pet)',cat:'pet',slot:'pet',d:'A little ladybug with a lucky gold antenna.',set:'luck'},
+ galaxy_cape:{n:'Galaxy Cape',cat:'cape',slot:'cape',d:'Night sky cape with a crescent moon and twinkling stars.',set:'x'},
+ ocean_cape:{n:'Ocean Cape',cat:'cape',slot:'cape',d:'Rolling pixel waves, bubbles and a little fish.',set:'x'},
+ inferno_cape:{n:'Inferno Cape',cat:'cape',slot:'cape',d:'Animated flames rising from the hem.',set:'x'},
+ matrix_cape:{n:'Matrix Cape',cat:'cape',slot:'cape',d:'Green digital rain falling down the cape.',set:'x'},
+ royal_cape:{n:'Royal Cape',cat:'cape',slot:'cape',d:'Purple velvet with an ermine collar and a golden crown.',set:'x'},
+ dragon_wings:{n:'Dragon Wings',cat:'wings',slot:'wings',d:'Leathery bat wings with bones and a scalloped edge.',set:'x'},
+ butterfly_wings:{n:'Butterfly Wings',cat:'wings',slot:'wings',d:'Orange pixel wings with eyespots and white dots.',set:'x'},
+ angel_wings:{n:'Angel Wings',cat:'wings',slot:'wings',d:'Layered white feathers with golden tips.',set:'x'},
+ phoenix_wings:{n:'Phoenix Wings',cat:'wings',slot:'wings',d:'Wings of living fire that flicker.',set:'x'},
+ dragonfly_wings:{n:'Dragonfly Wings',cat:'wings',slot:'wings',d:'Slim translucent wings with veins.',set:'x'},
+ ninja_bandana:{n:'Ninja Headband',cat:'bandana',slot:'bandana',d:'Black headband with a steel plate and long tails.',set:'x'},
+ crown_bandana:{n:'Golden Crown',cat:'bandana',slot:'bandana',d:'A pixel gold crown with rubies and sapphires.',set:'x'},
+ flame_bandana:{n:'Flame Crown',cat:'bandana',slot:'bandana',d:'A ring of flickering pixel flames.',set:'x'},
+ cat_bandana:{n:'Cat Ears',cat:'bandana',slot:'bandana',d:'Pink headband with cat ears and a bell.',set:'x'},
+ rainbow_bandana:{n:'Rainbow Band',cat:'bandana',slot:'bandana',d:'Six-stripe rainbow band with flowing tails.',set:'x'},
+ drake_pet:{n:'Drake (pet)',cat:'pet',slot:'pet',d:'A baby pixel dragon with little wings.',set:'x'},
+ ghost_pet:{n:'Ghost (pet)',cat:'pet',slot:'pet',d:'A smooth, cute floating ghost.',set:'x'},
+ slime_pet:{n:'Slime (pet)',cat:'pet',slot:'pet',d:'A bouncing, squishy green slime.',set:'x'},
+ panda_pet:{n:'Panda (pet)',cat:'pet',slot:'pet',d:'A pixel panda munching bamboo.',set:'x'},
+ axolotl_pet:{n:'Axolotl (pet)',cat:'pet',slot:'pet',d:'A pink pixel axolotl with fluffy gills.',set:'x'}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle},
           qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1},
@@ -59,11 +79,11 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
           clown:{n:'Clown Bundle',d:'Pixel circus bundle: balloon wings, harlequin cape, striped pompom band and Bozo the juggling clown.',items:['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'],price:PR.animeBundle||10},
           luck:{n:'Luck Bundle',d:'Lucky green bundle: clover-leaf wings, a white cape with one animated four-leaf clover, a lucky band and the ladybug Lucky.',items:['luck_cape', 'luck_wings', 'luck_bandana', 'luck_pet'],price:PR.animeBundle||10}};
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
-var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',clown:'#ffd21f',luck:'#3ddc6a',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
+var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',clown:'#ffd21f',luck:'#3ddc6a',x:'#c9cdd8',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
 var PAGES=['sakura','shinobi','kitsune','santa','frost','clown','luck','mono','beta','qlux'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
 var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
-function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost','clown','luck'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});return R(t*K())}
+function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost','clown','luck'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});t+=list.filter(function(i){return P[i].set==='x'}).length*PR.item;return R(t*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
 function card(key,isSet){
  var d=isSet?SETS[key]:P[key],ids=isSet?d.items:[key],free=isSet?!!d.free:P[key].set==='beta',price=isSet?(d.free?0:R(d.price*K())):priceOf(key);
