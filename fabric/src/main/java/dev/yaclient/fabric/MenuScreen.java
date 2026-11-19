@@ -471,7 +471,10 @@ public class MenuScreen extends Screen {
         java.util.List<int[]> cells = new java.util.ArrayList<int[]>();   // {bundle}
         if (bundles) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
         else if (cosTab.equals("partner")) { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) if (Cosmetics.PARTNER[b]) cells.add(new int[] {b}); }
-        else { for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b}); }
+        else {
+            for (int b = 0; b < Cosmetics.BUNDLES.length; b++) cells.add(new int[] {b});
+            for (int e = 0; e < Cosmetics.EXTRAS.length; e++) if (Cosmetics.EXTRAS[e].endsWith("_" + cosTab)) cells.add(new int[] {-1, e});   // single items
+        }
         int rows = (cells.size() + cols - 1) / cols;
         int areaH = VY + VH - gridTop;
         contentH = rows * (ch + gap) + 6;
@@ -481,7 +484,7 @@ public class MenuScreen extends Screen {
         int top = gridTop - Math.round(scroll);
         boolean partnerTab = cosTab.equals("partner");
         for (int c = 0; c < cells.size(); c++) {
-            final int bi = cells.get(c)[0];
+            final int bi = Math.max(0, cells.get(c)[0]);
             int x = CX + (c % cols) * (cw + gap), y = top + (c / cols) * (ch + gap);
             if (y + ch < gridTop - 2 || y > VY + VH + 2) continue;
             boolean inView = myl >= gridTop && myl < VY + VH;
@@ -508,14 +511,15 @@ public class MenuScreen extends Screen {
                 });
             } else {
                 final String slot = cosTab;
-                final String item = Cosmetics.item(bi, slot);
+                final int ex = cells.get(c).length > 1 ? cells.get(c)[1] : -1;
+                final String item = ex >= 0 ? Cosmetics.EXTRAS[ex] : Cosmetics.item(bi, slot);
                 boolean has = CosmeticsApi.owned(item), on = Cosmetics.selected(slot).equals(item);
                 float h = anim("ci" + item, hov ? 1f : 0f, 16f);
                 Gfx.rr(x, y, cw, ch, 6, Ui.mix(SURF, SURF2, h));
                 Gfx.image("/assets/yaclient/cos/" + item + ".jpg", x + 4, y + 4, cw - 8, imgH, has ? 0xFFFFFFFF : 0xFF777777);
                 Gfx.rrOutline(x, y, cw, ch, 6, 1, on ? 0x99FFFFFF : Ui.mix(0x14FFFFFF, 0x30FFFFFF, h));
                 if (!has) Gfx.icon("lock", x + cw - 24, y + 10, 14, Theme.TEXT);
-                Gfx.text(Gfx.trim(Cosmetics.NAMES[bi], 12, true, cw - 20), x + 10, y + imgH + 10, 12, true, Theme.TEXT);
+                Gfx.text(Gfx.trim(ex >= 0 ? Cosmetics.EXTRA_NAMES[ex] : Cosmetics.NAMES[bi], 12, true, cw - 20), x + 10, y + imgH + 10, 12, true, Theme.TEXT);
                 int fy = y + ch - 8 - 22;
                 boolean fo = inView && over(x + 10, fy, cw - 20, 22);
                 String fl = has ? (on ? "Remove" : "Equip") : (CosmeticsApi.premium() ? "Get in store" : "Premium only");
@@ -523,7 +527,7 @@ public class MenuScreen extends Screen {
                 Gfx.textCentered(fl, x + cw / 2, fy + (22 - Gfx.lineHeight(10, true)) / 2, 10, true, has ? ON_ACC : Theme.TEXT);
                 bodyHit(x + 10, fy, cw - 20, 22, (px, py) -> {
                     if (!CosmeticsApi.premium()) return;
-                    if (CosmeticsApi.owned(item)) Cosmetics.toggle(bi, slot); else CosmeticsApi.openItem(item);
+                    if (CosmeticsApi.owned(item)) { if (ex >= 0) Cosmetics.toggleItem(slot, item); else Cosmetics.toggle(bi, slot); } else CosmeticsApi.openItem(item);
                 });
             }
         }

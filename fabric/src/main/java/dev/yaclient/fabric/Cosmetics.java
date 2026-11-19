@@ -13,6 +13,24 @@ public final class Cosmetics {
 
     private Cosmetics() {}
 
+    /** Single items (sold one by one, outside the bundles): "<style>_<slot>". */
+    public static final String[] EXTRAS = {
+            "sky_cape", "ocean_cape", "sunset_cape", "forest_cape", "space_cape",
+            "dragon_wings", "butterfly_wings", "azure_wings", "venom_wings", "dragonfly_wings",
+            "ninja_bandana", "crown_bandana", "halo_bandana", "cat_bandana", "rainbow_bandana",
+            "drake_pet", "bunny_pet", "penguin_pet", "panda_pet", "axolotl_pet"};
+
+    public static final String[] EXTRA_NAMES = {
+            "Sky Cape", "Ocean Cape", "Sunset Cape", "Forest Cape", "Space Cape",
+            "Dragon Wings", "Butterfly Wings", "Azure Wings", "Valkyrie Wings", "Dragonfly Wings",
+            "Ninja Headband", "Golden Crown", "Angel Halo", "Cat Ears", "Rainbow Band",
+            "Drake (pet)", "Bunny (pet)", "Penguin (pet)", "Panda (pet)", "Axolotl (pet)"};
+
+    public static boolean isExtra(String item) { for (String e : EXTRAS) if (e.equals(item)) return true; return false; }
+
+    /** Equips (or removes when it is already worn) a single item. */
+    public static void toggleItem(String slot, String item) { equip(slot, selected(slot).equals(item) ? "none" : item); }
+
     public static String item(int bundle, String slot) { return PREFIX[bundle] + "_" + slot; }
 
     public static boolean ownsBundle(int bundle) {

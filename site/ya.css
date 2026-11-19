@@ -261,3 +261,17 @@ footer a:hover{color:var(--text)}
 .items.imp .it{border-left-color:rgba(96,165,250,.7)}
 .items.fix .it{border-left-color:rgba(245,158,11,.7)}
 
+/* phone: three product columns in the store */
+@media(max-width:640px){
+.pg{grid-template-columns:repeat(3,1fr);gap:8px}
+.pc{border-radius:12px}.pc:hover{transform:none}
+.pc .im{aspect-ratio:3/4}
+.pc .bd{padding:8px 8px 10px;gap:2px}
+.pc h3{font-size:12px;line-height:1.2}
+.pc p{display:none}
+.pc .pr{flex-direction:column;align-items:stretch;gap:6px;margin-top:6px}
+.price{font-size:13px}.price s{font-size:10px;margin-right:3px}
+.pc .btn.sm{height:28px;padding:0 6px;font-size:11px;width:100%;justify-content:center}
+.tagb{top:6px;left:6px;height:18px;padding:0 6px;font-size:9px;letter-spacing:.5px}
+.fchip{height:34px;padding:0 14px;font-size:13px}
+}

@@ -18,10 +18,10 @@ public final class Cosmetics {
 
     /** Single items (sold one by one, outside the bundles): "<style>_<slot>". */
     public static final String[] EXTRAS = {
-            "galaxy_cape", "ocean_cape", "inferno_cape", "matrix_cape", "royal_cape",
-            "dragon_wings", "butterfly_wings", "angel_wings", "phoenix_wings", "dragonfly_wings",
-            "ninja_bandana", "crown_bandana", "flame_bandana", "cat_bandana", "rainbow_bandana",
-            "drake_pet", "ghost_pet", "slime_pet", "panda_pet", "axolotl_pet"};
+            "sky_cape", "ocean_cape", "sunset_cape", "forest_cape", "space_cape",
+            "dragon_wings", "butterfly_wings", "azure_wings", "venom_wings", "dragonfly_wings",
+            "ninja_bandana", "crown_bandana", "halo_bandana", "cat_bandana", "rainbow_bandana",
+            "drake_pet", "bunny_pet", "penguin_pet", "panda_pet", "axolotl_pet"};
 
     public static boolean isExtra(String item) { for (String e : EXTRAS) if (e.equals(item)) return true; return false; }
 

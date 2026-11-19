@@ -32,7 +32,11 @@ final class CosmeticRender {
     }
 
     /** One wing in its own plane (x out, y up, z thickness). The caller mirrors it for the other side. */
+    /** Set while a single (non-bundle) item is drawn: its style id (e.g. "dragon"). */
+    static String extra;
+
     static void wing(float age) {
+        if (extra != null) { ExtraPix.wing(extra, age); return; }
         if (anime != null && anime.pixel) { XmasPix.wing(anime, age); return; }
         if (anime != null && anime.index == 7) { LuckPix.wing(anime, age); return; }
         int k = 0;
@@ -239,6 +243,7 @@ final class CosmeticRender {
     }
 
     static void bandana(float age, float limbSwing) {
+        if (extra != null) { ExtraPix.band(extra, age, limbSwing); return; }
         if (anime != null && anime.pixel) { XmasPix.band(anime, age, limbSwing); return; }
         monoAge = age;
         final int N = 56;
