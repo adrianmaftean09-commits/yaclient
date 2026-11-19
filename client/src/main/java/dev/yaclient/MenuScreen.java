@@ -790,7 +790,7 @@ public class MenuScreen extends GuiScreen {
             if (Minecraft.getMinecraft().thePlayer != null) {
                 drawWornCard(key, bi, bundle, single ? id : null, cx + cw / 2, ty + th - 8, 56);
             } else {   // no world yet (title screen): standalone preview of the item
-                CosmeticPreview.draw(key, single ? id.substring(0, id.indexOf('_')) : Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
+                CosmeticPreview.draw(key, single ? id.substring(0, id.lastIndexOf('_')) : Cosmetics.PREFIX[bi], cx + cw / 2f, ty + th / 2f + 3f, ps, System.currentTimeMillis(), CosmeticsApi.plus());
             }
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             clip(x0 - 2, gTop, wRight + 4, gH);

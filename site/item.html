@@ -60,7 +60,7 @@ document.addEventListener('click',function(e){var t=e.target.closest('[data-add]
 document.getElementById('cartdr').addEventListener('click',function(e){if(e.target.id==='cartdr')e.target.className='cartdr'});
 document.addEventListener('yaplus',function(){price();items()});
 price();items();
-if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){var ty=id.split('_')[1],v=YA3D.viewer(document.getElementById('v3d'),{yaw:ty==='cape'||ty==='wings'?.55+Math.PI:.55,dist:ty==='pet'?5.4:4.8,target:[0,1,0]});v.set([id],false);YA3D.skinBox(document.getElementById('stage3'),v)})}
+if(window.YA3D&&YA3D.ok()){YA3D.whenReady(function(){var ty=id.split('_').pop(),v=YA3D.viewer(document.getElementById('v3d'),{yaw:ty==='cape'||ty==='wings'?.55+Math.PI:.55,dist:ty==='pet'?5.4:4.8,target:[0,1,0]});v.set([id],false);YA3D.skinBox(document.getElementById('stage3'),v)})}
 else document.getElementById('stage3').innerHTML='<div class="fall" style="padding:40px;text-align:center;color:var(--mute)">3D preview needs WebGL.</div>';
 })();
 </script></body></html>

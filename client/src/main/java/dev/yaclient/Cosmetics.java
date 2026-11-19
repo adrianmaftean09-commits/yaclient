@@ -21,7 +21,15 @@ public final class Cosmetics {
             "sky_cape", "ocean_cape", "sunset_cape", "forest_cape", "space_cape",
             "dragon_wings", "butterfly_wings", "azure_wings", "venom_wings", "dragonfly_wings",
             "ninja_bandana", "crown_bandana", "halo_bandana", "cat_bandana", "rainbow_bandana",
-            "drake_pet", "bunny_pet", "penguin_pet", "panda_pet", "axolotl_pet"};
+            "drake_pet", "bunny_pet", "penguin_pet", "panda_pet", "axolotl_pet",
+            "vampire_wings", "vamp_crimson_wings", "vamp_scarlet_wings", "vamp_orange_wings", "vamp_amber_wings", "vamp_gold_wings",
+            "vamp_lime_wings", "vamp_green_wings", "vamp_emerald_wings", "vamp_teal_wings", "vamp_cyan_wings", "vamp_sky_wings",
+            "vamp_blue_wings", "vamp_indigo_wings", "vamp_violet_wings", "vamp_purple_wings", "vamp_magenta_wings",
+            "vamp_pink_wings", "vamp_rose_wings", "vamp_white_wings", "vamp_silver_wings", "vampire_cape", "vamp_crimson_cape",
+            "vamp_scarlet_cape", "vamp_orange_cape", "vamp_amber_cape", "vamp_gold_cape", "vamp_lime_cape", "vamp_green_cape",
+            "vamp_emerald_cape", "vamp_teal_cape", "vamp_cyan_cape", "vamp_sky_cape", "vamp_blue_cape", "vamp_indigo_cape",
+            "vamp_violet_cape", "vamp_purple_cape", "vamp_magenta_cape", "vamp_pink_cape", "vamp_rose_cape", "vamp_white_cape",
+            "vamp_silver_cape", "storm_cape", "puppy_pet"};
 
     public static boolean isExtra(String item) { for (String e : EXTRAS) if (e.equals(item)) return true; return false; }
 
@@ -35,7 +43,7 @@ public final class Cosmetics {
     public static String item(int bundle, String slot) { return PREFIX[bundle] + "_" + slot; }
 
     public static String slotOf(String item) {
-        int i = item == null ? -1 : item.indexOf('_');
+        int i = item == null ? -1 : item.lastIndexOf('_');
         return i < 0 ? null : item.substring(i + 1);
     }
 

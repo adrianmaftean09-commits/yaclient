@@ -107,7 +107,7 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
     static String style(Map<String, String> eq, String slot) {
         String v = eq.get(slot);
         if (v == null) return "ya";
-        { int u = v.indexOf('_'); if (u > 0 && ExtraPix.has(slot, v.substring(0, u))) return v.substring(0, u); }
+        { int u = v.lastIndexOf('_'); if (u > 0 && ExtraPix.has(slot, v.substring(0, u))) return v.substring(0, u); }
         if (v.startsWith("mono_")) return "mono";
         if (v.startsWith("qlux_")) return "qlux";
         for (Anime.Th t : Anime.ALL) if (v.startsWith(t.id + "_")) return t.id;

@@ -40,7 +40,51 @@ const ITEMS = {
   bunny_pet: { slot: 'pet', price: 'Exclusive' },
   penguin_pet: { slot: 'pet', price: 'Exclusive' },
   panda_pet: { slot: 'pet', price: 'Exclusive' },
-  axolotl_pet: { slot: 'pet', price: 'Exclusive' }
+  axolotl_pet: { slot: 'pet', price: 'Exclusive' },
+  vampire_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_crimson_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_scarlet_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_orange_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_amber_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_gold_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_lime_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_green_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_emerald_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_teal_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_cyan_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_sky_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_blue_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_indigo_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_violet_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_purple_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_magenta_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_pink_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_rose_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_white_wings: { slot: 'wings', price: 'Exclusive' },
+  vamp_silver_wings: { slot: 'wings', price: 'Exclusive' },
+  vampire_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_crimson_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_scarlet_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_orange_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_amber_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_gold_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_lime_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_green_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_emerald_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_teal_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_cyan_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_sky_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_blue_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_indigo_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_violet_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_purple_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_magenta_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_pink_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_rose_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_white_cape: { slot: 'cape', price: 'Exclusive' },
+  vamp_silver_cape: { slot: 'cape', price: 'Exclusive' },
+  storm_cape: { slot: 'cape', price: 'Exclusive' },
+  puppy_pet: { slot: 'pet', price: 'Exclusive' }
 };
 // Bundles unlock several items at once. "beta" = Beta Tester bundle (free, granted by the admin to testers).
 const BUNDLES = {
@@ -109,7 +153,7 @@ async function applyGrant(env, uuid, f) {
 // ---------- automatic card payments (Stripe Checkout) ----------
 // Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
 const PRICE = { item: 3.49, mono: 10.99, qlux: 8.99, sakura: 10.99, shinobi: 10.99, kitsune: 10.99, santa: 10.99, frost: 10.99, clown: 10.99, luck: 10.99, plus: 5.49 };   // includes the Stripe fee (about 1.5% + 0.25)
-const EXTRA_IDS = ['sky_cape', 'ocean_cape', 'sunset_cape', 'forest_cape', 'space_cape', 'dragon_wings', 'butterfly_wings', 'azure_wings', 'venom_wings', 'dragonfly_wings', 'ninja_bandana', 'crown_bandana', 'halo_bandana', 'cat_bandana', 'rainbow_bandana', 'drake_pet', 'bunny_pet', 'penguin_pet', 'panda_pet', 'axolotl_pet'];   // single items (3 each, not in a bundle)
+const EXTRA_IDS = ['sky_cape', 'ocean_cape', 'sunset_cape', 'forest_cape', 'space_cape', 'dragon_wings', 'butterfly_wings', 'azure_wings', 'venom_wings', 'dragonfly_wings', 'ninja_bandana', 'crown_bandana', 'halo_bandana', 'cat_bandana', 'rainbow_bandana', 'drake_pet', 'bunny_pet', 'penguin_pet', 'panda_pet', 'axolotl_pet', 'vampire_wings', 'vamp_crimson_wings', 'vamp_scarlet_wings', 'vamp_orange_wings', 'vamp_amber_wings', 'vamp_gold_wings', 'vamp_lime_wings', 'vamp_green_wings', 'vamp_emerald_wings', 'vamp_teal_wings', 'vamp_cyan_wings', 'vamp_sky_wings', 'vamp_blue_wings', 'vamp_indigo_wings', 'vamp_violet_wings', 'vamp_purple_wings', 'vamp_magenta_wings', 'vamp_pink_wings', 'vamp_rose_wings', 'vamp_white_wings', 'vamp_silver_wings', 'vampire_cape', 'vamp_crimson_cape', 'vamp_scarlet_cape', 'vamp_orange_cape', 'vamp_amber_cape', 'vamp_gold_cape', 'vamp_lime_cape', 'vamp_green_cape', 'vamp_emerald_cape', 'vamp_teal_cape', 'vamp_cyan_cape', 'vamp_sky_cape', 'vamp_blue_cape', 'vamp_indigo_cape', 'vamp_violet_cape', 'vamp_purple_cape', 'vamp_magenta_cape', 'vamp_pink_cape', 'vamp_rose_cape', 'vamp_white_cape', 'vamp_silver_cape', 'storm_cape', 'puppy_pet'];   // single items (3 each, not in a bundle)
 const DISABLED = ['qlux'];   // sets that cannot be bought for now
 const STORE_HIDDEN = ['qlux'];   // bundles switched off in the store (keep in sync with site/config.js 'hidden')
 const PAID_SETS = ['mono', 'qlux', 'sakura', 'shinobi', 'kitsune', 'santa', 'frost', 'clown', 'luck'];
