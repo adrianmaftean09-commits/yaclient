@@ -305,8 +305,14 @@ footer a:hover{color:var(--text)}
 @media(max-width:700px){#tags{padding-top:60px;padding-bottom:70px}}
 
 /* home: one continuous voxel world behind News, logos and features */
-.world{position:relative;isolation:isolate;min-height:min(calc(100vw*1.875),2900px)}
-.world::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,0) 70px,rgba(9,9,11,0) calc(100% - 90px),#09090b 100%),linear-gradient(rgba(9,9,11,.18),rgba(9,9,11,.18)),url(/b/world.jpg?v=1) center top/cover no-repeat}
 .world .sec{border:0;background:none}
 .world .sh2 h2,.world .sh2 .lead,.world .sh2 .more{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.75),0 2px 18px rgba(0,0,0,.85)}
 .world .card{box-shadow:0 16px 44px rgba(0,0,0,.35)}
+
+/* home: space above, voxel world below, one continuous background behind hero + sections */
+.cosmos{position:relative;isolation:isolate;min-height:min(calc(100vw*2.41),3700px)}
+.cosmos::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,9,11,0) calc(100% - 90px),#09090b 100%),linear-gradient(rgba(9,9,11,.14),rgba(9,9,11,.14)),url(/b/world.jpg?v=3) center top/cover no-repeat}
+.cosmos .h2::before{display:none}
+.cosmos .h2 .sub,.cosmos .h2 .hint{color:#c9cfe6;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.cosmos .stats2{background:rgba(9,9,14,.62);border-color:rgba(255,255,255,.14);backdrop-filter:blur(6px)}
+.cosmos .stats2 span{color:#b4b8c8}
