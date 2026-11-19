@@ -1,6 +1,7 @@
 package dev.yaclient;
 
 import dev.yaclient.modules.ChatModule;
+import dev.yaclient.modules.ChatTweaksModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
@@ -21,6 +22,14 @@ public class YaChat extends GuiNewChat {
     private static boolean searched, ok;
 
     public YaChat(Minecraft mc) { super(mc); }
+
+    @Override
+    public void printChatMessageWithOptionalDeletion(net.minecraft.util.IChatComponent c, int id) {
+        int[] out = {id};
+        net.minecraft.util.IChatComponent r = ChatTweaksModule.process(c, this, out);
+        if (r == null) return;
+        super.printChatMessageWithOptionalDeletion(r, out[0]);
+    }
 
     @Override
     public float getChatScale() { return super.getChatScale() * ChatModule.userScale(); }

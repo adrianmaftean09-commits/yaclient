@@ -24,6 +24,8 @@ import java.lang.reflect.Modifier;
 public class OldAnimationsModule extends Module {
     static final Setting.Bool BLOCKHIT = new Setting.Bool("blockhit", true);
     static final Setting.Bool LOW = new Setting.Bool("low_sword", true);
+    static final Setting.Num SWORD_Y = new Setting.Num("sword_height", -20f, 20f, 1f, 0f, "");
+    static final Setting.Num SWORD_X = new Setting.Num("sword_side", -20f, 20f, 1f, 0f, "");
     static volatile boolean ACTIVE;
 
     private boolean tried;
@@ -32,6 +34,8 @@ public class OldAnimationsModule extends Module {
         super("old_animations", Category.PVP, false);
         add(BLOCKHIT);
         add(LOW);
+        add(SWORD_Y);
+        add(SWORD_X);
     }
 
     @Override
@@ -126,6 +130,7 @@ public class OldAnimationsModule extends Module {
             // everything below happens "inside" the item's own position, exactly where vanilla does its swing
             GlStateManager.translate(0.56f, -0.52f, -0.72f);
             if (block && LOW.value) GlStateManager.translate(0f, -0.06f, 0f);
+            if (block || eat) GlStateManager.translate(SWORD_X.value * 0.01f, SWORD_Y.value * 0.01f, 0f);
             if ((eat || BLOCKHIT.value) && sw > 0f) {
                 float s1 = MathHelper.sin(sw * sw * (float) Math.PI);
                 float s2 = MathHelper.sin(MathHelper.sqrt_float(sw) * (float) Math.PI);

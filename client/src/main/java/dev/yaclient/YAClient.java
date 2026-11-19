@@ -64,6 +64,10 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ToggleSneakModule());
         MODULES.add(new ZoomModule());
         MODULES.add(new ChatModule());
+        MODULES.add(new ClipModule());
+        MODULES.add(new PerspectiveLockModule());
+        MODULES.add(new ChatTweaksModule());
+        MODULES.add(new PingGraphModule());
         MODULES.add(new FreeLookModule());
         MODULES.add(new NoCloudsModule());
         MODULES.add(new SmoothShiftModule());
