@@ -30,145 +30,14 @@ final class ExtraPix {
         return false;
     }
 
-    static final String[] CAPES = {"pirate", "love", "camo", "synth", "storm"};
+    static final String[] CAPES = {"sky", "sunset", "forest", "ocean", "space"};
 
-    static void cape(String id, float age, boolean plus) {
-        final int NU = 22, NV = 32;
-        for (int i = 0; i < NU; i++) for (int j = 0; j < NV; j++) {
-            float[] col;
-            if (id.equals("pirate")) col = pirate(i, j, NU, NV, age);
-            else if (id.equals("love")) col = love(i, j, NU, NV, age);
-            else if (id.equals("camo")) col = camo(i, j, NU, NV, age);
-            else if (id.equals("synth")) col = synth(i, j, NU, NV, age);
-            else col = storm(i, j, NU, NV, age);
-            double u0 = i / (double) NU, u1 = (i + 1) / (double) NU, v0 = j / (double) NV, v1 = (j + 1) / (double) NV;
-            Poly.quad(CosmeticRender.capePt(u0, v0, age, plus), CosmeticRender.capePt(u1, v0, age, plus),
-                    CosmeticRender.capePt(u1, v1, age, plus), CosmeticRender.capePt(u0, v1, age, plus), col, col, col, col, 1f);
-        }
-    }
-
-    /** Pixel sprite: '#' = lit cell. Drawn centred at (cx, cy). */
-    private static boolean spr(String[] rows, int i, int j, int cx, int cy) {
-        int w = rows[0].length(), h = rows.length, x = i - (cx - w / 2), y = j - (cy - h / 2);
-        return x >= 0 && y >= 0 && x < w && y < h && rows[y].charAt(x) == '#';
-    }
-
-    private static final String[] SKULL = {
-            "..#######..", ".#########.", "###########", "##..###..##", "##..###..##", "###########", ".####.####.", "..#######..", "..#.#.#.#..", "..#.#.#.#.."};
-    private static final String[] HEART = {
-            "..##...##..", ".####.####.", "###########", "###########", "###########", ".#########.", "..#######..", "...#####...", "....###....", ".....#....."};
-
-    private static float[] pirate(int i, int j, int NU, int NV, float age) {
-        float[] base = Poly.mix(c(0x15151C), c(0x24242E), (float) (j / (double) NV));
-        if (noise(i, j) > 0.93) base = c(0x2E2E3A);
-        // crossbones behind the skull
-        for (int t = 0; t < 12; t++) {
-            int x1 = 5 + t, y1 = 6 + t, y2 = 17 - t;
-            if ((i == x1 && j == y1) || (i == x1 + 1 && j == y1) || (i == x1 && j == y2) || (i == x1 + 1 && j == y2)) base = c(0xD8D0B8);
-        }
-        for (int[] kn : new int[][]{{4, 5}, {5, 6}, {17, 5}, {16, 6}, {4, 18}, {5, 17}, {17, 18}, {16, 17}}) if (i == kn[0] && j == kn[1]) base = c(0xD8D0B8);
-        if (spr(SKULL, i, j, 11, 12)) {
-            base = c(0xF2EEE0);
-            if (SKULL[j - 7].charAt(i - 6) == '#' && (j - 7 == 3 || j - 7 == 4) && ((i - 6) == 2 || (i - 6) == 3 || (i - 6) == 7 || (i - 6) == 8)) base = c(0x15151C);
-        }
-        if (j >= 10 && j <= 11 && ((i == 8 || i == 9 || i == 13 || i == 14))) base = g(0xFF2A2A, 0.6f + 0.4f * (float) Math.sin(age * 0.2));   // glowing eyes
-        if (i == 0 || i == NU - 1 || j == NV - 1 || j == 0) base = c(0xC21A22);
-        else if (i == 1 || i == NU - 2 || j == NV - 2) base = Poly.mix(base, c(0xC21A22), 0.5f);
-        return base;
-    }
-
-    private static float[] love(int i, int j, int NU, int NV, float age) {
-        float[] base = Poly.mix(c(0xFF9EC4), c(0xFF5A94), (float) (j / (double) NV));
-        // small hearts drifting up
-        for (int h = 0; h < 5; h++) {
-            int hx = 2 + (h * 5) % 18, hy = (int) ((((h * 11) - age * (0.10 + h * 0.015)) % 32 + 32) % 32);
-            if ((i == hx && j == hy) || (i == hx + 2 && j == hy) || (i == hx + 1 && j == hy + 1)) base = c(0xFFE0EE);
-            if ((i == hx + 1 && j == hy) ) base = c(0xFFE0EE);
-        }
-        boolean big = ((int) (age * 0.1) & 1) == 0;
-        String[] h = HEART;
-        if (spr(h, i, j, 11, 14)) {
-            base = c(0xE0143C);
-            if (i == 7 && j == 11 || i == 8 && j == 11 || i == 7 && j == 12) base = c(0xFFC0D0);                                       // shine
-            if (big && ((i - 6) + (j - 9) < 1)) base = c(0xFFFFFF);
-        } else {                                                                                                                       // outline around the heart
-            if (spr(h, i - 1, j, 11, 14) || spr(h, i + 1, j, 11, 14) || spr(h, i, j - 1, 11, 14) || spr(h, i, j + 1, 11, 14)) base = c(0xFFFFFF);
-        }
-        if (i == 0 || i == NU - 1 || j == NV - 1) base = c(0xFFFFFF);
-        else if (i == 1 || i == NU - 2 || j == NV - 2) base = Poly.mix(base, c(0xFFFFFF), 0.5f);
-        return base;
-    }
-
-    private static float[] camo(int i, int j, int NU, int NV, float age) {
-        // blocky blobs from two octaves of low-frequency noise
-        double n = noise(i / 3 + 7, j / 3 + 2) * 0.6 + noise(i / 2 + 31, j / 2 + 13) * 0.4;
-        float[] base = n < 0.30 ? c(0x2F3B22) : n < 0.52 ? c(0x5C6B35) : n < 0.74 ? c(0x4A3A22) : c(0xA89A62);
-        if (noise(i, j) > 0.94) base = Poly.mix(base, c(0x1E2616), 0.5f);
-        // dog-tag patch
-        if (i >= 8 && i <= 13 && j >= 12 && j <= 17) { base = c(0xC9CED8); if (i == 8 || i == 13 || j == 12 || j == 17) base = c(0x8A90A0); if (j == 14 && i >= 9 && i <= 12) base = c(0x2A2D38); if (j == 15 && i >= 9 && i <= 11) base = c(0x2A2D38); }
-        if (i == 0 || i == NU - 1 || j == NV - 1 || j == 0) base = c(0x181E10);
-        else if ((i == 1 || i == NU - 2 || j == NV - 2) && ((i + j) & 1) == 0) base = c(0xD8C060);   // stitched edge
-        return base;
-    }
-
-    private static float[] synth(int i, int j, int NU, int NV, float age) {
-        double v = j / (double) NV;
-        float[] base;
-        int horizon = 19;
-        if (j < horizon) {
-            base = Poly.mix(c(0x2A0B52), c(0xFF4FA3), (float) Math.pow(j / (double) horizon, 1.4));
-            // sun with horizontal cuts
-            double dx = i - 10.5, dy = j - 12.5, d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 7.2) {
-                boolean cut = j > 13 && ((j - 13) % 3 == 2);
-                if (!cut) base = Poly.mix(c(0xFFE259), c(0xFF4F8B), (float) ((j - 5) / 14.0));
-                base = g(((int) (base[0] * 255) << 16) | ((int) (base[1] * 255) << 8) | (int) (base[2] * 255), 0.8f);
-            }
-            if (noise(i, j) > 0.97 && j < 8) base = c(0xFFFFFF);                                    // stars
-        } else {
-            base = c(0x14062E);
-            double depth = (j - horizon) / (double) (NV - horizon);
-            // horizontal grid lines moving toward the viewer
-            double ph = ((j - horizon) + (age * 0.08)) % 4.0;
-            if (ph < 1.0 && j > horizon + 1) base = g(0x39F3FF, 0.8f);
-            // converging vertical lines
-            double xr = (i - 10.5) / (1 + depth * 2.6);
-            if (Math.abs(xr - Math.round(xr / 2.2) * 2.2) < 0.35 / (1 + depth) + 0.02) base = g(0xFF4FD8, 0.8f);
-            if (j == horizon) base = g(0xFFFFFF, 0.9f);
-        }
-        if (i == 0 || i == NU - 1 || j == NV - 1) base = c(0x0A0420);
-        return base;
-    }
-
-    private static float[] storm(int i, int j, int NU, int NV, float age) {
-        double flash = Math.max(0, Math.sin(age * 0.07)); flash = Math.pow(flash, 24);          // brief lightning flashes
-        float[] base = Poly.mix(c(0x2B3A55), c(0x0F1626), (float) (j / (double) NV));
-        base = Poly.mix(base, g(0xCFE3FF, 0.8f), (float) flash * 0.45f);
-        // rain
-        for (int r = 0; r < 12; r++) {
-            int rx = (r * 7 + 3) % NU, ry = (int) (((r * 13 - age * 0.9) % 34 + 34) % 34);
-            if ((i == rx && j == ry) || (i == rx - 1 && j == ry + 1)) base = c(0x6EA8E8);
-        }
-        // cloud
-        int[][] cloud = {{4, 4, 18}, {3, 5, 19}, {2, 6, 20}, {2, 7, 20}, {3, 8, 19}};
-        for (int[] row : cloud) if (j == row[0] + 0 && false) base = base;
-        double cd = 0;
-        double[][] puffs = {{6, 6, 3.4}, {10, 4.5, 4.2}, {15, 5.5, 3.8}, {18, 7, 3.0}, {4, 8, 2.6}, {12, 8, 3.6}};
-        boolean in = false;
-        for (double[] p : puffs) { double dx = i - p[0], dy = j - p[1]; if (dx * dx + dy * dy < p[2] * p[2]) in = true; }
-        if (in) base = j > 7 ? c(0x6E7A94) : c(0xA9B6CE);
-        // lightning bolt
-        int[][] bolt = {{11, 9}, {10, 10}, {10, 11}, {9, 12}, {10, 13}, {9, 14}, {9, 15}, {8, 16}, {9, 17}, {8, 18}, {7, 19}, {8, 20}};
-        for (int[] b : bolt) if (i == b[0] || i == b[0] + 1) { if (j == b[1]) base = g(flash > 0.2 ? 0xFFFFFF : 0xFFE24A, 1f); }
-        if (flash > 0.2) for (int[] b : bolt) if ((i == b[0] - 1 || i == b[0] + 2) && j == b[1]) base = Poly.mix(base, g(0xFFF7B0, 0.9f), 0.6f);
-        if (i == 0 || i == NU - 1 || j == NV - 1) base = c(0x0A0F1C);
-        return base;
-    }
+    static void cape(String id, float age, boolean plus) { ExtraCape.draw(id, age, plus); }
 
     // ================================================================== WINGS (pixel cells in the wing plane)
-    static final String[] WINGS = {"dragon", "butterfly", "crystal", "mecha", "dragonfly"};
+    static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly"};
 
-    private static final double CELL = 0.020;
+    private static double CELL = 0.020, HZ = 0.011;
     private static final Map<Long, float[]> W = new LinkedHashMap<Long, float[]>();
     private static long key(int ix, int iy) { return ((long) (ix + 1000) << 20) | (iy + 1000); }
 
@@ -223,20 +92,23 @@ final class ExtraPix {
     }
 
     private static float WA = 1f;
+    private static double SC = 1.0;
+    private static boolean DEF = false;
+    private static float AGE = 0f;
     private static boolean outline = true;
 
     static void wing(String id, float age) {
-        W.clear(); WA = 1f; outline = true;
+        CELL = 0.020; HZ = 0.011; W.clear(); WA = 1f; outline = true; SC = (id.equals("dragon") || id.equals("azure") || id.equals("venom")) ? 1.32 : 1.0; DEF = id.equals("azure") || id.equals("venom"); AGE = age; if (DEF) { CELL = id.equals("azure") ? 0.034 : 0.045; HZ = 0.022; SC = 1.0; }
         if (id.equals("dragon")) dragonWing(age);
         else if (id.equals("butterfly")) butterflyWing(age);
-        else if (id.equals("crystal")) crystalWing(age);
-        else if (id.equals("mecha")) mechaWing(age);
+        else if (id.equals("azure")) bigDragon(age, true);
+        else if (id.equals("venom")) bigDragon(age, false);
         else dragonflyWing(age);
         emitWing();
     }
 
     private static void emitWing() {
-        final double hz = 0.011;
+        final double hz = HZ;
         for (Map.Entry<Long, float[]> e : W.entrySet()) {
             long kk = e.getKey();
             int ix = (int) (kk >> 20) - 1000, iy = (int) (kk & 0xFFFFF) - 1000;
@@ -245,9 +117,16 @@ final class ExtraPix {
             float m = 0.97f + 0.05f * noise(iy, ix);
             if (outline && edge) m *= 0.62f;
             float[] cc = {Math.min(1f, col[0] * m), Math.min(1f, col[1] * m), Math.min(1f, col[2] * m), edge && outline ? col[3] * 0.4f : col[3]};
-            double x0 = ix * CELL, x1 = x0 + CELL, y0 = iy * CELL, y1 = y0 + CELL;
-            double[] a = Poly.p(x0, y0, -hz), b = Poly.p(x1, y0, -hz), cq = Poly.p(x1, y1, -hz), d = Poly.p(x0, y1, -hz);
-            double[] a2 = Poly.p(x0, y0, hz), b2 = Poly.p(x1, y0, hz), c2 = Poly.p(x1, y1, hz), d2 = Poly.p(x0, y1, hz);
+            double x0 = ix * CELL * SC, x1 = x0 + CELL * SC, y0 = iy * CELL * SC, y1 = y0 + CELL * SC;
+            double dzz = 0, dyy = 0;
+            if (DEF) {                                                    // wing folds and trails like a real wing: the tip lags behind the arm
+                double xc = (x0 + x1) * 0.5, ph = AGE * 0.12 - xc * 1.9;
+                dzz = 0.10 * xc * xc * Math.sin(ph) - 0.06 * xc;
+                dyy = -0.07 * xc * xc * (0.5 + 0.5 * Math.sin(ph)) * 1.0;
+                y0 += dyy; y1 += dyy;
+            }
+            double[] a = Poly.p(x0, y0, -hz + dzz), b = Poly.p(x1, y0, -hz + dzz), cq = Poly.p(x1, y1, -hz + dzz), d = Poly.p(x0, y1, -hz + dzz);
+            double[] a2 = Poly.p(x0, y0, hz + dzz), b2 = Poly.p(x1, y0, hz + dzz), c2 = Poly.p(x1, y1, hz + dzz), d2 = Poly.p(x0, y1, hz + dzz);
             Poly.quad(a, b, cq, d, cc, cc, cc, cc, WA);
             Poly.quad(a2, d2, c2, b2, cc, cc, cc, cc, WA);
             if (!W.containsKey(key(ix - 1, iy))) Poly.quad(a, d, d2, a2, cc, cc, cc, cc, WA);
@@ -273,6 +152,10 @@ final class ExtraPix {
         for (double[] t : tips) seg(0.74, 0.54, t[0], t[1], 0.011, bone);
         seg(0.02, 0.00, 0.12, 0.30, 0.020, bone); seg(0.12, 0.30, 0.36, 0.62, 0.018, bone); seg(0.36, 0.62, 0.74, 0.54, 0.016, bone);
         seg(0.74, 0.54, 0.80, 0.68, 0.012, horn); seg(0.36, 0.62, 0.34, 0.72, 0.010, horn);      // claws
+        double glow = 0.65 + 0.35 * Math.sin(age * 0.12);
+        float[] ember = g(0xFF8A1F, (float) (0.7 + 0.3 * glow));
+        for (double[] t : tips) seg(0.74, 0.54, t[0] * 0.97 + 0.02, t[1] * 0.97 + 0.01, 0.0055, ember);       // glowing veins
+        seg(0.12, 0.30, 0.36, 0.62, 0.006, ember); seg(0.36, 0.62, 0.74, 0.54, 0.006, ember);
     }
 
     // --- butterfly: two rounded lobes with a dark border, white dots and blue eyespots
@@ -301,70 +184,45 @@ final class ExtraPix {
         return Poly.mix(c(0xFF8A1E), c(0xE8501A), (float) sm((d - 0.4) / 0.4));
     }
 
-    // --- crystal: angular translucent shards, faceted light/dark halves
-    private static void shard(final double bx, final double by, double deg, final double len, final double w) {
-        final double ang = Math.toRadians(deg), ca = Math.cos(ang), sa = Math.sin(ang);
-        final double[][] kite = {{0, 0}, {0.30 * len, w}, {len, 0}, {0.30 * len, -w}};
-        fill(Math.min(bx, bx + ca * len) - w - 0.02, Math.min(by, by + sa * len) - w - 0.02, Math.max(bx, bx + ca * len) + w + 0.02, Math.max(by, by + sa * len) + w + 0.02, new Fn() {
-            public float[] at(double x, double y) {
-                double dx = x - bx, dy = y - by, along = dx * ca + dy * sa, across = -dx * sa + dy * ca;
-                if (!inPoly(along, across, kite)) return null;
-                float t = (float) Math.min(1, along / len);
-                float[] col = Poly.mix(c(0x7DF3FF), c(0x9A6BFF), t);
-                if (across > 0) col = new float[]{col[0] * 0.72f, col[1] * 0.72f, col[2] * 0.85f, col[3]};      // shaded facet
-                if (Math.abs(across) < w * 0.07) col = g(0xFFFFFF, 0.9f);                                       // bright ridge
-                col[3] = 0.55f + 0.3f * t;
-                return col;
+    // --- Bedrock-style chunky wings (big blocks, thick). azure = rounded feathered arch, white to blue. venom = swept-back dragon wing, purple/green/gold.
+    private static void bigDragon(final float age, final boolean azure) {
+        if (azure) {
+            final double[] lens = {0.58, 0.76, 0.92, 1.02, 1.04, 0.98, 0.86, 0.68};
+            fill(-0.1, -0.7, 1.2, 1.0, new Fn() { public float[] at(double x, double y) {
+                double dx = x - 0.03, dy = y - 0.06, r = Math.hypot(dx, dy), th = Math.toDegrees(Math.atan2(dy, dx));
+                double s = (112 - th) / 15.0;                               // feather index along the fan
+                if (s < 0 || s >= lens.length || r < 0.04) return null;
+                int k = (int) Math.floor(s); double frac = s - k;
+                double len = lens[k] * (1 - 0.10 * Math.abs(2 * frac - 1) * 1.0) - (frac > 0.5 ? 0 : 0.0);
+                if (r > len) return null;
+                double t = r / len;
+                float[] col = t < 0.30 ? c(0xFFFFFF) : t < 0.55 ? c(0xCFE8FF) : t < 0.80 ? c(0x86BBF7) : c(0x4A84E0);
+                if (frac < 0.09 || frac > 0.93) col = Poly.mix(col, c(0x2F63BE), 0.55f);                             // dark gap between feathers
+                if (k < 2 && t < 0.35) col = c(0xF2F8FF);
+                if (r > len - CELL * 1.1) col = Poly.mix(col, c(0x2F63BE), 0.35f);
+                return col; } });
+        } else {
+            final double[] el = {0.14, 0.40}, wr = {0.46, 0.74};
+            final double[][] tips = {{1.10, 0.66}, {1.06, 0.14}, {0.80, -0.26}, {0.50, -0.42}, {0.22, -0.24}};
+            java.util.List<double[]> poly = new java.util.ArrayList<double[]>();
+            poly.add(new double[]{0.02, 0.0}); poly.add(el); poly.add(wr);
+            for (int i = 0; i < tips.length; i++) {
+                poly.add(tips[i]);
+                if (i + 1 < tips.length) { double mx = (tips[i][0] + tips[i + 1][0]) / 2, my = (tips[i][1] + tips[i + 1][1]) / 2; poly.add(new double[]{mx + (wr[0] - mx) * 0.16, my + (wr[1] - my) * 0.16}); }
             }
-        });
-    }
-
-    private static void crystalWing(float age) {
-        WA = 0.82f; outline = true;
-        double[] angs = {86, 70, 54, 38, 22, 8, -6};
-        double[] lens = {0.38, 0.56, 0.74, 0.88, 0.82, 0.64, 0.42};
-        for (int i = 0; i < angs.length; i++) shard(0.03 + i * 0.01, 0.02 + (6 - i) * 0.01, angs[i] + Math.sin(age * 0.15 + i) * 1.5, lens[i], 0.075);
-        double[] a2 = {78, 46, 14};
-        for (int i = 0; i < a2.length; i++) shard(0.05, 0.05, a2[i], 0.40 + 0.04 * i, 0.05);
-    }
-
-    // --- mecha: armoured plates with glowing stripes, a spinning gear and thruster flames
-    private static void plate(final double bx, final double by, double deg, final double len, final double w, final int idx) {
-        final double ang = Math.toRadians(deg), ca = Math.cos(ang), sa = Math.sin(ang);
-        fill(Math.min(bx, bx + ca * len) - w - 0.02, Math.min(by, by + sa * len) - w - 0.02, Math.max(bx, bx + ca * len) + w + 0.02, Math.max(by, by + sa * len) + w + 0.02, new Fn() {
-            public float[] at(double x, double y) {
-                double dx = x - bx, dy = y - by, along = dx * ca + dy * sa, across = -dx * sa + dy * ca;
-                if (along < 0 || along > len || Math.abs(across) > w * (1 - 0.35 * along / len)) return null;
-                float[] col = Poly.mix(c(0xB4BAC8), c(0x6C7286), (float) (along / len));
-                if (Math.abs(across) < w * 0.16) col = g(0x39F3FF, 0.9f);                                      // glowing stripe
-                else if (((int) Math.floor(along / 0.07)) % 3 == 0 && along > 0.02) col = Poly.mix(col, c(0x3A3F50), 0.55f);   // panel gaps
-                if (along > len * 0.9) col = c(0x2A2D38);
-                return col;
-            }
-        });
-    }
-
-    private static void mechaWing(float age) {
-        outline = true;
-        double[] angs = {74, 50, 26, 2};
-        double[] lens = {0.50, 0.70, 0.80, 0.62};
-        for (int i = 0; i < angs.length; i++) plate(0.10, 0.06, angs[i], lens[i], 0.062, i);
-        // thruster flames at the plate tips
-        for (int i = 0; i < angs.length; i++) {
-            double a = Math.toRadians(angs[i]), fl = 0.05 + 0.03 * Math.sin(age * 0.5 + i * 1.7);
-            double tx = 0.10 + Math.cos(a) * lens[i], ty = 0.06 + Math.sin(a) * lens[i];
-            seg(tx, ty, tx + Math.cos(a) * fl * 1.6, ty + Math.sin(a) * fl * 1.6, 0.020, g(0xFFE060, 0.95f));
-            seg(tx, ty, tx + Math.cos(a) * fl, ty + Math.sin(a) * fl, 0.012, g(0xFFFFFF, 1f));
+            poly.add(new double[]{0.14, -0.04});
+            final double[][] P = poly.toArray(new double[0][]);
+            fill(0, -0.6, 1.1, 0.95, new Fn() { public float[] at(double x, double y) {
+                if (!inPoly(x, y, P)) return null;
+                double d = Math.hypot(x - 0.10, y - 0.10);
+                float[] col = d < 0.42 ? c(0x3FDB6E) : d < 0.72 ? c(0x9A55EA) : c(0x5A22A8);
+                if (noise((int) (x / CELL), (int) (y / CELL)) > 0.9) col = Poly.mix(col, c(0xFFFFFF), 0.25f);
+                return col; } });
+            float[] bone = c(0xFFD21F), bone2 = c(0xE0A800);
+            for (double[] t : tips) seg(wr[0], wr[1], t[0], t[1], 0.040, bone);
+            seg(0.02, 0.0, el[0], el[1], 0.050, bone2); seg(el[0], el[1], wr[0], wr[1], 0.044, bone2);
+            seg(wr[0], wr[1], wr[0] + 0.05, wr[1] + 0.16, 0.030, c(0xFFF2A0));
         }
-        // spinning gear at the joint
-        final double rot = age * 0.08;
-        fill(-0.05, -0.08, 0.28, 0.25, new Fn() { public float[] at(double x, double y) {
-            double dx = x - 0.14, dy = y - 0.12, d = Math.sqrt(dx * dx + dy * dy), a = Math.atan2(dy, dx) - rot;
-            double tooth = 0.10 + 0.022 * (Math.sin(a * 8) > 0 ? 1 : 0);
-            if (d > tooth) return null;
-            if (d < 0.030) return c(0x2A2D38);
-            if (d < 0.055) return g(0x39F3FF, 0.8f);
-            return c(0xE0B040); } });
     }
 
     // --- dragonfly: slim translucent wings with veins and a dark tip mark
@@ -453,12 +311,12 @@ final class ExtraPix {
     }
 
     // ================================================================== PETS
-    static final String[] PETS = {"drake", "fox", "penguin", "panda", "axolotl"};
+    static final String[] PETS = {"drake", "bunny", "penguin", "panda", "axolotl"};
 
     static void pet(String id, float age) {
         Vox.TEXEL = 0.0185; Vox.reset(); Vox.marker = null; Vox.yo = -0.05;
         if (id.equals("drake")) drake(age);
-        else if (id.equals("fox")) fox(age);
+        else if (id.equals("bunny")) bunny(age);
         else if (id.equals("penguin")) penguin(age);
         else if (id.equals("panda")) panda(age);
         else axolotl(age);
@@ -496,28 +354,26 @@ final class ExtraPix {
         Vox.box(0, hy - 0.052, 0.020, 0.010, 0.010, 0.026, c(0x2E8F42), dg, 0);                      // back spikes
     }
 
-    private static void fox(float age) {
-        double bob = Math.sin(age * 0.10) * 0.005;
-        Vox.yo = -0.05 + bob;
-        float[] or = c(0xF08A2A), dor = c(0xC8641A), wh = c(0xFFF6E8), bk = c(0x24202A);
-        for (int s = -1; s <= 1; s += 2) Vox.box(s * 0.040, 0.108, -0.020, 0.022, 0.022, 0.032, bk, bk, 3);        // black socks
-        Vox.box(0, 0.056, 0.012, 0.058, 0.046, 0.062, or, dor, 1);
-        Vox.box(0, 0.062, -0.044, 0.034, 0.036, 0.010, wh, wh, 1);                                                  // white chest
-        for (int i = 0; i < 4; i++) {                                                                                // big bushy tail
-            double sw = Math.sin(age * 0.16 - i * 0.7) * 0.016 * (i + 1) * 0.5;
-            double sz = 0.030 + 0.012 * Math.sin(i * 1.3);
-            Vox.box(0.030 + sw + i * 0.014, 0.070 - i * 0.016, 0.082 + i * 0.030, sz + 0.012, sz + 0.010, 0.022, i == 3 ? wh : or, i == 3 ? wh : dor, 4);
-        }
+    private static void bunny(float age) {
+        double hop = Math.max(0, Math.sin(age * 0.12)) * 0.012, tw = Math.sin(age * 0.3) * 0.006;
+        Vox.yo = -0.05 - hop;
+        float[] wh = c(0xFFFFFF), sh = c(0xE4E8F2), pk = c(0xFFA6C4), bk = c(0x2A2430);
+        for (int s = -1; s <= 1; s += 2) Vox.box(s * 0.040, 0.108, -0.016, 0.022, 0.016, 0.040, sh, sh, 3);        // big feet
+        Vox.box(0, 0.056, 0.012, 0.056, 0.048, 0.056, wh, sh, 1);                                                    // body
+        Vox.box(0, 0.060, -0.044, 0.030, 0.034, 0.010, sh, sh, 1);                                                   // belly
+        Vox.box(0, 0.066, 0.078, 0.026, 0.026, 0.020, wh, wh, 4);                                                    // fluffy tail
+        for (int s = -1; s <= 1; s += 2) Vox.box(s * 0.060, 0.050, -0.010, 0.012, 0.030, 0.020, sh, sh, 2);          // arms
         double hy = -0.050;
-        Vox.box(0, hy, -0.014, 0.060, 0.044, 0.046, or, dor, 0);
+        Vox.box(0, hy, -0.014, 0.056, 0.046, 0.048, wh, sh, 0);                                                      // head
         for (int s = -1; s <= 1; s += 2) {
-            Vox.box(s * 0.040, hy + 0.020, -0.056, 0.024, 0.020, 0.010, wh, wh, 0);                                // white cheeks
-            Vox.box(s * 0.046, hy - 0.058, -0.012, 0.020, 0.030, 0.014, or, dor, 0);                              // ears
-            Vox.box(s * 0.048, hy - 0.092, -0.012, 0.012, 0.016, 0.010, bk, bk, 0);                               // black ear tips
-            Vox.box(s * 0.028, hy - 0.006, -0.060, 0.008, 0.012, 0.003, bk, bk, 0);                               // eyes
+            double lean = s * 0.008 + tw * s;
+            Vox.box(s * 0.034 + lean, hy - 0.090, -0.004, 0.018, 0.050, 0.012, wh, sh, 0);                          // tall ears
+            Vox.box(s * 0.034 + lean, hy - 0.088, -0.016, 0.009, 0.040, 0.003, pk, pk, 0);                         // pink inside
+            Vox.box(s * 0.028, hy - 0.004, -0.064, 0.009, 0.012, 0.003, bk, bk, 0);                                // eyes
+            Vox.box(s * 0.044, hy + 0.014, -0.062, 0.010, 0.007, 0.003, pk, pk, 0);                                // blush
         }
-        Vox.box(0, hy + 0.012, -0.076, 0.020, 0.016, 0.022, wh, wh, 2);                                            // snout
-        Vox.box(0, hy + 0.002, -0.096, 0.008, 0.007, 0.004, bk, bk, 2);                                            // nose
+        Vox.box(0, hy + 0.012, -0.066, 0.009, 0.007, 0.004, pk, pk, 2);                                             // nose
+        Vox.box(0, hy + 0.026, -0.064, 0.003, 0.008, 0.003, bk, bk, 2);                                             // mouth
     }
 
     private static void penguin(float age) {
