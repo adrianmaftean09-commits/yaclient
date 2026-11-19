@@ -680,7 +680,7 @@ public class MenuScreen extends GuiScreen {
     }
 
     /** Accent colour of each bundle (same as the website cards). */
-    private static final int[] BCOL = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF};
+    private static final int[] BCOL = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF, 0xFFFFD21F, 0xFF3DDC6A};
 
     /** One locker card picture: the player (own skin) wearing the item, or the whole bundle, swaying gently. */
     private void drawWornCard(String key, int bi, boolean bundle, int cx, int baseY, int size) {

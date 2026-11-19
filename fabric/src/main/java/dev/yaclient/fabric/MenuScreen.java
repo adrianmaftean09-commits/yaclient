@@ -427,7 +427,7 @@ public class MenuScreen extends Screen {
 
     // ---------- cosmetics ----------
     private static final String[] SLOT_NAMES = {"Cape", "Wings", "Bandana", "Pet"};
-    private static final int[] BUNDLE_ACC = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF};
+    private static final int[] BUNDLE_ACC = {0xFFE10600, 0xFFE4E4E8, 0xFF9FD8FF, 0xFFFF86B6, 0xFF8C6CFF, 0xFFFF9B3D, 0xFFFF4040, 0xFF6EC6FF, 0xFFFFD21F, 0xFF3DDC6A};
 
     private void bodyHit(int x, int y, int w, int h, Act click) {
         int y0 = Math.max(y, VY), y1 = Math.min(y + h, VY + VH);
