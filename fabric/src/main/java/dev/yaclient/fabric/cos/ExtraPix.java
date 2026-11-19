@@ -222,7 +222,7 @@ final class ExtraPix {
         double[][] F = new double[3][];
         for (int i = 0; i < 3; i++) {
             double dx = base[i][0] - J[0], dy = base[i][1] - J[1];
-            F[i] = Poly.p(J[0] + dx * cs - dy * sn, J[1] + dx * sn + dy * cs, 0);
+            F[i] = Poly.p(J[0] + dx * cs - dy * sn, J[1] + dx * sn + dy * cs, Math.sin(age * 0.10 - 0.22 * (i + 1)) * 0.058);   // follows the leading edge, a hair behind
         }
         double[][] Fm = new double[3][];
         for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.95);
