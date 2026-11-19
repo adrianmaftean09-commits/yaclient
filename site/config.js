@@ -6,5 +6,5 @@ window.YA = {
   discord: "https://discord.gg/yaproject",
   github: "https://github.com/adrianmaftean09-commits/yaclient",
   currency: "EUR",
-  prices: { item: 3, monoBundle: 10, qluxBundle: 8, animeBundle: 10, plus: 4.99 }   // euros: one cosmetic, the full Monochrome bundle, YA Plus per month. Beta Tester items are free.
+  prices: { item: 3.49, monoBundle: 10.99, qluxBundle: 8.99, animeBundle: 10.99, plus: 5.49 }   // euros: one cosmetic, the full Monochrome bundle, YA Plus per month. Beta Tester items are free.
 };

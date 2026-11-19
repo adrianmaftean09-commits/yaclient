@@ -23,7 +23,7 @@ if((window.YA.hidden||[]).some(function(h){return id===h||id.indexOf(h+'_')===0}
 var ITEM={},SETOF={};Object.keys(B).forEach(function(k){B[k].it.forEach(function(x){ITEM[x[0]]={n:x[1],d:x[2],s:k};SETOF[x[0]]=k})});
 if(!ITEM[id]){location.replace('/store');return}
 var key=ITEM[id].s,b=B[key],it=ITEM[id];
-function setPrice(k){return k==='beta'?0:k==='qlux'?(PR.qluxBundle||8):k==='mono'?(PR.monoBundle||10):(PR.animeBundle||10)}
+function setPrice(k){return k==='beta'?0:k==='qlux'?(PR.qluxBundle||8.99):k==='mono'?(PR.monoBundle||10.99):(PR.animeBundle||10.99)}
 function itemPrice(k){return k==='beta'?0:PR.item}
 document.title=it.n+' - YA CLIENT';
 var nm=document.getElementById('nm');nm.textContent=it.n.toUpperCase();

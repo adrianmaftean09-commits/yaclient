@@ -24,7 +24,7 @@ var key=(new URLSearchParams(location.search).get('b')||location.hash.slice(1)||
 if((window.YA.hidden||[]).some(function(h){return key===h||key.indexOf(h+'_')===0}))location.replace('/store');
 if(!B[key]){location.replace('/store?c=bundle');return}
 var b=B[key],ids=b.it.map(function(x){return x[0]});
-function setPrice(k){return k==='beta'?0:k==='qlux'?(PR.qluxBundle||8):k==='mono'?(PR.monoBundle||10):(PR.animeBundle||10)}
+function setPrice(k){return k==='beta'?0:k==='qlux'?(PR.qluxBundle||8.99):k==='mono'?(PR.monoBundle||10.99):(PR.animeBundle||10.99)}
 function itemPrice(k){return k==='beta'?0:PR.item}
 var ITEM={},SETOF={};Object.keys(B).forEach(function(k){B[k].it.forEach(function(x){ITEM[x[0]]={n:x[1],s:k};SETOF[x[0]]=k})});
 document.title=b.n+' - YA CLIENT';document.getElementById('nm').textContent=b.n.toUpperCase();document.getElementById('hi').innerHTML=b.it.map(function(x){return '<li><i style="background:'+b.c+'"></i>'+x[1]+'</li>'}).join('');[0,1,2].forEach(function(n){document.getElementById('r'+n).src='/b/'+key+'-'+(n+1)+'.jpg'});function fit(){var h=document.getElementById('hero'),nv=document.querySelector('nav.top'),w=h.clientWidth,H=innerHeight-(nv?nv.offsetHeight:68),k=w/1920;h.style.height=Math.max(H,780*k)+'px';document.getElementById('hs').style.transform='scale('+k+')';var nm=document.getElementById('nm'),fs=92;nm.style.fontSize=fs+'px';while(nm.scrollWidth>840&&fs>40){fs-=4;nm.style.fontSize=fs+'px'}}fit();addEventListener('resize',fit);

@@ -313,9 +313,9 @@ function viewCosmetics() {
     <div class="tabs" id="ctabs"></div><div id="cmsg" class="note"></div><div class="cos" id="cgrid"></div>`;
 }
 const BUNDLES = [
-  ['beta', 'Beta Tester Bundle', '#e10600', 0], ['mono', 'Monochrome Bundle', '#e4e4e8', 10], ['qlux', 'Qlux Bundle', '#9fd8ff', 8],
-  ['sakura', 'Sakura Bundle', '#ff86b6', 10], ['shinobi', 'Shinobi Bundle', '#8c6cff', 10], ['kitsune', 'Kitsune Bundle', '#ff9b3d', 10],
-  ['santa', 'Santa Bundle', '#ff4040', 10], ['frost', 'Frost Bundle', '#6ec6ff', 10], ['clown', 'Clown Bundle', '#ffd21f', 10], ['luck', 'Luck Bundle', '#3ddc6a', 10]];
+  ['beta', 'Beta Tester Bundle', '#e10600', 0], ['mono', 'Monochrome Bundle', '#e4e4e8', 10.99], ['qlux', 'Qlux Bundle', '#9fd8ff', 8.99],
+  ['sakura', 'Sakura Bundle', '#ff86b6', 10.99], ['shinobi', 'Shinobi Bundle', '#8c6cff', 10.99], ['kitsune', 'Kitsune Bundle', '#ff9b3d', 10.99],
+  ['santa', 'Santa Bundle', '#ff4040', 10.99], ['frost', 'Frost Bundle', '#6ec6ff', 10.99], ['clown', 'Clown Bundle', '#ffd21f', 10.99], ['luck', 'Luck Bundle', '#3ddc6a', 10.99]];
 const SETCOL = { ya: '#e10600', mono: '#e4e4e8', qlux: '#9fd8ff', sakura: '#ff86b6', shinobi: '#8c6cff', kitsune: '#ff9b3d', santa: '#ff4040', frost: '#6ec6ff', clown: '#ffd21f', luck: '#3ddc6a', azure: '#c9cdd8', axolotl: '#c9cdd8', butterfly: '#c9cdd8', cat: '#c9cdd8', crown: '#c9cdd8', dragon: '#c9cdd8', dragonfly: '#c9cdd8', drake: '#c9cdd8', halo: '#c9cdd8', sky: '#c9cdd8', bunny: '#c9cdd8', sunset: '#c9cdd8', forest: '#c9cdd8', ninja: '#c9cdd8', ocean: '#c9cdd8', panda: '#c9cdd8', venom: '#c9cdd8', rainbow: '#c9cdd8', space: '#c9cdd8', penguin: '#c9cdd8' };
 function siteBase() { return String(S._store || C.storeUrl || '').replace(/\/+$/, '').replace(/\/store$/, ''); }
 function openCos(v) {
@@ -337,7 +337,7 @@ async function fillCosmetics() {
     $('#cgrid').innerHTML = BUNDLES.map((b) => card('../assets/cos/b_' + b[0] + '.jpg', b[2], b[1], money(b[3]), 'b:' + b[0])).join('');
   } else {
     $('#cgrid').innerHTML = Object.keys(SLOT).filter((id) => cosTab === 'all' || SLOT[id] === cosTab).map((id) =>
-      card('../assets/cos/' + id + '.jpg', SETCOL[id.split('_')[0]], NAMES[id], prices[id] ? t('price') + ': ' + prices[id] : money(id.startsWith('ya_') ? 0 : 3), 'i:' + id)).join('');
+      card('../assets/cos/' + id + '.jpg', SETCOL[id.split('_')[0]], NAMES[id], prices[id] ? t('price') + ': ' + prices[id] : money(id.startsWith('ya_') ? 0 : 3.49), 'i:' + id)).join('');
   }
   S._store = r.store || '';
 }

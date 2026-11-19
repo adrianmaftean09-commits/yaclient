@@ -108,7 +108,7 @@ async function applyGrant(env, uuid, f) {
 
 // ---------- automatic card payments (Stripe Checkout) ----------
 // Secrets (Cloudflare Pages > Settings > Variables): STRIPE_SECRET (sk_live_... or sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...).
-const PRICE = { item: 3, mono: 10, qlux: 8, sakura: 10, shinobi: 10, kitsune: 10, santa: 10, frost: 10, clown: 10, luck: 10, plus: 4.99 };
+const PRICE = { item: 3.49, mono: 10.99, qlux: 8.99, sakura: 10.99, shinobi: 10.99, kitsune: 10.99, santa: 10.99, frost: 10.99, clown: 10.99, luck: 10.99, plus: 5.49 };   // includes the Stripe fee (about 1.5% + 0.25)
 const EXTRA_IDS = ['sky_cape', 'ocean_cape', 'sunset_cape', 'forest_cape', 'space_cape', 'dragon_wings', 'butterfly_wings', 'azure_wings', 'venom_wings', 'dragonfly_wings', 'ninja_bandana', 'crown_bandana', 'halo_bandana', 'cat_bandana', 'rainbow_bandana', 'drake_pet', 'bunny_pet', 'penguin_pet', 'panda_pet', 'axolotl_pet'];   // single items (3 each, not in a bundle)
 const DISABLED = ['qlux'];   // sets that cannot be bought for now
 const STORE_HIDDEN = ['qlux'];   // bundles switched off in the store (keep in sync with site/config.js 'hidden')

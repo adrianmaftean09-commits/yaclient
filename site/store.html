@@ -6,7 +6,7 @@
 </div></div>
 <footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/soon.js"></script><script src="/site.js"></script><script src="/plusbar.js?v=1"></script><script>
 (function(){
-var Y=window.YA,PR=Y.prices||{item:3,monoBundle:10},eur=window.YAeur;
+var Y=window.YA,PR=Y.prices||{item:3.49,monoBundle:10.99},eur=window.YAeur;
 var P={
  ya_cape:{n:'YA Cape',cat:'cape',slot:'cape',d:'Black and red cape with the YA logo glitching on it.',set:'beta'},
  ya_wings:{n:'Ember Wings',cat:'wings',slot:'wings',d:'Feathered wings, black fading to red.',set:'beta'},
@@ -70,14 +70,14 @@ var P={
  axolotl_pet:{n:'Axolotl (pet)',cat:'pet',slot:'pet',d:'A pink pixel axolotl with fluffy gills.',set:'x'}};
 var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for beta testers.',items:['ya_cape','ya_wings','ya_bandana','ya_pet'],free:true},
           mono:{n:'Monochrome Bundle',d:'Infinity cape, shadow dragon wings, bandana and yin yang pet.',items:['mono_cape','mono_wings','mono_bandana','mono_pet'],price:PR.monoBundle},
-          qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8,partner:1},
-          sakura:{n:'Sakura Bundle',d:'Cherry-blossom pink: petal wings, blossom cape, ribbon band and the bunny Mochi.',items:['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'],price:PR.animeBundle||10},
-          shinobi:{n:'Shinobi Bundle',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',items:['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'],price:PR.animeBundle||10},
-          kitsune:{n:'Kitsune Bundle',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',items:['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'],price:PR.animeBundle||10},
-          santa:{n:'Santa Bundle',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',items:['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'],price:PR.animeBundle||10},
-          frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10},
-          clown:{n:'Clown Bundle',d:'Pixel circus bundle: balloon wings, harlequin cape, striped pompom band and Bozo the juggling clown.',items:['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'],price:PR.animeBundle||10},
-          luck:{n:'Luck Bundle',d:'Lucky green bundle: clover-leaf wings, a white cape with one animated four-leaf clover, a lucky band and the ladybug Lucky.',items:['luck_cape', 'luck_wings', 'luck_bandana', 'luck_pet'],price:PR.animeBundle||10}};
+          qlux:{n:'Qlux Bundle',d:'Partner bundle made with the streamer Qlux: satin cape with the Qlux_ wordmark, angel wings, band and the Lumi spirit pet.',items:['qlux_cape','qlux_wings','qlux_bandana','qlux_pet'],price:PR.qluxBundle||8.99,partner:1},
+          sakura:{n:'Sakura Bundle',d:'Cherry-blossom pink: petal wings, blossom cape, ribbon band and the bunny Mochi.',items:['sakura_cape', 'sakura_wings', 'sakura_bandana', 'sakura_pet'],price:PR.animeBundle||10.99},
+          shinobi:{n:'Shinobi Bundle',d:'Night ninja: blade wings, moonlit cloak, headband and the ninja cat Kage.',items:['shinobi_cape', 'shinobi_wings', 'shinobi_bandana', 'shinobi_pet'],price:PR.animeBundle||10.99},
+          kitsune:{n:'Kitsune Bundle',d:'Shrine fox: flame wings, fox mask cape, shrine ribbon and the two-tailed fox Inari.',items:['kitsune_cape', 'kitsune_wings', 'kitsune_bandana', 'kitsune_pet'],price:PR.animeBundle||10.99},
+          santa:{n:'Santa Bundle',d:'Christmas pixel bundle: candy wings, gift cape, Santa band and the reindeer Rudy.',items:['santa_cape', 'santa_wings', 'santa_bandana', 'santa_pet'],price:PR.animeBundle||10.99},
+          frost:{n:'Frost Bundle',d:'Christmas pixel bundle: ice wings, snowflake cape, frost band and the snowman Frosty.',items:['frost_cape', 'frost_wings', 'frost_bandana', 'frost_pet'],price:PR.animeBundle||10.99},
+          clown:{n:'Clown Bundle',d:'Pixel circus bundle: balloon wings, harlequin cape, striped pompom band and Bozo the juggling clown.',items:['clown_cape', 'clown_wings', 'clown_bandana', 'clown_pet'],price:PR.animeBundle||10.99},
+          luck:{n:'Luck Bundle',d:'Lucky green bundle: clover-leaf wings, a white cape with one animated four-leaf clover, a lucky band and the ladybug Lucky.',items:['luck_cape', 'luck_wings', 'luck_bandana', 'luck_pet'],price:PR.animeBundle||10.99}};
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
 var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',clown:'#ffd21f',luck:'#3ddc6a',x:'#c9cdd8',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
 var PAGES=['sakura','shinobi','kitsune','santa','frost','clown','luck','mono','beta','qlux'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
