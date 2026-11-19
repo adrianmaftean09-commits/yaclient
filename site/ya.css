@@ -275,3 +275,13 @@ footer a:hover{color:var(--text)}
 .tagb{top:6px;left:6px;height:18px;padding:0 6px;font-size:9px;letter-spacing:.5px}
 .fchip{height:34px;padding:0 14px;font-size:13px}
 }
+
+@font-face{font-family:MC;src:url(/fonts/mc.woff) format("woff")}
+.tgc{padding:0;overflow:hidden;text-align:center}
+.tgc .mcs{height:170px;display:grid;place-items:center;background:radial-gradient(60% 80% at 50% 40%,#23232b,#0c0c0f);border-bottom:1px solid var(--line)}
+.tgc .nt{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.45);padding:3px 6px 3px 4px;height:56px}
+.tgc .nt img{width:50px;height:50px;display:block}
+.tgc .nt span{font:48px/50px MC,monospace;color:#fff;text-shadow:3px 3px 0 #3f3f3f;-webkit-font-smoothing:none;font-smooth:never}
+.tgc .mcap{font:32px/1 MC,monospace;color:#fff;text-shadow:2px 2px 0 #3f3f3f;margin:20px 0 6px;-webkit-font-smoothing:none}
+.tgc p{color:var(--mute);font-size:14px;margin:0 0 22px}
+@media(max-width:420px){.tgc .nt span{font-size:32px}.tgc .nt{height:40px}.tgc .nt img{width:34px;height:34px}}
