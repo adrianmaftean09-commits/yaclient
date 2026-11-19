@@ -167,8 +167,7 @@ final class ExtraPix {
 
     private static float[] vcol(double x, double y, double jx, double jy) {
         float t = (float) sm(Math.hypot(x - jx, y - jy) / 0.46);
-        float[] c = Poly.mix(c(0x34343A), c(0x1E1E22), t);
-        return c;
+        return g(0x26262A, 0.95f);                                                      // one flat colour
     }
 
     private static void vmem(double[] a, double[] b, double[] c, double[] j, float age) {
@@ -200,7 +199,7 @@ final class ExtraPix {
         double[] d = vsub(q, p);
         double[] n = vnorm(vcross(d, new double[]{0, 0, 1}));
         double[] m = vnorm(vcross(d, n));
-        double d0 = w0 * 0.8, d1 = w1 * 0.8;
+        double d0 = w0, d1 = w1;                                                           // square cross-section
         double[][] P = {voff(p, n, w0, m, d0), voff(p, n, -w0, m, d0), voff(p, n, -w0, m, -d0), voff(p, n, w0, m, -d0)};
         double[][] Q = {voff(q, n, w1, m, d1), voff(q, n, -w1, m, d1), voff(q, n, -w1, m, -d1), voff(q, n, w1, m, -d1)};
         for (int i = 0; i < 4; i++) {
@@ -244,12 +243,12 @@ final class ExtraPix {
         vmem(J, Fm[2], A, J, age);
         float[] bone = c(0x030304), edge = c(0x0A0A0C);
         vbone(A, J, 0.040, 0.032, bone, edge);
-        vbone(J, T, 0.028, 0.013, bone, edge);                                                                        // leading edge
-        vcube(T, 0.019, bone);
+        vbone(J, T, 0.018, 0.018, bone, edge);                                                                        // leading edge
+        vcube(T, 0.018, bone);
         double[] w = {0.021, 0.024, 0.016};
         for (int i = 0; i < 3; i++) {
-            vbone(J, F[i], w[i], 0.012, bone, edge);
-            vcube(F[i], 0.016, bone);
+            vbone(J, F[i], w[i], w[i], bone, edge);
+            vcube(F[i], w[i], bone);
         }
     }
 
