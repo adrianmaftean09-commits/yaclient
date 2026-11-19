@@ -351,7 +351,7 @@ public final class CosmeticsApi {
     private static Map<String, String> lookup(final String uuid) {
         Map<String, String> cached = OTHERS.get(uuid);
         Long at = FETCHED.get(uuid);
-        long ttl = cached != null && "1".equals(cached.get("client")) ? 8L * 1000L : 30L * 1000L;   // short, so equipping or removing a cosmetic shows up for others within seconds
+        long ttl = cached != null && "1".equals(cached.get("client")) ? 2L * 1000L : 10L * 1000L;   // very short, so equipping or removing a cosmetic shows up for others almost immediately
         boolean stale = at == null || System.currentTimeMillis() - at > ttl;
         if (stale && PENDING.add(uuid)) {
             Thread t = new Thread(new Runnable() {

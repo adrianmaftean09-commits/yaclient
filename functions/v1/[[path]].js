@@ -73,7 +73,7 @@ async function getJson(url) {
   try { const r = await fetch(url, { headers: { 'user-agent': 'YA-CLIENT-Store' } }); return r.ok ? await r.json() : null; } catch (_) { return null; }
 }
 async function loadPlayer(env, uuid) {
-  const v = (await env.DB.get('p:' + uuid, 'json')) || { owned: [], equipped: {} };
+  const v = (await env.DB.get('p:' + uuid, { type: 'json', cacheTtl: 30 })) || { owned: [], equipped: {} };
   if (env.BETA_OPEN === '1') v.owned = Object.keys(ITEMS);   // open beta: everyone owns everything
   return v;
 }
