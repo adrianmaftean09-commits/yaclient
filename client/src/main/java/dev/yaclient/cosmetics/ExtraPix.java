@@ -30,9 +30,10 @@ final class ExtraPix {
         return false;
     }
 
-    static final String[] CAPES = {"sky", "sunset", "forest", "ocean", "space", "storm"};
+    static final String[] CAPES = capeList();
+    private static String[] capeList() { String[] a = {"sky", "sunset", "forest", "ocean", "space", "storm"}, b = CapeArt.names(), r = new String[a.length + b.length]; System.arraycopy(a, 0, r, 0, a.length); System.arraycopy(b, 0, r, a.length, b.length); return r; }
 
-    static void cape(String id, float age, boolean plus) { ExtraCape.draw(id, age, plus); }
+    static void cape(String id, float age, boolean plus) { if (CapeArt.has(id)) CapeArt.draw(id, age, plus); else ExtraCape.draw(id, age, plus); }
 
     // ================================================================== WINGS (pixel cells in the wing plane)
     static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly", "vampire", "vamp_crimson", "vamp_scarlet", "vamp_orange", "vamp_amber", "vamp_gold", "vamp_lime", "vamp_green", "vamp_emerald", "vamp_teal", "vamp_cyan", "vamp_sky", "vamp_blue", "vamp_indigo", "vamp_violet", "vamp_purple", "vamp_magenta", "vamp_pink", "vamp_rose", "vamp_white", "vamp_silver"};

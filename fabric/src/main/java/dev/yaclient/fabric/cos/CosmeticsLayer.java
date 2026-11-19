@@ -168,6 +168,9 @@ public class CosmeticsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
             Poly.end();
             GlStateManager.disableTexture2D();
         }
+        Poly.begin();
+        CosmeticRender.capeThickness(age, plus, CosmeticRender.capeEdgeColor(style));
+        Poly.end();
     }
 
     private void drawPet(float age, String style) {

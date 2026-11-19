@@ -115,13 +115,13 @@ final class CosmeticRender {
     // CAPE: static black cloth with scanlines and a red trim. The cloth only waves for YA Plus
     // members; the logo emblem always glitches.
     // =====================================================================================
-    static final double CAPE_W = 0.66, CAPE_H = 1.0;
+    static final double CAPE_W = 0.66, CAPE_H = 1.0, THK = 0.055;   // THK: cloth thickness (like the vanilla cape's 1 px)
     static final int CAPE_C = 14, CAPE_R = 40;
 
     static double[] capePt(double u, double v, float age, boolean plus) {
         double x = (u - 0.5) * CAPE_W * (1 + 0.06 * v);
         double y = v * CAPE_H;
-        double z = 0.012 + 0.02 * v;
+        double z = 0.012 + THK + 0.02 * v;
         if (plus) {
             z += Math.sin(age * 0.10 + v * 5.5 + u * 2.2) * 0.026 * v
                     + Math.sin(age * 0.06 + u * 7.0 - v * 2.0) * 0.011 * v
@@ -129,6 +129,53 @@ final class CosmeticRender {
         }
         return Poly.p(x, y, z);
     }
+
+
+    /** Side colour of the cape cloth (what you see on its edges), by style. */
+    static int capeEdgeColor(String style) {
+        int cb = CapeArt.bg(style);
+        if (cb >= 0) return cb;
+        switch (style) {
+            case "ya": return 0x5A0A0A;
+            case "mono": return 0x0C0C0E;
+            case "qlux": return 0xC9CFDD;
+            case "sakura": return 0xE79AB4;
+            case "shinobi": return 0x1A1A22;
+            case "kitsune": return 0xD9692A;
+            case "santa": return 0xB01E1E;
+            case "frost": return 0x9CCCE8;
+            case "clown": return 0xE0E0E8;
+            case "luck": return 0x2E8F48;
+            case "sky": return 0x62BDFF;
+            case "sunset": return 0x3C2A7A;
+            case "forest": return 0x1E5A2A;
+            case "ocean": return 0x1A4A7A;
+            case "space": return 0x120A2A;
+            case "storm": return 0x1A1C2A;
+            default: return 0x16161C;
+        }
+    }
+
+    /** Thickness of the cape: the inner face and the left, right and bottom sides (the top is hidden by the shoulders). */
+    static void capeThickness(float age, boolean plus, int edgeRgb) {
+        float[] e = Vox.rgb(edgeRgb, 0f);
+        float[] in = {e[0] * 0.7f, e[1] * 0.7f, e[2] * 0.7f, 0f};
+        for (int i = 0; i < CAPE_C; i++) for (int j = 0; j < CAPE_R; j++) {
+            double u0 = i / (double) CAPE_C, u1 = (i + 1) / (double) CAPE_C, v0 = j / (double) CAPE_R, v1 = (j + 1) / (double) CAPE_R;
+            Poly.quad(capeIn(u0, v0, age, plus), capeIn(u1, v0, age, plus), capeIn(u1, v1, age, plus), capeIn(u0, v1, age, plus), in, in, in, in, 1f);
+        }
+        for (int j = 0; j < CAPE_R; j++) {
+            double v0 = j / (double) CAPE_R, v1 = (j + 1) / (double) CAPE_R;
+            for (int sd = 0; sd <= 1; sd++)
+                Poly.quad(capePt(sd, v0, age, plus), capePt(sd, v1, age, plus), capeIn(sd, v1, age, plus), capeIn(sd, v0, age, plus), e, e, e, e, 1f);
+        }
+        for (int i = 0; i < CAPE_C; i++) {
+            double u0 = i / (double) CAPE_C, u1 = (i + 1) / (double) CAPE_C;
+            Poly.quad(capePt(u0, 1, age, plus), capePt(u1, 1, age, plus), capeIn(u1, 1, age, plus), capeIn(u0, 1, age, plus), e, e, e, e, 1f);
+        }
+    }
+
+    private static double[] capeIn(double u, double v, float age, boolean plus) { double[] p = capePt(u, v, age, plus); p[2] -= THK; return p; }
 
     private static float[] capeColor(double u, double v, float age, boolean plus, int row) {
         float[] base = Poly.mix(Poly.BLACK, Poly.DARK, (float) (v * 0.6));

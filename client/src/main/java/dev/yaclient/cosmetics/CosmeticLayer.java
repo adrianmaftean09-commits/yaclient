@@ -201,6 +201,12 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             Poly.end();
             GlStateManager.disableTexture2D();
         }
+        final int edge = CosmeticRender.capeEdgeColor(style);
+        GeomCache.draw("t:" + style + plus, GeomCache.bucket(age), new Runnable() { public void run() {
+            Poly.begin();
+            CosmeticRender.capeThickness(age, plus, edge);
+            Poly.end();
+        } });
         GlStateManager.popMatrix();
     }
 

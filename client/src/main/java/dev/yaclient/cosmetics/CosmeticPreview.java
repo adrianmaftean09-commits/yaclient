@@ -96,6 +96,14 @@ public final class CosmeticPreview {
     private static String XV;
 
     private static void cape(float age, boolean plus, boolean mono, boolean qlux, Anime.Th an) {
+        capeBody(age, plus, mono, qlux, an);
+        String st = XV != null ? XV : an != null ? an.id : qlux ? "qlux" : mono ? "mono" : "ya";
+        Poly.begin();
+        CosmeticRender.capeThickness(age, plus, CosmeticRender.capeEdgeColor(st));
+        Poly.end();
+    }
+
+    private static void capeBody(float age, boolean plus, boolean mono, boolean qlux, Anime.Th an) {
         if (XV != null) { Poly.begin(); ExtraPix.cape(XV, age, plus); Poly.end(); return; }
         if (an != null) { Anime.drawCape(an, age, plus); return; }
         if (qlux) { CosmeticQlux.drawCape(age, plus); return; }
