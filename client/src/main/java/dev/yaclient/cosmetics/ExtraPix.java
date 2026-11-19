@@ -215,8 +215,15 @@ final class ExtraPix {
     private static void vampireSmooth(float age) {
         double sw = Math.sin(age * 0.10);                                                                              // slow, in step with the flap
         double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0);                                                 // arm + joint stay still
-        double[] T = Poly.p(0.70, 0.24, sw * 0.022);                                                                   // big main branch: small swing back and forth
-        double[][] F = {Poly.p(0.65, -0.15, sw * 0.030), Poly.p(0.42, -0.36, sw * 0.045), Poly.p(0.09, -0.31, sw * 0.062)};   // finger tips swing, the small one most
+        double[] T = Poly.p(0.70, 0.24, 0);                                                                            // leading edge: fixed
+        double th = sw * 0.16;                                                                                         // the three fingers + membrane move up/down together, hinged at the joint
+        double cs = Math.cos(th), sn = Math.sin(th);
+        double[][] base = {{0.65, -0.15}, {0.42, -0.36}, {0.09, -0.31}};
+        double[][] F = new double[3][];
+        for (int i = 0; i < 3; i++) {
+            double dx = base[i][0] - J[0], dy = base[i][1] - J[1];
+            F[i] = Poly.p(J[0] + dx * cs - dy * sn, J[1] + dx * sn + dy * cs, 0);
+        }
         double[][] Fm = new double[3][];
         for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.95);
         double[] Tm = lerp(J, T, 0.96);
