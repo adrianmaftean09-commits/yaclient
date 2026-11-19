@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -62,11 +63,20 @@ public class OldAnimationsModule extends Module {
      * 1.7: with the sword up you can keep swinging while you hit the ground or the air (hold left click, right click held).
      * 1.8 only swings on the first click there. Swinging is rate limited by the game itself.
      */
+    private boolean attackWas;
+
     @Override
     public void onTick() {
-        if (mc == null || mc.thePlayer == null || mc.currentScreen != null) return;
+        if (mc == null || mc.thePlayer == null || mc.currentScreen != null) { attackWas = false; return; }
         EntityPlayerSP p = mc.thePlayer;
         ItemStack held = p.getHeldItem();
+        // 1.7: left click swings the arm while you eat an apple or drink a potion (1.8 ignores the click)
+        boolean atk = Hud.down(mc.gameSettings.keyBindAttack);
+        if (atk && !attackWas && held != null && p.isUsingItem()) {
+            EnumAction a = held.getItemUseAction();
+            if (a == EnumAction.EAT || a == EnumAction.DRINK) p.swingItem();
+        }
+        attackWas = atk;
         if (held == null || !(held.getItem() instanceof ItemSword)) return;
         if (!Hud.down(mc.gameSettings.keyBindUseItem) || !Hud.down(mc.gameSettings.keyBindAttack)) return;
         MovingObjectPosition mop = mc.objectMouseOver;
@@ -75,25 +85,48 @@ public class OldAnimationsModule extends Module {
     }
 
     private static final class OldItemRenderer extends ItemRenderer {
+        // own swing clock: the game's swing progress only moves on ticks, this one moves every frame
+        private boolean swingWas;
+        private int lastInt;
+        private long startNs;
+
         OldItemRenderer(Minecraft mc) { super(mc); }
+
+        /** Frame-accurate swing progress 0..1 (0 when not swinging). */
+        private float smoothSwing(EntityPlayerSP p, float pt) {
+            if (!p.isSwingInProgress) { swingWas = false; lastInt = 0; return 0f; }
+            long now = System.nanoTime();
+            if (!swingWas || p.swingProgressInt < lastInt) startNs = now;
+            swingWas = true;
+            lastInt = p.swingProgressInt;
+            int end = 6;
+            if (p.isPotionActive(Potion.digSpeed)) end -= 1 + p.getActivePotionEffect(Potion.digSpeed).getAmplifier();
+            else if (p.isPotionActive(Potion.digSlowdown)) end += (1 + p.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2;
+            if (end < 2) end = 2;
+            float t = (now - startNs) / (end * 50_000_000f);
+            return t < 0f ? 0f : (t > 1f ? 1f : t);
+        }
 
         @Override
         public void renderItemInFirstPerson(float pt) {
             Minecraft mc = Minecraft.getMinecraft();
             EntityPlayerSP p = mc.thePlayer;
             ItemStack held = p == null ? null : p.getHeldItem();
+            boolean fp = ACTIVE && held != null && mc.gameSettings.thirdPersonView == 0 && mc.currentScreen == null;
             // right click held counts as blocking too (the game stops "using" the sword while you hit a block)
-            boolean block = ACTIVE && held != null && held.getItem() instanceof ItemSword
+            boolean block = fp && held.getItem() instanceof ItemSword
                     && held.getItemUseAction() == EnumAction.BLOCK
-                    && (p.isUsingItem() || Hud.down(mc.gameSettings.keyBindUseItem))
-                    && mc.gameSettings.thirdPersonView == 0 && mc.currentScreen == null;
-            if (!block) { super.renderItemInFirstPerson(pt); return; }
+                    && (p.isUsingItem() || Hud.down(mc.gameSettings.keyBindUseItem));
+            EnumAction act = fp ? held.getItemUseAction() : EnumAction.NONE;
+            boolean eat = fp && p.isUsingItem() && (act == EnumAction.EAT || act == EnumAction.DRINK);
+            if (!block && !eat) { super.renderItemInFirstPerson(pt); return; }
+            float sw = smoothSwing(p, pt);
+            if (eat && sw <= 0f) { super.renderItemInFirstPerson(pt); return; }
             GlStateManager.pushMatrix();
             // everything below happens "inside" the item's own position, exactly where vanilla does its swing
             GlStateManager.translate(0.56f, -0.52f, -0.72f);
-            if (LOW.value) GlStateManager.translate(0f, -0.06f, 0f);
-            float sw = p.getSwingProgress(pt);
-            if (BLOCKHIT.value && sw > 0f) {
+            if (block && LOW.value) GlStateManager.translate(0f, -0.06f, 0f);
+            if ((eat || BLOCKHIT.value) && sw > 0f) {
                 float s1 = MathHelper.sin(sw * sw * (float) Math.PI);
                 float s2 = MathHelper.sin(MathHelper.sqrt_float(sw) * (float) Math.PI);
                 GlStateManager.translate(-s2 * 0.4f, MathHelper.sin(MathHelper.sqrt_float(sw) * (float) Math.PI * 2f) * 0.2f,
