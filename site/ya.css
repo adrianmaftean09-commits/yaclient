@@ -322,3 +322,4 @@ footer a:hover{color:var(--text)}
 #tags .card p,#features .card p{color:#c4c8d6}
 .cosmos .h2 h1{text-shadow:0 2px 24px rgba(5,5,20,.75)}
 .cosmos .h2 .sub{color:#e4e8fa;text-shadow:0 1px 3px rgba(0,0,0,.9),0 2px 14px rgba(0,0,10,.9)}
+.cosmos+footer,.cosmos ~ footer{border-top:0}
