@@ -45,6 +45,14 @@ jobs:
         shell: bash
         run: |
           sed -i "s#TUO_UTENTE_GITHUB/ya-client#${{ github.repository }}#" launcher/config.json
+      - name: Versione launcher dal tag (così l'auto-update vede sempre una versione nuova)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        working-directory: launcher
+        run: |
+          V="${GITHUB_REF_NAME#[vV]}"
+          npm pkg set version="$V"
+          echo "Launcher version: $V"
       - name: Compila installer .exe (con nuovi tentativi se la rete di GitHub fallisce)
         shell: bash
         working-directory: launcher
