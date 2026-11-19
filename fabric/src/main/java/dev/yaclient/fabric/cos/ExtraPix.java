@@ -167,7 +167,7 @@ final class ExtraPix {
 
     private static float[] vcol(double x, double y, double jx, double jy) {
         float t = (float) sm(Math.hypot(x - jx, y - jy) / 0.46);
-        float[] c = Poly.mix(c(0x4E2B78), c(0x140A22), t);
+        float[] c = Poly.mix(c(0x34343A), c(0x1E1E22), t);
         return c;
     }
 
@@ -213,6 +213,13 @@ final class ExtraPix {
 
     private static double[] lerp(double[] a, double[] b, double t) { return Poly.p(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t); }
 
+    private static void vcube(double[] c, double h, float[] col) {
+        double[][] P = new double[8][];
+        for (int i = 0; i < 8; i++) P[i] = Poly.p(c[0] + ((i & 1) == 0 ? -h : h), c[1] + ((i & 2) == 0 ? -h : h), c[2] + ((i & 4) == 0 ? -h : h));
+        int[][] f = {{0, 1, 3, 2}, {4, 5, 7, 6}, {0, 1, 5, 4}, {2, 3, 7, 6}, {0, 2, 6, 4}, {1, 3, 7, 5}};
+        for (int[] q : f) Poly.quad(P[q[0]], P[q[1]], P[q[2]], P[q[3]], col, col, col, col, 1f);
+    }
+
     private static void vampireSmooth(float age) {
         double sw = Math.sin(age * 0.10);                                                                              // slow, in step with the flap
         double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0);                                                 // arm + joint stay still
@@ -226,23 +233,23 @@ final class ExtraPix {
             F[i] = Poly.p(J[0] + dx * cs - dy * sn, J[1] + dx * sn + dy * cs, i == 2 ? 0 : sw * 0.09);   // follows the leading edge, a hair behind; the small inner finger (next to the body) stays still
         }
         double[][] Fm = new double[3][];
-        for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.93);
-        double[] Tm = lerp(J, T, 0.95);
+        for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.99);
+        double[] Tm = lerp(J, T, 0.99);
         double[][] M = new double[2][];
-        for (int i = 0; i < 2; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, -0.14); }
-        double[] M0 = lerp(lerp(Tm, Fm[0], 0.5), J, -0.10);
+        for (int i = 0; i < 2; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, 0.10); }
+        double[] M0 = lerp(lerp(Tm, Fm[0], 0.5), J, 0.10);
         vmem(J, Tm, M0, J, age); vmem(J, M0, Fm[0], J, age);
         vmem(J, Fm[0], M[0], J, age); vmem(J, M[0], Fm[1], J, age);
         vmem(J, Fm[1], M[1], J, age); vmem(J, M[1], Fm[2], J, age);
         vmem(J, Fm[2], A, J, age);
-        float[] bone = c(0x0B0712), edge = c(0x3A2A52);
+        float[] bone = c(0x030304), edge = c(0x0A0A0C);
         vbone(A, J, 0.040, 0.032, bone, edge);
         vbone(J, T, 0.028, 0.013, bone, edge);                                                                        // leading edge
-        Poly.ellipsoid(T[0], T[1], T[2], 0.016, 0.016, 0.013, bone, bone, 0f);
+        vcube(T, 0.019, bone);
         double[] w = {0.021, 0.024, 0.016};
         for (int i = 0; i < 3; i++) {
             vbone(J, F[i], w[i], 0.012, bone, edge);
-            Poly.ellipsoid(F[i][0], F[i][1], F[i][2], 0.013, 0.013, 0.011, bone, bone, 0f);
+            vcube(F[i], 0.016, bone);
         }
     }
 
