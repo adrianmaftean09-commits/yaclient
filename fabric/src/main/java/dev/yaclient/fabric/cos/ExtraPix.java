@@ -98,7 +98,7 @@ final class ExtraPix {
     private static boolean outline = true;
 
     static void wing(String id, float age) {
-        CELL = 0.020; HZ = 0.011; W.clear(); WA = 1f; outline = true; SC = (id.equals("dragon") || id.equals("azure") || id.equals("venom")) ? 1.32 : (id.equals("vampire") ? 0.95 : 1.0); DEF = id.equals("azure") || id.equals("venom"); AGE = age; if (DEF) { CELL = id.equals("azure") ? 0.034 : 0.045; HZ = 0.022; SC = 1.0; }
+        CELL = 0.020; HZ = 0.011; W.clear(); WA = 1f; outline = true; SC = (id.equals("dragon") || id.equals("azure") || id.equals("venom")) ? 1.32 : (id.equals("vampire") ? 1.0 : 1.0); DEF = id.equals("azure") || id.equals("venom"); AGE = age; if (DEF) { CELL = id.equals("azure") ? 0.034 : 0.045; HZ = 0.022; SC = 1.0; }
         if (id.equals("dragon")) dragonWing(age);
         else if (id.equals("butterfly")) butterflyWing(age);
         else if (id.equals("azure")) bigDragon(age, true);
@@ -160,26 +160,26 @@ final class ExtraPix {
     }
 
 
-    // --- vampire: tall, sharp bat wing; near-black violet membrane, three long fingers, crimson edge glow that breathes
+    // --- vampire: small blocky dragon wing: thick two-part bone arm, four straight finger bones and a dark membrane with notched edge
     private static void vampireWing(float age) {
-        final double fl = Math.sin(age * 0.2) * 0.012;
-        final double[][] mem = {{0.02, 0.02}, {0.06, 0.40}, {0.22, 0.74}, {0.50, 0.92}, {0.80, 0.80 + fl}, {0.97, 0.52 + fl}, {0.76, 0.46}, {0.84, 0.16 + fl},
-                {0.60, 0.30}, {0.58, -0.12 + fl}, {0.40, 0.18}, {0.28, -0.16}, {0.16, 0.08}};
-        fill(0, -0.3, 1.05, 1.0, new Fn() { public float[] at(double x, double y) {
+        final double fl = Math.sin(age * 0.2) * 0.010;
+        final double[] sh = {0.02, 0.02}, el = {0.20, 0.40}, wr = {0.46, 0.46};
+        final double[][] tip = {{0.74, 0.28 + fl}, {0.66, 0.00 + fl}, {0.46, -0.14}, {0.24, -0.10}};
+        final double[][] mem = {sh, el, wr, tip[0], {0.60, 0.13}, tip[1], {0.50, -0.03}, tip[2], {0.33, -0.01}, tip[3], {0.12, -0.02}};
+        fill(0, -0.3, 0.9, 0.7, new Fn() { public float[] at(double x, double y) {
             if (!inPoly(x, y, mem)) return null;
-            float t = (float) sm((0.90 - y) / 1.1);
-            float[] col = Poly.mix(c(0x3B1F5C), c(0x140A24), t);
-            if (noise((int) (x / CELL), (int) (y / CELL)) > 0.92) col = Poly.mix(col, c(0x5C2F8A), 0.5f);
+            float t = (float) sm((0.46 - y) / 0.62);
+            float[] col = Poly.mix(c(0x2E2440), c(0x15101E), t);
+            if (noise((int) (x / CELL), (int) (y / CELL)) > 0.9) col = Poly.mix(col, c(0x4B3A66), 0.5f);
             return col; } });
-        float[] bone = c(0x0C0612), claw = c(0xE9E2F2);
-        double[][] tips = {{0.97, 0.52 + fl}, {0.84, 0.16 + fl}, {0.58, -0.12 + fl}, {0.28, -0.16}};
-        for (double[] t : tips) seg(0.50, 0.92, t[0], t[1], 0.010, bone);
-        seg(0.02, 0.02, 0.06, 0.40, 0.020, bone); seg(0.06, 0.40, 0.22, 0.74, 0.018, bone); seg(0.22, 0.74, 0.50, 0.92, 0.016, bone);
-        seg(0.50, 0.92, 0.56, 1.02, 0.011, claw); seg(0.22, 0.74, 0.17, 0.84, 0.009, claw);              // claws
+        float[] bone = c(0x0B0810), edge = c(0x5A4A78);
+        seg(sh[0], sh[1], el[0], el[1], 0.024, bone); seg(el[0], el[1], wr[0], wr[1], 0.020, bone);          // thick arm
+        for (double[] t : tip) seg(wr[0], wr[1], t[0], t[1], 0.012, bone);                                   // fingers
+        seg(sh[0] + 0.01, sh[1] + 0.02, el[0], el[1] + 0.02, 0.006, edge); seg(el[0], el[1] + 0.02, wr[0], wr[1] + 0.02, 0.006, edge);
+        for (double[] t : tip) seg(t[0], t[1], t[0] + 0.02, t[1] + 0.03, 0.010, edge);                       // small claws
         double glow = 0.6 + 0.4 * Math.sin(age * 0.10);
         float[] red = g(0xFF2A4A, (float) (0.6 + 0.4 * glow));
-        for (double[] t : tips) seg(0.50, 0.92, t[0] * 0.96 + 0.02, t[1] * 0.96 + 0.02, 0.0055, red);      // glowing veins
-        seg(0.06, 0.40, 0.22, 0.74, 0.006, red); seg(0.22, 0.74, 0.50, 0.92, 0.006, red);
+        for (double[] t : tip) seg(wr[0], wr[1], t[0] * 0.94 + wr[0] * 0.06, t[1] * 0.94 + wr[1] * 0.06, 0.0045, red);   // glowing veins
     }
 
     // --- butterfly: two rounded lobes with a dark border, white dots and blue eyespots
