@@ -70,6 +70,9 @@ public class YAClient implements ModInitializer {
         MODULES.add(new PingGraphModule());
         MODULES.add(new AutoReconnectModule());
         MODULES.add(new ReplayBufferModule());
+        MODULES.add(new ComboCoachModule());
+        MODULES.add(new CalloutsModule());
+        MODULES.add(new TeamViewerModule());
         MODULES.add(new FreeLookModule());
         MODULES.add(new NoCloudsModule());
         MODULES.add(new SmoothShiftModule());
