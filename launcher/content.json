@@ -6,6 +6,62 @@
   "remote": "",
   "news": [
     {
+      "title": "Update 1.6 - 20 new cosmetics, sold one by one",
+      "text": "20 new cosmetics, sold one by one, and faster cosmetics sync. Click for the full changelog.",
+      "image": "../assets/news/update16.png",
+      "url": "",
+      "date": "2026-11-19",
+      "ver": "1.6",
+      "sections": [
+        {
+          "k": "new",
+          "t": "NEW",
+          "list": [
+            {
+              "b": "20 single cosmetics",
+              "s": "5 capes, 5 pairs of wings, 5 bands and 5 pets you can buy one by one, 3.49 each. No need to buy a whole bundle."
+            },
+            {
+              "b": "Pixel capes and new wings",
+              "s": "Pixel art capes, wings in many colours with a realistic flap and cute pixel pets."
+            },
+            {
+              "b": "Store on phones",
+              "s": "The store now shows 3 products per row on your phone."
+            }
+          ]
+        },
+        {
+          "k": "imp",
+          "t": "IMPROVED",
+          "list": [
+            {
+              "b": "Cosmetics show up faster",
+              "s": "When a player changes cosmetics, the others see it in about 2 seconds instead of 8."
+            },
+            {
+              "b": "More FPS with cosmetics",
+              "s": "Wings, capes and pets are built once and reused, so crowded servers run smoother."
+            },
+            {
+              "b": "Same photos everywhere",
+              "s": "Store, site and launcher show every cosmetic full body on your own skin, all framed the same way."
+            }
+          ]
+        },
+        {
+          "k": "fix",
+          "t": "FIXED",
+          "list": [
+            {
+              "b": "Name tag logo",
+              "s": "The YA logo next to a name stays aligned, also in front view and when spectating."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "title": "Update 1.5 - 90+ mods for every mode, and the first YA Plus tools",
       "text": "90+ mods for every mode, and the first YA Plus tools. Click for the full changelog.",
       "image": "../assets/news/update15.png",
