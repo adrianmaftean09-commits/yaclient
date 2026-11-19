@@ -180,7 +180,8 @@ final class ExtraPix {
                 double u = ij[q][0] / (double) n, v = ij[q][1] / (double) n, w = 1 - u - v;
                 double x = a[0] * w + b[0] * u + c[0] * v, y = a[1] * w + b[1] * u + c[1] * v;
                 double billow = 0.030 * 27.0 * u * v * w;                                     // bows backwards between the bones
-                P[q] = vp(x, y, billow, age); C[q] = vcol(x, y, j[0], j[1]);
+                double z0 = a[2] * w + b[2] * u + c[2] * v;                                          // carry the bones' swing into the membrane
+                P[q] = vp(x, y, z0 + billow, age); C[q] = vcol(x, y, j[0], j[1]);
             }
             Poly.tri(P[0], P[1], P[2], C[0], C[1], C[2], 1f);
             if (k < n - i - 1) Poly.tri(P[1], P[3], P[2], C[1], C[3], C[2], 1f);
