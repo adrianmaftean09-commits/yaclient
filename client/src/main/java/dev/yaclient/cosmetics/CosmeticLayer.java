@@ -119,8 +119,8 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         return v != null && !v.equals("none");
     }
 
-    private void drawWings(AbstractClientPlayer p, ModelPlayer model, float age, String style) {
-        boolean mono = style.equals("mono");
+    private void drawWings(AbstractClientPlayer p, ModelPlayer model, final float age, final String style) {
+        final boolean mono = style.equals("mono");
         float air = airFactor(p);
         float flap = (float) Math.sin(age * 0.10f) * (mono ? 17f : 7f) * (1f - air)
                 + (float) Math.sin(age * 0.32f) * (mono ? 34f : 22f) * air;
@@ -134,21 +134,23 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
             GlStateManager.rotate(-side * raise, 0f, 0f, 1f);     // flap: pure up/down around the body's front-back axis
             GlStateManager.rotate(-side * spread, 0f, 1f, 0f);    // fixed outward lean
             GlStateManager.scale((float) side, -1f, 1f);
-            Poly.begin();
-            CosmeticRender.qlux = style.equals("qlux");
-            CosmeticRender.anime = Anime.byStyle(style);
-            CosmeticRender.extra = ExtraPix.has("wings", style) ? style : null;
-            if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
-            CosmeticRender.extra = null;
-            CosmeticRender.qlux = false;
-            CosmeticRender.anime = null;
-            Poly.end();
+            GeomCache.draw("w:" + style, GeomCache.bucket(age), new Runnable() { public void run() {
+                Poly.begin();
+                CosmeticRender.qlux = style.equals("qlux");
+                CosmeticRender.anime = Anime.byStyle(style);
+                CosmeticRender.extra = ExtraPix.has("wings", style) ? style : null;
+                if (mono) CosmeticMono.wing(age); else CosmeticRender.wing(age);
+                CosmeticRender.extra = null;
+                CosmeticRender.qlux = false;
+                CosmeticRender.anime = null;
+                Poly.end();
+            } });
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();
     }
 
-    private void drawCape(AbstractClientPlayer p, float pt, float age, boolean plus, String style) {
+    private void drawCape(AbstractClientPlayer p, float pt, final float age, final boolean plus, final String style) {
         boolean mono = style.equals("mono");
         double d0 = p.prevChasingPosX + (p.chasingPosX - p.prevChasingPosX) * pt - (p.prevPosX + (p.posX - p.prevPosX) * pt);
         double d1 = p.prevChasingPosY + (p.chasingPosY - p.prevChasingPosY) * pt - (p.prevPosY + (p.posY - p.prevPosY) * pt);
@@ -173,9 +175,11 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.rotate(f3 / 2f, 0f, 0f, 1f);
         GlStateManager.rotate(-f3 / 2f, 0f, 1f, 0f);
         if (ExtraPix.has("cape", style)) {
-            Poly.begin();
-            ExtraPix.cape(style, age, plus);
-            Poly.end();
+            GeomCache.draw("c:" + style + plus, GeomCache.bucket(age), new Runnable() { public void run() {
+                Poly.begin();
+                ExtraPix.cape(style, age, plus);
+                Poly.end();
+            } });
         } else if (Anime.byStyle(style) != null) {
             Anime.drawCape(Anime.byStyle(style), age, plus);
         } else if (style.equals("qlux")) {
@@ -200,17 +204,19 @@ public class CosmeticLayer implements LayerRenderer<AbstractClientPlayer> {
         GlStateManager.popMatrix();
     }
 
-    private void drawPet(AbstractClientPlayer p, float age, String style) {
-        boolean mono = style.equals("mono"), qlux = style.equals("qlux");
+    private void drawPet(AbstractClientPlayer p, final float age, final String style) {
+        final boolean mono = style.equals("mono"), qlux = style.equals("qlux");
         GlStateManager.pushMatrix();
         double bob = Math.sin(age * 0.10) * 0.035;
         double swayX = Math.sin(age * 0.05) * 0.04, swayZ = Math.cos(age * 0.04) * 0.05;
         GlStateManager.translate((float) (-0.64 + swayX), (float) (-0.20 + bob), (float) (0.04 + swayZ));
         if (mono) GlStateManager.rotate(age * 6f, 0f, 1f, 0f);
         else GlStateManager.rotate((float) (Math.sin(age * 0.05) * 12.0), 0f, 1f, 0f);
-        Poly.begin();
-        if (ExtraPix.has("pet", style)) ExtraPix.pet(style, age); else if (Anime.byStyle(style) != null) AnimePets.pet(Anime.byStyle(style), age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
-        Poly.end();
+        GeomCache.draw("p:" + style, GeomCache.bucket(age), new Runnable() { public void run() {
+            Poly.begin();
+            if (ExtraPix.has("pet", style)) ExtraPix.pet(style, age); else if (Anime.byStyle(style) != null) AnimePets.pet(Anime.byStyle(style), age); else if (qlux) CosmeticQlux.pet(age); else if (mono) CosmeticMono.pet(age); else CosmeticRender.pet(age);
+            Poly.end();
+        } });
         GlStateManager.popMatrix();
     }
 
