@@ -218,7 +218,7 @@ final class ExtraPix {
         double[] T = Poly.p(0.70, 0.24, 0);                                                                            // leading edge: fixed
         double th = sw * 0.16;                                                                                         // the three fingers + membrane move up/down together, hinged at the joint
         double cs = Math.cos(th), sn = Math.sin(th);
-        double[][] base = {{0.65, -0.15}, {0.42, -0.36}, {0.09, -0.31}};
+        double[][] base = {{0.67, -0.17}, {0.38, -0.19}, {0.07, -0.356}};
         double[][] F = new double[3][];
         for (int i = 0; i < 3; i++) {
             double dx = base[i][0] - J[0], dy = base[i][1] - J[1];
@@ -238,7 +238,7 @@ final class ExtraPix {
         vbone(A, J, 0.040, 0.032, bone, edge);
         vbone(J, T, 0.028, 0.013, bone, edge);                                                                        // leading edge
         Poly.ellipsoid(T[0], T[1], T[2], 0.016, 0.016, 0.013, bone, bone, 0f);
-        double[] w = {0.022, 0.019, 0.016};
+        double[] w = {0.023, 0.016, 0.023};
         for (int i = 0; i < 3; i++) {
             vbone(J, F[i], w[i], 0.012, bone, edge);
             Poly.ellipsoid(F[i][0], F[i][1], F[i][2], 0.013, 0.013, 0.011, bone, bone, 0f);
