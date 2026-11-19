@@ -202,26 +202,28 @@ final class ExtraPix {
                 if (r > len - CELL * 1.1) col = Poly.mix(col, c(0x2F63BE), 0.35f);
                 return col; } });
         } else {
-            final double[] el = {0.14, 0.40}, wr = {0.46, 0.74};
-            final double[][] tips = {{1.10, 0.66}, {1.06, 0.14}, {0.80, -0.26}, {0.50, -0.42}, {0.22, -0.24}};
-            java.util.List<double[]> poly = new java.util.ArrayList<double[]>();
-            poly.add(new double[]{0.02, 0.0}); poly.add(el); poly.add(wr);
-            for (int i = 0; i < tips.length; i++) {
-                poly.add(tips[i]);
-                if (i + 1 < tips.length) { double mx = (tips[i][0] + tips[i + 1][0]) / 2, my = (tips[i][1] + tips[i + 1][1]) / 2; poly.add(new double[]{mx + (wr[0] - mx) * 0.16, my + (wr[1] - my) * 0.16}); }
+            // stepped valkyrie wing: four long pointed blades stacked like stairs, gold on top, green, violet, deep purple underneath
+            final double[] ang = {-8, 14, 36, 60}, len = {0.70, 0.88, 1.02, 0.86}, wd = {0.16, 0.17, 0.18, 0.15};
+            final int[][] pal = {{0x5A22A8, 0x3A1480}, {0x9A55EA, 0x6E2FC8}, {0x3FDB6E, 0x20A84A}, {0xFFD21F, 0xE0A000}};
+            for (int rowk = 0; rowk < 4; rowk++) {
+                final int kk = rowk;
+                final double a0 = Math.toRadians(ang[kk]), ca = Math.cos(a0), sa = Math.sin(a0);
+                final double bx = 0.04, by = 0.02 + kk * 0.07;
+                fill(-0.1, -0.6, 1.2, 1.0, new Fn() { public float[] at(double x, double y) {
+                    double dx = x - bx, dy = y - by, along = dx * ca + dy * sa, across = -dx * sa + dy * ca;
+                    if (along < 0 || along > len[kk]) return null;
+                    double t = along / len[kk], w = wd[kk] * (1 - 0.92 * Math.pow(t, 2.2));
+                    if (Math.abs(across) > w) return null;
+                    float[] col = c(t < 0.5 ? pal[kk][0] : pal[kk][1]);
+                    if (across > w * 0.45) col = Poly.mix(col, c(0x000000), 0.18f);                                   // lower half in shade
+                    if (across < -w * 0.55 && t > 0.1) col = Poly.mix(col, c(0xFFFFFF), 0.22f);
+                    if (((int) Math.floor(along / 0.09)) % 3 == 0 && Math.abs(across) < w * 0.25) col = Poly.mix(col, c(0xFFFFFF), 0.25f);   // chunky feather stripe
+                    return col; } });
             }
-            poly.add(new double[]{0.14, -0.04});
-            final double[][] P = poly.toArray(new double[0][]);
-            fill(0, -0.6, 1.1, 0.95, new Fn() { public float[] at(double x, double y) {
-                if (!inPoly(x, y, P)) return null;
-                double d = Math.hypot(x - 0.10, y - 0.10);
-                float[] col = d < 0.42 ? c(0x3FDB6E) : d < 0.72 ? c(0x9A55EA) : c(0x5A22A8);
-                if (noise((int) (x / CELL), (int) (y / CELL)) > 0.9) col = Poly.mix(col, c(0xFFFFFF), 0.25f);
-                return col; } });
-            float[] bone = c(0xFFD21F), bone2 = c(0xE0A800);
-            for (double[] t : tips) seg(wr[0], wr[1], t[0], t[1], 0.040, bone);
-            seg(0.02, 0.0, el[0], el[1], 0.050, bone2); seg(el[0], el[1], wr[0], wr[1], 0.044, bone2);
-            seg(wr[0], wr[1], wr[0] + 0.05, wr[1] + 0.16, 0.030, c(0xFFF2A0));
+            // gold shoulder plate
+            fill(-0.05, -0.1, 0.26, 0.3, new Fn() { public float[] at(double x, double y) {
+                double dx = x - 0.08, dy = y - 0.09;
+                return dx * dx / 0.011 + dy * dy / 0.016 < 1 ? c(dx + dy > 0 ? 0xE0A000 : 0xFFE46A) : null; } });
         }
     }
 
