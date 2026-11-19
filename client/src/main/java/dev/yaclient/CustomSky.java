@@ -37,6 +37,7 @@ public final class CustomSky {
         String blend = "alpha";
         boolean rotate;
         float speed = 1f;
+        int w, h;             // size of the decoded image, to keep sampling inside each face
         float[] axis = {1f, 0f, 0f};
         boolean[] days;       // null = every day
         int daysLoop = 8;
@@ -121,6 +122,7 @@ public final class CustomSky {
                         InputStream ti = mc.getResourceManager().getResource(l.tex).getInputStream();
                         java.awt.image.BufferedImage bi = javax.imageio.ImageIO.read(ti);
                         ti.close();
+                        if (bi != null) { l.w = bi.getWidth(); l.h = bi.getHeight(); }
                         if (bi != null) l.dyn = mc.getTextureManager().getDynamicTextureLocation("yasky" + dim + i, new net.minecraft.client.renderer.texture.DynamicTexture(bi));
                     } catch (Throwable t) { System.out.println("[YA CLIENT] custom sky: could not decode " + l.tex + ": " + t); }
                     String a = p.getProperty("startFadeIn"), b = p.getProperty("endFadeIn"), c = p.getProperty("startFadeOut"), d = p.getProperty("endFadeOut");
@@ -201,24 +203,32 @@ public final class CustomSky {
         }
     }
 
-    private static void cube(float h) {
+    /**
+     * Sky box in world axes (+X east, +Z south, +Y up), seen from inside. Image layout, worked out from how the edges of
+     * real packs join up: tile 0 = down, 1 = up, 2 = east, 3 = south, 4 = west, 5 = north (the four sides turn clockwise).
+     */
+    private static void cube(float h, float iu, float iv) {
+        // corners TL, TR, BL, BR of every tile as x,y,z signs (times h)
+        final int[][] c = {
+            { -1, -1,  1,   -1, -1, -1,    1, -1,  1,    1, -1, -1 },   // 0 down
+            {  1,  1,  1,    1,  1, -1,   -1,  1,  1,   -1,  1, -1 },   // 1 up
+            {  1,  1, -1,    1,  1,  1,    1, -1, -1,    1, -1,  1 },   // 2 east
+            {  1,  1,  1,   -1,  1,  1,    1, -1,  1,   -1, -1,  1 },   // 3 south
+            { -1,  1,  1,   -1,  1, -1,   -1, -1,  1,   -1, -1, -1 },   // 4 west
+            { -1,  1, -1,    1,  1, -1,   -1, -1, -1,    1, -1, -1 }    // 5 north
+        };
         Tessellator t = Tessellator.getInstance();
         WorldRenderer w = t.getWorldRenderer();
         for (int i = 0; i < 6; i++) {
-            GlStateManager.pushMatrix();
-            if (i == 1) GlStateManager.rotate(90f, 1f, 0f, 0f);
-            if (i == 2) GlStateManager.rotate(-90f, 1f, 0f, 0f);
-            if (i == 3) GlStateManager.rotate(180f, 1f, 0f, 0f);
-            if (i == 4) GlStateManager.rotate(90f, 0f, 0f, 1f);
-            if (i == 5) GlStateManager.rotate(-90f, 0f, 0f, 1f);
-            float tx = (i % 3) / 3f, ty = (i / 3) / 2f, du = 1f / 3f, dv = 0.5f;
+            float u0 = (i % 3) / 3f + iu, u1 = (i % 3 + 1) / 3f - iu;
+            float v0 = (i / 3) / 2f + iv, v1 = (i / 3 + 1) / 2f - iv;
+            int[] k = c[i];
             w.begin(7, DefaultVertexFormats.POSITION_TEX);
-            w.pos(-h, -h, -h).tex(tx, ty).endVertex();
-            w.pos(-h, -h, h).tex(tx, ty + dv).endVertex();
-            w.pos(h, -h, h).tex(tx + du, ty + dv).endVertex();
-            w.pos(h, -h, -h).tex(tx + du, ty).endVertex();
+            w.pos(k[0] * h, k[1] * h, k[2] * h).tex(u0, v0).endVertex();     // top left
+            w.pos(k[6] * h, k[7] * h, k[8] * h).tex(u0, v1).endVertex();     // bottom left
+            w.pos(k[9] * h, k[10] * h, k[11] * h).tex(u1, v1).endVertex();   // bottom right
+            w.pos(k[3] * h, k[4] * h, k[5] * h).tex(u1, v0).endVertex();     // top right
             t.draw();
-            GlStateManager.popMatrix();
         }
     }
 
@@ -243,6 +253,7 @@ public final class CustomSky {
             boolean fog = GL11.glIsEnabled(GL11.GL_FOG);
             GlStateManager.disableFog();
             GlStateManager.disableLighting();
+            GlStateManager.disableCull();
             GlStateManager.disableAlpha();
             GlStateManager.enableTexture2D();
             GlStateManager.depthMask(false);
@@ -258,21 +269,25 @@ public final class CustomSky {
                 if (b <= 0.001f) continue;
                 GlStateManager.pushMatrix();
                 if (l.rotate) {
+                    // same turn as the sun: axis given in the sun's frame, 0 at sunrise (celestial angle 0.75), box kept in world axes
                     GlStateManager.rotate(-90f, 0f, 1f, 0f);
-                    GlStateManager.rotate(w.getCelestialAngle(pt) * 360f * l.speed, l.axis[0], l.axis[1], l.axis[2]);
+                    if (l.axis[0] != 0f || l.axis[1] != 0f || l.axis[2] != 0f)
+                        GlStateManager.rotate((w.getCelestialAngle(pt) - 0.75f) * 360f * l.speed, l.axis[0], l.axis[1], l.axis[2]);
+                    GlStateManager.rotate(90f, 0f, 1f, 0f);
                 }
                 blend(l.blend);
                 GlStateManager.color(1f, 1f, 1f, b);
                 mc.getTextureManager().bindTexture(l.dyn != null ? l.dyn : l.tex);
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 33071);   // clamp to edge: no seams between faces
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 33071);
-                cube(30f);
+                cube(30f, l.w > 0 ? 0.5f / l.w : 0f, l.h > 0 ? 0.5f / l.h : 0f);
                 GlStateManager.popMatrix();
             }
             GlStateManager.popMatrix();
             GL11.glDepthRange(0.0, 1.0);
             GlStateManager.color(1f, 1f, 1f, 1f);
             GlStateManager.disableBlend();
+            GlStateManager.enableCull();
             GlStateManager.enableAlpha();
             GlStateManager.depthMask(true);
             GlStateManager.depthFunc(515);
