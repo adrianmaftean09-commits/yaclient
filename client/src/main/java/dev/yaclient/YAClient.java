@@ -70,6 +70,7 @@ public class YAClient implements ModInitializer {
         MODULES.add(new BlockOutlineModule());
         BlockOutlineModule.register();
         CustomSky.register();
+        dev.yaclient.modules.HitPopups.register();
         MODULES.add(new FullbrightModule());
         MODULES.add(new MotionBlurModule());
         MODULES.add(new CrosshairModule());

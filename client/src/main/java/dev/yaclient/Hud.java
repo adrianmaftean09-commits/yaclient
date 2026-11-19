@@ -62,7 +62,11 @@ public final class Hud {
             Gfx.setScale(gs);
             m.onRender();
         }
-        for (HudModule h : elements()) h.renderHud(false, sr.getScaledWidth(), sr.getScaledHeight(), gs);
+        int sw = sr.getScaledWidth(), sh = sr.getScaledHeight();
+        for (int i = 0, n = YAClient.MODULES.size(); i < n; i++) {
+            Module m = YAClient.MODULES.get(i);
+            if (m.enabled && m instanceof HudModule) ((HudModule) m).renderHud(false, sw, sh, gs);
+        }
     }
 
     /** Key or mouse button of a key binding is currently held. */

@@ -134,7 +134,7 @@ public final class CustomSky {
                     }
                     String bl = p.getProperty("blend");
                     if (bl != null) l.blend = bl.trim().toLowerCase();
-                    l.rotate = "true".equalsIgnoreCase(p.getProperty("rotate", "false").trim());
+                    l.rotate = "true".equalsIgnoreCase(p.getProperty("rotate", "true").trim());
                     try { l.speed = Float.parseFloat(p.getProperty("speed", "1").trim()); } catch (Throwable t) { }
                     String ax = p.getProperty("axis");
                     if (ax != null) {

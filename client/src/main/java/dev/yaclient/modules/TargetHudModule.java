@@ -10,7 +10,13 @@ import java.util.Locale;
 
 /** Name and health bar of the enemy you are fighting. */
 public class TargetHudModule extends HudModule {
-    public TargetHudModule() { super("target_hud", Category.PVP, false, 0.40f, 0.70f); }
+    private final dev.yaclient.Setting.Bool popup = add(new dev.yaclient.Setting.Bool("hit_popup", true));
+    private static TargetHudModule inst;
+
+    public TargetHudModule() { super("target_hud", Category.PVP, false, 0.40f, 0.70f); inst = this; }
+
+    /** White heart with the target's health popping up on every hit you land. */
+    public static boolean popupsOn() { return inst != null && inst.enabled && inst.popup.value; }
 
     @Override
     public int width() { return 124; }

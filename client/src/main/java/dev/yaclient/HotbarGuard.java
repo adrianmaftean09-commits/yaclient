@@ -39,7 +39,7 @@ public final class HotbarGuard {
                 boolean[] down = new boolean[9];
                 while (true) {
                     try {
-                        Thread.sleep(2);
+                        Thread.sleep(4);
                         if (mc.gameSettings == null) continue;
                         for (int i = 0; i < 9; i++) {
                             int code = mc.gameSettings.keyBindsHotbar[i].getKeyCode();
