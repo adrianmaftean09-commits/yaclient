@@ -75,7 +75,7 @@ public abstract class Module {
         for (Setting s : settings) s.save();
     }
 
-    public Module plus() { plusOnly = true; return this; }
+    public Module plus() { return this; }   // every mod is free for everyone now
 
     /** On, and allowed for this account. */
     public boolean active() { return enabled && (!plusOnly || CosmeticsApi.plus()); }

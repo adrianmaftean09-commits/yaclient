@@ -112,9 +112,9 @@ public class YAClient implements ModInitializer {
         MODULES.add(new GappleTimerModule());
         MODULES.add(new PotionAlertModule());
 
-        // Plus-only mods (free players see them locked)
+        // no Plus-only mods any more (kept empty on purpose)
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(
-                "minimap", "waypoints", "motion_blur", "cinematic", "time_changer", "nearby_players"));
+                ));   // every mod is free for everyone now
         for (Module m : MODULES) { if (plusMods.contains(m.id)) m.plusOnly = true; }
         // new installs: only FPS, CPS and Keystrokes are on; every other mod starts off (the player turns on what they want)
         if (!Config.hasPrefix("mod.") && !Config.getBool("perf.v2", false)) {
