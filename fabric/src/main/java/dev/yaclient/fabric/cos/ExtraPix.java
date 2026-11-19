@@ -162,7 +162,7 @@ final class ExtraPix {
 
     // --- vampire: smooth 3D dragon wing, small: thick bone arm with a short spike, three fingers and a bowed violet-black membrane
     private static double[] vp(double x, double y, double z, float age) {
-        return Poly.p(x, y, z + 0.035 * x * Math.sin(age * 0.18 - x * 3.2));          // the tip lags behind: the wing ripples
+        return Poly.p(x, y, z);                                                          // membrane follows the bones, no ripple
     }
 
     private static float[] vcol(double x, double y, double jx, double jy) {
@@ -210,18 +210,13 @@ final class ExtraPix {
         Poly.quad(P[0], P[1], P[2], P[3], col, col, col, col, 1f);
     }
 
-    private static double[] lerp(double[] a, double[] b, double t) { return Poly.p(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 0); }
+    private static double[] lerp(double[] a, double[] b, double t) { return Poly.p(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t); }
 
     private static void vampireSmooth(float age) {
-        double ph = age * 0.20;
-        double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0);
-        double[] T = Poly.p(0.66 + Math.sin(ph) * 0.012, 0.24 + Math.sin(ph - 0.6) * 0.010, 0);                     // long horizontal leading edge, rounded tip
-        double[][] F = new double[3][];
-        double[][] base = {{0.58, -0.12}, {0.40, -0.31}, {0.17, -0.27}};
-        for (int i = 0; i < 3; i++) {                                                                                  // fingers sweep with a travelling delay (diagonal wave)
-            double sw = Math.sin(ph - i * 0.9);
-            F[i] = Poly.p(base[i][0] + sw * 0.035 * (1 - i * 0.25), base[i][1] + sw * 0.028, 0);
-        }
+        double sw = Math.sin(age * 0.10);                                                                              // slow, in step with the flap
+        double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0);                                                 // arm + joint stay still
+        double[] T = Poly.p(0.70, 0.24, sw * 0.022);                                                                   // big main branch: small swing back and forth
+        double[][] F = {Poly.p(0.65, -0.15, sw * 0.030), Poly.p(0.42, -0.36, sw * 0.045), Poly.p(0.09, -0.31, sw * 0.062)};   // finger tips swing, the small one most
         double[][] Fm = new double[3][];
         for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.95);
         double[] Tm = lerp(J, T, 0.96);
@@ -235,18 +230,11 @@ final class ExtraPix {
         float[] bone = c(0x0B0712), edge = c(0x3A2A52);
         vbone(A, J, 0.040, 0.032, bone, edge);
         vbone(J, T, 0.028, 0.013, bone, edge);                                                                        // leading edge
-        Poly.ellipsoid(T[0], T[1], 0.0, 0.016, 0.016, 0.013, bone, bone, 0f);
+        Poly.ellipsoid(T[0], T[1], T[2], 0.016, 0.016, 0.013, bone, bone, 0f);
         double[] w = {0.022, 0.019, 0.016};
         for (int i = 0; i < 3; i++) {
             vbone(J, F[i], w[i], 0.012, bone, edge);
-            Poly.ellipsoid(F[i][0], F[i][1], 0.0, 0.013, 0.013, 0.011, bone, bone, 0f);
-        }
-        double glow = 0.55 + 0.45 * Math.sin(age * 0.10);
-        float[] red = g(0xFF2A4A, (float) (0.55 + 0.4 * glow));
-        double[][] V = {T, F[0], F[1], F[2]};
-        for (double[] f : V) {
-            double[] a2 = Poly.p(J[0], J[1], 0.012), b2 = Poly.p(f[0] * 0.92 + J[0] * 0.08, f[1] * 0.92 + J[1] * 0.08, 0.012);
-            vbone(a2, b2, 0.005, 0.003, red, red);
+            Poly.ellipsoid(F[i][0], F[i][1], F[i][2], 0.013, 0.013, 0.011, bone, bone, 0f);
         }
     }
 
