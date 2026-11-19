@@ -316,3 +316,7 @@ footer a:hover{color:var(--text)}
 .cosmos .h2 .sub,.cosmos .h2 .hint{color:#c9cfe6;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .cosmos .stats2{background:rgba(9,9,14,.62);border-color:rgba(255,255,255,.14);backdrop-filter:blur(6px)}
 .cosmos .stats2 span{color:#b4b8c8}
+#tags .card,#features .card{background:rgba(14,14,18,.55);border-color:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+#tags .tgc .mcs{background:rgba(255,255,255,.04)}
+#tags .card,#features .card{background:rgba(12,12,16,.72)}
+#tags .card p,#features .card p{color:#c4c8d6}
