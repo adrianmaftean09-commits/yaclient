@@ -15,9 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Mechvibes: real keyboard sounds (Cherry MX Black ABS pack, one sound per key) and a mouse click sound (Razer mouse pack).
@@ -26,6 +24,9 @@ import java.util.Map;
  */
 public class MechvibesModule extends Module {
     private final Setting.Num volume = add("general", new Setting.Num("volume", 0f, 100f, 5f, 70f, "%"));
+    private final Setting.Choice keyboard = add("general", new Setting.Choice("mv_keyboard", 0, "mv_cherry", "mv_orange"));
+    private final Setting.Choice mousePack = add("general", new Setting.Choice("mv_mouse", 0, "mv_razer", "mv_logitech"));
+    private final Setting.Bool release = add("general", new Setting.Bool("key_release", true));
     private final Setting.Bool mouse = add("general", new Setting.Bool("mouse_clicks", true));
     private final Setting.Bool inMenus = add("general", new Setting.Bool("in_menus", true));
 
@@ -33,6 +34,8 @@ public class MechvibesModule extends Module {
 
     private static final int RATE = 44100;
     private static final String BASE = "/assets/yaclient/mv/";
+    private static final String[] KB = { "cherry", "orange" };
+    private static final String[] MS = { "razer", "logitech" };
     private Thread thread;
 
     @Override
@@ -50,9 +53,9 @@ public class MechvibesModule extends Module {
     }
 
     /** Reads a 44.1 kHz mono 16-bit WAV from the jar. */
-    private static short[] wav(String name) {
+    private static short[] wav(String dir, String name) {
         try {
-            InputStream in = MechvibesModule.class.getResourceAsStream(BASE + name);
+            InputStream in = MechvibesModule.class.getResourceAsStream(BASE + dir + "/" + name);
             if (in == null) return null;
             AudioInputStream a = AudioSystem.getAudioInputStream(new BufferedInputStream(in));
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -67,6 +70,25 @@ public class MechvibesModule extends Module {
         } catch (Throwable t) { return null; }
     }
 
+    /** Reads a pack table: "code file [releaseFile]" lines, returned as {code, file, dir[, releaseFile]}. */
+    private static List<String[]> table(String dir, String file) {
+        List<String[]> r = new ArrayList<String[]>();
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(MechvibesModule.class.getResourceAsStream(BASE + dir + "/" + file), "UTF-8"));
+            String ln;
+            while ((ln = in.readLine()) != null) {
+                String[] p = ln.trim().split(" ");
+                if (p.length < 2) continue;
+                String[] e = new String[p.length + 1];
+                e[0] = p[0]; e[1] = p[1]; e[2] = dir;
+                if (p.length > 2) e[3] = p[2];
+                r.add(e);
+            }
+            in.close();
+        } catch (Throwable ignored) { }
+        return r;
+    }
+
     // ---- audio thread ----
     private void loop() {
         SourceDataLine line;
@@ -75,24 +97,11 @@ public class MechvibesModule extends Module {
             line.open(new AudioFormat(RATE, 16, 1, true, false), 4096);
             line.start();
         } catch (Throwable t) { return; }   // no audio device: the mod simply stays silent
-        // key code -> sound (the pack gives every key its own sound)
-        final short[][] byKey = new short[256][];
+        // [code][0] = press sound, [code][1] = release sound (when the pack has one)
+        short[][][] byKey = new short[256][][];
+        short[][][] byBtn = new short[5][][];
         short[] any = null;
-        try {
-            Map<String, short[]> cache = new HashMap<String, short[]>();
-            BufferedReader r = new BufferedReader(new InputStreamReader(MechvibesModule.class.getResourceAsStream(BASE + "keys.txt"), "UTF-8"));
-            String ln;
-            while ((ln = r.readLine()) != null) {
-                String[] p = ln.trim().split(" ");
-                if (p.length != 2) continue;
-                short[] s = cache.get(p[1]);
-                if (s == null) { s = wav(p[1]); cache.put(p[1], s); }
-                int code = Integer.parseInt(p[0]);
-                if (s != null && code > 0 && code < 256) { byKey[code] = s; if (any == null) any = s; }
-            }
-            r.close();
-        } catch (Throwable ignored) { }
-        final short[] mouseDown = wav("mouse_down.wav"), mouseUp = wav("mouse_up.wav");
+        int kbLoaded = -1, msLoaded = -1;
         final List<Voice> voices = new ArrayList<Voice>();
         final boolean[] prev = new boolean[256];
         final boolean[] prevM = new boolean[5];
@@ -101,6 +110,23 @@ public class MechvibesModule extends Module {
         final float[] mix = new float[CH];
         while (true) {
             try {
+                if (kbLoaded != keyboard.index) {
+                    kbLoaded = keyboard.index;
+                    byKey = new short[256][][]; any = null;
+                    for (String[] e : table(KB[Math.min(kbLoaded, KB.length - 1)], "keys.txt")) {
+                        int code = Integer.parseInt(e[0]);
+                        short[][] pair = { wav(e[2], e[1]), e.length > 3 ? wav(e[2], e[3]) : null };
+                        if (pair[0] != null && code > 0 && code < 256) { byKey[code] = pair; if (any == null) any = pair[0]; }
+                    }
+                }
+                if (msLoaded != mousePack.index) {
+                    msLoaded = mousePack.index;
+                    byBtn = new short[5][][];
+                    for (String[] e : table(MS[Math.min(msLoaded, MS.length - 1)], "mouse.txt")) {
+                        int b = Integer.parseInt(e[0]);
+                        if (b >= 0 && b < 5) byBtn[b] = new short[][] { wav(e[2], e[1]), e.length > 3 ? wav(e[2], e[3]) : null };
+                    }
+                }
                 boolean active = enabled && mc != null && Display.isActive() && Keyboard.isCreated();
                 if (active && (inMenus.value || mc.currentScreen == null)) {
                     float g = Math.max(0f, Math.min(1f, volume.value / 100f)) * 0.9f;
@@ -108,10 +134,9 @@ public class MechvibesModule extends Module {
                         boolean d = Keyboard.isKeyDown(k);
                         if (d != prev[k]) {
                             prev[k] = d;
-                            if (d) {
-                                short[] s = byKey[k] != null ? byKey[k] : any;
-                                if (s != null && voices.size() < 24) voices.add(new Voice(s, g));
-                            }
+                            short[] s = d ? (byKey[k] != null ? byKey[k][0] : any)
+                                    : (release.value && byKey[k] != null ? byKey[k][1] : null);
+                            if (s != null && voices.size() < 24) voices.add(new Voice(s, g));
                         }
                     }
                     if (mouse.value && Mouse.isCreated()) {
@@ -119,8 +144,7 @@ public class MechvibesModule extends Module {
                             boolean d = b < Mouse.getButtonCount() && Mouse.isButtonDown(b);
                             if (d != prevM[b]) {
                                 prevM[b] = d;
-                                // left button: click down / click up; the other buttons use the click for both, as the pack says
-                                short[] s = d ? mouseDown : (b == 0 ? mouseUp : mouseDown);
+                                short[] s = byBtn[b] == null ? null : byBtn[b][d ? 0 : 1];
                                 if (s != null && voices.size() < 24) voices.add(new Voice(s, g));
                             }
                         }
