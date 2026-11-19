@@ -31,6 +31,7 @@ public final class CustomSky {
 
     private static final class Layer {
         ResourceLocation tex;
+        ResourceLocation dyn;   // the image decoded by us (avoids missing-texture problems with big or odd images)
         int sIn = -1, eIn = -1, sOut = -1, eOut = -1;
         boolean always;
         String blend = "alpha";
@@ -115,7 +116,13 @@ public final class CustomSky {
                     String src = p.getProperty("source");
                     if (src == null) src = root + "/sky" + i + ".png";
                     l.tex = resolve(src, root);
-                    if (!exists(mc, l.tex)) continue;
+                    if (!exists(mc, l.tex)) { System.out.println("[YA CLIENT] custom sky: image not found " + l.tex); continue; }
+                    try {
+                        InputStream ti = mc.getResourceManager().getResource(l.tex).getInputStream();
+                        java.awt.image.BufferedImage bi = javax.imageio.ImageIO.read(ti);
+                        ti.close();
+                        if (bi != null) l.dyn = mc.getTextureManager().getDynamicTextureLocation("yasky" + dim + i, new net.minecraft.client.renderer.texture.DynamicTexture(bi));
+                    } catch (Throwable t) { System.out.println("[YA CLIENT] custom sky: could not decode " + l.tex + ": " + t); }
                     String a = p.getProperty("startFadeIn"), b = p.getProperty("endFadeIn"), c = p.getProperty("startFadeOut"), d = p.getProperty("endFadeOut");
                     if (a == null && b == null && c == null && d == null) l.always = true;
                     else {
@@ -150,6 +157,7 @@ public final class CustomSky {
                         l.clear = w.contains("clear"); l.rain = w.contains("rain"); l.thunder = w.contains("thunder");
                     }
                     layers.add(l);
+                    System.out.println("[YA CLIENT] custom sky: layer " + pr + " source " + l.tex + " blend " + l.blend + " rotate " + l.rotate + " decoded " + (l.dyn != null));
                 } catch (Throwable t) {
                     miss++;
                 } finally {
@@ -249,11 +257,15 @@ public final class CustomSky {
                 if (l.clear && l.rain && l.thunder) b *= rainDim;
                 if (b <= 0.001f) continue;
                 GlStateManager.pushMatrix();
-                GlStateManager.rotate(-90f, 0f, 1f, 0f);
-                if (l.rotate) GlStateManager.rotate(w.getCelestialAngle(pt) * 360f * l.speed, l.axis[0], l.axis[1], l.axis[2]);
+                if (l.rotate) {
+                    GlStateManager.rotate(-90f, 0f, 1f, 0f);
+                    GlStateManager.rotate(w.getCelestialAngle(pt) * 360f * l.speed, l.axis[0], l.axis[1], l.axis[2]);
+                }
                 blend(l.blend);
                 GlStateManager.color(1f, 1f, 1f, b);
-                mc.getTextureManager().bindTexture(l.tex);
+                mc.getTextureManager().bindTexture(l.dyn != null ? l.dyn : l.tex);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 33071);   // clamp to edge: no seams between faces
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 33071);
                 cube(30f);
                 GlStateManager.popMatrix();
             }
