@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         maven("https://gitlab.com/api/v4/projects/80566527/packages/maven")
     }
 }
