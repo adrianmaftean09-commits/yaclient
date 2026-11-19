@@ -311,7 +311,7 @@ footer a:hover{color:var(--text)}
 
 /* home: space above, voxel world below, one continuous background behind hero + sections */
 .cosmos{position:relative;isolation:isolate;min-height:min(calc(100vw*2.41),3700px)}
-.cosmos::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,9,11,0) calc(100% - 90px),#09090b 100%),linear-gradient(rgba(9,9,11,.14),rgba(9,9,11,.14)),url(/b/world.jpg?v=3) center top/cover no-repeat}
+.cosmos::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,9,11,0) calc(100% - 90px),#09090b 100%),linear-gradient(rgba(9,9,11,.14),rgba(9,9,11,.14)),url(/b/world.jpg?v=4) center top/cover no-repeat}
 .cosmos .h2::before{display:none}
 .cosmos .h2 .sub,.cosmos .h2 .hint{color:#c9cfe6;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .cosmos .stats2{background:rgba(9,9,14,.62);border-color:rgba(255,255,255,.14);backdrop-filter:blur(6px)}
@@ -320,3 +320,5 @@ footer a:hover{color:var(--text)}
 #tags .tgc .mcs{background:rgba(255,255,255,.04)}
 #tags .card,#features .card{background:rgba(12,12,16,.72)}
 #tags .card p,#features .card p{color:#c4c8d6}
+.cosmos .h2 h1{text-shadow:0 2px 24px rgba(5,5,20,.75)}
+.cosmos .h2 .sub{color:#e4e8fa;text-shadow:0 1px 3px rgba(0,0,0,.9),0 2px 14px rgba(0,0,10,.9)}
