@@ -293,3 +293,10 @@ footer a:hover{color:var(--text)}
 #news .sh2 .lead{color:#e6e6ea}
 #news .card.news{box-shadow:0 18px 50px rgba(0,0,0,.35)}
 @media(max-width:700px){#news{padding-top:60px;padding-bottom:70px}#news::before{background-position:50% 30%}}
+
+/* home: golden-hour voxel illustration behind "Everything a PvP client needs" */
+#features{position:relative;isolation:isolate;padding-top:90px;padding-bottom:100px}
+#features::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,.5) 5%,rgba(9,9,11,.3) 20%,rgba(9,9,11,.14) 60%,rgba(9,9,11,.3) 85%,#09090b 100%),url(/b/features-bg.jpg?v=1) center/cover no-repeat}
+#features .sh2 h2,#features .sh2 .lead{text-shadow:0 2px 16px rgba(0,0,0,.8);color:#fff}
+#features .card{box-shadow:0 16px 44px rgba(0,0,0,.35)}
+@media(max-width:700px){#features{padding-top:60px;padding-bottom:70px}}
