@@ -226,11 +226,11 @@ final class ExtraPix {
             F[i] = Poly.p(J[0] + dx * cs - dy * sn, J[1] + dx * sn + dy * cs, i == 2 ? 0 : sw * 0.09);   // follows the leading edge, a hair behind; the small inner finger (next to the body) stays still
         }
         double[][] Fm = new double[3][];
-        for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.99);
-        double[] Tm = lerp(J, T, 0.99);
+        for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.93);
+        double[] Tm = lerp(J, T, 0.95);
         double[][] M = new double[2][];
-        for (int i = 0; i < 2; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, 0.10); }
-        double[] M0 = lerp(lerp(Tm, Fm[0], 0.5), J, 0.10);
+        for (int i = 0; i < 2; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, -0.14); }
+        double[] M0 = lerp(lerp(Tm, Fm[0], 0.5), J, -0.10);
         vmem(J, Tm, M0, J, age); vmem(J, M0, Fm[0], J, age);
         vmem(J, Fm[0], M[0], J, age); vmem(J, M[0], Fm[1], J, age);
         vmem(J, Fm[1], M[1], J, age); vmem(J, M[1], Fm[2], J, age);
