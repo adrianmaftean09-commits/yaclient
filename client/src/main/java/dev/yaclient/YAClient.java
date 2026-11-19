@@ -155,6 +155,7 @@ public class YAClient implements ModInitializer {
             Minecraft m0 = Minecraft.getMinecraft();
             if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMainMenu.class) m0.displayGuiScreen(new MainMenuScreen());
             FreeLook.pre(m0);
+            HotbarGuard.pre(m0);
         });
         EventBus.subscribe(TickEvent.Post.class, e -> {
             Minecraft mc = Minecraft.getMinecraft();

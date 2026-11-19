@@ -1,7 +1,12 @@
 package dev.yaclient;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 /**
  * Built-in hotbar protection (not a module, always on).
@@ -54,8 +59,71 @@ public final class HotbarGuard {
     /** A switch the client itself made on purpose (mouse side buttons): never revert it. */
     public static void accept(int slot) { prev = slot; lastChange = tick; }
 
+    // ---- inventory: the key / mouse button bound to a hotbar slot swaps the hovered item into that slot ----
+    private static ItemStack[] snap;
+    private static int armed = -1, armedTick;
+    private static boolean seenChange;
+    private static java.lang.reflect.Method mSlotAt, mClick;
+
+    private static ItemStack[] refs(Container c) {
+        ItemStack[] a = new ItemStack[c.inventorySlots.size()];
+        for (int i = 0; i < a.length; i++) a[i] = c.inventorySlots.get(i).getStack();
+        return a;
+    }
+
+    /** Start of a tick: remember the inventory, to know afterwards whether the game already did the swap itself. */
+    public static void pre(Minecraft mc) {
+        try {
+            EntityPlayer p = mc == null ? null : mc.thePlayer;
+            snap = p != null && p.openContainer != null && mc.currentScreen instanceof GuiContainer ? refs(p.openContainer) : null;
+        } catch (Throwable t) { snap = null; }
+    }
+
+    private static void inventory(Minecraft mc, EntityPlayer p) {
+        int want = pending;
+        pending = -1;
+        try {
+            Container c = p.openContainer;
+            if (c == null) return;
+            ItemStack[] now = refs(c);
+            boolean changed = false;
+            if (snap != null && snap.length == now.length) for (int i = 0; i < now.length; i++) if (snap[i] != now[i]) { changed = true; break; }
+            snap = null;
+            if (changed) seenChange = true;
+            if (want >= 0) {
+                int code = mc.gameSettings.keyBindsHotbar[want].getKeyCode();
+                if (code <= -98) { swap(mc, p, want); armed = -1; return; }            // mouse side buttons: the game ignores them in inventories
+                if (code > 0) { armed = want; armedTick = tick; seenChange = changed; }  // keyboard (CTRL, ALT, ...): wait one tick to see if the game did it
+            }
+            if (armed >= 0 && tick > armedTick) {
+                int a = armed; armed = -1;
+                if (!seenChange) swap(mc, p, a);
+            }
+        } catch (Throwable t) { armed = -1; }
+    }
+
+    private static void swap(Minecraft mc, EntityPlayer p, int hot) throws Exception {
+        if (mc.currentScreen == null || !(mc.currentScreen instanceof GuiContainer) || mc.currentScreen instanceof GuiContainerCreative) return;
+        if (p.inventory.getItemStack() != null) return;
+        if (mSlotAt == null || mClick == null) {
+            for (java.lang.reflect.Method m : GuiContainer.class.getDeclaredMethods()) {
+                Class<?>[] a = m.getParameterTypes();
+                if (a.length == 2 && a[0] == int.class && a[1] == int.class && m.getReturnType() == Slot.class) { m.setAccessible(true); mSlotAt = m; }
+                if (a.length == 4 && a[0] == Slot.class && a[1] == int.class && a[2] == int.class && a[3] == int.class && m.getReturnType() == void.class) { m.setAccessible(true); mClick = m; }
+            }
+            if (mSlotAt == null || mClick == null) return;
+        }
+        GuiContainer g = (GuiContainer) mc.currentScreen;
+        int mx = org.lwjgl.input.Mouse.getX() * g.width / mc.displayWidth;
+        int my = g.height - org.lwjgl.input.Mouse.getY() * g.height / mc.displayHeight - 1;
+        Slot s = (Slot) mSlotAt.invoke(g, mx, my);
+        if (s == null) return;
+        mClick.invoke(g, s, s.slotNumber, hot, 2);   // click type 2 = swap with hotbar slot
+    }
+
     public static void tick(Minecraft mc) {
         tick++;
+        if (mc != null && mc.thePlayer != null && mc.currentScreen instanceof GuiContainer) { startWatcher(mc); inventory(mc, mc.thePlayer); } else armed = -1;
         if (mc != null) startWatcher(mc);
         EntityPlayer p = mc == null ? null : mc.thePlayer;
         if (p == null || p.isDead || !Config.getBool("hotbar.guard", true)) { prev = -1; return; }
