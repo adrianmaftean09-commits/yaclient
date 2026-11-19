@@ -213,33 +213,41 @@ final class ExtraPix {
     private static double[] lerp(double[] a, double[] b, double t) { return Poly.p(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 0); }
 
     private static void vampireSmooth(float age) {
-        double fl = Math.sin(age * 0.10) * 0.015;
-        double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0), K = Poly.p(0.38, 0.44, 0);
-        double[][] F = {Poly.p(0.54 + fl, -0.10, 0), Poly.p(0.43 + fl * 0.7, -0.27, 0), Poly.p(0.27 + fl * 0.3, -0.33, 0), Poly.p(0.11, -0.24, 0)};   // four fingers
-        double[][] Fm = new double[4][];
-        for (int i = 0; i < 4; i++) Fm[i] = lerp(J, F[i], 0.94);                                                       // membrane stops a little before the bone ends
-        double[][] M = new double[3][];
-        for (int i = 0; i < 3; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, 0.30); }         // rounded scallops between the fingers
-        double[] Mo = Poly.p(J[0] + 0.12, J[1] - 0.20, 0);
-        vmem(J, Fm[0], M[0], J, age); vmem(J, M[0], Fm[1], J, age); vmem(J, Fm[1], M[1], J, age); vmem(J, M[1], Fm[2], J, age);
-        vmem(J, Fm[2], M[2], J, age); vmem(J, M[2], Fm[3], J, age); vmem(J, Fm[3], A, J, age);
-        vmem(J, K, Mo, J, age); vmem(J, Mo, Fm[0], J, age);
+        double ph = age * 0.20;
+        double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0);
+        double[] T = Poly.p(0.66 + Math.sin(ph) * 0.012, 0.24 + Math.sin(ph - 0.6) * 0.010, 0);                     // long horizontal leading edge, rounded tip
+        double[][] F = new double[3][];
+        double[][] base = {{0.58, -0.12}, {0.40, -0.31}, {0.17, -0.27}};
+        for (int i = 0; i < 3; i++) {                                                                                  // fingers sweep with a travelling delay (diagonal wave)
+            double sw = Math.sin(ph - i * 0.9);
+            F[i] = Poly.p(base[i][0] + sw * 0.035 * (1 - i * 0.25), base[i][1] + sw * 0.028, 0);
+        }
+        double[][] Fm = new double[3][];
+        for (int i = 0; i < 3; i++) Fm[i] = lerp(J, F[i], 0.95);
+        double[] Tm = lerp(J, T, 0.96);
+        double[][] M = new double[2][];
+        for (int i = 0; i < 2; i++) { double[] mid = lerp(Fm[i], Fm[i + 1], 0.5); M[i] = lerp(mid, J, 0.28); }
+        double[] M0 = lerp(lerp(Tm, Fm[0], 0.5), J, 0.22);
+        vmem(J, Tm, M0, J, age); vmem(J, M0, Fm[0], J, age);
+        vmem(J, Fm[0], M[0], J, age); vmem(J, M[0], Fm[1], J, age);
+        vmem(J, Fm[1], M[1], J, age); vmem(J, M[1], Fm[2], J, age);
+        vmem(J, Fm[2], A, J, age);
         float[] bone = c(0x0B0712), edge = c(0x3A2A52);
         vbone(A, J, 0.040, 0.032, bone, edge);
-        vbone(J, K, 0.030, 0.016, bone, edge);                                                                         // blunt spike
-        Poly.ellipsoid(K[0], K[1], 0.0, 0.017, 0.017, 0.014, bone, bone, 0f);
-        double[] w = {0.024, 0.021, 0.018, 0.015};
-        for (int i = 0; i < 4; i++) {
+        vbone(J, T, 0.028, 0.013, bone, edge);                                                                        // leading edge
+        Poly.ellipsoid(T[0], T[1], 0.0, 0.016, 0.016, 0.013, bone, bone, 0f);
+        double[] w = {0.022, 0.019, 0.016};
+        for (int i = 0; i < 3; i++) {
             vbone(J, F[i], w[i], 0.012, bone, edge);
-            Poly.ellipsoid(F[i][0], F[i][1], 0.0, 0.013, 0.013, 0.011, bone, bone, 0f);                                // rounded tips, not needles
+            Poly.ellipsoid(F[i][0], F[i][1], 0.0, 0.013, 0.013, 0.011, bone, bone, 0f);
         }
         double glow = 0.55 + 0.45 * Math.sin(age * 0.10);
         float[] red = g(0xFF2A4A, (float) (0.55 + 0.4 * glow));
-        for (double[] f : F) {                                                                                         // glowing vein along each finger
+        double[][] V = {T, F[0], F[1], F[2]};
+        for (double[] f : V) {
             double[] a2 = Poly.p(J[0], J[1], 0.012), b2 = Poly.p(f[0] * 0.92 + J[0] * 0.08, f[1] * 0.92 + J[1] * 0.08, 0.012);
             vbone(a2, b2, 0.005, 0.003, red, red);
         }
-        vbone(Poly.p(J[0], J[1], 0.012), Poly.p(K[0], K[1] - 0.05, 0.012), 0.005, 0.003, red, red);
     }
 
     // --- butterfly: two rounded lobes with a dark border, white dots and blue eyespots
