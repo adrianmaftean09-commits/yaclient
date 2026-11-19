@@ -103,7 +103,7 @@ final class ExtraPix {
         else if (id.equals("butterfly")) butterflyWing(age);
         else if (id.equals("azure")) bigDragon(age, true);
         else if (id.equals("venom")) bigDragon(age, false);
-        else if (id.equals("vampire")) vampireWing(age);
+        else if (id.equals("vampire")) { vampireSmooth(age); return; }
         else dragonflyWing(age);
         emitWing();
     }
@@ -160,26 +160,78 @@ final class ExtraPix {
     }
 
 
-    // --- vampire: small blocky dragon wing: thick two-part bone arm, four straight finger bones and a dark membrane with notched edge
-    private static void vampireWing(float age) {
-        final double fl = Math.sin(age * 0.2) * 0.010;
-        final double[] sh = {0.02, 0.02}, el = {0.20, 0.40}, wr = {0.46, 0.46};
-        final double[][] tip = {{0.74, 0.28 + fl}, {0.66, 0.00 + fl}, {0.46, -0.14}, {0.24, -0.10}};
-        final double[][] mem = {sh, el, wr, tip[0], {0.60, 0.13}, tip[1], {0.50, -0.03}, tip[2], {0.33, -0.01}, tip[3], {0.12, -0.02}};
-        fill(0, -0.3, 0.9, 0.7, new Fn() { public float[] at(double x, double y) {
-            if (!inPoly(x, y, mem)) return null;
-            float t = (float) sm((0.46 - y) / 0.62);
-            float[] col = Poly.mix(c(0x2E2440), c(0x15101E), t);
-            if (noise((int) (x / CELL), (int) (y / CELL)) > 0.9) col = Poly.mix(col, c(0x4B3A66), 0.5f);
-            return col; } });
-        float[] bone = c(0x0B0810), edge = c(0x5A4A78);
-        seg(sh[0], sh[1], el[0], el[1], 0.024, bone); seg(el[0], el[1], wr[0], wr[1], 0.020, bone);          // thick arm
-        for (double[] t : tip) seg(wr[0], wr[1], t[0], t[1], 0.012, bone);                                   // fingers
-        seg(sh[0] + 0.01, sh[1] + 0.02, el[0], el[1] + 0.02, 0.006, edge); seg(el[0], el[1] + 0.02, wr[0], wr[1] + 0.02, 0.006, edge);
-        for (double[] t : tip) seg(t[0], t[1], t[0] + 0.02, t[1] + 0.03, 0.010, edge);                       // small claws
-        double glow = 0.6 + 0.4 * Math.sin(age * 0.10);
-        float[] red = g(0xFF2A4A, (float) (0.6 + 0.4 * glow));
-        for (double[] t : tip) seg(wr[0], wr[1], t[0] * 0.94 + wr[0] * 0.06, t[1] * 0.94 + wr[1] * 0.06, 0.0045, red);   // glowing veins
+    // --- vampire: smooth 3D dragon wing, small: thick bone arm with a short spike, three fingers and a bowed violet-black membrane
+    private static double[] vp(double x, double y, double z, float age) {
+        return Poly.p(x, y, z + 0.035 * x * Math.sin(age * 0.18 - x * 3.2));          // the tip lags behind: the wing ripples
+    }
+
+    private static float[] vcol(double x, double y, double jx, double jy) {
+        float t = (float) sm(Math.hypot(x - jx, y - jy) / 0.46);
+        float[] c = Poly.mix(c(0x4E2B78), c(0x140A22), t);
+        return c;
+    }
+
+    private static void vmem(double[] a, double[] b, double[] c, double[] j, float age) {
+        final int n = 8;
+        for (int i = 0; i < n; i++) for (int k = 0; k < n - i; k++) {
+            double[][] P = new double[4][]; float[][] C = new float[4][];
+            int[][] ij = {{i, k}, {i + 1, k}, {i, k + 1}, {i + 1, k + 1}};
+            for (int q = 0; q < 4; q++) {
+                double u = ij[q][0] / (double) n, v = ij[q][1] / (double) n, w = 1 - u - v;
+                double x = a[0] * w + b[0] * u + c[0] * v, y = a[1] * w + b[1] * u + c[1] * v;
+                double billow = 0.030 * 27.0 * u * v * w;                                     // bows backwards between the bones
+                P[q] = vp(x, y, billow, age); C[q] = vcol(x, y, j[0], j[1]);
+            }
+            Poly.tri(P[0], P[1], P[2], C[0], C[1], C[2], 1f);
+            if (k < n - i - 1) Poly.tri(P[1], P[3], P[2], C[1], C[3], C[2], 1f);
+        }
+    }
+
+    private static double[] vsub(double[] a, double[] b) { return new double[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]}; }
+    private static double[] vcross(double[] a, double[] b) { return new double[]{a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]}; }
+    private static double[] vnorm(double[] a) { double l = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]); return new double[]{a[0] / l, a[1] / l, a[2] / l}; }
+    private static double[] voff(double[] p, double[] n, double kn, double[] m, double km) {
+        return Poly.p(p[0] + n[0] * kn + m[0] * km, p[1] + n[1] * kn + m[1] * km, p[2] + n[2] * kn + m[2] * km);
+    }
+
+    /** A bone: tapered 4-sided prism from p to q (real thickness). */
+    private static void vbone(double[] p, double[] q, double w0, double w1, float[] col, float[] edge) {
+        double[] d = vsub(q, p);
+        double[] n = vnorm(vcross(d, new double[]{0, 0, 1}));
+        double[] m = vnorm(vcross(d, n));
+        double d0 = w0 * 0.8, d1 = w1 * 0.8;
+        double[][] P = {voff(p, n, w0, m, d0), voff(p, n, -w0, m, d0), voff(p, n, -w0, m, -d0), voff(p, n, w0, m, -d0)};
+        double[][] Q = {voff(q, n, w1, m, d1), voff(q, n, -w1, m, d1), voff(q, n, -w1, m, -d1), voff(q, n, w1, m, -d1)};
+        for (int i = 0; i < 4; i++) {
+            int k = (i + 1) % 4;
+            float[] cc = (i == 0 || i == 2) ? edge : col;
+            Poly.quad(P[i], P[k], Q[k], Q[i], cc, cc, cc, cc, 1f);
+        }
+        Poly.quad(P[0], P[1], P[2], P[3], col, col, col, col, 1f);
+    }
+
+    private static void vampireSmooth(float age) {
+        double fl = Math.sin(age * 0.10) * 0.015;
+        double[] A = Poly.p(0.02, 0.0, 0), J = Poly.p(0.30, 0.20, 0), K = Poly.p(0.40, 0.55, 0);
+        double[] F1 = Poly.p(0.50 + fl, -0.20, 0), F2 = Poly.p(0.31 + fl * 0.5, -0.30, 0), F3 = Poly.p(0.11, -0.22, 0);
+        double[] M1 = Poly.p((F1[0] + F2[0]) / 2, (F1[1] + F2[1]) / 2 + 0.06, 0), M2 = Poly.p((F2[0] + F3[0]) / 2, (F2[1] + F3[1]) / 2 + 0.05, 0);
+        double[] Mo = Poly.p(J[0] + 0.12, J[1] - 0.24, 0);
+        vmem(J, F1, M1, J, age); vmem(J, M1, F2, J, age); vmem(J, F2, M2, J, age); vmem(J, M2, F3, J, age); vmem(J, F3, A, J, age);
+        vmem(J, K, Mo, J, age); vmem(J, Mo, F1, J, age);
+        float[] bone = c(0x0B0712), edge = c(0x3A2A52);
+        vbone(A, J, 0.040, 0.032, bone, edge);
+        vbone(J, K, 0.030, 0.008, bone, edge);
+        vbone(J, F1, 0.024, 0.009, bone, edge);
+        vbone(J, F2, 0.020, 0.008, bone, edge);
+        vbone(J, F3, 0.016, 0.008, bone, edge);
+        double glow = 0.55 + 0.45 * Math.sin(age * 0.10);
+        float[] red = g(0xFF2A4A, (float) (0.55 + 0.4 * glow));
+        double[][] fin = {F1, F2, F3};
+        for (double[] f : fin) {                                                         // glowing vein along each finger, on the membrane side
+            double[] a = Poly.p(J[0], J[1], 0.012), b = Poly.p(f[0] * 0.96 + J[0] * 0.04, f[1] * 0.96 + J[1] * 0.04, 0.012);
+            vbone(a, b, 0.005, 0.003, red, red);
+        }
+        vbone(Poly.p(J[0], J[1], 0.012), Poly.p(K[0], K[1] - 0.04, 0.012), 0.005, 0.003, red, red);
     }
 
     // --- butterfly: two rounded lobes with a dark border, white dots and blue eyespots
@@ -274,6 +326,21 @@ final class ExtraPix {
     static final String[] BANDS = {"ninja", "crown", "halo", "cat", "rainbow"};
     private static final double BY = -0.37;
 
+
+    /** Point on the halo torus: ring angle a, tube angle t. y points down, so up is negative. */
+    private static double[] hp(double a, double t, double R, double rw, double rh, double bob, double tx, double tz) {
+        double r = R + rw * Math.cos(t), x = Math.sin(a) * r, z = Math.cos(a) * r;
+        double y = BY - 0.33 + bob + tx * z + tz * x - rh * Math.sin(t);
+        return Poly.p(x, y, z);
+    }
+
+    private static float[] hc(double a, double t, float age) {
+        double run = Math.max(0, Math.cos(a - age * 0.12));                         // bright spot travelling around the ring
+        double top = 0.5 - 0.5 * Math.sin(t);                                       // 0 on top, 1 underneath
+        float[] hi = g(0xFFF2A8, (float) (0.8 + 0.2 * run)), lo = g(0xD99A00, 0.75f);
+        return Poly.mix(Poly.mix(hi, lo, (float) top), g(0xFFFFFF, 1f), (float) (run * run * 0.35 * (1 - top)));
+    }
+
     private static void ring(double y, double hy, float[] top, float[] bot) {
         Vox.box(0, y, -0.27, 0.2825, hy, 0.0125, top, bot, 0);
         Vox.box(0, y, 0.27, 0.2825, hy, 0.0125, top, bot, 0);
@@ -302,15 +369,19 @@ final class ExtraPix {
             }
             Vox.box(0, BY, -0.282, 0.032, 0.028, 0.010, g(0xFF3B5C, 0.7f), g(0xFF9AAE, 0.7f), 1);   // front ruby
         } else if (id.equals("halo")) {
-            // thick golden halo floating above the head: it bobs, tilts and drifts slowly, with a light running around it
+            // thick golden halo floating above the head (smooth 3D ring): it bobs, tilts and drifts slowly, with a light running around it
             double bob = Math.sin(age * 0.10) * 0.020, tx = Math.sin(age * 0.07) * 0.13, tz = Math.cos(age * 0.055) * 0.13;
-            int n = 28;
-            for (int i = 0; i < n; i++) {
-                double a = i * 2 * Math.PI / n, x = Math.sin(a) * 0.22, z = Math.cos(a) * 0.22;
-                double y = BY - 0.33 + bob + tx * z + tz * x;
-                double run = Math.max(0, Math.cos(a - age * 0.12));                          // bright spot travelling around the ring
-                float[] top = g(0xFFE06A, (float) (0.85 + 0.15 * run)), bot = g(0xE0A800, (float) (0.8 + 0.2 * run));
-                Vox.box(x, y, z, 0.058, 0.042, 0.058, top, bot, 1);
+            final int nr = 44, nt = 12;
+            final double R = 0.22, rw = 0.058, rh = 0.042;
+            for (int i = 0; i < nr; i++) {
+                double a0 = i * 2 * Math.PI / nr, a1 = (i + 1) * 2 * Math.PI / nr;
+                for (int j = 0; j < nt; j++) {
+                    double t0 = j * 2 * Math.PI / nt, t1 = (j + 1) * 2 * Math.PI / nt;
+                    double[] p00 = hp(a0, t0, R, rw, rh, bob, tx, tz), p10 = hp(a1, t0, R, rw, rh, bob, tx, tz);
+                    double[] p11 = hp(a1, t1, R, rw, rh, bob, tx, tz), p01 = hp(a0, t1, R, rw, rh, bob, tx, tz);
+                    float[] c00 = hc(a0, t0, age), c10 = hc(a1, t0, age), c11 = hc(a1, t1, age), c01 = hc(a0, t1, age);
+                    Poly.quad(p00, p10, p11, p01, c00, c10, c11, c01, 1f);
+                }
             }
         } else if (id.equals("cat")) {
             ring(BY, 0.04, c(0xFF8FB8), c(0xE0608F));
