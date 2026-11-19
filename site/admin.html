@@ -98,6 +98,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--s2)}
 </main></div>
 <div id="toast"></div>
 
+<script src="/singles.js"></script>
 <script>
 var KEY="",$=function(i){return document.getElementById(i)},BUNDLES=["beta","mono","qlux","sakura","shinobi","kitsune","santa","frost","clown","luck"],PREF={beta:"ya"},SLOTS=["cape","wings","bandana","pet"];
 var NAMES={beta:"Beta Tester",mono:"Monochrome",qlux:"Qlux (partner)",sakura:"Sakura",shinobi:"Shinobi",kitsune:"Kitsune",santa:"Santa",frost:"Frost",clown:"Clown",luck:"Luck"};
@@ -130,13 +131,16 @@ $("rf").onclick=loadOv;
 /* grant helpers */
 function itemOptions(){var h="<optgroup label='Bundles'>";BUNDLES.forEach(function(b){h+="<option value='"+b+"'>"+NAMES[b]+" bundle</option>"});h+="</optgroup><optgroup label='Everything'><option value='*'>All cosmetics</option></optgroup><optgroup label='Single items'>";BUNDLES.forEach(function(b){SLOTS.forEach(function(s){h+="<option value='"+pre(b)+"_"+s+"'>"+NAMES[b]+" "+s+"</option>"})});return h+"</optgroup>"}
 var SLN={cape:"Cape",wings:"Wings",bandana:"Bandana",pet:"Pet"};
-function imgOf(v){if(v==="*")return"";if(BUNDLES.indexOf(v)>=0)return"/b/"+v+"-2.jpg";return"/b/i/"+v+".jpg"}
-function nameOf(v){if(v==="*")return"All cosmetics";if(BUNDLES.indexOf(v)>=0)return NAMES[v]+" bundle";var p=v.split("_"),b=BUNDLES.filter(function(x){return pre(x)===p[0]})[0];return(b?NAMES[b]:v)+" "+(SLN[p[1]]||"").toLowerCase()}
-function mkPicker(el){var st={v:"beta",tab:"bundles"};var tabs=[["bundles","Bundles"],["cape","Capes"],["wings","Wings"],["bandana","Bandanas"],["pet","Pets"]];
- function draw(){var h="<div class='pkt'>"+tabs.map(function(t){return"<button type='button' data-t='"+t[0]+"' class='"+(st.tab===t[0]?"on":"")+"'>"+t[1]+"</button>"}).join("")+"</div><div class='pk'>";
-  var list=st.tab==="bundles"?BUNDLES.concat(["*"]):BUNDLES.map(function(b){return pre(b)+"_"+st.tab});
+function imgOf(v){if(v==="*")return"";if(SG[v])return"/b/i/"+v+".jpg";if(BUNDLES.indexOf(v)>=0)return"/b/"+v+"-2.jpg";return"/b/i/"+v+".jpg"}
+var SG={};(window.YA_SINGLES||[]).forEach(function(x){SG[x[0]]=x});
+function nameOf(v){if(SG[v])return SG[v][1];if(v==="*")return"All cosmetics";if(BUNDLES.indexOf(v)>=0)return NAMES[v]+" bundle";var p=v.split("_"),b=BUNDLES.filter(function(x){return pre(x)===p[0]})[0];return(b?NAMES[b]:v)+" "+(SLN[p[1]]||"").toLowerCase()}
+function mkPicker(el){var st={v:"beta",tab:"bundles",q:""};var tabs=[["bundles","Bundles"],["cape","Capes"],["wings","Wings"],["bandana","Bandanas"],["pet","Pets"]];
+ function draw(){var h="<div class='pkt'>"+tabs.map(function(t){return"<button type='button' data-t='"+t[0]+"' class='"+(st.tab===t[0]?"on":"")+"'>"+t[1]+"</button>"}).join("")+"</div>"+(st.tab==="bundles"?"":"<input class='pq' placeholder='Search (e.g. vampire, geometric, storm)' value='"+esc(st.q)+"' style='width:100%;margin:8px 0'>")+"<div class='pk'>";
+  var list=st.tab==="bundles"?BUNDLES.concat(["*"]):BUNDLES.map(function(b){return pre(b)+"_"+st.tab}).concat((window.YA_SINGLES||[]).filter(function(x){return x[2]===st.tab}).map(function(x){return x[0]}));
+  if(st.q){var qq=st.q.toLowerCase();list=list.filter(function(v){return nameOf(v).toLowerCase().indexOf(qq)>=0||v.indexOf(qq)>=0})}
   h+=list.map(function(v){return"<div class='pc"+(st.v===v?" on":"")+"' data-v='"+v+"'>"+(v==="*"?"<div class='ph'>ALL</div>":"<img loading='lazy' src='"+imgOf(v)+"' alt=''>")+"<span>"+esc(nameOf(v))+"</span></div>"}).join("")+"</div>";
   h+="<div class='selbar'>"+(st.v==="*"?"":"<img src='"+imgOf(st.v)+"' alt=''>")+"<div>Selected: <b>"+esc(nameOf(st.v))+"</b></div></div>";el.innerHTML=h;
+  var pq=el.querySelector(".pq");if(pq){pq.oninput=function(){st.q=pq.value;var p=pq.selectionStart;draw();var n=el.querySelector(".pq");n.focus();n.setSelectionRange(p,p)}}
   el.querySelectorAll(".pkt button").forEach(function(b){b.onclick=function(){st.tab=b.dataset.t;draw()}});el.querySelectorAll(".pc").forEach(function(c){c.onclick=function(){st.v=c.dataset.v;draw()}})}
  draw();return{get:function(){return st.v}}}
 var QPK;function fillSel(){QPK=mkPicker($("qg-pk"))}
