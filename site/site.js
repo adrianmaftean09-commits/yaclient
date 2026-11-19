@@ -57,3 +57,8 @@
     u.onkeydown = function (e) { if (e.key === 'Enter') go(); };
   };
 })();
+
+/* product photos were re-rendered (cape thickness): bypass old cached copies */
+(function(){try{var V='?v=21';function fix(i){var s=i.getAttribute&&i.getAttribute('src');if(s&&s.indexOf('/b/')===0&&s.indexOf('?')<0)i.setAttribute('src',s+V)}
+function all(r){var l=(r.querySelectorAll?r.querySelectorAll('img[src^="/b/"]'):[]);for(var k=0;k<l.length;k++)fix(l[k])}
+new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='attributes')fix(m.target);else m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.tagName==='IMG')fix(n);all(n)}})})}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src']});document.addEventListener('DOMContentLoaded',function(){all(document)})}catch(e){}})();
