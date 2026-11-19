@@ -35,7 +35,7 @@ final class ExtraPix {
     static void cape(String id, float age, boolean plus) { ExtraCape.draw(id, age, plus); }
 
     // ================================================================== WINGS (pixel cells in the wing plane)
-    static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly", "vampire"};
+    static final String[] WINGS = {"dragon", "butterfly", "azure", "venom", "dragonfly", "vampire", "vamp_crimson", "vamp_scarlet", "vamp_orange", "vamp_amber", "vamp_gold", "vamp_lime", "vamp_green", "vamp_emerald", "vamp_teal", "vamp_cyan", "vamp_sky", "vamp_blue", "vamp_indigo", "vamp_violet", "vamp_purple", "vamp_magenta", "vamp_pink", "vamp_rose", "vamp_white", "vamp_silver"};
 
     private static double CELL = 0.020, HZ = 0.011;
     private static final Map<Long, float[]> W = new LinkedHashMap<Long, float[]>();
@@ -103,7 +103,7 @@ final class ExtraPix {
         else if (id.equals("butterfly")) butterflyWing(age);
         else if (id.equals("azure")) bigDragon(age, true);
         else if (id.equals("venom")) bigDragon(age, false);
-        else if (id.equals("vampire")) { vampireSmooth(age); return; }
+        else if (id.equals("vampire") || id.startsWith("vamp_")) { vcolors(id); vampireSmooth(age); return; }
         else dragonflyWing(age);
         emitWing();
     }
@@ -165,9 +165,38 @@ final class ExtraPix {
         return Poly.p(x, y, z);                                                          // membrane follows the bones, no ripple
     }
 
+    // colour variants of the smooth vampire wings: {name, membrane, bones}
+    private static final Object[][] VCOLS = {
+        {"vamp_crimson", 0x8E1420, 0x2A0508},
+        {"vamp_scarlet", 0xC42A1E, 0x3A0E08},
+        {"vamp_orange", 0xD9701A, 0x3D1D06},
+        {"vamp_amber", 0xE0A020, 0x40300A},
+        {"vamp_gold", 0xE8C84A, 0x4A3C10},
+        {"vamp_lime", 0x8CC63A, 0x24380C},
+        {"vamp_green", 0x2E9B4A, 0x0A2A14},
+        {"vamp_emerald", 0x12805E, 0x05281E},
+        {"vamp_teal", 0x1FA3A0, 0x073130},
+        {"vamp_cyan", 0x38C6E0, 0x0C3640},
+        {"vamp_sky", 0x5AA8F0, 0x14304F},
+        {"vamp_blue", 0x2F5BD6, 0x0A1840},
+        {"vamp_indigo", 0x4A3AB8, 0x120E3A},
+        {"vamp_violet", 0x7B3FCF, 0x22103F},
+        {"vamp_purple", 0x5B2A8A, 0x180A2A},
+        {"vamp_magenta", 0xC0359E, 0x3A0F30},
+        {"vamp_pink", 0xF07AB8, 0x4A1A38},
+        {"vamp_rose", 0xE0507A, 0x40101F},
+        {"vamp_white", 0xE8E8F0, 0x5A5A66},
+        {"vamp_silver", 0x9AA0AE, 0x2C2F38}
+    };
+    private static float[] vMem = g(0x121214, 0.95f), vBone = c(0x030304);
+    private static void vcolors(String id) {
+        vMem = g(0x121214, 0.95f); vBone = c(0x030304);
+        for (Object[] r : VCOLS) if (r[0].equals(id)) { vMem = g((Integer) r[1], 0.95f); vBone = c((Integer) r[2]); }
+    }
+
     private static float[] vcol(double x, double y, double jx, double jy) {
         float t = (float) sm(Math.hypot(x - jx, y - jy) / 0.46);
-        return g(0x131316, 0.95f);                                                      // one flat colour
+        return vMem;                                                                   // one flat colour
     }
 
     private static void vmem(double[] a, double[] b, double[] c, double[] j, float age) {
@@ -241,7 +270,7 @@ final class ExtraPix {
         vmem(J, Fm[0], M[0], J, age); vmem(J, M[0], Fm[1], J, age);
         vmem(J, Fm[1], M[1], J, age); vmem(J, M[1], Fm[2], J, age);
         vmem(J, Fm[2], A, J, age);
-        float[] bone = c(0x030304), edge = c(0x0A0A0C);
+        float[] bone = vBone, edge = vBone;
         vbone(A, J, 0.040, 0.032, bone, edge);
         vbone(J, T, 0.018, 0.011, bone, edge);                                                                        // leading edge
         vcube(T, 0.011, bone);
