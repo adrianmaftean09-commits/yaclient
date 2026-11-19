@@ -288,22 +288,25 @@ footer a:hover{color:var(--text)}
 
 /* home: sunny voxel background behind the news */
 #news{position:relative;isolation:isolate;padding-top:90px;padding-bottom:100px}
-#news::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,.62) 4%,rgba(9,9,11,.42) 14%,rgba(9,9,11,.22) 40%,rgba(9,9,11,.22) 84%,#09090b 100%),url(/b/news-bg.jpg?v=2) center top/cover no-repeat}
 #news .sh2 h2,#news .sh2 .lead,#news .sh2 .more{text-shadow:0 2px 14px rgba(0,0,0,.8);color:#fff}
 #news .sh2 .lead{color:#e6e6ea}
 #news .card.news{box-shadow:0 18px 50px rgba(0,0,0,.35)}
-@media(max-width:700px){#news{padding-top:60px;padding-bottom:70px}#news::before{background-position:50% 30%}}
-
+@media(max-width:700px){#news{padding-top:60px;padding-bottom:70px}}
 /* home: golden-hour voxel illustration behind "Everything a PvP client needs" */
 #features{position:relative;isolation:isolate;padding-top:90px;padding-bottom:100px}
-#features::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,.5) 5%,rgba(9,9,11,.3) 20%,rgba(9,9,11,.14) 60%,rgba(9,9,11,.3) 85%,#09090b 100%),url(/b/features-bg.jpg?v=3) center/cover no-repeat}
 #features .sh2 h2,#features .sh2 .lead{text-shadow:0 2px 16px rgba(0,0,0,.8);color:#fff}
 #features .card{box-shadow:0 16px 44px rgba(0,0,0,.35)}
 @media(max-width:700px){#features{padding-top:60px;padding-bottom:70px}}
 
 /* home: middle part of the voxel world behind "Your logo in game" (meadow turning into desert) */
 #tags{position:relative;isolation:isolate;padding-top:90px;padding-bottom:100px}
-#tags::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,.5) 4%,rgba(9,9,11,.22) 18%,rgba(9,9,11,.16) 60%,rgba(9,9,11,.3) 90%,#09090b 100%),url(/b/tags-bg.jpg?v=1) center/cover no-repeat}
 #tags .sh2 h2,#tags .sh2 .lead{text-shadow:0 2px 16px rgba(0,0,0,.8);color:#fff}
 #tags .card{box-shadow:0 16px 44px rgba(0,0,0,.35)}
 @media(max-width:700px){#tags{padding-top:60px;padding-bottom:70px}}
+
+/* home: one continuous voxel world behind News, logos and features */
+.world{position:relative;isolation:isolate;min-height:min(calc(100vw*1.875),2900px)}
+.world::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#09090b 0,rgba(9,9,11,0) 70px,rgba(9,9,11,0) calc(100% - 90px),#09090b 100%),linear-gradient(rgba(9,9,11,.18),rgba(9,9,11,.18)),url(/b/world.jpg?v=1) center top/cover no-repeat}
+.world .sec{border:0;background:none}
+.world .sh2 h2,.world .sh2 .lead,.world .sh2 .more{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.75),0 2px 18px rgba(0,0,0,.85)}
+.world .card{box-shadow:0 16px 44px rgba(0,0,0,.35)}
