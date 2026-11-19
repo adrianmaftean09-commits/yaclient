@@ -68,6 +68,8 @@ public class YAClient implements ModInitializer {
         MODULES.add(new PerspectiveLockModule());
         MODULES.add(new ChatTweaksModule());
         MODULES.add(new PingGraphModule());
+        MODULES.add(new AutoReconnectModule());
+        MODULES.add(new ReplayBufferModule());
         MODULES.add(new FreeLookModule());
         MODULES.add(new NoCloudsModule());
         MODULES.add(new SmoothShiftModule());
@@ -182,6 +184,7 @@ public class YAClient implements ModInitializer {
             HitTracker.tick(mc);
             KeyGuard.tick(mc);
             HotbarGuard.tick(mc);
+            RecentServers.tick(mc);
             FreeLook.post(mc);
             for (Module m : MODULES) {
                 m.bind();

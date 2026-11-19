@@ -96,6 +96,15 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
+        RecentServers.draw(mx, my, height);
+        for (int i = 0; i < ModPresets.NAMES.length; i++) {
+            int x = width - 10 - (ModPresets.NAMES.length - i) * 46 + 4, y = 8;
+            boolean over = mx >= x && mx < x + 42 && my >= y && my < y + 14;
+            Gfx.rr(x, y, 42, 14, 6, over ? 0xC0242429 : 0xA0101014);
+            Gfx.rrOutline(x, y, 42, 14, 6, 1, over ? 0x66FFFFFF : 0x2EFFFFFF);
+            Gfx.textCentered(ModPresets.NAMES[i], x + 21, y + (14 - Gfx.lineHeight(8, true)) / 2, 8, true, Theme.TEXT);
+        }
+        if (System.currentTimeMillis() < ModPresets.messageUntil) Gfx.text(ModPresets.message, width - 10 - Gfx.width(ModPresets.message, 8, false), 26, 8, false, Theme.MUTED);
         Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, Theme.DIM);
         String acc = Minecraft.getMinecraft().getSession().getUsername();
         Gfx.text(acc, width - Gfx.width(acc, 10, false) - 8, height - 14, 10, false, Theme.MUTED);
@@ -164,6 +173,11 @@ public class MainMenuScreen extends GuiScreen {
     protected void mouseClicked(int mx, int my, int button) {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
+        if (RecentServers.click(mx, my, height, this)) return;
+        for (int i = 0; i < ModPresets.NAMES.length; i++) {
+            int x = width - 10 - (ModPresets.NAMES.length - i) * 46 + 4;
+            if (mx >= x && mx < x + 42 && my >= 8 && my < 22) { ModPresets.apply(i); return; }
+        }
         if (mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
