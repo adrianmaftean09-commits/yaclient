@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.network.ServerListPinger;
+import net.minecraft.client.network.OldServerPinger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public final class RecentServers {
                 public void run() {
                     try {
                         ServerData sd = new ServerData("", ip, false);
-                        ServerListPinger p = new ServerListPinger();
+                        OldServerPinger p = new OldServerPinger();
                         p.ping(sd);
                         for (int i = 0; i < 60 && sd.pingToServer <= 0; i++) { p.pingPendingNetworks(); Thread.sleep(100); }
                         pings.put(ip, sd.pingToServer > 0 ? sd.pingToServer : -1L);

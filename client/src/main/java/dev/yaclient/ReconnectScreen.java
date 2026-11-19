@@ -47,15 +47,15 @@ public class ReconnectScreen extends GuiScreen {
     }
 
     @Override
-    public void handleMouseInput() throws IOException {
+    public void handleMouseInput() {
         if (Mouse.getEventButtonState()) cancelled = true;
-        inner.handleMouseInput();
+        try { inner.handleMouseInput(); } catch (Exception ignored) { }
     }
 
     @Override
-    public void handleKeyboardInput() throws IOException {
+    public void handleKeyboardInput() {
         if (Keyboard.getEventKeyState()) cancelled = true;
-        inner.handleKeyboardInput();
+        try { inner.handleKeyboardInput(); } catch (Exception ignored) { }
     }
 
     @Override
