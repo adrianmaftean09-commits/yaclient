@@ -167,7 +167,7 @@ final class ExtraPix {
 
     private static float[] vcol(double x, double y, double jx, double jy) {
         float t = (float) sm(Math.hypot(x - jx, y - jy) / 0.46);
-        return g(0x26262A, 0.95f);                                                      // one flat colour
+        return g(0x131316, 0.95f);                                                      // one flat colour
     }
 
     private static void vmem(double[] a, double[] b, double[] c, double[] j, float age) {
@@ -243,12 +243,12 @@ final class ExtraPix {
         vmem(J, Fm[2], A, J, age);
         float[] bone = c(0x030304), edge = c(0x0A0A0C);
         vbone(A, J, 0.040, 0.032, bone, edge);
-        vbone(J, T, 0.018, 0.018, bone, edge);                                                                        // leading edge
-        vcube(T, 0.018, bone);
+        vbone(J, T, 0.018, 0.011, bone, edge);                                                                        // leading edge
+        vcube(T, 0.011, bone);
         double[] w = {0.021, 0.024, 0.016};
         for (int i = 0; i < 3; i++) {
-            vbone(J, F[i], w[i], w[i], bone, edge);
-            vcube(F[i], w[i], bone);
+            vbone(J, F[i], w[i], w[i] * 0.62, bone, edge);
+            vcube(F[i], w[i] * 0.62, bone);
         }
     }
 
