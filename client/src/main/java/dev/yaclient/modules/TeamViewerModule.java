@@ -82,7 +82,7 @@ public class TeamViewerModule extends Module {
                 double y = p.lastTickPosY + (p.posY - p.lastTickPosY) * pt - vy + p.height + 0.75 + Math.sin(System.currentTimeMillis() / 260.0) * 0.06;
                 double z = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * pt - vz;
                 float dist = (float) Math.sqrt(x * x + y * y + z * z);
-                float sc = 0.30f * Math.max(1f, dist / 7f);
+                float sc = 0.42f * Math.max(1f, dist / 8f);
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(x, y, z);
                 GlStateManager.rotate(-yaw, 0f, 1f, 0f);
@@ -125,6 +125,20 @@ public class TeamViewerModule extends Module {
     private final List<EntityPlayer> rows = new ArrayList<EntityPlayer>();
     private long built;
 
+    /** Same scoreboard team: the same team object, the same team name, or the same colored prefix (servers that build teams per viewer). */
+    private boolean sameTeam(EntityPlayer p) {
+        try {
+            net.minecraft.scoreboard.Team a = mc.thePlayer.getTeam(), b = p.getTeam();
+            if (a == null || b == null) return false;
+            if (a == b || a.getRegisteredName().equals(b.getRegisteredName())) return true;
+            if (a instanceof net.minecraft.scoreboard.ScorePlayerTeam && b instanceof net.minecraft.scoreboard.ScorePlayerTeam) {
+                String pa = ((net.minecraft.scoreboard.ScorePlayerTeam) a).getColorPrefix(), pb = ((net.minecraft.scoreboard.ScorePlayerTeam) b).getColorPrefix();
+                return pa != null && !pa.trim().isEmpty() && pa.equals(pb);
+            }
+        } catch (Throwable ignored) { }
+        return false;
+    }
+
     private List<EntityPlayer> members() {
         long now = System.currentTimeMillis();
         if (now - built < 250) return rows;
@@ -139,7 +153,7 @@ public class TeamViewerModule extends Module {
         for (EntityPlayer p : mc.theWorld.playerEntities) {
             if (p == mc.thePlayer || rows.size() >= 6) continue;
             if (mc.thePlayer.getDistanceToEntity(p) > range.value) continue;
-            boolean mate = (team.value && mc.thePlayer.getTeam() != null && p.isOnSameTeam(mc.thePlayer))
+            boolean mate = (team.value && sameTeam(p))
                     || manual.containsKey(p.getName().toLowerCase(Locale.ROOT));
             if (mate) rows.add(p);
         }

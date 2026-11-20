@@ -99,9 +99,29 @@ final class Icons {
         DSL.put("scoreboard", "R 4 3 16 18 2 M 8 8 L 16 8 M 8 12 L 16 12 M 8 16 L 13 16");
         DSL.put("fps_boost", "M 12 3 B 17 6 18 12 16 17 L 8 17 B 6 12 7 6 12 3 Z C 12 10 1.8 M 8 17 L 6 21 M 16 17 L 18 21");
         DSL.put("no_clouds", "M 7 18 B 3 18 3 12 7.5 12 B 8 7 16 7 17 12 B 21 12 21 18 17 18 Z M 3 3 L 21 21");
-        DSL.put("block_outline", "M 12 3 L 20 7.5 L 20 16.5 L 12 21 L 4 16.5 L 4 7.5 Z M 4 7.5 L 12 12 L 20 7.5 M 12 12 L 12 21");
+        DSL.put("block_outline", "R 4 8 12 12 1 M 4 8 L 8 4 L 20 4 L 20 16 L 16 20 M 16 8 L 20 4");
         DSL.put("smooth_shift", "M 5 4 L 19 4 M 12 8 L 12 19 M 8 15 L 12 19 L 16 15");
         DSL.put("chat", "R 3 4 18 13 3 M 8 17 L 8 21 L 12.5 17 M 7.5 9 L 16.5 9 M 7.5 12.5 L 13 12.5");
+        DSL.put("auto_reconnect", "A 12 12 8 20 140 M 19 4 L 19 9 L 14 9 A 12 12 8 200 140 M 5 20 L 5 15 L 10 15");
+        DSL.put("block_place", "R 3 3 12 12 2 M 18 14 L 18 21 M 14.5 17.5 L 21.5 17.5");
+        DSL.put("callouts", "M 3 10 L 3 14 L 14 19 L 14 5 Z M 17 9 B 19.5 11 19.5 13 17 15 M 19.5 6.5 B 23 10.5 23 13.5 19.5 17.5");
+        DSL.put("chat_tweaks", "M 4 5 L 20 5 L 20 16 L 11 16 L 6 20 L 6 16 L 4 16 Z M 8 9 L 16 9 M 8 12 L 12 12 D 15 12 1");
+        DSL.put("click_counter", "M 8 8 L 19 12.5 L 14.5 14.5 L 12.5 19 Z M 5 5 L 7 7 M 12 3 L 12 6 M 3 12 L 6 12");
+        DSL.put("clip", "M 6 3 L 18 3 L 18 21 L 12 17 L 6 21 Z");
+        DSL.put("custom_text", "M 5 7 L 5 4 L 19 4 L 19 7 M 12 4 L 12 20 M 9 20 L 15 20");
+        DSL.put("facing", "C 12 12 9 M 12 5 L 15 12 L 12 10.5 L 9 12 Z M 12 14.5 L 12 19");
+        DSL.put("game_time", "C 12 13.5 7.5 M 12 13.5 L 15 10.5 M 10 3 L 14 3 M 12 3 L 12 6");
+        DSL.put("item_lore", "R 5 3 14 18 2 M 8.5 8 L 15.5 8 M 8.5 12 L 15.5 12 M 8.5 16 L 12.5 16");
+        DSL.put("item_tracker", "R 3 3 10 10 2 C 15 15 4.5 M 18.3 18.3 L 21.5 21.5");
+        DSL.put("mouse_strokes", "R 8 2 8 12 4 M 12 2 L 12 7 M 3 19 B 6 15 8 22 12 18 B 16 14 18 21 21 17");
+        DSL.put("perspective_lock", "R 5 11 14 10 2 M 8 11 L 8 8 B 8 2 16 2 16 8 L 16 11");
+        DSL.put("player_head", "R 6 4 12 12 2 D 9.5 9.5 0.9 D 14.5 9.5 0.9 M 9.5 13 L 14.5 13 M 8 20 L 16 20");
+        DSL.put("player_preview", "M 4 8 L 4 5 L 7 4 M 17 4 L 20 5 L 20 8 M 20 16 L 20 19 L 17 20 M 7 20 L 4 19 L 4 16 C 12 10 2.5 M 7.5 17 B 8 14.5 10 13.5 12 13.5 B 14 13.5 16 14.5 16.5 17");
+        DSL.put("replay_buffer", "C 12 12 9 D 12 12 3.5 M 12 1 L 12 3");
+        DSL.put("saturation", "C 15 9 5.5 M 11 13 L 4 20 M 3 17 L 7 21");
+        DSL.put("shape", "C 8 8 4.5 R 11 11 9 9 1.5");
+        DSL.put("team_viewer", "M 5 3 L 19 3 L 12 12 Z M 12 16 B 8.5 16 7 18 7 21 L 17 21 B 17 18 15.5 16 12 16");
+        DSL.put("weather", "M 7 15 B 3 15 3 9.5 7.5 9.5 B 8 5 16 5 17 9.5 B 21 9.5 21 15 17 15 Z M 8 18 L 7 21 M 12 18 L 11 21 M 16 18 L 15 21");
     }
 
     static boolean has(String name) { return DSL.containsKey(name); }
