@@ -100,7 +100,7 @@ public final class RecentServers {
             int y = y0 + 13 + i * RH;
             if (mx >= X && mx < X + W && my >= y && my < y + RH - 2) {
                 Minecraft mc = Minecraft.getMinecraft();
-                mc.displayGuiScreen(new GuiConnecting(from, mc, new ServerData("YA", list.get(i), false)));
+                mc.displayGuiScreen(new YAConnecting(from, mc, new ServerData("YA", list.get(i), false)));
                 return true;
             }
         }

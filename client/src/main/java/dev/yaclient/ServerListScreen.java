@@ -182,7 +182,7 @@ public class ServerListScreen extends GuiScreen {
 
     private void join(ServerData sd) {
         if (sd == null) return;
-        mc.displayGuiScreen(new GuiConnecting(this, mc, new ServerData(sd.serverName, sd.serverIP, false)));
+        mc.displayGuiScreen(new YAConnecting(this, mc, new ServerData(sd.serverName, sd.serverIP, false)));
     }
 
     // ---------- drawing ----------

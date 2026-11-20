@@ -26,6 +26,9 @@ public class MainMenuScreen extends GuiScreen {
     private int bx, by0, dockX, dockY, recentY;
     private int nx, ny, nw = RecentServers.W, nh = 86;
     private float newsHover;
+    private int pillX, pillY, pillW;
+    private final int[] qx = new int[11];
+    private int qy;
 
     private int btnH(int i) { return i == 0 ? PBH : BH; }
     private int btnY(int i) { return i == 0 ? by0 : by0 + PBH + GAP + (i - 1) * (BH + GAP); }
@@ -62,6 +65,7 @@ public class MainMenuScreen extends GuiScreen {
             String nm = Minecraft.getMinecraft().getSession().getUsername();
             int pw = Gfx.width(nm, 9, true) + 22;
             int py = feet + 16;
+            pillX = pcx - pw / 2; pillY = py; pillW = pw;
             Gfx.rr(pcx - pw / 2, py + 1, pw, 16, 8, 0x22101830);
             Gfx.rr(pcx - pw / 2, py, pw, 16, 8, 0xE0101014);
             Gfx.rrOutline(pcx - pw / 2, py, pw, 16, 8, 1, 0x40FFFFFF);
@@ -135,8 +139,29 @@ public class MainMenuScreen extends GuiScreen {
 
         // footer
         Gfx.text("CLIENT 1.8.9", 16, height - 14, 8, true, INK2);
-        String site = "yaprojects.it";
-        Gfx.text(site, width - Gfx.width(site, 8, true) - 16, height - 14, 8, true, INK2);
+        // quick settings (bottom right): language chips and accent colors
+        int n = 0, cxr = width - 16;
+        int ac = CosmeticsApi.plus() ? 7 : 6;
+        qy = height - 22;
+        for (int i = ac - 1; i >= 0; i--) {
+            cxr -= 12;
+            boolean sel = Theme.accentIndex() == i;
+            boolean ov = mx >= cxr && mx < cxr + 10 && my >= qy + 2 && my < qy + 12;
+            Gfx.rr(cxr - 1, qy + 1, 12, 12, 6, sel ? 0xFF101014 : (ov ? 0x60101014 : 0x00000000));
+            Gfx.rr(cxr + 1, qy + 3, 8, 8, 4, Theme.accentOf(i));
+            cxr -= 2;
+        }
+        cxr -= 6;
+        for (int i = Lang.CODES.length - 1; i >= 0; i--) {
+            String c = Lang.CODES[i].toUpperCase();
+            int cw = Gfx.width(c, 7, true) + 10;
+            cxr -= cw;
+            boolean sel = Lang.CODES[i].equals(Lang.code());
+            boolean ov = mx >= cxr && mx < cxr + cw && my >= qy && my < qy + 14;
+            Gfx.rr(cxr, qy, cw, 14, 7, sel ? 0xE0101014 : (ov ? 0x70101014 : 0x30101014));
+            Gfx.textCentered(c, cxr + cw / 2, qy + (14 - Gfx.lineHeight(7, true)) / 2, 7, true, sel ? Theme.TEXT : MenuBg.INK);
+            cxr -= 3;
+        }
         Gfx.fade = 1f;
         FriendToast.render();
     }
@@ -148,6 +173,22 @@ public class MainMenuScreen extends GuiScreen {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (width >= 520 && RecentServers.click(mx, my, recentY, this)) return;
+        if (width >= 520 && mx >= pillX && mx < pillX + pillW && my >= pillY && my < pillY + 16) { mc.displayGuiScreen(new AccountScreen(this)); return; }
+        {
+            int cxr = width - 16, ac = CosmeticsApi.plus() ? 7 : 6;
+            for (int i = ac - 1; i >= 0; i--) {
+                cxr -= 12;
+                if (mx >= cxr && mx < cxr + 10 && my >= qy + 2 && my < qy + 12) { Theme.setAccent(i); Config.save(); return; }
+                cxr -= 2;
+            }
+            cxr -= 6;
+            for (int i = Lang.CODES.length - 1; i >= 0; i--) {
+                int cw = Gfx.width(Lang.CODES[i].toUpperCase(), 7, true) + 10;
+                cxr -= cw;
+                if (mx >= cxr && mx < cxr + cw && my >= qy && my < qy + 14) { Lang.load(Lang.CODES[i]); Config.save(); return; }
+                cxr -= 3;
+            }
+        }
         if (width >= 520 && mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
