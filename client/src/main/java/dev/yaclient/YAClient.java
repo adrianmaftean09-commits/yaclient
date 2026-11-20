@@ -5,6 +5,7 @@ import dev.yaclient.modules.*;
 import dev.yaclient.modules.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiMultiplayer;
 import net.weavemc.api.ModInitializer;
 import net.weavemc.api.event.EventBus;
 import net.weavemc.api.event.RenderGameOverlayEvent;
@@ -177,6 +178,7 @@ public class YAClient implements ModInitializer {
         EventBus.subscribe(TickEvent.Pre.class, e -> {
             Minecraft m0 = Minecraft.getMinecraft();
             if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMainMenu.class) m0.displayGuiScreen(new MainMenuScreen());
+            if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMultiplayer.class) m0.displayGuiScreen(new ServerListScreen(new MainMenuScreen()));
             FreeLook.pre(m0);
             HotbarGuard.pre(m0);
         });
@@ -191,6 +193,10 @@ public class YAClient implements ModInitializer {
             // our title screen replaces the vanilla one
             if (mc.currentScreen != null && mc.currentScreen.getClass() == GuiMainMenu.class) {
                 mc.displayGuiScreen(new MainMenuScreen());
+            }
+            // leaving a server drops you on our server list, not on the vanilla multiplayer screen
+            if (mc.currentScreen != null && mc.currentScreen.getClass() == GuiMultiplayer.class) {
+                mc.displayGuiScreen(new ServerListScreen(new MainMenuScreen()));
             }
 
             ScoreboardModule.afterOverlay();

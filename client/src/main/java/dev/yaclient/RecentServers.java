@@ -82,14 +82,14 @@ public final class RecentServers {
             String ip = list.get(i);
             int y = y0 + 13 + i * RH;
             boolean over = mx >= 10 && mx < 10 + W && my >= y && my < y + RH - 2;
-            Gfx.rr(10, y, W, RH - 2, 6, over ? 0xFFFFFFFF : 0xE6FFFFFF);
-            Gfx.rrOutline(10, y, W, RH - 2, 6, 1, over ? 0x44000000 : 0x22000000);
+            Gfx.rr(10, y, W, RH - 2, 6, over ? 0xE8242429 : 0xD0101014);
+            Gfx.rrOutline(10, y, W, RH - 2, 6, 1, over ? 0x80FFFFFF : 0x40FFFFFF);
             Long p = pings.get(ip);
             String ps = p == null ? "..." : (p < 0 ? "--" : p + "ms");
-            int pc = p == null || p < 0 ? MainMenuScreen.INK2 : (p <= 80 ? 0xFF16A34A : (p <= 160 ? 0xFFD98E04 : 0xFFDC2626));
+            int pc = p == null || p < 0 ? Theme.DIM : (p <= 80 ? 0xFF34D27B : (p <= 160 ? 0xFFFFC21A : 0xFFEF4444));
             int ty = y + (RH - 2 - lh) / 2;
             Gfx.text(ps, 10 + W - 7 - Gfx.width(ps, 8, false), ty, 8, false, pc);
-            Gfx.text(Gfx.trim(ip, 8, false, W - 20 - Gfx.width(ps, 8, false)), 17, ty, 8, false, MainMenuScreen.INK);
+            Gfx.text(Gfx.trim(ip, 8, false, W - 20 - Gfx.width(ps, 8, false)), 17, ty, 8, false, Theme.TEXT);
         }
     }
 

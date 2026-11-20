@@ -198,8 +198,7 @@ public class ServerListScreen extends GuiScreen {
     public void drawScreen(int mx, int my, float pt) {
         gs = Math.max(1, new ScaledResolution(mc).getScaleFactor());
         float fadeIn = Ui.ease((System.currentTimeMillis() - opened) / 350f);
-        if (!MenuBackdrop.draw(width, height, (System.currentTimeMillis() - opened) / 1000f)) drawGradientRect(0, 0, width, height, 0xFF18181F, 0xFF0C0C10);
-        drawGradientRect(0, 0, width, height, 0x60000000, 0x90000000);
+        MenuBg.draw(width, height, (System.currentTimeMillis() - opened) / 1000f);
         Gfx.setScale(gs);
         Gfx.fade = fadeIn;
 
@@ -232,8 +231,8 @@ public class ServerListScreen extends GuiScreen {
         int x = mainX + 4;
         for (int i = 0; i < 2; i++) {
             int w = Gfx.width(tabs[i], 8, true) + 12;
-            Gfx.text(tabs[i], x + 6, tabsY + 2, 8, true, i == tab ? Theme.TEXT : Theme.DIM);
-            if (i == tab) Gfx.rr(x + 4, tabsY + 13, w - 8, 1, 0, 0xFFFFFFFF);
+            Gfx.text(tabs[i], x + 6, tabsY + 2, 8, true, i == tab ? MenuBg.INK : MenuBg.INK2);
+            if (i == tab) Gfx.rr(x + 4, tabsY + 13, w - 8, 1, 0, MenuBg.INK);
             x += w + 4;
         }
 

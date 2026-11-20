@@ -41,7 +41,7 @@ public class MainMenuScreen extends GuiScreen {
         float fadeIn = Ui.ease((now - opened) / 500f);
 
         // backdrop: bright, soft gradient with slowly drifting color blobs
-        drawLightBackdrop(t);
+        MenuBg.draw(width, height, t);
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
         Gfx.setScale(Math.max(1, gs));
@@ -49,7 +49,7 @@ public class MainMenuScreen extends GuiScreen {
 
         int logo = Math.min(38, height / 7), badge = logo + 16;
         boolean wideScr = width >= 520;
-        int plW = 104, gapC = 34;
+        int plW = 104, gapC = 66;
         int contentH = badge + 12 + 3 * BH + 2 * GAP + 9 + TH;
         int total = wideScr ? BW + gapC + plW : BW;
         int leftX = wideScr ? Math.max(138, (width - total) / 2) : (width - total) / 2;
@@ -58,15 +58,19 @@ public class MainMenuScreen extends GuiScreen {
         if (wideScr) {
             int pcx = leftX + BW + gapC + plW / 2;
             int feet = top + contentH - 20;
-            blob(pcx, feet + 2, 34f, 5f, 0x1A2238, 70);
+            MenuBg.blob(pcx, feet + 2, 34f, 5f, 0x1A2238, 70);
             MenuPlayer.draw(pcx, feet, Math.max(30, (contentH - 30) * 10 / 19), ((now - opened) % 9000L) / 9000f * 360f);
             String nm = Minecraft.getMinecraft().getSession().getUsername();
             Gfx.textCentered(nm, pcx, feet + 9, 10, true, INK);
         }
         // logo on a dark rounded badge (the logo has a white Y, it needs a dark base on a bright screen)
         float bob = (float) Math.sin(t * 1.4f) * 1.2f;
-        Gfx.rr(cx - badge / 2, Math.round(top + bob), badge, badge, 12, 0xFF1A1C26);
-        Logo.draw(cx - logo / 2f, top + bob + 8, logo, logo, fadeIn);
+        float lx = cx - logo / 2f, ly = top + bob + 8;
+        for (int k = 0; k < 8; k++) {
+            double ang = k * Math.PI / 4;
+            Logo.drawTint(lx + (float) Math.cos(ang) * 1.6f, ly + (float) Math.sin(ang) * 1.6f, logo, logo, 0.92f * fadeIn, 0.10f, 0.11f, 0.15f);
+        }
+        Logo.draw(lx, ly, logo, logo, fadeIn);
 
         bx = cx - BW / 2;
         by0 = top + badge + 12;
@@ -76,12 +80,9 @@ public class MainMenuScreen extends GuiScreen {
             boolean over = mx >= x && mx < x + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
             boolean primary = i == 2;
-            if (primary) Gfx.rr(x, y, BW, BH, 7, Ui.mix(0xFF1A1C26, 0xFF2D3042, hover[i]));
-            else {
-                Gfx.rr(x, y, BW, BH, 7, Ui.mix(0xE6FFFFFF, 0xFFFFFFFF, hover[i]));
-                Gfx.rrOutline(x, y, BW, BH, 7, 1, Ui.mix(0x24000000, 0x44000000, hover[i]));
-            }
-            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(9, true)) / 2, 9, true, primary ? 0xFFFFFFFF : INK);
+            Gfx.rr(x, y, BW, BH, 7, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0xD0101014, 0xE8242429, hover[i]));
+            Gfx.rrOutline(x, y, BW, BH, 7, 1, primary ? Ui.mix(0x50101014, 0x90101014, hover[i]) : Ui.mix(0x40FFFFFF, 0x80FFFFFF, hover[i]));
+            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(9, true)) / 2, 9, true, primary ? 0xFF101014 : Theme.TEXT);
         }
 
         // icon dock: four clear tiles, big icon
@@ -92,9 +93,9 @@ public class MainMenuScreen extends GuiScreen {
             int x = dockX + i * (TW + DG);
             boolean over = mx >= x && mx < x + TW && my >= dockY && my < dockY + TH;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
-            Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0xD8FFFFFF, 0xFFFFFFFF, dock[i]));
-            Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x22000000, 0x44000000, dock[i]));
-            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + (TH - 16) / 2, 16, Ui.mix(0xFF3A3F52, INK, dock[i]));
+            Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0xD0101014, 0xE8242429, dock[i]));
+            Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x40FFFFFF, 0x80FFFFFF, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + (TH - 16) / 2, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
         }
 
         // news card (bottom left): banner + title, opens the changelog sheet
@@ -102,12 +103,12 @@ public class MainMenuScreen extends GuiScreen {
         ny = height - 20 - 8 - nh;
         boolean nOver = mx >= nx && mx < nx + nw && my >= ny && my < ny + nh;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
-        Gfx.rr(nx, ny, nw, nh, 8, Ui.mix(0xE6FFFFFF, 0xFFFFFFFF, newsHover));
+        Gfx.rr(nx, ny, nw, nh, 8, Ui.mix(0xD0101014, 0xE8242429, newsHover));
         int artH = Math.round((nw - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, nw - 8, artH, fadeIn);
-        Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x22000000, 0x44000000, newsHover));
-        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, INK);
-        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, INK2);
+        Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x40FFFFFF, 0x80FFFFFF, newsHover));
+        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
+        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
 
         RecentServers.draw(mx, my, height);
         Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, INK2);
@@ -117,36 +118,7 @@ public class MainMenuScreen extends GuiScreen {
         FriendToast.render();
     }
 
-    static final int INK = 0xFF1A1C26, INK2 = 0xFF5B6272;
-
-    /** Soft radial blob (an ellipse of color fading to transparent), alpha 0..255 at the center. */
-    private static void blob(float cx, float cy, float rx, float ry, int rgb, int alpha) {
-        Tessellator t = Tessellator.getInstance();
-        WorldRenderer wr = t.getWorldRenderer();
-        int r = (rgb >> 16) & 255, g = (rgb >> 8) & 255, b = rgb & 255;
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.disableAlpha();
-        wr.begin(6, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(cx, cy, 0).color(r, g, b, alpha).endVertex();
-        for (int i = 0; i <= 32; i++) {
-            double a = i * Math.PI * 2 / 32;
-            wr.pos(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, 0).color(r, g, b, 0).endVertex();
-        }
-        t.draw();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-    }
-
-    private void drawLightBackdrop(float t) {
-        drawGradientRect(0, 0, width, height, 0xFFEEF3FC, 0xFFD5E0F4);
-        float w = width, h = height;
-        blob(w * 0.82f + (float) Math.sin(t * 0.21f) * 18f, h * 0.18f, w * 0.55f, h * 0.75f, 0x7FA2FF, 120);
-        blob(w * 0.12f + (float) Math.cos(t * 0.17f) * 16f, h * 0.88f, w * 0.5f, h * 0.7f, 0xC9A4FF, 95);
-        blob(w * 0.52f + (float) Math.sin(t * 0.13f) * 22f, h * 0.55f, w * 0.38f, h * 0.55f, 0xFFFFFF, 150);
-        blob(w * 0.95f, h * 0.95f, w * 0.3f, h * 0.45f, 0xFF9A9A, 55);
-    }
+    static final int INK = MenuBg.INK, INK2 = MenuBg.INK2;
 
     /** The vanilla title panorama (same technique as the original menu), rendered at the screen's aspect. */
     private void drawPanorama(float timer) {
