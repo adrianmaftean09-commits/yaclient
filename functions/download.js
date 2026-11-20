@@ -1,6 +1,5 @@
 // /download -> redirects straight to the latest Windows installer (.exe), no GitHub page in between.
 export async function onRequest() {
-  return Response.redirect('https://yaprojects.it/', 302);   // downloads are off for now ("Soon"); remove this line to turn them back on
   const repo = 'adrianmaftean09-commits/yaclient';
   try {
     const r = await fetch('https://api.github.com/repos/' + repo + '/releases/latest', { headers: { 'User-Agent': 'yaclient-site', Accept: 'application/vnd.github+json' }, cf: { cacheTtl: 120, cacheEverything: true } });
