@@ -180,3 +180,9 @@ footer.fx .bt{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .cs a{width:auto}
 @media(max-width:900px){.cs{grid-template-columns:repeat(2,1fr)}}
 nav.top{background:rgba(37,38,45,.78)}
+/* world photo only behind the news, fading into the flat colour */
+#news{position:relative;isolation:isolate}
+#news::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#25262d 0,rgba(37,38,45,0) 22%,rgba(37,38,45,0) 70%,#25262d 100%),linear-gradient(rgba(37,38,45,.25),rgba(37,38,45,.25)),url(/b/world.jpg?v=4) center/cover no-repeat}
+/* block-world photo only behind the news, fading into the flat page colour */
+#news{position:relative;isolation:isolate}
+#news::before{content:"";position:absolute;inset:0 0 -20px 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#25262d 0,rgba(37,38,45,.25) 28%,rgba(37,38,45,.25) 62%,#25262d 100%),url(/b/world.jpg?v=4) center 30%/cover no-repeat}
