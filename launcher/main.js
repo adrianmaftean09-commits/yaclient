@@ -7,7 +7,6 @@ const http = require('http');
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const AdmZip = require('adm-zip');
 const cfg = require('./config.json');
-const IS_WIN = process.platform === 'win32', IS_MAC = process.platform === 'darwin';
 
 const dataDir = path.join(app.getPath('appData'), '.yaclient');
 const gameDir = path.join(dataDir, 'game');
@@ -45,7 +44,6 @@ app.whenReady().then(() => {
 function checkLauncherUpdate() {
   if (!app.isPackaged) return;
   try {
-    if (IS_MAC) return;   // unsigned macOS builds cannot self-update: download the new .dmg from the site
     const { autoUpdater } = require('electron-updater');
     autoUpdater.autoDownload = true;
     autoUpdater.autoInstallOnAppQuit = true;
@@ -194,33 +192,23 @@ function javaMajorFor(v) {
 }
 
 // ---------- Java ----------
-const JAVA_BIN = IS_WIN ? 'java.exe' : 'java';
 function findJava(major) {
+  const roots = [
+    process.env['ProgramFiles'], process.env['ProgramFiles(x86)'],
+    process.env['LOCALAPPDATA'] && path.join(process.env['LOCALAPPDATA'], 'Programs')
+  ].filter(Boolean);
+  const vendors = ['Eclipse Adoptium', 'Java', 'Zulu', 'Amazon Corretto', 'Microsoft', 'BellSoft', 'AdoptOpenJDK', 'Eclipse Foundation', 'Semeru'];
   const re = major === 8
-    ? /(jdk|jre)[-_ ]?(1\.)?8([._-]|$)|zulu-?8|jdk8|jre8|1\.8\.0|java-8|temurin-8/i
-    : new RegExp('(jdk|jre|zulu|java|temurin|openjdk)[-_ ]?' + major + '([._-]|$)|(^|[-_ ])' + major + '([._]|$)', 'i');
-  let roots, vendors, sub;
-  if (IS_WIN) {
-    roots = [process.env['ProgramFiles'], process.env['ProgramFiles(x86)'], process.env['LOCALAPPDATA'] && path.join(process.env['LOCALAPPDATA'], 'Programs')].filter(Boolean);
-    vendors = ['Eclipse Adoptium', 'Java', 'Zulu', 'Amazon Corretto', 'Microsoft', 'BellSoft', 'AdoptOpenJDK', 'Eclipse Foundation', 'Semeru'];
-    sub = ['bin'];
-  } else if (IS_MAC) {
-    roots = ['/Library/Java/JavaVirtualMachines', path.join(os.homedir(), 'Library', 'Java', 'JavaVirtualMachines')];
-    vendors = [''];
-    sub = ['Contents', 'Home', 'bin'];
-  } else {
-    roots = ['/usr/lib/jvm', '/usr/java', '/opt/java', '/opt', path.join(os.homedir(), '.sdkman', 'candidates', 'java')];
-    vendors = [''];
-    sub = ['bin'];
-  }
+    ? /(jdk|jre)[-_ ]?(1\.)?8([._-]|$)|zulu-?8|jdk8|jre8|1\.8\.0/i
+    : new RegExp('(jdk|jre|zulu|java)[-_ ]?' + major + '([._-]|$)|(^|[-_ ])' + major + '([._]|$)', 'i');
   for (const r of roots) {
     for (const v of vendors) {
-      const dir = v ? path.join(r, v) : r;
+      const dir = path.join(r, v);
       let names;
       try { names = fs.readdirSync(dir); } catch (_) { continue; }
       for (const n of names) {
         if (!re.test(n)) continue;
-        const exe = path.join(dir, n, ...sub, JAVA_BIN);
+        const exe = path.join(dir, n, 'bin', 'java.exe');
         if (fs.existsSync(exe)) return exe;
       }
     }
@@ -233,12 +221,12 @@ function findBundledJava(major) {
   const root = path.join(dataDir, 'java', String(major));
   const walk = (dir, depth) => {
     let names; try { names = fs.readdirSync(dir); } catch (_) { return null; }
-    if (names.indexOf('bin') >= 0) { const exe = path.join(dir, 'bin', JAVA_BIN); if (fs.existsSync(exe)) return exe; }
+    if (names.indexOf('bin') >= 0) { const exe = path.join(dir, 'bin', 'java.exe'); if (fs.existsSync(exe)) return exe; }
     if (depth <= 0) return null;
     for (const n of names) { const r = walk(path.join(dir, n), depth - 1); if (r) return r; }
     return null;
   };
-  return walk(root, 4);
+  return walk(root, 2);
 }
 // Finds a Java of the right version or downloads one (Eclipse Temurin JRE) so the player never has to.
 async function ensureJava(major) {
@@ -246,18 +234,14 @@ async function ensureJava(major) {
   const have = findJava(major) || findBundledJava(major);
   if (have) return have;
   const dir = path.join(dataDir, 'java', String(major));
-  const zipFile = path.join(dataDir, `java-${major}.${IS_WIN ? 'zip' : 'tar.gz'}`);
-  // Minecraft 1.8.9 natives are x64 only: on Apple Silicon use the x64 Java (runs through Rosetta)
-  const osName = IS_WIN ? 'windows' : IS_MAC ? 'mac' : 'linux';
-  const arch = (process.arch === 'arm64' && !(IS_MAC && major === 8)) ? 'aarch64' : 'x64';
+  const zipFile = path.join(dataDir, `java-${major}.zip`);
   try {
     send('log', `Java ${major} not found: downloading it automatically...`);
     send('status', { k: 'java_dl', pct: 5 });
     fs.mkdirSync(dir, { recursive: true });
-    await download(`https://api.adoptium.net/v3/binary/latest/${major}/ga/${osName}/${arch}/jre/hotspot/normal/eclipse`, zipFile);
+    await download(`https://api.adoptium.net/v3/binary/latest/${major}/ga/windows/x64/jre/hotspot/normal/eclipse`, zipFile);
     send('status', { k: 'java_dl', pct: 8 });
-    if (IS_WIN) new AdmZip(zipFile).extractAllTo(dir, true);
-    else require('child_process').execFileSync('tar', ['-xzf', zipFile, '-C', dir]);
+    new AdmZip(zipFile).extractAllTo(dir, true);
     try { fs.unlinkSync(zipFile); } catch (_) {}
     const exe = findBundledJava(major);
     if (exe) { send('log', `Java ${major} installed: ${exe}`); return exe; }

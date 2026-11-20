@@ -72,69 +72,9 @@ jobs:
             launcher/dist/YA-CLIENT-Setup.exe.blockmap
             launcher/dist/latest.yml
 
-  launcher-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Imposta repository nel launcher
-        run: |
-          sed -i '' "s#TUO_UTENTE_GITHUB/ya-client#${{ github.repository }}#" launcher/config.json
-      - name: Versione launcher dal tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: launcher
-        run: npm pkg set version="${GITHUB_REF_NAME#[vV]}"
-      - name: Compila .dmg (Intel + Apple Silicon)
-        working-directory: launcher
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: |
-          for i in 1 2 3 4; do
-            npm install && npm run dist:mac && exit 0
-            echo "Tentativo $i fallito, riprovo tra 30 secondi..."
-            sleep 30
-          done
-          exit 1
-      - uses: actions/upload-artifact@v4
-        with:
-          name: YA-CLIENT-mac
-          path: launcher/dist/YA-CLIENT-mac-*.dmg
-
-  launcher-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Imposta repository nel launcher
-        run: |
-          sed -i "s#TUO_UTENTE_GITHUB/ya-client#${{ github.repository }}#" launcher/config.json
-      - name: Versione launcher dal tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: launcher
-        run: npm pkg set version="${GITHUB_REF_NAME#[vV]}"
-      - name: Compila AppImage
-        working-directory: launcher
-        run: |
-          for i in 1 2 3 4; do
-            npm install && npm run dist:linux && exit 0
-            echo "Tentativo $i fallito, riprovo tra 30 secondi..."
-            sleep 30
-          done
-          exit 1
-      - uses: actions/upload-artifact@v4
-        with:
-          name: YA-CLIENT-linux
-          path: |
-            launcher/dist/YA-CLIENT-linux.AppImage
-            launcher/dist/latest-linux.yml
-
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [client-jar, launcher-exe, launcher-mac, launcher-linux]
+    needs: [client-jar, launcher-exe]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -148,6 +88,3 @@ jobs:
             out/YA-CLIENT-Setup.exe
             out/YA-CLIENT-Setup.exe.blockmap
             out/latest.yml
-            out/YA-CLIENT-mac-*.dmg
-            out/YA-CLIENT-linux.AppImage
-            out/latest-linux.yml
