@@ -23,6 +23,28 @@ public class DiscordRpcModule extends Module {
     public DiscordRpcModule() { super("discord_rpc", Category.UTILITY, true); }
 
     @Override
+    public void loadConfig() {
+        super.loadConfig();
+        // one-time migration: the module used to be off by default
+        if (!Config.getBool("discord.rpc.migrated", false)) {
+            enabled = true;
+            Config.setBool("discord.rpc.migrated", true);
+            saveConfig();
+            Config.save();
+        }
+    }
+
+    private static void log(String s) {
+        try {
+            java.io.File f = new java.io.File(System.getProperty("user.home"), ".yaclient/discord.log");
+            f.getParentFile().mkdirs();
+            java.io.FileWriter w = new java.io.FileWriter(f, true);
+            w.write(new java.util.Date() + " " + s + "\n");
+            w.close();
+        } catch (Exception ignored) { }
+    }
+
+    @Override
     public void onTick() {
         if (mc.theWorld == null) state = "In menus";
         else if (mc.isSingleplayer()) state = "Singleplayer";
@@ -49,7 +71,9 @@ public class DiscordRpcModule extends Module {
             RandomAccessFile pipe = null;
             try {
                 if (enabled && !id.isEmpty()) pipe = open();
+                if (pipe == null) log("pipe discord-ipc non trovata (Discord aperto?)");
                 if (pipe != null) {
+                    log("connesso a Discord, id " + id);
                     send(pipe, 0, "{\"v\":1,\"client_id\":\"" + esc(id) + "\"}");
                     read(pipe);
                     while (enabled) {
@@ -60,8 +84,8 @@ public class DiscordRpcModule extends Module {
                 }
             } catch (InterruptedException e) {
                 return;
-            } catch (Exception ignored) {
-                // Discord closed or unavailable: retry later
+            } catch (Exception e) {
+                log("errore: " + e);
             } finally {
                 try { if (pipe != null) pipe.close(); } catch (Exception ignored) { }
             }
