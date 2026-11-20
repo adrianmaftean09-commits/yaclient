@@ -139,19 +139,9 @@ public class MainMenuScreen extends GuiScreen {
 
         // footer
         Gfx.text("CLIENT 1.8.9", 16, height - 14, 8, true, INK2);
-        // quick settings (bottom right): language chips and accent colors
+        // quick settings (bottom right): language chips
         int n = 0, cxr = width - 16;
-        int ac = CosmeticsApi.plus() ? 7 : 6;
         qy = height - 22;
-        for (int i = ac - 1; i >= 0; i--) {
-            cxr -= 12;
-            boolean sel = Theme.accentIndex() == i;
-            boolean ov = mx >= cxr && mx < cxr + 10 && my >= qy + 2 && my < qy + 12;
-            Gfx.rr(cxr - 1, qy + 1, 12, 12, 6, sel ? 0xFF101014 : (ov ? 0x60101014 : 0x00000000));
-            Gfx.rr(cxr + 1, qy + 3, 8, 8, 4, Theme.accentOf(i));
-            cxr -= 2;
-        }
-        cxr -= 6;
         for (int i = Lang.CODES.length - 1; i >= 0; i--) {
             String c = Lang.CODES[i].toUpperCase();
             int cw = Gfx.width(c, 7, true) + 10;
@@ -175,13 +165,7 @@ public class MainMenuScreen extends GuiScreen {
         if (width >= 520 && RecentServers.click(mx, my, recentY, this)) return;
         if (width >= 520 && mx >= pillX && mx < pillX + pillW && my >= pillY && my < pillY + 16) { mc.displayGuiScreen(new AccountScreen(this)); return; }
         {
-            int cxr = width - 16, ac = CosmeticsApi.plus() ? 7 : 6;
-            for (int i = ac - 1; i >= 0; i--) {
-                cxr -= 12;
-                if (mx >= cxr && mx < cxr + 10 && my >= qy + 2 && my < qy + 12) { Theme.setAccent(i); Config.save(); return; }
-                cxr -= 2;
-            }
-            cxr -= 6;
+            int cxr = width - 16;
             for (int i = Lang.CODES.length - 1; i >= 0; i--) {
                 int cw = Gfx.width(Lang.CODES[i].toUpperCase(), 7, true) + 10;
                 cxr -= cw;

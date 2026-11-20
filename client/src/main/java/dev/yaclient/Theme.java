@@ -19,7 +19,7 @@ public final class Theme {
 
     private Theme() {}
 
-    public static void load() { setAccent(Config.getInt("accent", 0)); }
+    public static void load() { setAccent(0); }
 
     /** Falls back to the default accent when Plus is not active. */
     public static void enforcePlus(boolean plus) { if (!plus && plusOnly(index)) { index = 0; Config.setInt("accent", 0); } }
@@ -29,9 +29,10 @@ public final class Theme {
     /** The last accent (gold) belongs to YA Plus. */
     public static boolean plusOnly(int i) { return i == ACCENTS.length - 1; }
 
+    /** The accent is always the brand red; the picker was removed. */
     public static void setAccent(int i) {
-        index = Ui.clamp(i, 0, ACCENTS.length - 1);
-        Config.setInt("accent", index);
+        index = 0;
+        Config.setInt("accent", 0);
     }
 
     public static int accent() { return ACCENTS[index]; }
