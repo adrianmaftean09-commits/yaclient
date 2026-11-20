@@ -78,14 +78,19 @@ public class OldAnimationsModule extends Module {
         boolean atk = Hud.down(mc.gameSettings.keyBindAttack);
         if (atk && !attackWas && held != null && p.isUsingItem()) {
             EnumAction a = held.getItemUseAction();
-            if (a == EnumAction.EAT || a == EnumAction.DRINK) p.swingItem();
+            if (a == EnumAction.EAT || a == EnumAction.DRINK) localSwing(p);
         }
         attackWas = atk;
         if (held == null || !(held.getItem() instanceof ItemSword)) return;
         if (!Hud.down(mc.gameSettings.keyBindUseItem) || !Hud.down(mc.gameSettings.keyBindAttack)) return;
         MovingObjectPosition mop = mc.objectMouseOver;
         if (mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) return;   // hitting a player already swings
-        p.swingItem();
+        localSwing(p);
+    }
+
+    /** Visual arm swing only: nothing is sent to the server (EntityPlayerSP.swingItem would send an animation packet). */
+    private static void localSwing(EntityPlayerSP p) {
+        if (!p.isSwingInProgress || p.swingProgressInt >= 3 || p.swingProgressInt < 0) { p.swingProgressInt = -1; p.isSwingInProgress = true; }
     }
 
     private static final class OldItemRenderer extends ItemRenderer {

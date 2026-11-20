@@ -26,14 +26,7 @@ public final class HitTracker {
         boolean down = Mouse.isButtonDown(0) && mc.currentScreen == null;
         if (down && !wasDown) {
             MovingObjectPosition m = mc.objectMouseOver;
-            // Minecraft 1.8.9 ignores every click for 10 ticks after a click on thin air: a hit right after a miss does nothing.
-            // Land that hit ourselves (the game would drop it); only inside the ticks where it is certain the game ignores it.
-            boolean ent = m != null && m.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY && m.entityHit != null;
-            if (ent && missTick >= 0 && tick - missTick >= 1 && tick - missTick <= 8 && mc.playerController != null
-                    && !mc.thePlayer.isUsingItem() && !mc.playerController.isInCreativeMode()) {
-                try { mc.thePlayer.swingItem(); mc.playerController.attackEntity(mc.thePlayer, m.entityHit); } catch (Throwable ignored) { }
-                missTick = -1;
-            } else if (m == null || m.typeOfHit == MovingObjectPosition.MovingObjectType.MISS) {
+            if (m == null || m.typeOfHit == MovingObjectPosition.MovingObjectType.MISS) {
                 missTick = tick;
             } else if (m.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 missTick = -1;
