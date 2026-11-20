@@ -31,7 +31,7 @@ nav.top.sc .wrap{height:60px}
 .btn.glass{background:rgba(12,12,18,.55);border-color:rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .hx .hint{text-align:center;color:#c9cfe6;margin-top:20px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .hv{position:relative;max-width:1060px;margin:62px auto 0;padding:0 24px;perspective:1800px}
-.hv .win{transform:rotateX(var(--rx,4deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease);transform-origin:50% 60%;box-shadow:0 60px 140px rgba(0,0,0,.75),0 0 160px rgba(225,6,0,.2)}
+.hv .win{box-shadow:0 60px 140px rgba(0,0,0,.75),0 0 160px rgba(225,6,0,.2)}
 .hv .fl{position:absolute;pointer-events:none;filter:drop-shadow(0 18px 26px rgba(0,0,0,.55));animation:flo 6s ease-in-out infinite}
 .hv .hl{left:-1%;bottom:-8%;width:17%}
 .hv .hr2{right:-1%;top:-18%;width:17%;animation-delay:-3s;translate:none}

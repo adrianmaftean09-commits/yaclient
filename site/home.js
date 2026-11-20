@@ -27,19 +27,6 @@
   window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
 
-  // hero window: soft tilt that follows the pointer
-  var hv = d.querySelector('.hv');
-  if (hv && !reduce && matchMedia('(hover:hover)').matches) {
-    var raf = 0, tx = 4, ty = 0;
-    hv.addEventListener('pointermove', function (e) {
-      var r = hv.getBoundingClientRect();
-      ty = ((e.clientX - r.left) / r.width - 0.5) * 8;
-      tx = 4 - ((e.clientY - r.top) / r.height - 0.5) * 6;
-      if (!raf) raf = requestAnimationFrame(function () { raf = 0; hv.style.setProperty('--rx', tx + 'deg'); hv.style.setProperty('--ry', ty + 'deg'); });
-    });
-    hv.addEventListener('pointerleave', function () { hv.style.setProperty('--rx', '4deg'); hv.style.setProperty('--ry', '0deg'); });
-  }
-
   // showcase tabs with auto-advance
   var sc = d.querySelector('.sc');
   if (sc) {
