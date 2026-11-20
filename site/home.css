@@ -171,3 +171,8 @@ footer.fx .bt{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .cs a{overflow:hidden}
 .cs a:hover img{transform:scale(1.18)}
 .cs span{padding:56px 18px 16px;font-size:18px;letter-spacing:-.2px}
+
+/* cosmetics: just four cards in a row, no scrolling */
+.cs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;overflow:visible;margin:0;padding:6px 0 10px;-webkit-mask-image:none;mask-image:none;cursor:default;scroll-snap-type:none}
+.cs a{width:auto}
+@media(max-width:900px){.cs{grid-template-columns:repeat(2,1fr)}}
