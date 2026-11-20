@@ -1,12 +1,12 @@
 /* ===== YA CLIENT launcher v2: floating glass rail, soft glow, smooth motion. Loaded after style.css and overrides it. ===== */
-:root{--bg:#07070a;--surface:rgba(255,255,255,.04);--surface2:rgba(255,255,255,.07);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);--r:18px;--ease:cubic-bezier(.22,.8,.24,1);--mute:#9a9aa6;--dim:#64646f}
+:root{--bg:#15151b;--rail:#191920;--surface:rgba(255,255,255,.065);--surface2:rgba(255,255,255,.105);--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.18);--r:18px;--ease:cubic-bezier(.22,.8,.24,1);--mute:#9a9aa6;--dim:#64646f}
 body{background:var(--bg)}
-.glow{position:fixed;width:620px;height:620px;border-radius:50%;filter:blur(120px);opacity:.5;pointer-events:none;z-index:0;transition:background .6s}
+.glow{position:fixed;width:620px;height:620px;border-radius:50%;filter:blur(120px);opacity:.8;pointer-events:none;z-index:0;transition:background .6s}
 .glow.g1{left:-160px;top:-200px;background:var(--glow2)}.glow.g2{right:-200px;bottom:-260px;background:var(--glow2);opacity:.35}
 body.plus .glow{opacity:.55}
 .app{position:relative;z-index:1;padding:12px;gap:12px}
 /* rail */
-.rail{width:92px;height:calc(100vh - 24px);border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.035);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:14px 10px;align-items:center;overflow:hidden}
+.rail{width:92px;height:calc(100vh - 24px);border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.06);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:14px 10px;align-items:center;overflow:hidden}
 .brandbox{padding:0;justify-content:center;margin-top:2px}
 .mark{width:46px;height:46px;filter:drop-shadow(0 4px 14px var(--glow))}
 .rail nav{margin-top:18px;gap:4px;width:100%;align-items:center;overflow-y:auto;scrollbar-width:none}
@@ -57,10 +57,10 @@ select:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--
 .hm{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
 .hxc{display:flex;flex-direction:column;gap:16px;min-width:0}
 .hx2{position:relative;height:370px;border-radius:26px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 30px 80px rgba(0,0,0,.45);isolation:isolate;
- background:radial-gradient(120% 90% at 85% 0,var(--glow2),transparent 60%),linear-gradient(160deg,#16161c,#0a0a0d)}
+ background:radial-gradient(120% 90% at 85% 0,var(--glow2),transparent 60%),linear-gradient(160deg,#23232c,#15151b)}
 .hx2 .bgi{position:absolute;inset:0;z-index:-1;background-size:cover;background-position:center;transform:scale(1.04);transition:transform 8s var(--ease)}
 .hx2:hover .bgi{transform:scale(1.09)}
-.hx2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(7,7,10,.86) 0,rgba(7,7,10,.45) 55%,rgba(7,7,10,.1) 100%),linear-gradient(0deg,rgba(7,7,10,.7),transparent 45%)}
+.hx2::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(14,14,20,.78) 0,rgba(14,14,20,.35) 55%,rgba(14,14,20,0) 100%),linear-gradient(0deg,rgba(14,14,20,.55),transparent 45%)}
 .hx2 .hl{position:absolute;left:34px;top:30px;right:300px}
 .hx2 .hl small{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--accent-hi);text-transform:uppercase}
 .hx2 .hl small::before{content:"";width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 10px #3ddc84}
@@ -137,7 +137,7 @@ select:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--
 .pal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:flex;justify-content:center;padding-top:12vh;animation:fade .2s}
 .pal[hidden]{display:none}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.palbox{width:560px;max-width:92vw;max-height:60vh;display:flex;flex-direction:column;background:#101014;border:1px solid var(--line2);border-radius:20px;box-shadow:0 40px 100px rgba(0,0,0,.7);overflow:hidden;animation:pin .3s var(--ease);align-self:flex-start}
+.palbox{width:560px;max-width:92vw;max-height:60vh;display:flex;flex-direction:column;background:#1c1c24;border:1px solid var(--line2);border-radius:20px;box-shadow:0 40px 100px rgba(0,0,0,.7);overflow:hidden;animation:pin .3s var(--ease);align-self:flex-start}
 .palbox input{border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:18px 20px;font-size:16px;width:100%;user-select:text}
 .pall{overflow:auto;padding:8px}
 .pit{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:12px;color:var(--mute)}

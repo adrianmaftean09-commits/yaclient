@@ -188,7 +188,6 @@ function viewHome() {
       <div class="ctl"><div class="row2">
         <button class="playbig" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
         <div class="chipsel"><label>${esc(t('version'))}</label><select id="verSel">${vers.map((v) => `<option ${v === S.version ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></div>
-        <div class="chipsel"><label>${esc(t('profile'))}</label><select id="profSel"><option value="">${esc(t('prof_cur'))}</option>${profs.map((p, i) => `<option value="${i}" ${String(i) === String(profSel) ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
         <button class="sqb" id="bgBtn" aria-label="Background" title="Background">${BG_ICON}</button></div>
         <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div></div>
     <div class="stts">
@@ -325,7 +324,7 @@ function viewModules() {
     <div class="mhead"><div class="grow"><input type="text" id="mqIn" placeholder="${esc(t('mod_search'))}" value="${esc(mq)}" autocomplete="off"></div>
       ${MCATS.map((c) => `<button class="tab ${c === mcat ? 'on' : ''}" data-mc="${c}">${esc(t(c === 'all' ? 'all' : c === 'on' ? 'mod_on' : 'cat_' + c))}</button>`).join('')}
       <span class="mcount" id="mcount">${activeMods()} / ${ok}</span></div>
-    <div class="profs" id="profs">${profChips()}</div><div class="mgrid" id="mgrid">${modCards()}</div>`;
+    <div class="mgrid" id="mgrid">${modCards()}</div>`;
 }
 let FR = { data: null, err: '', msg: '', ok: true };
 function frRows(list, kind) {
@@ -774,7 +773,6 @@ document.addEventListener('click', async (e) => {
 });
 document.addEventListener('change', async (e) => {
   if (e.target.id === 'verSel') { S.version = e.target.value; window.ya.saveSettings({ version: S.version }); renderNav(); render(); }
-  if (e.target.id === 'profSel') { profSel = e.target.value; if (profSel !== '') { const p = (S.profiles || [])[+profSel]; if (p) { await applyProf(p); toast(t('prof_applied') + ': ' + p.name); } } render(); }
   if (e.target.id === 'vsel') { S.version = e.target.value; window.ya.saveSettings({ version: S.version }); renderNav(); $('#vgrid').innerHTML = vCards(); $('#vpanel').innerHTML = vPanel(); }
   if (e.target.id === 'sW' || e.target.id === 'sH') { S.width = +$('#sW').value || 1280; S.height = +$('#sH').value || 720; window.ya.saveSettings({ width: S.width, height: S.height }); }
   if (e.target.id === 'sLang') { S.lang = e.target.value; await window.ya.setLang(S.lang); renderNav(); render(); }
