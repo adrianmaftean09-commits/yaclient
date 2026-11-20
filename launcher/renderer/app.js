@@ -817,6 +817,78 @@ document.addEventListener('error', (e) => {   // inline onerror is blocked by th
   const im = e.target; if (im && im.classList && im.classList.contains('face')) { const i = document.createElement('i'); i.textContent = im.dataset.ini || '?'; im.replaceWith(i); }
 }, true);
 
+Object.assign(I18N.en, {"wz_wel": "Welcome to YA CLIENT", "wz_wel_s": "Let's get you set up. It only takes a minute.", "wz_lang": "Choose your preferred language", "wz_dir": "Where should YA CLIENT live?", "wz_dir_s": "Your game files, mods and settings are stored here. You can open this folder any time from Settings.", "wz_dir_l": "Your folder", "wz_terms": "Terms & Privacy", "wz_terms_s": "Please read and accept these before continuing.", "wz_accept": "Accept", "wz_decline": "Decline", "wz_look": "Appearance", "wz_look_s": "Pick a look you like. You can change it any time.", "wz_graph": "Graphite", "wz_mid": "Midnight", "wz_anim": "Animations", "wz_anim_d": "Whether all launcher animations and transitions should be enabled.", "wz_min": "Minimize on launch", "wz_min_d": "Keep the launcher out of the way while the game runs.", "wz_set": "Your setup", "wz_set_s": "Choose how much of the client you want on and how much memory to give it.", "wz_acc": "Sign in", "wz_acc_s": "Use a Microsoft (premium) account for cosmetics and friends, or play offline.", "wz_acc_b": "Sign in", "wz_acc_ok": "Signed in as", "wz_done": "You're all set", "wz_done_s": "Everything is ready. Have fun and good luck in your matches!", "wz_back": "Back", "wz_next": "Next", "wz_finish": "Start playing", "wz_skip": "Skip", "wz_loc": "localized", "wz_t1": "YA CLIENT is a free Minecraft client. It is not affiliated with Mojang or Microsoft.", "wz_t2": "The launcher downloads game files from Mojang and stores them on your computer.", "wz_t3": "We only keep what is needed for cosmetics, friends and YA Plus: your Minecraft name and UUID. We never see your Microsoft password.", "wz_t4": "You can sign out at any time from Settings."});
+Object.assign(I18N.it, {"wz_wel": "Benvenuto in YA CLIENT", "wz_wel_s": "Prepariamo tutto. Ci vuole solo un minuto.", "wz_lang": "Scegli la tua lingua", "wz_dir": "Dove deve stare YA CLIENT?", "wz_dir_s": "File di gioco, mod e impostazioni sono salvati qui. Puoi aprire questa cartella quando vuoi dalle Impostazioni.", "wz_dir_l": "La tua cartella", "wz_terms": "Termini e Privacy", "wz_terms_s": "Leggi e accetta prima di continuare.", "wz_accept": "Accetta", "wz_decline": "Rifiuta", "wz_look": "Aspetto", "wz_look_s": "Scegli lo stile che preferisci. Puoi cambiarlo quando vuoi.", "wz_graph": "Grafite", "wz_mid": "Mezzanotte", "wz_anim": "Animazioni", "wz_anim_d": "Attiva tutte le animazioni e transizioni del launcher.", "wz_min": "Riduci all'avvio", "wz_min_d": "Tiene il launcher fuori dai piedi mentre giochi.", "wz_set": "Il tuo setup", "wz_set_s": "Scegli quante funzioni vuoi attive e quanta memoria dare al gioco.", "wz_acc": "Accedi", "wz_acc_s": "Usa un account Microsoft (premium) per cosmetici e amici, oppure gioca offline.", "wz_acc_b": "Accedi", "wz_acc_ok": "Accesso come", "wz_done": "Tutto pronto", "wz_done_s": "È tutto a posto. Buon divertimento e buona fortuna nei match!", "wz_back": "Indietro", "wz_next": "Avanti", "wz_finish": "Inizia a giocare", "wz_skip": "Salta", "wz_loc": "tradotto", "wz_t1": "YA CLIENT è un client Minecraft gratuito. Non è affiliato a Mojang o Microsoft.", "wz_t2": "Il launcher scarica i file di gioco da Mojang e li salva sul tuo computer.", "wz_t3": "Conserviamo solo ciò che serve per cosmetici, amici e YA Plus: nome Minecraft e UUID. Non vediamo mai la tua password Microsoft.", "wz_t4": "Puoi uscire dall'account in qualsiasi momento dalle Impostazioni."});
+Object.assign(I18N.es, {"wz_wel": "Bienvenido a YA CLIENT", "wz_wel_s": "Vamos a prepararlo todo. Solo toma un minuto.", "wz_lang": "Elige tu idioma", "wz_dir": "¿Dónde debe vivir YA CLIENT?", "wz_dir_s": "Tus archivos de juego, mods y ajustes se guardan aquí. Puedes abrir esta carpeta cuando quieras desde Ajustes.", "wz_dir_l": "Tu carpeta", "wz_terms": "Términos y Privacidad", "wz_terms_s": "Léelos y acéptalos antes de continuar.", "wz_accept": "Aceptar", "wz_decline": "Rechazar", "wz_look": "Apariencia", "wz_look_s": "Elige el estilo que prefieras. Puedes cambiarlo cuando quieras.", "wz_graph": "Grafito", "wz_mid": "Medianoche", "wz_anim": "Animaciones", "wz_anim_d": "Activa todas las animaciones y transiciones del launcher.", "wz_min": "Minimizar al iniciar", "wz_min_d": "Mantiene el launcher fuera del camino mientras juegas.", "wz_set": "Tu configuración", "wz_set_s": "Elige cuántas funciones quieres activas y cuánta memoria dar al juego.", "wz_acc": "Iniciar sesión", "wz_acc_s": "Usa una cuenta Microsoft (premium) para cosméticos y amigos, o juega sin conexión.", "wz_acc_b": "Iniciar sesión", "wz_acc_ok": "Sesión iniciada como", "wz_done": "Todo listo", "wz_done_s": "Todo está listo. ¡Diviértete y suerte en tus partidas!", "wz_back": "Atrás", "wz_next": "Siguiente", "wz_finish": "Empezar a jugar", "wz_skip": "Omitir", "wz_loc": "traducido", "wz_t1": "YA CLIENT es un cliente de Minecraft gratuito. No está afiliado a Mojang ni a Microsoft.", "wz_t2": "El launcher descarga los archivos del juego de Mojang y los guarda en tu equipo.", "wz_t3": "Solo guardamos lo necesario para cosméticos, amigos y YA Plus: tu nombre de Minecraft y UUID. Nunca vemos tu contraseña de Microsoft.", "wz_t4": "Puedes cerrar sesión cuando quieras desde Ajustes."});
+Object.assign(I18N.de, {"wz_wel": "Willkommen bei YA CLIENT", "wz_wel_s": "Wir richten alles ein. Das dauert nur eine Minute.", "wz_lang": "Wähle deine Sprache", "wz_dir": "Wo soll YA CLIENT liegen?", "wz_dir_s": "Spieldateien, Mods und Einstellungen werden hier gespeichert. Den Ordner kannst du jederzeit in den Einstellungen öffnen.", "wz_dir_l": "Dein Ordner", "wz_terms": "Bedingungen & Datenschutz", "wz_terms_s": "Bitte lesen und akzeptieren, bevor es weitergeht.", "wz_accept": "Akzeptieren", "wz_decline": "Ablehnen", "wz_look": "Aussehen", "wz_look_s": "Wähle einen Stil, der dir gefällt. Du kannst ihn jederzeit ändern.", "wz_graph": "Graphit", "wz_mid": "Mitternacht", "wz_anim": "Animationen", "wz_anim_d": "Alle Animationen und Übergänge des Launchers aktivieren.", "wz_min": "Beim Start minimieren", "wz_min_d": "Hält den Launcher aus dem Weg, während du spielst.", "wz_set": "Dein Setup", "wz_set_s": "Wähle, wie viele Funktionen aktiv sein sollen und wie viel Speicher das Spiel bekommt.", "wz_acc": "Anmelden", "wz_acc_s": "Nutze ein Microsoft-Konto (Premium) für Kosmetik und Freunde oder spiele offline.", "wz_acc_b": "Anmelden", "wz_acc_ok": "Angemeldet als", "wz_done": "Alles bereit", "wz_done_s": "Alles ist eingerichtet. Viel Spaß und viel Glück in deinen Matches!", "wz_back": "Zurück", "wz_next": "Weiter", "wz_finish": "Jetzt spielen", "wz_skip": "Überspringen", "wz_loc": "übersetzt", "wz_t1": "YA CLIENT ist ein kostenloser Minecraft-Client. Er steht in keiner Verbindung zu Mojang oder Microsoft.", "wz_t2": "Der Launcher lädt Spieldateien von Mojang herunter und speichert sie auf deinem Computer.", "wz_t3": "Wir speichern nur, was für Kosmetik, Freunde und YA Plus nötig ist: Minecraft-Name und UUID. Dein Microsoft-Passwort sehen wir nie.", "wz_t4": "Du kannst dich jederzeit in den Einstellungen abmelden."});
+
+// ---------- first-run setup wizard ----------
+let wzStep = 0;
+const WZ = ['wel', 'lang', 'dir', 'terms', 'look', 'set', 'acc', 'done'];
+const WZ_ART = {
+  wel: '<path d="M12 2.5l2.4 6.1 6.1 2.4-6.1 2.4L12 19.5l-2.4-6.1L3.5 11l6.1-2.4z"/>',
+  lang: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/>',
+  dir: '<path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H10l2 2.5h6.5A2.5 2.5 0 0 1 21 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><path d="M12 10v5m-2.2-2.2L12 15l2.2-2.2"/>',
+  terms: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  look: '<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16" cy="11" r="1"/>',
+  set: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  acc: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+  done: '<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-6.5"/>'
+};
+function wzApplyLook() {
+  document.documentElement.dataset.theme = S.theme || 'graphite';
+  document.body.classList.toggle('noanim', S.anim === false);
+}
+function wzBody(k) {
+  if (k === 'wel') return `<h1>${esc(t('wz_wel'))}</h1><p class="wzs">${esc(t('wz_wel_s'))}</p>`;
+  if (k === 'lang') return `<h1>YA CLIENT</h1><p class="wzs">${esc(t('wz_wel_s'))}</p><h3>${esc(t('wz_lang'))}</h3><div class="wzl">${Object.keys(LANGS).map((c) => `<button class="wzo ${c === S.lang ? 'on' : ''}" data-wl="${c}"><b>${esc(LANGS[c])}</b><small>${I18N[c] && c !== 'en' ? '' : '100%'} ${esc(t('wz_loc'))}</small></button>`).join('')}</div>`;
+  if (k === 'dir') return `<h1>${esc(t('wz_dir'))}</h1><p class="wzs">${esc(t('wz_dir_s'))}</p><div class="wzo on static"><b>${esc(t('wz_dir_l'))}</b><small>${esc((S.dir || '%APPDATA%\\.yaclient') + '\\game')}</small><i>${ic('check')}</i></div>`;
+  if (k === 'terms') return `<h1>${esc(t('wz_terms'))}</h1><p class="wzs">${esc(t('wz_terms_s'))}</p><div class="wzdoc">${['wz_t1', 'wz_t2', 'wz_t3', 'wz_t4'].map((x) => `<p>${esc(t(x))}</p>`).join('')}</div>`;
+  if (k === 'look') return `<h1>${esc(t('wz_look'))}</h1><p class="wzs">${esc(t('wz_look_s'))}</p>
+    <div class="wzth">${[['graphite', 'wz_graph'], ['midnight', 'wz_mid']].map(([id, l]) => `<button class="wzt ${(S.theme || 'graphite') === id ? 'on' : ''}" data-th="${id}"><span class="pv ${id}"><i></i><i></i></span><b>${esc(t(l))}</b></button>`).join('')}</div>
+    ${wzSw('anim', 'wz_anim', 'wz_anim_d', S.anim !== false)}${wzSw('min', 'wz_min', 'wz_min_d', !!S.minimizeOnLaunch)}`;
+  if (k === 'set') return `<h1>${esc(t('wz_set'))}</h1><p class="wzs">${esc(t('wz_set_s'))}</p>
+    <div class="wzth three">${['pvp', 'all', 'min'].map((id) => `<button class="wzt ${obPreset === id ? 'on' : ''}" data-wp="${id}"><b>${esc(t('pre_' + id))}</b></button>`).join('')}</div>
+    <div class="wzram"><div><b>RAM</b><span id="wzRamV">${S.ram} MB</span></div><input type="range" id="wzRam" min="1024" max="8192" step="512" value="${S.ram || 2048}"></div>`;
+  if (k === 'acc') return `<h1>${esc(t('wz_acc'))}</h1><p class="wzs">${esc(t('wz_acc_s'))}</p>${S.account ? `<div class="wzo on static"><b>${esc(t('wz_acc_ok'))} ${esc(S.account.name)}</b><i>${ic('check')}</i></div>` : `<button class="btn hi" id="wzLogin">${esc(t('wz_acc_b'))}</button>`}`;
+  return `<h1>${esc(t('wz_done'))}</h1><p class="wzs">${esc(t('wz_done_s'))}</p>`;
+}
+const wzSw = (id, a, b, on) => `<div class="wzrow"><div><b>${esc(t(a))}</b><small>${esc(t(b))}</small></div><button class="sw ${on ? 'on' : ''}" data-ws="${id}" aria-label="${esc(t(a))}"></button></div>`;
+function showSetup(step) {
+  wzStep = step || 0; const w = $('#wz'); w.hidden = false; drawSetup(true);
+}
+function drawSetup(first) {
+  const w = $('#wz'); const k = WZ[wzStep]; const center = k === 'wel' || k === 'done';
+  const last = wzStep === WZ.length - 1;
+  const next = k === 'terms' ? `<button class="btn" data-wa="decline">${esc(t('wz_decline'))} ×</button><button class="btn hi" data-wa="next">${esc(t('wz_accept'))} ✓</button>`
+    : `<button class="btn hi" data-wa="${last ? 'finish' : 'next'}">${esc(t(last ? 'wz_finish' : 'wz_next'))} →</button>`;
+  w.innerHTML = `<div class="wzp"><i style="width:${Math.round((wzStep + 1) / WZ.length * 100)}%"></i></div>
+    <header class="wzh"><img src="../assets/logo.png" alt=""><b>YA CLIENT</b><div class="top-r"><button class="wb" data-w="min" aria-label="Minimize">&#8211;</button><button class="wb x" data-w="close" aria-label="Close">&#10005;</button></div></header>
+    <div class="wzm ${center ? 'c' : ''}" key="${k}"><div class="wza"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${WZ_ART[k]}</svg></div><div class="wzc">${wzBody(k)}</div></div>
+    <footer class="wzf"><span>YA CLIENT · yaprojects.it</span><div>${wzStep > 0 ? `<button class="btn" data-wa="back">${esc(t('wz_back'))}</button>` : ''}${next}</div></footer>`;
+}
+function endSetup() {
+  S.frDone = true; window.ya.saveSettings({ frDone: true, theme: S.theme || 'graphite', anim: S.anim !== false, minimizeOnLaunch: !!S.minimizeOnLaunch, ram: S.ram });
+  const w = $('#wz'); w.hidden = true; w.innerHTML = ''; renderNav(); render();
+}
+document.addEventListener('click', async (e) => {
+  const el = e.target.closest('#wz [data-wa],#wz [data-wl],#wz [data-th],#wz [data-ws],#wz [data-wp],#wz #wzLogin');
+  if (!el) return;
+  e.stopPropagation();
+  if (el.dataset.wl) { S.lang = el.dataset.wl; await window.ya.setLang(S.lang); window.ya.saveSettings({ lang: S.lang }); document.documentElement.lang = S.lang; return drawSetup(); }
+  if (el.dataset.th) { S.theme = el.dataset.th; wzApplyLook(); return drawSetup(); }
+  if (el.dataset.ws === 'anim') { S.anim = S.anim === false; wzApplyLook(); return drawSetup(); }
+  if (el.dataset.ws === 'min') { S.minimizeOnLaunch = !S.minimizeOnLaunch; return drawSetup(); }
+  if (el.dataset.wp) { obPreset = el.dataset.wp; await applyProfile((m) => PRESETS[obPreset](m)); return drawSetup(); }
+  if (el.id === 'wzLogin') { showLogin(); return; }
+  const a = el.dataset.wa;
+  if (a === 'next') { wzStep++; return drawSetup(); }
+  if (a === 'back') { wzStep--; return drawSetup(); }
+  if (a === 'decline') return window.ya.win('close');
+  if (a === 'finish') return endSetup();
+}, true);
+document.addEventListener('input', (e) => { if (e.target.id === 'wzRam') { S.ram = +e.target.value; $('#wzRamV').textContent = S.ram + ' MB'; } });
+
 (async function init() {
   S = { ...S, ...(await window.ya.getState()) };
   if (!I18N[S.lang]) S.lang = 'en';
@@ -827,7 +899,8 @@ document.addEventListener('error', (e) => {   // inline onerror is blocked by th
   window.ya.art().then((a) => { ART = a || {}; if (page === 'versions') render(); }).catch(() => {});
   $('#palLbl').textContent = t('pal_ph').split(',')[0].replace('...', '') + '...';
   renderNav(); render();
-  if (!S.account) showLogin();   // not signed in: ask right away
+  wzApplyLook();
+  if (!S.frDone && !S.account) showSetup(); else if (!S.account) showLogin();
   refreshPlus();
   window.addEventListener('focus', () => { if (Date.now() - (S._pt || 0) > 60000) { S._pt = Date.now(); refreshPlus(); } });
 })();
