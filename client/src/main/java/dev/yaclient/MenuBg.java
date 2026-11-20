@@ -1,6 +1,9 @@
 package dev.yaclient;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.util.glu.Project;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -9,30 +12,29 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 final class MenuBg {
     private MenuBg() {}
 
+    private static final ResourceLocation[] PANO = new ResourceLocation[6];
+    static { for (int i = 0; i < 6; i++) PANO[i] = new ResourceLocation("textures/gui/title/background/panorama_" + i + ".png"); }
+
     static final int INK = 0xFF1A1C26, INK2 = 0xFF5B6272;
 
     static void draw(int w, int h, float t) {
+        // the game's own panorama, slowly turning, then a frosted light veil on top so it reads clean and bright
+        panorama(w, h, t * 50f);
         Tessellator tess = Tessellator.getInstance();
         WorldRenderer wr = tess.getWorldRenderer();
         GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.disableAlpha();
-        GlStateManager.disableBlend();
         wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(w, 0, 0).color(0xE8, 0xED, 0xF6, 255).endVertex();
-        wr.pos(0, 0, 0).color(0xF6, 0xF8, 0xFB, 255).endVertex();
-        wr.pos(0, h, 0).color(0xE4, 0xEA, 0xF4, 255).endVertex();
-        wr.pos(w, h, 0).color(0xD3, 0xDB, 0xEA, 255).endVertex();
+        wr.pos(w, 0, 0).color(0xF2, 0xF5, 0xFB, 200).endVertex();
+        wr.pos(0, 0, 0).color(0xFA, 0xFB, 0xFE, 215).endVertex();
+        wr.pos(0, h, 0).color(0xE9, 0xEE, 0xF7, 200).endVertex();
+        wr.pos(w, h, 0).color(0xDC, 0xE3, 0xF0, 215).endVertex();
         tess.draw();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
-        // cool glow top left, a hint of the brand red bottom right
-        blob(w * 0.05f, h * 0.0f, w * 0.5f, h * 0.8f, 0x7FA6F5, 60);
-        blob(w * 0.98f, h * 1.02f, w * 0.45f, h * 0.7f, 0xE10600, 26);
-        // two slow diagonal light panels
-        float d = (float) Math.sin(t * 0.12f) * w * 0.02f;
-        band(w * 0.40f + d, w * 0.70f + d, w * 0.30f + d, w * 0.00f + d, w, h, 70);
-        band(w * 0.78f - d, w * 1.00f - d, w * 0.82f - d, w * 0.52f - d, w, h, 46);
-        band(w * 0.00f + d, w * 0.16f + d, w * -0.10f + d, w * -0.26f + d, w, h, 40);
+        blob(w * 0.5f, h * 0.46f, w * 0.36f, h * 0.6f, 0xFFFFFF, 120);
     }
 
     /** A translucent white diagonal panel: top edge x0..x1, bottom edge x3..x2. */
@@ -136,5 +138,64 @@ final class MenuBg {
         t.draw();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
+    }
+
+
+
+    /** The vanilla title panorama (same technique as the original menu). */
+    static void panorama(int width, int height, float timer) {
+        Tessellator t = Tessellator.getInstance();
+        WorldRenderer wr = t.getWorldRenderer();
+        GlStateManager.matrixMode(5889);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        Project.gluPerspective(85.0F, (float) width / (float) height, 0.05F, 10.0F);
+        GlStateManager.matrixMode(5888);
+        GlStateManager.pushMatrix();
+        GlStateManager.loadIdentity();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.disableCull();
+        GlStateManager.depthMask(false);
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        final int n = 4;
+        for (int j = 0; j < n * n; j++) {
+            GlStateManager.pushMatrix();
+            float dx = ((float) (j % n) / n - 0.5F) / 64.0F, dy = ((float) (j / n) / n - 0.5F) / 64.0F;
+            GlStateManager.translate(dx, dy, 0.0F);
+            GlStateManager.rotate((float) Math.sin(timer / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-timer * 0.1F, 0.0F, 1.0F, 0.0F);
+            for (int k = 0; k < 6; k++) {
+                GlStateManager.pushMatrix();
+                if (k == 1) GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 2) GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 3) GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+                if (k == 4) GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                if (k == 5) GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+                Minecraft.getMinecraft().getTextureManager().bindTexture(PANO[k]);
+                wr.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                int a = 255 / (j + 1);
+                wr.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(-1.0D, 1.0D, 1.0D).tex(1.0D, 0.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(1.0D, 1.0D, 1.0D).tex(1.0D, 1.0D).color(255, 255, 255, a).endVertex();
+                wr.pos(1.0D, -1.0D, 1.0D).tex(0.0D, 1.0D).color(255, 255, 255, a).endVertex();
+                t.draw();
+                GlStateManager.popMatrix();
+            }
+            GlStateManager.popMatrix();
+            GlStateManager.colorMask(true, true, true, false);
+        }
+        GlStateManager.colorMask(true, true, true, true);
+        GlStateManager.matrixMode(5889);
+        GlStateManager.popMatrix();
+        GlStateManager.matrixMode(5888);
+        GlStateManager.popMatrix();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableCull();
+        GlStateManager.enableDepth();
+        GlStateManager.enableAlpha();
     }
 }
