@@ -159,7 +159,10 @@ footer.fx .bt{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .cosmos::before{background-size:cover}
 .world .xs{padding:0}
 /* readability: darker veil over the voxel world once the hero is past */
-.cosmos::before{height:860px;bottom:auto;background:linear-gradient(180deg,rgba(37,38,45,0) 55%,#25262d 100%),linear-gradient(180deg,rgba(37,38,45,.1) 0,rgba(37,38,45,.35) 100%),url(/b/world.jpg?v=4) center top/cover no-repeat}
+.cosmos::before{display:none}
+.news{position:relative}
+.news img{-webkit-mask-image:linear-gradient(180deg,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,#000 62%,transparent 100%)}
+.news .tx{margin-top:-30px;position:relative}
 .hx h1 em{background-image:linear-gradient(100deg,#fff 0%,#ffc2bd 38%,#ff4a40 100%)}
 .xh .kick,.ft .kick{color:#ff8a83}
 .sc-c{color:#e8ebf8}
