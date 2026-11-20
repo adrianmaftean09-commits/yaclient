@@ -18,17 +18,26 @@ final class MenuBg {
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(w, 0, 0).color(0xEE, 0xF3, 0xFC, 255).endVertex();
-        wr.pos(0, 0, 0).color(0xEE, 0xF3, 0xFC, 255).endVertex();
-        wr.pos(0, h, 0).color(0xD5, 0xE0, 0xF4, 255).endVertex();
-        wr.pos(w, h, 0).color(0xD5, 0xE0, 0xF4, 255).endVertex();
+        wr.pos(w, 0, 0).color(0xDC, 0xE8, 0xFC, 255).endVertex();
+        wr.pos(0, 0, 0).color(0xF6, 0xF8, 0xFF, 255).endVertex();
+        wr.pos(0, h, 0).color(0xD2, 0xE2, 0xF8, 255).endVertex();
+        wr.pos(w, h, 0).color(0xE8, 0xDC, 0xF6, 255).endVertex();
         tess.draw();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
-        blob(w * 0.82f + (float) Math.sin(t * 0.21f) * 18f, h * 0.18f, w * 0.55f, h * 0.75f, 0x7FA2FF, 120);
-        blob(w * 0.12f + (float) Math.cos(t * 0.17f) * 16f, h * 0.88f, w * 0.5f, h * 0.7f, 0xC9A4FF, 95);
-        blob(w * 0.52f + (float) Math.sin(t * 0.13f) * 22f, h * 0.55f, w * 0.38f, h * 0.55f, 0xFFFFFF, 150);
-        blob(w * 0.95f, h * 0.95f, w * 0.3f, h * 0.45f, 0xFF9A9A, 55);
+        blob(w * 0.86f + (float) Math.sin(t * 0.21f) * 22f, h * 0.12f, w * 0.6f, h * 0.85f, 0x6F9CFF, 150);
+        blob(w * 0.08f + (float) Math.cos(t * 0.17f) * 18f, h * 0.95f, w * 0.55f, h * 0.8f, 0xB98CFF, 120);
+        blob(w * 0.10f + (float) Math.sin(t * 0.15f) * 14f, h * 0.05f, w * 0.38f, h * 0.55f, 0x7FE3F5, 105);
+        blob(w * 0.97f + (float) Math.cos(t * 0.19f) * 10f, h * 0.98f, w * 0.38f, h * 0.6f, 0xFF9DB8, 105);
+        blob(w * 0.50f + (float) Math.sin(t * 0.13f) * 26f, h * 0.50f, w * 0.40f, h * 0.60f, 0xFFFFFF, 170);
+        // slow floating soft discs for depth
+        for (int i = 0; i < 7; i++) {
+            float px = w * (0.08f + 0.14f * i) + (float) Math.sin(t * (0.10f + 0.03f * i) + i * 1.7f) * 22f;
+            float py = h * (0.18f + 0.13f * ((i * 5) % 7)) + (float) Math.cos(t * (0.08f + 0.02f * i) + i) * 16f;
+            float rr = h * (0.05f + 0.025f * (i % 4));
+            disc(px, py, rr, 0xFFFFFF, 34);
+            ring(px, py, rr, rr, 1f, 0xFFFFFF, 70);
+        }
         dots(w, h);
     }
 
@@ -43,11 +52,31 @@ final class MenuBg {
         wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
         for (int y = 9; y < h; y += 14) {
             for (int x = 9; x < w; x += 14) {
-                wr.pos(x, y, 0).color(0x1A, 0x22, 0x38, 26).endVertex();
-                wr.pos(x, y + 1, 0).color(0x1A, 0x22, 0x38, 26).endVertex();
-                wr.pos(x + 1, y + 1, 0).color(0x1A, 0x22, 0x38, 26).endVertex();
-                wr.pos(x + 1, y, 0).color(0x1A, 0x22, 0x38, 26).endVertex();
+                wr.pos(x, y, 0).color(0x1A, 0x22, 0x38, 20).endVertex();
+                wr.pos(x, y + 1, 0).color(0x1A, 0x22, 0x38, 20).endVertex();
+                wr.pos(x + 1, y + 1, 0).color(0x1A, 0x22, 0x38, 20).endVertex();
+                wr.pos(x + 1, y, 0).color(0x1A, 0x22, 0x38, 20).endVertex();
             }
+        }
+        tess.draw();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
+
+    /** Flat translucent disc. */
+    static void disc(float cx, float cy, float r, int rgb, int alpha) {
+        Tessellator tess = Tessellator.getInstance();
+        WorldRenderer wr = tess.getWorldRenderer();
+        int rr = (rgb >> 16) & 255, g = (rgb >> 8) & 255, b = rgb & 255;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.disableAlpha();
+        wr.begin(6, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(cx, cy, 0).color(rr, g, b, alpha).endVertex();
+        for (int i = 0; i <= 40; i++) {
+            double a = i * Math.PI * 2 / 40;
+            wr.pos(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 0).color(rr, g, b, (int) (alpha * 0.45f)).endVertex();
         }
         tess.draw();
         GlStateManager.enableAlpha();

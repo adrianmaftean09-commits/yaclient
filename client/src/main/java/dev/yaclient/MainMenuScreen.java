@@ -46,25 +46,18 @@ public class MainMenuScreen extends GuiScreen {
 
         int logo = Math.min(50, height / 6), badge = logo + 14;
         boolean wideScr = width >= 520;
-        int plW = 112, gapC = 70;
+        int plW = 112;
         int contentH = badge + 14 + PBH + 2 * BH + 3 * GAP + 12 + TH;
-        int colRight = RecentServers.X + RecentServers.W + 18;
-        int total = wideScr ? BW + gapC + plW : BW;
-        if (wideScr && colRight + total + 16 > width) gapC = Math.max(30, gapC - (colRight + total + 16 - width));
-        total = wideScr ? BW + gapC + plW : BW;
-        int leftX = wideScr ? Math.max(colRight, (width - total) / 2) : (width - total) / 2;
         int top = Math.max(10, (height - contentH) / 2);
-        int cx = leftX + BW / 2;
+        int cx = width / 2;
 
-        // the player: soft glow, a floor ring, the model, and the name on a dark pill
+        // the player: centered in the free space on the right, with only a soft floor shadow
         if (wideScr) {
-            int pcx = leftX + BW + gapC + plW / 2;
+            int rightStart = cx + BW / 2 + 20;
+            int pcx = (rightStart + width - 16) / 2;
             int feet = top + contentH - 24;
             int ps = Math.max(30, (contentH - 40) * 10 / 19);
-            MenuBg.blob(pcx, feet - ps * 0.95f, plW * 1.1f, ps * 1.35f, 0xFFFFFF, 140);
             MenuBg.blob(pcx, feet + 2, 46f, 8f, 0x1A2238, 75);
-            MenuBg.ring(pcx, feet + 2, 40f, 7f, 1.4f, 0xFFFFFF, 190);
-            MenuBg.ring(pcx, feet + 2, 52f, 9.5f, 1f, 0x1A2238, 38);
             MenuPlayer.draw(pcx, feet, ps, ((now - opened) % 9000L) / 9000f * 360f);
             String nm = Minecraft.getMinecraft().getSession().getUsername();
             int pw = Gfx.width(nm, 9, true) + 22;
@@ -127,9 +120,10 @@ public class MainMenuScreen extends GuiScreen {
         recentY = colTop;
         nx = RecentServers.X;
         ny = colTop + rb;
-        RecentServers.draw(mx, my, recentY);
-        boolean nOver = mx >= nx && mx < nx + nw && my >= ny && my < ny + nh;
+        if (width >= 520) RecentServers.draw(mx, my, recentY);
+        boolean nOver = width >= 520 && mx >= nx && mx < nx + nw && my >= ny && my < ny + nh;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
+        if (width >= 520) {
         Gfx.rr(nx, ny + 2, nw, nh, 9, 0x26101830);
         Gfx.rr(nx, ny, nw, nh, 9, Ui.mix(0xD0101014, 0xE8242429, newsHover));
         int artH = Math.round((nw - 8) / NewsArt.ASPECT);
@@ -137,6 +131,7 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.rrOutline(nx, ny, nw, nh, 9, 1, Ui.mix(0x40FFFFFF, 0x80FFFFFF, newsHover));
         Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
         Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " \u00b7 " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
+        }
 
         // footer
         Gfx.text("CLIENT 1.8.9", 16, height - 14, 8, true, INK2);
@@ -152,8 +147,8 @@ public class MainMenuScreen extends GuiScreen {
     protected void mouseClicked(int mx, int my, int button) {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
-        if (RecentServers.click(mx, my, recentY, this)) return;
-        if (mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
+        if (width >= 520 && RecentServers.click(mx, my, recentY, this)) return;
+        if (width >= 520 && mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
             if (mx >= bx && mx < bx + BW && my >= y && my < y + btnH(i)) {
