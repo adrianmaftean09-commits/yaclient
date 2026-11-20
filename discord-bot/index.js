@@ -45,9 +45,22 @@ const ownerOf = ch => ((ch.topic || '').match(/^ticket:(\d+)/) || [])[1];
 const isStaff = m => m.roles.cache.has(STAFF_ROLE_ID) || m.permissions.has(PermissionFlagsBits.Administrator);
 
 client.once('ready', async () => {
-  const rest = new REST({ version: '10' }).setToken(TOKEN);
-  await rest.put(Routes.applicationGuildCommands(client.user.id, GUILD_ID), { body: commands });
-  console.log(`YA CLIENT ticket bot ready as ${client.user.tag}`);
+  console.log(`Logged in as ${client.user.tag} (bot id ${client.user.id})`);
+  const guild = client.guilds.cache.get(GUILD_ID);
+  if (!guild) {
+    const list = [...client.guilds.cache.values()].map(g => `${g.name} (${g.id})`).join(', ') || 'none';
+    console.error(`The bot is NOT in the server with GUILD_ID ${GUILD_ID}. Servers it is in: ${list}`);
+    console.error(`Invite THIS bot: https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&integration_type=0&scope=bot+applications.commands`);
+    return;
+  }
+  try {
+    const rest = new REST({ version: '10' }).setToken(TOKEN);
+    await rest.put(Routes.applicationGuildCommands(client.user.id, GUILD_ID), { body: commands });
+    console.log(`Commands registered in "${guild.name}". YA CLIENT ticket bot ready as ${client.user.tag}`);
+  } catch (e) {
+    console.error('Could not register commands:', e.message);
+    console.error(`Re-invite with commands scope: https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&integration_type=0&scope=bot+applications.commands`);
+  }
 });
 
 client.on('interactionCreate', async i => {
