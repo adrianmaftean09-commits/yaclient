@@ -166,7 +166,7 @@ body{background:var(--bg)}
 .rail,.card,.chipsel,.sqb,.accpill,.searchpill{backdrop-filter:none;-webkit-backdrop-filter:none}
 .rail{background:var(--rail)}
 .hx2{background:var(--surface);box-shadow:none}
-.hx2 .bgi,.hx2::after,#bgBtn{display:none}
+.hx2::after{background:linear-gradient(90deg,rgba(37,38,45,.8) 0,rgba(37,38,45,.3) 55%,rgba(37,38,45,0) 100%),linear-gradient(0deg,rgba(37,38,45,.5),transparent 45%)}
 .hx2 .hl p{color:#b4b5c0}
 .chipsel{background:var(--surface2)}
 .hx2 .bar{background:rgba(255,255,255,.1)}

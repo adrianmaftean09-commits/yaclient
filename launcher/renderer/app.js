@@ -182,7 +182,7 @@ function viewHome() {
   const greet = hr < 6 ? t('g_night') : hr < 13 ? t('g_morning') : hr < 19 ? t('g_afternoon') : t('g_evening');
   const online = FR.data ? FR.data.friends.filter((f) => f.online) : [];
   return `<div class="hm"><div class="hxc">
-    <div class="hx2" id="hero"><div class="bgi" id="bgi" style="${S.bg > 0 ? `background-image:url('bg/bg${S.bg}.jpg')` : ''}"></div>
+    <div class="hx2" id="hero"><div class="bgi" id="bgi" style="${(S.bg == null ? 1 : S.bg) > 0 ? `background-image:url('bg/bg${S.bg == null ? 1 : S.bg}.jpg')` : ''}"></div>
       <div class="hl"><small>${esc(tag)}</small><h1>${esc(greet)}${nm ? ', ' + esc(nm) : ''}</h1><p>${esc(t('home_sub'))}</p></div>
       <div class="pl">${av}</div>
       <div class="ctl"><div class="row2">
@@ -747,7 +747,7 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'buyPlus') { const u = C.storeUrl; if (u) window.ya.openExternal(u); return; }
   if (el.dataset.p) return go(el.dataset.p);
   if (el.id === 'btnAcc' || el.id === 'accBtn') return showLogin();
-  if (el.id === 'bgBtn') { S.bg = ((S.bg || 0) + 1) % (BGS + 1); window.ya.saveSettings({ bg: S.bg }); const h = $('#bgi'); if (h) h.style.backgroundImage = S.bg > 0 ? `url('bg/bg${S.bg}.jpg')` : ''; return; }
+  if (el.id === 'bgBtn') { S.bg = (((S.bg == null ? 1 : S.bg)) + 1) % (BGS + 1); window.ya.saveSettings({ bg: S.bg }); const h = $('#bgi'); if (h) h.style.backgroundImage = S.bg > 0 ? `url('bg/bg${S.bg}.jpg')` : ''; return; }
   if (el.id === 'play') return launch();
   if (el.dataset.srv != null) { const s = (C.servers || [])[+el.dataset.srv]; if (s) launch({ host: s.host, port: s.port || 25565 }); return; }
   if (el.dataset.url) return window.ya.openExternal(el.dataset.url);
