@@ -87,7 +87,11 @@ nav.top.sc .wrap{height:60px}
 @keyframes mq{to{transform:translate3d(-50%,0,0)}}
 .mc{display:flex;align-items:center;gap:12px;height:64px;padding:0 24px 0 14px;border-radius:16px;background:rgba(10,10,15,.72);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);white-space:nowrap;font-weight:700;font-size:15.5px;color:#fff;transition:border-color .2s,transform .25s var(--ease)}
 .mc:hover{border-color:rgba(255,255,255,.4);transform:translateY(-3px)}
-.mc b{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;font-size:16px;font-weight:800;color:#fff;background:linear-gradient(145deg,var(--c1),var(--c2));box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.mc b{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+.mc b svg{width:21px;height:21px}
+.mc.pvp b{color:#ff6b63;background:rgba(225,6,0,.16);border-color:rgba(225,6,0,.4)}
+.mc.info b{color:#8ab4ff;background:rgba(80,130,255,.14);border-color:rgba(100,150,255,.36)}
+.mc.utility b{color:#7ee2a8;background:rgba(52,210,123,.12);border-color:rgba(52,210,123,.34)}
 @media(prefers-reduced-motion:reduce){.mq .tk{animation:none}.mq{overflow-x:auto}}
 
 /* three columns */
