@@ -482,8 +482,8 @@ public class ServerListScreen extends GuiScreen {
     }
 
     @Override
-    public void handleMouseInput() throws java.io.IOException {
-        super.handleMouseInput();
+    public void handleMouseInput() {
+        try { super.handleMouseInput(); } catch (Exception ignored) { }
         int d = Mouse.getEventDWheel();
         if (d != 0 && dlg == 0) scrollTarget -= Math.signum((float) d) * (ROW + 4);
     }
