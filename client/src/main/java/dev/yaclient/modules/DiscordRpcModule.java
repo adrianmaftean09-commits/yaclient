@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class DiscordRpcModule extends Module {
     /** Discord application whose NAME is shown as "Playing ...": set it to "YA Client 1.8.9" in the developer portal. */
-    private static final String DEFAULT_ID = "1573058727051792546";
+    private static final String DEFAULT_ID = "1562827651100581970";
     private volatile String state = "In menus";
     private Thread thread;
     private final long startedAt = System.currentTimeMillis() / 1000L;
