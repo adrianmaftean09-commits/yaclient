@@ -697,11 +697,10 @@
  "srv.offline": "Offline",
  "srv.hint": "Scrivi un indirizzo per vedere l'anteprima.",
  "srv.default_name": "Server Minecraft",
- "set.team_viewer.arrow": "Freccia sopra i compagni",
  "set.hit_color.intensity": "Intensità",
  "set.hit_color.self": "Colora anche me",
  "set.inventory_hud.hotbar": "Mostra la hotbar",
  "set.inventory_hud.slots": "Sfondo degli slot",
  "mod.hit_color.desc": "Colora un giocatore con il tuo colore quando viene colpito",
- "mod.team_viewer.desc": "Vita e distanza dei compagni e una freccia verde sopra la testa"
+ "mod.team_viewer.desc": "Una freccia verde sopra i compagni di squadra, così sai sempre dove sono"
 }

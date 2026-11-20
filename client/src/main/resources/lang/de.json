@@ -697,11 +697,10 @@
  "srv.offline": "Offline",
  "srv.hint": "Gib eine Adresse ein, um die Vorschau zu sehen.",
  "srv.default_name": "Minecraft-Server",
- "set.team_viewer.arrow": "Pfeil über Teammitgliedern",
  "set.hit_color.intensity": "Stärke",
  "set.hit_color.self": "Mich auch einfärben",
  "set.inventory_hud.hotbar": "Hotbar anzeigen",
  "set.inventory_hud.slots": "Slot-Hintergrund",
  "mod.hit_color.desc": "Färbt einen Spieler in deiner Farbe, wenn er getroffen wird",
- "mod.team_viewer.desc": "Leben und Entfernung deiner Teammitglieder und ein grüner Pfeil über dem Kopf"
+ "mod.team_viewer.desc": "Ein grüner Pfeil über deinen Teammitgliedern, damit du immer weißt, wo sie sind"
 }

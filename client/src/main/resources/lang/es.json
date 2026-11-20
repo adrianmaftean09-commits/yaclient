@@ -697,11 +697,10 @@
  "srv.offline": "Sin conexión",
  "srv.hint": "Escribe una dirección para ver la vista previa.",
  "srv.default_name": "Servidor de Minecraft",
- "set.team_viewer.arrow": "Flecha sobre los compañeros",
  "set.hit_color.intensity": "Intensidad",
  "set.hit_color.self": "Colorearme también",
  "set.inventory_hud.hotbar": "Mostrar la barra rápida",
  "set.inventory_hud.slots": "Fondo de las casillas",
  "mod.hit_color.desc": "Colorea a un jugador con tu color cuando recibe un golpe",
- "mod.team_viewer.desc": "Vida y distancia de tus compañeros y una flecha verde sobre su cabeza"
+ "mod.team_viewer.desc": "Una flecha verde sobre tus compañeros para ver siempre dónde están"
 }

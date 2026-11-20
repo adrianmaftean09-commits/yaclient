@@ -707,11 +707,10 @@
  "srv.offline": "Offline",
  "srv.hint": "Type an address to see a live preview.",
  "srv.default_name": "Minecraft Server",
- "set.team_viewer.arrow": "Arrow above teammates",
  "set.hit_color.intensity": "Intensity",
  "set.hit_color.self": "Also tint myself",
  "set.inventory_hud.hotbar": "Show hotbar",
  "set.inventory_hud.slots": "Slot backgrounds",
  "mod.hit_color.desc": "Tints a player in your color when they get hit",
- "mod.team_viewer.desc": "Teammate health, distance and a green arrow above their head"
+ "mod.team_viewer.desc": "A green arrow above your teammates, so you always see where they are"
 }

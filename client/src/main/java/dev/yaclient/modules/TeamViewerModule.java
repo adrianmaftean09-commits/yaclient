@@ -1,10 +1,7 @@
 package dev.yaclient.modules;
 
 import dev.yaclient.FriendsApi;
-import dev.yaclient.Gfx;
 import dev.yaclient.Setting;
-import dev.yaclient.Theme;
-import dev.yaclient.Ui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -22,20 +19,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Your teammates at a glance: health bar, hearts and distance. Teammates = same scoreboard team, your online YA friends, and names you list. */
-public class TeamViewerModule extends HudModule {
+/** A green arrow above your teammates' heads. Teammates = same scoreboard team, your online YA friends, and names you list. */
+public class TeamViewerModule extends Module {
     private final Setting.Bool team = add(new Setting.Bool("team", true));
     private final Setting.Bool friends = add(new Setting.Bool("friends", true));
     private final Setting.Text names = add(new Setting.Text("names", "", 80));
     private final Setting.Num range = add(new Setting.Num("range", 16f, 256f, 16f, 128f, ""));
 
-    private final Setting.Bool arrow = add(new Setting.Bool("arrow", true));
-
     private static TeamViewerModule inst;
     private static Method pt;
     private static boolean ptTried;
 
-    public TeamViewerModule() { super("team_viewer", Category.INFO, false, 0.008f, 0.45f); inst = this; }
+    public TeamViewerModule() { super("team_viewer", Category.INFO, false); inst = this; }
 
     /** Green arrow above each teammate's head (world render event, looked up by name). */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -61,7 +56,7 @@ public class TeamViewerModule extends HudModule {
     }
 
     private void drawArrows(Object event) {
-        if (!enabled || !arrow.value) return;
+        if (!enabled) return;
         Minecraft m = Minecraft.getMinecraft();
         if (m == null || m.theWorld == null || m.thePlayer == null || m.gameSettings.hideGUI) return;
         Entity v = m.getRenderViewEntity();
@@ -149,33 +144,5 @@ public class TeamViewerModule extends HudModule {
             if (mate) rows.add(p);
         }
         return rows;
-    }
-
-    @Override
-    public int width() { return members().isEmpty() && !preview ? 0 : 124; }
-
-    @Override
-    public int height() { int n = members().size(); return (n == 0 ? 2 : n) * 22 + 6; }
-
-    @Override
-    protected void draw() {
-        List<EntityPlayer> l = members();
-        int n = l.isEmpty() ? 2 : l.size();
-        Gfx.rr(0, 0, 124, n * 22 + 6, 8, Theme.HUD_BG);
-        Gfx.rrOutline(0, 0, 124, n * 22 + 6, 8, 1, 0x1AFFFFFF);
-        for (int i = 0; i < n; i++) {
-            int y = 5 + i * 22;
-            String name; float hp, max, dist;
-            if (l.isEmpty()) { name = i == 0 ? "Mate1" : "Mate2"; hp = i == 0 ? 20f : 9f; max = 20f; dist = i == 0 ? 6f : 23f; }
-            else { EntityPlayer p = l.get(i); name = p.getName(); hp = p.getHealth() + p.getAbsorptionAmount(); max = Math.max(1f, p.getMaxHealth()); dist = mc.thePlayer.getDistanceToEntity(p); }
-            Gfx.text(Gfx.trim(name, 9, true, 70), 8, y, 9, true, Theme.TEXT);
-            String d = Math.round(dist) + "m";
-            Gfx.text(d, 116 - Gfx.width(d, 8, false), y + 1, 8, false, Theme.MUTED);
-            float f = Ui.clamp(hp / max, 0f, 1f);
-            Gfx.rr(8, y + 12, 86, 4, 2, 0x33FFFFFF);
-            if (f > 0.02f) Gfx.rr(8, y + 12, Math.max(4, Math.round(86 * f)), 4, 2, Ui.mix(0xFFFF3B30, 0xFF34D27B, f));
-            String h = String.format(Locale.ROOT, "%.1f", hp / 2f);
-            Gfx.text(h, 116 - Gfx.width(h, 8, false), y + 11, 8, false, Theme.MUTED);
-        }
     }
 }

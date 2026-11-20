@@ -855,7 +855,7 @@
   {
    "id": "team_viewer",
    "name": "Team Viewer",
-   "desc": "Teammate health, distance and a green arrow above their head",
+   "desc": "A green arrow above your teammates, so you always see where they are",
    "category": "info",
    "versions": [
     "1.8.9"
