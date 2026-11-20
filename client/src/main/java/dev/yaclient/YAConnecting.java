@@ -21,8 +21,7 @@ public class YAConnecting extends GuiConnecting {
         super.initGui();
         if (!buttonList.isEmpty()) {
             GuiButton b = (GuiButton) buttonList.get(0);
-            b.width = 100; b.height = 18;
-            b.xPosition = width / 2 - 50;
+            b.xPosition = width / 2 - b.getButtonWidth() / 2;
             b.yPosition = LoadingArt.barY(height) + 20;
         }
     }
@@ -33,8 +32,8 @@ public class YAConnecting extends GuiConnecting {
         if (!buttonList.isEmpty()) {
             GuiButton b = (GuiButton) buttonList.get(0);
             Gfx.setScale(Math.max(1, new net.minecraft.client.gui.ScaledResolution(mc).getScaleFactor()));
-            boolean over = mx >= b.xPosition && mx < b.xPosition + b.width && my >= b.yPosition && my < b.yPosition + b.height;
-            LoadingArt.button(b.xPosition, b.yPosition, b.width, b.height, Lang.t("srv.cancel"), false, over, true);
+            boolean over = mx >= b.xPosition && mx < b.xPosition + b.getButtonWidth() && my >= b.yPosition && my < b.yPosition + 20;
+            LoadingArt.button(b.xPosition, b.yPosition, b.getButtonWidth(), 20, Lang.t("srv.cancel"), false, over, true);
         }
     }
 }

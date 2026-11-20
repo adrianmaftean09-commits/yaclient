@@ -33,8 +33,8 @@ public class PauseScreen extends GuiIngameMenu {
         for (Object o : buttonList) {
             GuiButton b = (GuiButton) o;
             if (!b.visible) continue;
-            boolean over = b.enabled && mx >= b.xPosition && mx < b.xPosition + b.width && my >= b.yPosition && my < b.yPosition + b.height;
-            LoadingArt.button(b.xPosition, b.yPosition, b.width, b.height, b.displayString, b.id == 4, over, b.enabled);
+            boolean over = b.enabled && mx >= b.xPosition && mx < b.xPosition + b.getButtonWidth() && my >= b.yPosition && my < b.yPosition + 20;
+            LoadingArt.button(b.xPosition, b.yPosition, b.getButtonWidth(), 20, b.displayString, b.id == 4, over, b.enabled);
         }
         for (int i = 0; i < ICONS.length; i++) {
             int x = dockX() + i * (TW + DG), y = dockY();
@@ -49,7 +49,7 @@ public class PauseScreen extends GuiIngameMenu {
     }
 
     @Override
-    protected void mouseClicked(int mx, int my, int button) throws IOException {
+    protected void mouseClicked(int mx, int my, int button) {
         if (button == 0) {
             for (int i = 0; i < ICONS.length; i++) {
                 int x = dockX() + i * (TW + DG), y = dockY();
