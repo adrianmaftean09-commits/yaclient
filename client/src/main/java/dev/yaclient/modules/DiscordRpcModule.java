@@ -14,11 +14,13 @@ import java.util.UUID;
  * in ~/.yaclient/config.properties as: discord.clientId=123456789012345678
  */
 public class DiscordRpcModule extends Module {
+    /** Discord application whose NAME is shown as "Playing ...": set it to "YA Client 1.8.9" in the developer portal. */
+    private static final String DEFAULT_ID = "1573058727051792546";
     private volatile String state = "In menus";
     private Thread thread;
     private final long startedAt = System.currentTimeMillis() / 1000L;
 
-    public DiscordRpcModule() { super("discord_rpc", Category.UTILITY, false); }
+    public DiscordRpcModule() { super("discord_rpc", Category.UTILITY, true); }
 
     @Override
     public void onTick() {
@@ -43,7 +45,7 @@ public class DiscordRpcModule extends Module {
 
     private void loop() {
         while (true) {
-            String id = Config.get("discord.clientId", "").trim();
+            String id = Config.get("discord.clientId", DEFAULT_ID).trim();
             RandomAccessFile pipe = null;
             try {
                 if (enabled && !id.isEmpty()) pipe = open();
@@ -70,7 +72,7 @@ public class DiscordRpcModule extends Module {
     private String activity() {
         String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
         return "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":" + pid + ",\"activity\":{"
-                + "\"details\":\"Minecraft 1.8.9 - YA CLIENT\","
+                + "\"details\":\"YA Client 1.8.9\","
                 + "\"state\":\"" + esc(state) + "\","
                 + "\"timestamps\":{\"start\":" + startedAt + "}}},"
                 + "\"nonce\":\"" + UUID.randomUUID() + "\"}";
