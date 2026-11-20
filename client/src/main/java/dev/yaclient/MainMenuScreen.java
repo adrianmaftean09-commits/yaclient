@@ -50,10 +50,25 @@ public class MainMenuScreen extends GuiScreen {
         Gfx.setScale(Math.max(1, gs));
         Gfx.fade = fadeIn;
 
-        int logo = Math.min(64, height / 5);
-        int cx = width / 2;
-        int total = logo + 12 + 3 * BH + 2 * GAP + 10 + TH;
-        int top = Math.max(12, (height - total) / 2);
+        int logo = Math.min(44, height / 6);
+        boolean wideScr = width >= 560;
+        int cardW = wideScr ? 176 : 160, plW = 130, gapC = 10;
+        int cardH = 12 + logo + 10 + 3 * BH + 2 * GAP + 10 + TH + 12;
+        int total = wideScr ? cardW + gapC + plW : cardW;
+        int leftX = wideScr ? 140 + (width - 140 - total) / 2 : (width - total) / 2;
+        int cardY = Math.max(12, (height - cardH) / 2);
+        int cx = leftX + cardW / 2;
+        int top = cardY + 12;
+        Gfx.rr(leftX, cardY, cardW, cardH, 10, 0xB0121216);
+        Gfx.rrOutline(leftX, cardY, cardW, cardH, 10, 1, 0x2EFFFFFF);
+        if (wideScr) {
+            int px = leftX + cardW + gapC;
+            Gfx.rr(px, cardY, plW, cardH, 10, 0xB0121216);
+            Gfx.rrOutline(px, cardY, plW, cardH, 10, 1, 0x2EFFFFFF);
+            String nm = Minecraft.getMinecraft().getSession().getUsername();
+            Gfx.textCentered(nm, px + plW / 2, cardY + cardH - 8 - Gfx.lineHeight(10, true), 10, true, Theme.TEXT);
+            MenuPlayer.draw(px + plW / 2, cardY + cardH - 30, Math.max(30, (cardH - 52) * 5 / 11), ((now - opened) % 9000L) / 9000f * 360f);
+        }
         float bob = (float) Math.sin(t * 1.4f) * 1.5f;
         Logo.draw(cx - logo / 2f, top + bob, logo, logo, fadeIn);
 
