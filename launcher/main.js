@@ -264,6 +264,14 @@ ipcMain.handle('state', () => ({ ...state, version: state.version || cfg.minecra
 ipcMain.handle('settings', (_e, s) => { state = { ...state, ...s }; save(); return state; });
 ipcMain.handle('logout', () => { state.account = null; save(); return true; });
 ipcMain.handle('detect-java', () => findJava8());
+// server latency: time to open a TCP connection (what the launcher shows next to a server)
+ipcMain.handle('ping', (_e, host, port) => new Promise((resolve) => {
+  const h = String(host || '').slice(0, 253);
+  if (!/^[A-Za-z0-9._-]+$/.test(h)) return resolve(-1);
+  const t0 = Date.now(); const sock = require('net').connect({ host: h, port: Math.min(65535, +port || 25565) });
+  const end = (v) => { try { sock.destroy(); } catch (_) {} resolve(v); };
+  sock.setTimeout(3500, () => end(-1)); sock.on('connect', () => end(Date.now() - t0)); sock.on('error', () => end(-1));
+}));
 ipcMain.handle('open-folder', () => shell.openPath(gameDir));
 ipcMain.handle('set-lang', (_e, code) => {
   state.lang = code; save();

@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('ya', {
   loginOffline: (name) => ipcRenderer.invoke('login-offline', name),
   logout: () => ipcRenderer.invoke('logout'),
   detectJava: () => ipcRenderer.invoke('detect-java'),
+  ping: (h, p) => ipcRenderer.invoke('ping', h, p),
   openFolder: () => ipcRenderer.invoke('open-folder'),
   openExternal: (u) => ipcRenderer.invoke('open-external', u),
   content: () => ipcRenderer.invoke('content'),

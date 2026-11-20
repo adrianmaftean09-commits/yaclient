@@ -83,17 +83,28 @@ const ICON = {
   friends: '<circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-4 3-6 6.5-6s6.5 2 6.5 6"/><path d="M16 4.6a3.6 3.6 0 0 1 1.4 6.4M18 14.2c2.4.6 3.8 2.5 3.8 5.6"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'
 };
+ICON.modules = ICON.mods;
+ICON.search = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';
+ICON.clock = '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>';
+ICON.play = '<path d="M7 4.5v15l12-7.5z"/>';
+ICON.trash = '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>';
+ICON.folder = '<path d="M3 6.5A2.5 2.5 0 0 1 5.5 4H10l2 2.5h6.5A2.5 2.5 0 0 1 21 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>';
 const ic = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
 
 let S = { lang: 'en', account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false };
 let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest: {}, online: true }; let vtab = 'release'; let vq = ''; let page = 'home'; let busy = false; let cosTab = 'all';
+let mq = ''; let mcat = 'all'; let profSel = ''; let PING = {};
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
 
 Object.assign(I18N.es, { bundles: 'Packs', get_it: 'Ver en la web', owned_free: 'Gratis' });
 Object.assign(I18N.de, { bundles: 'Bundles', get_it: 'Auf der Website ansehen', owned_free: 'Gratis' });
-const PAGES = ['home', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
-const PKEY = { home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
+Object.assign(I18N.en, {"home_sub": "Everything you need to play: your modules, servers and friends in one place.", "version": "Version", "profile": "Profile", "prof_cur": "Current setup", "st_play": "Time played", "st_last": "Last session", "st_mods": "Active modules", "quick": "Quick join", "all": "All", "noServers2": "No servers yet. Add one in Servers.", "offline_s": "Offline", "now": "now", "g_night": "Good night", "g_morning": "Good morning", "g_afternoon": "Good afternoon", "g_evening": "Good evening", "srv_sub": "Add your favourite servers, check the ping and join with one click.", "srv_name": "Name (optional)", "srv_add": "Add server", "srv_bad": "Invalid address. Use host or host:port.", "srv_added": "Server added", "srv_removed": "Server removed", "mod_search": "Search modules...", "mod_on": "Enabled", "mod_none": "Nothing found.", "mod_na": "Not available for this version", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Utility", "pre_pvp": "PvP", "pre_all": "Everything", "pre_min": "Minimal", "prof_save": "Save profile", "prof_name": "Profile name", "prof_saved": "Profile saved", "prof_deleted": "Profile deleted", "prof_applied": "Profile applied", "prof_del": "Delete", "pal_ph": "Search pages, modules, servers, actions...", "pal_pages": "Pages", "pal_act": "Actions", "open_store": "Open store"});
+Object.assign(I18N.it, {"home_sub": "Tutto quello che ti serve per giocare: moduli, server e amici in un posto solo.", "version": "Versione", "profile": "Profilo", "prof_cur": "Setup attuale", "st_play": "Tempo di gioco", "st_last": "Ultima sessione", "st_mods": "Moduli attivi", "quick": "Accesso rapido", "all": "Tutti", "noServers2": "Nessun server. Aggiungine uno in Server.", "offline_s": "Offline", "now": "ora", "g_night": "Buonanotte", "g_morning": "Buongiorno", "g_afternoon": "Buon pomeriggio", "g_evening": "Buonasera", "srv_sub": "Aggiungi i tuoi server preferiti, controlla il ping ed entra con un click.", "srv_name": "Nome (facoltativo)", "srv_add": "Aggiungi server", "srv_bad": "Indirizzo non valido. Usa host o host:porta.", "srv_added": "Server aggiunto", "srv_removed": "Server rimosso", "mod_search": "Cerca moduli...", "mod_on": "Attivi", "mod_none": "Nessun risultato.", "mod_na": "Non disponibile per questa versione", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Utilità", "pre_pvp": "PvP", "pre_all": "Tutto", "pre_min": "Minimo", "prof_save": "Salva profilo", "prof_name": "Nome profilo", "prof_saved": "Profilo salvato", "prof_deleted": "Profilo eliminato", "prof_applied": "Profilo applicato", "prof_del": "Elimina", "pal_ph": "Cerca pagine, moduli, server, azioni...", "pal_pages": "Pagine", "pal_act": "Azioni", "open_store": "Apri lo store"});
+Object.assign(I18N.es, {"home_sub": "Todo lo que necesitas para jugar: módulos, servidores y amigos en un solo lugar.", "version": "Versión", "profile": "Perfil", "prof_cur": "Configuración actual", "st_play": "Tiempo jugado", "st_last": "Última sesión", "st_mods": "Módulos activos", "quick": "Acceso rápido", "all": "Todos", "noServers2": "Aún no hay servidores. Añade uno en Servidores.", "offline_s": "Sin conexión", "now": "ahora", "g_night": "Buenas noches", "g_morning": "Buenos días", "g_afternoon": "Buenas tardes", "g_evening": "Buenas noches", "srv_sub": "Añade tus servidores favoritos, mira el ping y entra con un clic.", "srv_name": "Nombre (opcional)", "srv_add": "Añadir servidor", "srv_bad": "Dirección no válida. Usa host o host:puerto.", "srv_added": "Servidor añadido", "srv_removed": "Servidor eliminado", "mod_search": "Buscar módulos...", "mod_on": "Activos", "mod_none": "Sin resultados.", "mod_na": "No disponible para esta versión", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Utilidad", "pre_pvp": "PvP", "pre_all": "Todo", "pre_min": "Mínimo", "prof_save": "Guardar perfil", "prof_name": "Nombre del perfil", "prof_saved": "Perfil guardado", "prof_deleted": "Perfil eliminado", "prof_applied": "Perfil aplicado", "prof_del": "Eliminar", "pal_ph": "Buscar páginas, módulos, servidores, acciones...", "pal_pages": "Páginas", "pal_act": "Acciones", "open_store": "Abrir tienda"});
+Object.assign(I18N.de, {"home_sub": "Alles zum Spielen an einem Ort: Module, Server und Freunde.", "version": "Version", "profile": "Profil", "prof_cur": "Aktuelles Setup", "st_play": "Spielzeit", "st_last": "Letzte Sitzung", "st_mods": "Aktive Module", "quick": "Schnellzugriff", "all": "Alle", "noServers2": "Noch keine Server. Füge einen unter Server hinzu.", "offline_s": "Offline", "now": "jetzt", "g_night": "Gute Nacht", "g_morning": "Guten Morgen", "g_afternoon": "Guten Tag", "g_evening": "Guten Abend", "srv_sub": "Füge deine Lieblingsserver hinzu, prüfe den Ping und tritt mit einem Klick bei.", "srv_name": "Name (optional)", "srv_add": "Server hinzufügen", "srv_bad": "Ungültige Adresse. Nutze Host oder Host:Port.", "srv_added": "Server hinzugefügt", "srv_removed": "Server entfernt", "mod_search": "Module suchen...", "mod_on": "Aktiv", "mod_none": "Nichts gefunden.", "mod_na": "Für diese Version nicht verfügbar", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Werkzeug", "pre_pvp": "PvP", "pre_all": "Alles", "pre_min": "Minimal", "prof_save": "Profil speichern", "prof_name": "Profilname", "prof_saved": "Profil gespeichert", "prof_deleted": "Profil gelöscht", "prof_applied": "Profil angewendet", "prof_del": "Löschen", "pal_ph": "Seiten, Module, Server, Aktionen suchen...", "pal_pages": "Seiten", "pal_act": "Aktionen", "open_store": "Shop öffnen"});
+const PAGES = ['home', 'modules', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
+const PKEY = { modules: 'mods', home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
 function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em>${p === 'friends' && FR.data && FR.data.incoming.length ? `<b class="bdg">${FR.data.incoming.length}</b>` : ''}</button>`).join('');
@@ -145,18 +156,50 @@ function plusCard() {
 const BGS = 4;
 const bgCss = (n) => (n > 0 ? `background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.6)),url('bg/bg${n}.jpg') center/cover no-repeat` : '');
 const BG_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M3.5 17l5-4.5 4 3.5 3-2.5 5 4"/></svg>';
+const fmtMs = (ms) => { const m = Math.floor((ms || 0) / 60000); return m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + 'm'; };
+const fmtAgo = (ts) => { if (!ts) return '-'; const d = Date.now() - ts; const m = Math.floor(d / 60000); if (m < 1) return t('now'); if (m < 60) return m + 'm'; const h = Math.floor(m / 60); if (h < 48) return h + 'h'; return Math.floor(h / 24) + 'd'; };
+const modOn = (m) => (MODSTATE[m.id] !== undefined ? !!MODSTATE[m.id] : !!m.def);
+const activeMods = () => MODS.filter((m) => modOk(m, S.version) && modOn(m)).length;
+const allServers = () => [...(C.servers || []).map((x) => ({ ...x, _b: 1 })), ...(S.customServers || []).map((x, i) => ({ ...x, _c: i }))];
+const srvKey = (x) => x.host + ':' + (x.port || 25565);
+function pingAll() {
+  allServers().forEach((x) => {
+    const k = srvKey(x); if (PING[k] !== undefined) return; PING[k] = null;
+    window.ya.ping(x.host, x.port || 25565).then((v) => { PING[k] = v; paintPing(); }).catch(() => { PING[k] = -1; paintPing(); });
+  });
+}
+function msBadge(x) { const v = PING[srvKey(x)]; return v == null ? `<span class="ms wait">...</span>` : v < 0 ? `<span class="ms bad">${esc(t('offline_s'))}</span>` : `<span class="ms">${v} ms</span>`; }
+function paintPing() { document.querySelectorAll('[data-pk]').forEach((el) => { const x = allServers().find((y) => srvKey(y) === el.dataset.pk); if (x) el.innerHTML = msBadge(x); }); }
 function viewHome() {
   const ads = C.ads || [];
   const nm = S.account ? S.account.name : '';
   const tag = isYa(S.version) ? 'YA CLIENT' : t('vanilla');
   const av = nm ? `<div class="mc3d" id="mc3d"></div>` : `<img class="logo" src="../assets/logo.png" alt="">`;
-  return `<div class="lp"><div>
-    <div class="card hero3" id="hero" style="${bgCss(S.bg || 0)}"><div class="who"><b>${esc(nm || t('noAcc'))}</b>${av}</div>
-      <div class="playwrap"><button class="launch2" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button><button class="launch2 bgbtn" id="bgBtn" aria-label="Background" title="Background">${BG_ICON}</button>
-</div>
-      <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div>
-    ${newsHtml(C.news)}</div>
-    <div class="side">${plusCard()}${adHtml(ads[0])}${adHtml(ads[1])}</div></div>`;
+  const profs = S.profiles || [];
+  const vers = [...new Set([S.version, ...(VERS.versions || []).filter((v) => v.type === 'release').slice(0, 14).map((v) => v.id)])].filter(Boolean);
+  const srv = allServers().slice(0, 4);
+  const hr = new Date().getHours();
+  const greet = hr < 6 ? t('g_night') : hr < 13 ? t('g_morning') : hr < 19 ? t('g_afternoon') : t('g_evening');
+  const online = FR.data ? FR.data.friends.filter((f) => f.online) : [];
+  return `<div class="hm"><div class="hxc">
+    <div class="hx2" id="hero"><div class="bgi" id="bgi" style="${S.bg > 0 ? `background-image:url('bg/bg${S.bg}.jpg')` : ''}"></div>
+      <div class="hl"><small>${esc(tag)}</small><h1>${esc(greet)}${nm ? ', ' + esc(nm) : ''}</h1><p>${esc(t('home_sub'))}</p></div>
+      <div class="pl">${av}</div>
+      <div class="ctl"><div class="row2">
+        <button class="playbig" id="play" ${busy ? 'disabled' : ''}><b>${esc(busy ? t('launching') : t('launch'))}</b><span>${esc(tag)} ${esc(S.version)}</span></button>
+        <div class="chipsel"><label>${esc(t('version'))}</label><select id="verSel">${vers.map((v) => `<option ${v === S.version ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></div>
+        <div class="chipsel"><label>${esc(t('profile'))}</label><select id="profSel"><option value="">${esc(t('prof_cur'))}</option>${profs.map((p, i) => `<option value="${i}" ${String(i) === String(profSel) ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
+        <button class="sqb" id="bgBtn" aria-label="Background" title="Background">${BG_ICON}</button></div>
+        <div class="bar" id="bar" style="display:${status.show ? 'block' : 'none'}"><i id="barI" style="width:${status.pct}%"></i></div><div class="stat" id="stat">${esc(status.text)}</div></div></div>
+    <div class="stts">
+      <div class="card stt"><span class="ico">${ic('clock')}</span><div><b>${esc(fmtMs(S.playMs))}</b><small>${esc(t('st_play'))}</small></div></div>
+      <div class="card stt"><span class="ico">${ic('play')}</span><div><b>${esc(fmtAgo(S.lastPlayed))}</b><small>${esc(t('st_last'))}</small></div></div>
+      <div class="card stt lnk" data-p="modules"><span class="ico">${ic('mods')}</span><div><b>${activeMods()}</b><small>${esc(t('st_mods'))}</small></div></div></div>
+    ${C.news && C.news.length ? newsHtml(C.news).replace('class="news"', 'class="nrow"') : ''}</div>
+    <div class="side">
+      <div class="card qs"><h3>${esc(t('quick'))}<a data-p="servers">${esc(t('all'))}</a></h3>${srv.length ? srv.map((x) => `<div class="qrow" data-qs="${esc(srvKey(x))}"><div class="ic2" ${safeImg(x.image) ? `style="background-image:url('${esc(safeImg(x.image))}')"` : ''}>${safeImg(x.image) ? '' : esc((x.name || '?')[0].toUpperCase())}</div><div><b>${esc(x.name)}</b><small>${esc(x.host)}</small></div><span data-pk="${esc(srvKey(x))}">${msBadge(x)}</span></div>`).join('') : `<div class="qe">${esc(t('noServers2'))}</div>`}</div>
+      ${online.length ? `<div class="card qs"><h3>${esc(t('fr_title'))}<a data-p="friends">${esc(t('all'))}</a></h3>${online.slice(0, 5).map((f) => `<div class="qrow"><div class="ic2" style="background-image:url('https://minotar.net/helm/${encodeURIComponent(f.name)}/48.png')"></div><div><b>${esc(f.name)}</b><small>${esc(t('fr_n_online'))}</small></div></div>`).join('')}</div>` : ''}
+      ${plusCard()}${adHtml(ads[0])}</div></div>`;
 }
 function viewPlus() {
   const perks = ['perk_theme', 'perk_cape', 'perk_more', 'perk_setup'].map((k) => `<span class="perk">${ic('check')}${esc(t(k))}</span>`).join('');
@@ -243,16 +286,46 @@ function viewVersions() {
   return `<div class="vp2"><div class="vgrid" id="vgrid">${vCards()}</div><div class="card vpanel" id="vpanel">${vPanel()}</div></div>`;
 }
 function viewServers() {
-  const list = C.servers || [];
-  let h = `<h1>${esc(t('servers'))}</h1><p class="sub"></p><div class="srv">`;
+  const list = allServers();
+  let h = `<h1>${esc(t('servers'))}</h1><p class="sub">${esc(t('srv_sub'))}</p>
+    <div class="card sadd"><input type="text" id="saName" placeholder="${esc(t('srv_name'))}" maxlength="32" autocomplete="off"><input type="text" id="saIp" placeholder="play.example.net:25565" maxlength="80" autocomplete="off" spellcheck="false"><button class="btn hi" id="saAdd">${esc(t('srv_add'))}</button></div><div class="sl">`;
   if (!list.length) h += `<div class="card sv ph">${esc(t('noServers'))}</div>`;
-  list.forEach((s, i) => {
-    const im = safeImg(s.image);
-    h += `<div class="card sv"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}>${im ? '' : esc((s.name || '?')[0].toUpperCase())}</div>
-      <div class="tx"><b>${esc(s.name)}</b><small>${esc(s.description || (s.host + (s.port && s.port != 25565 ? ':' + s.port : '')))}</small>
-      <button class="btn sm" data-srv="${i}" ${busy ? 'disabled' : ''}>${esc(t('play'))}</button></div></div>`;
+  list.forEach((x) => {
+    const im = safeImg(x.image);
+    h += `<div class="card srow"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}>${im ? '' : esc((x.name || '?')[0].toUpperCase())}</div>
+      <div class="tx"><b>${esc(x.name)}</b><small>${esc(x.description || srvKey(x))}</small></div>
+      <span data-pk="${esc(srvKey(x))}">${msBadge(x)}</span>
+      <button class="btn sm hi" data-sp="${esc(srvKey(x))}" ${busy ? 'disabled' : ''}>${esc(t('play'))}</button>
+      ${x._c != null ? `<button class="btn sm ghostb" data-sdel="${x._c}" aria-label="Remove">${ic('trash').replace('<svg', '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"')}</button>` : ''}</div>`;
   });
   return h + '</div>';
+}
+const MCATS = ['all', 'pvp', 'info', 'utility', 'on'];
+function modCards() {
+  const q = mq.trim().toLowerCase();
+  const list = MODS.filter((m) => (mcat === 'all' || (mcat === 'on' ? modOn(m) : m.category === mcat)) && (!q || (m.name + ' ' + m.desc + ' ' + m.id).toLowerCase().includes(q)));
+  const ok = (m) => modOk(m, S.version);
+  list.sort((a, b) => (ok(b) - ok(a)) || a.name.localeCompare(b.name));
+  return list.length ? list.map((m) => {
+    const on = modOn(m), can = ok(m);
+    const svg = window.MODICON && window.MODICON[m.id] ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${window.MODICON[m.id]}</svg>` : ic('mods');
+    return `<div class="card mm ${on && can ? 'on' : ''} ${can ? '' : 'off'}" ${can ? `data-mod="${esc(m.id)}"` : ''} title="${can ? '' : esc(t('mod_na'))}"><div class="mi">${svg}</div>
+      <div class="mt"><b>${esc(m.name)}</b><small>${esc(m.desc || '')}</small><span class="cat">${esc(t('cat_' + m.category))}</span></div><div class="sw ${on && can ? 'on' : ''}"></div></div>`;
+  }).join('') : `<div class="qe">${esc(t('mod_none'))}</div>`;
+}
+function profChips() {
+  const own = S.profiles || [];
+  return Object.keys(PRESETS).map((k) => `<button class="prof" data-pre="${k}">${esc(t('pre_' + k))}</button>`).join('') +
+    own.map((p, i) => `<button class="prof ${String(i) === String(profSel) ? 'on' : ''}" data-prof="${i}">${esc(p.name)}<i>${p.mods.length}</i><span class="x" data-pdel="${i}" title="${esc(t('prof_del'))}">&times;</span></button>`).join('') +
+    `<button class="prof add" id="profNew">+ ${esc(t('prof_save'))}</button>`;
+}
+function viewModules() {
+  const ok = MODS.filter((m) => modOk(m, S.version)).length;
+  return `<h1>${esc(t('mods'))}</h1><p class="sub">${esc(t('modsHint'))}</p>
+    <div class="mhead"><div class="grow"><input type="text" id="mqIn" placeholder="${esc(t('mod_search'))}" value="${esc(mq)}" autocomplete="off"></div>
+      ${MCATS.map((c) => `<button class="tab ${c === mcat ? 'on' : ''}" data-mc="${c}">${esc(t(c === 'all' ? 'all' : c === 'on' ? 'mod_on' : 'cat_' + c))}</button>`).join('')}
+      <span class="mcount" id="mcount">${activeMods()} / ${ok}</span></div>
+    <div class="profs" id="profs">${profChips()}</div><div class="mgrid" id="mgrid">${modCards()}</div>`;
 }
 let FR = { data: null, err: '', msg: '', ok: true };
 function frRows(list, kind) {
@@ -377,9 +450,10 @@ function viewConsole() {
 }
 function render() {
   const v = $('#view');
-  v.innerHTML = { home: viewHome, plus: viewPlus, versions: viewVersions, servers: viewServers, friends: viewFriends, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
+  v.innerHTML = { home: viewHome, modules: viewModules, plus: viewPlus, versions: viewVersions, servers: viewServers, friends: viewFriends, cosmetics: viewCosmetics, console: viewConsole, settings: viewSettings }[page]();
   if (page === 'cosmetics') fillCosmetics();
   if (page === 'friends') loadFriends();
+  if (page === 'home' || page === 'servers') pingAll();
   if (page === 'home' && S.account) mountPlayer($('#mc3d'), S.account.name, 5.8);
 }
 
@@ -547,6 +621,77 @@ async function launch(server) {
   }
 }
 
+// ---------- toasts ----------
+function toast(msg, kind) {
+  const w = $('#toasts'); if (!w) return;
+  const d = document.createElement('div'); d.className = 'toast ' + (kind || ''); d.innerHTML = '<i></i><span></span>'; d.lastChild.textContent = msg; w.appendChild(d);
+  setTimeout(() => { d.classList.add('out'); setTimeout(() => d.remove(), 320); }, 2600);
+}
+// ---------- mod profiles ----------
+async function applyProfile(pick) {
+  for (const m of MODS) {
+    if (!modOk(m, S.version)) continue;
+    const on = !!pick(m); if (modOn(m) === on) continue;
+    MODSTATE[m.id] = on; await window.ya.modsSet(m.id, on);
+  }
+}
+async function applyProf(p) {
+  await applyProfile((m) => p.mods.includes(m.id));
+  if (p.ram) { S.ram = p.ram; window.ya.saveSettings({ ram: p.ram }); }
+}
+function saveProfPrompt() {
+  const el = $('#profs'); if (!el || el.querySelector('#pnIn')) return;
+  const add = $('#profNew'); const inp = document.createElement('input');
+  inp.type = 'text'; inp.id = 'pnIn'; inp.placeholder = t('prof_name'); inp.maxLength = 24; inp.style.cssText = 'height:36px;width:170px';
+  add.replaceWith(inp); inp.focus();
+  const done = () => {
+    const name = inp.value.trim().slice(0, 24); if (!name) return render();
+    const list = (S.profiles || []).filter((p) => p.name !== name); if (list.length >= 12) list.shift();
+    list.push({ name, mods: MODS.filter((m) => modOk(m, S.version) && modOn(m)).map((m) => m.id), ram: S.ram }); S.profiles = list;
+    window.ya.saveSettings({ profiles: list }); profSel = String(list.length - 1); toast(t('prof_saved')); render();
+  };
+  inp.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') done(); if (ev.key === 'Escape') render(); });
+  inp.addEventListener('blur', () => setTimeout(() => { if (document.body.contains(inp)) done(); }, 120));
+}
+// ---------- command palette (Ctrl+K) ----------
+let palQ = '', palSel = 0, palItems = [];
+function palList() {
+  const q = palQ.trim().toLowerCase(); const out = [];
+  const add = (g, label, ico, hint, fn) => { if (!q || label.toLowerCase().includes(q)) out.push({ g, label, ico, hint, fn }); };
+  PAGES.forEach((p) => add(t('pal_pages'), t(PKEY[p]), p, '', () => go(p)));
+  add(t('pal_act'), t('launch'), 'play', S.version, () => launch());
+  add(t('pal_act'), t('folder'), 'folder', '', () => window.ya.openFolder());
+  add(t('pal_act'), t('open_store'), 'cosmetics', '', () => { const u = S._store || C.storeUrl; if (u) window.ya.openExternal(u); });
+  allServers().forEach((x) => add(t('servers'), x.name, 'servers', srvKey(x), () => launch({ host: x.host, port: x.port || 25565 })));
+  if (q) MODS.filter((m) => modOk(m, S.version)).forEach((m) => add(t('mods'), m.name, 'mods', modOn(m) ? 'ON' : 'OFF', async () => { const on = !modOn(m); MODSTATE[m.id] = on; await window.ya.modsSet(m.id, on); toast(m.name + ': ' + (on ? 'ON' : 'OFF')); if (page === 'modules') render(); }));
+  return out.slice(0, 40);
+}
+function drawPal() {
+  palItems = palList(); let last = '';
+  $('#palList').innerHTML = palItems.map((it, i) => { const g = it.g !== last ? `<div class="pgrp">${esc(it.g)}</div>` : ''; last = it.g; return `${g}<button class="pit ${i === palSel ? 'sel' : ''}" data-pit="${i}">${ICON[it.ico] ? ic(it.ico) : ic('mods')}<b>${esc(it.label)}</b><small>${esc(it.hint)}</small></button>`; }).join('') || `<div class="qe">${esc(t('mod_none'))}</div>`;
+}
+function openPal() {
+  const p = $('#pal'); palQ = ''; palSel = 0; p.hidden = false;
+  p.innerHTML = `<div class="palbox"><input type="text" id="palIn" placeholder="${esc(t('pal_ph'))}" autocomplete="off" spellcheck="false"><div class="pall" id="palList"></div></div>`;
+  drawPal(); $('#palIn').focus();
+}
+function closePal() { const p = $('#pal'); if (p) { p.hidden = true; p.innerHTML = ''; } }
+function runPal(i) { const it = palItems[i]; closePal(); if (it) it.fn(); }
+document.addEventListener('click', (e) => {
+  const pit = e.target.closest('[data-pit]');
+  if (pit) { e.stopPropagation(); return runPal(+pit.dataset.pit); }
+  if (e.target.id === 'pal') closePal();
+}, true);
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); return $('#pal').hidden ? openPal() : closePal(); }
+  if ($('#pal') && !$('#pal').hidden) {
+    if (e.key === 'Escape') return closePal();
+    if (e.key === 'ArrowDown') { e.preventDefault(); palSel = Math.min(palItems.length - 1, palSel + 1); drawPal(); const s2 = $('.pit.sel'); if (s2) s2.scrollIntoView({ block: 'nearest' }); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); palSel = Math.max(0, palSel - 1); drawPal(); const s2 = $('.pit.sel'); if (s2) s2.scrollIntoView({ block: 'nearest' }); }
+    if (e.key === 'Enter') { e.preventDefault(); runPal(palSel); }
+  }
+});
+
 let brandClicks = 0, brandT = 0;
 document.addEventListener('click', (e) => {
   if (!e.target.closest('#brand')) return;
@@ -557,7 +702,31 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('click', async (e) => {
-  const el = e.target.closest('button, .nc, .ad, .ci');
+  const q = e.target.closest('[data-qs],[data-pit],[data-mc],[data-pre],[data-prof],[data-pdel],[data-sp],[data-sdel],#saAdd,#profNew,#openPal');
+  if (!q) return;
+  if (q.id === 'openPal') return openPal();
+  if (q.dataset.qs) { const x = allServers().find((y) => srvKey(y) === q.dataset.qs); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
+  if (q.dataset.sp) { const x = allServers().find((y) => srvKey(y) === q.dataset.sp); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
+  if (q.dataset.sdel != null) { S.customServers = (S.customServers || []).filter((_, i) => i !== +q.dataset.sdel); window.ya.saveSettings({ customServers: S.customServers }); toast(t('srv_removed')); return render(); }
+  if (q.id === 'saAdd') {
+    const name = ($('#saName').value || '').trim(); let ip = ($('#saIp').value || '').trim();
+    const m = /^([A-Za-z0-9._-]{1,253})(?::(\d{1,5}))?$/.exec(ip);
+    if (!m) { toast(t('srv_bad'), 'bad'); return; }
+    const list = S.customServers || []; if (list.length >= 30) return;
+    list.push({ name: name || m[1], host: m[1], port: +m[2] || 25565 }); S.customServers = list;
+    window.ya.saveSettings({ customServers: list }); toast(t('srv_added')); return render();
+  }
+  if (q.dataset.mc) { mcat = q.dataset.mc; return render(); }
+  if (q.dataset.pre) { await applyProfile((m) => PRESETS[q.dataset.pre](m)); profSel = ''; toast(t('pre_' + q.dataset.pre)); return render(); }
+  if (q.dataset.pdel != null) { e.stopPropagation(); const i = +q.dataset.pdel; S.profiles = (S.profiles || []).filter((_, k) => k !== i); profSel = ''; window.ya.saveSettings({ profiles: S.profiles }); toast(t('prof_deleted')); return render(); }
+  if (q.dataset.prof != null) {
+    const p = (S.profiles || [])[+q.dataset.prof]; if (p) { await applyProf(p); profSel = q.dataset.prof; toast(t('prof_applied') + ': ' + p.name); render(); } return;
+  }
+  if (q.id === 'profNew') return saveProfPrompt();
+}, true);
+document.addEventListener('click', async (e) => {
+  if (e.target.closest('[data-pdel]')) return;
+  const el = e.target.closest('button, .nc, .ad, .ci, [data-p], [data-mod]');
   if (!el) return;
   if (el.dataset.w) return window.ya.win(el.dataset.w);
   if (el.dataset.ob) {
@@ -579,7 +748,7 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'buyPlus') { const u = C.storeUrl; if (u) window.ya.openExternal(u); return; }
   if (el.dataset.p) return go(el.dataset.p);
   if (el.id === 'btnAcc' || el.id === 'accBtn') return showLogin();
-  if (el.id === 'bgBtn') { S.bg = ((S.bg || 0) + 1) % (BGS + 1); window.ya.saveSettings({ bg: S.bg }); const h = $('#hero'); if (h) h.setAttribute('style', bgCss(S.bg)); return; }
+  if (el.id === 'bgBtn') { S.bg = ((S.bg || 0) + 1) % (BGS + 1); window.ya.saveSettings({ bg: S.bg }); const h = $('#bgi'); if (h) h.style.backgroundImage = S.bg > 0 ? `url('bg/bg${S.bg}.jpg')` : ''; return; }
   if (el.id === 'play') return launch();
   if (el.dataset.srv != null) { const s = (C.servers || [])[+el.dataset.srv]; if (s) launch({ host: s.host, port: s.port || 25565 }); return; }
   if (el.dataset.url) return window.ya.openExternal(el.dataset.url);
@@ -590,8 +759,10 @@ document.addEventListener('click', async (e) => {
   if (el.dataset.ld) { S.loader = el.dataset.ld; window.ya.saveSettings({ loader: S.loader }); $('#vld').innerHTML = loaderBtns(); return; }
   if (el.id === 'play2') return launch();
   if (el.dataset.mod) {
-    const id = el.dataset.mod; const on = MODSTATE[id] === false; MODSTATE[id] = on;
-    el.classList.toggle('on', on); return window.ya.modsSet(id, on);
+    const id = el.dataset.mod; const m = MODS.find((x) => x.id === id); const on = !modOn(m); MODSTATE[id] = on;
+    el.classList.toggle('on', on); const sw = el.querySelector('.sw'); if (sw) sw.classList.toggle('on', on); const mc = $('#mcount'); if (mc) mc.textContent = activeMods() + ' / ' + MODS.filter((x) => modOk(x, S.version)).length;
+    if (mcat === 'on') { $('#mgrid').innerHTML = modCards(); }
+    return window.ya.modsSet(id, on);
   }
   if (el.dataset.co) return openCos(el.dataset.co);
   if (el.dataset.ct) { cosTab = el.dataset.ct; return fillCosmetics(); }
@@ -602,6 +773,8 @@ document.addEventListener('click', async (e) => {
   if (el.id === 'sOut') { await window.ya.logout(); S.account = null; S.plus = false; window.ya.saveSettings({ plus: false }); renderNav(); render(); }
 });
 document.addEventListener('change', async (e) => {
+  if (e.target.id === 'verSel') { S.version = e.target.value; window.ya.saveSettings({ version: S.version }); renderNav(); render(); }
+  if (e.target.id === 'profSel') { profSel = e.target.value; if (profSel !== '') { const p = (S.profiles || [])[+profSel]; if (p) { await applyProf(p); toast(t('prof_applied') + ': ' + p.name); } } render(); }
   if (e.target.id === 'vsel') { S.version = e.target.value; window.ya.saveSettings({ version: S.version }); renderNav(); $('#vgrid').innerHTML = vCards(); $('#vpanel').innerHTML = vPanel(); }
   if (e.target.id === 'sW' || e.target.id === 'sH') { S.width = +$('#sW').value || 1280; S.height = +$('#sH').value || 720; window.ya.saveSettings({ width: S.width, height: S.height }); }
   if (e.target.id === 'sLang') { S.lang = e.target.value; await window.ya.setLang(S.lang); renderNav(); render(); }
@@ -610,18 +783,26 @@ document.addEventListener('change', async (e) => {
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'frName') $('#frAdd').click(); });
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'mqIn') { mq = e.target.value; $('#mgrid').innerHTML = modCards(); }
+  if (e.target.id === 'palIn') { palQ = e.target.value; palSel = 0; drawPal(); }
   if (e.target.id === 'sSearch') { sq = e.target.value; $('#sbody').innerHTML = settingsBody(); }
   if (e.target.id === 'obRam') { obRam = +e.target.value; $('#obRamV').textContent = obRam + ' MB · ' + t('ram_d'); }
   if (e.target.id === 'sRam') { S.ram = +e.target.value; $('#ramv').textContent = S.ram + ' MB'; }
 });
 
 window.ya.on('status', (d) => {
-  const txt = t(d.k) + (d.k === 'crashed' ? '' : '');
+  const txt = t(d.k);
   status = { text: d.done ? t(d.k) : txt, pct: d.pct || 0, show: !d.done };
-  if (d.done) busy = false;
+  if (d.k === 'ingame' && !S._pStart) { S._pStart = Date.now(); toast(t('ingame')); }
+  if (d.done) {
+    busy = false;
+    if (S._pStart) { S.playMs = (S.playMs || 0) + (Date.now() - S._pStart); S._pStart = 0; S.lastPlayed = Date.now(); window.ya.saveSettings({ playMs: S.playMs, lastPlayed: S.lastPlayed }); }
+    if (d.k === 'crashed') toast(t('crashed'), 'bad');
+  }
   if (page === 'home') {
     const bar = $('#bar'); if (bar) { bar.style.display = status.show ? 'block' : 'none'; $('#barI').style.width = status.pct + '%'; $('#stat').textContent = status.text; }
-    const p = $('#play'); if (p) { p.disabled = busy; p.textContent = busy ? t('launching') : t('launch'); }
+    const p = $('#play'); if (p) { p.disabled = busy; const b = p.querySelector('b'); if (b) b.textContent = busy ? t('launching') : t('launch'); }
+    if (d.done) render();
   }
 });
 window.ya.on('log', (m) => {
@@ -646,6 +827,7 @@ document.addEventListener('error', (e) => {   // inline onerror is blocked by th
   try { MODS = (await window.ya.mods()).mods || []; } catch (_) { MODS = []; }
   try { VERS = await window.ya.versions(); } catch (_) { }
   window.ya.art().then((a) => { ART = a || {}; if (page === 'versions') render(); }).catch(() => {});
+  $('#palLbl').textContent = t('pal_ph').split(',')[0].replace('...', '') + '...';
   renderNav(); render();
   if (!S.account) showLogin();   // not signed in: ask right away
   refreshPlus();
