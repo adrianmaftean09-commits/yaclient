@@ -4,10 +4,12 @@
   "version": "1.0.46",
   "description": "Launcher ufficiale di YA CLIENT (Minecraft 1.8.9)",
   "main": "main.js",
-  "author": "YA",
+  "author": "YA <noreply@yaprojects.it>",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis --publish never"
+    "dist": "electron-builder --win nsis --publish never",
+    "dist:mac": "electron-builder --mac dmg --x64 --arm64 --publish never",
+    "dist:linux": "electron-builder --linux AppImage --x64 --publish never"
   },
   "dependencies": {
     "minecraft-launcher-core": "^3.18.1",
@@ -49,6 +51,19 @@
         "owner": "adrianmaftean09-commits",
         "repo": "yaclient"
       }
-    ]
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png",
+      "category": "public.app-category.games",
+      "artifactName": "YA-CLIENT-mac-${arch}.${ext}",
+      "identity": null
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png",
+      "category": "Game",
+      "artifactName": "YA-CLIENT-linux.${ext}"
+    }
   }
 }
