@@ -1,0 +1,5 @@
+/* Flat grey theme shared with the home page (colors only). Loaded by store and plus. */
+:root{--bg:#25262d;--s1:#2e2f38;--s2:#383945;--line:#3c3d49;--line2:#4a4b58;--mute:#aeb0bd;--dim:#80828f}
+nav.top.sc{background:rgba(37,38,45,.92)}
+nav.top{background:rgba(37,38,45,.85)}
+.skinbox input,.pbf input{background:var(--s2)}
