@@ -152,7 +152,7 @@ public class MainMenuScreen extends GuiScreen {
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);
             if (mx >= bx && mx < bx + BW && my >= y && my < y + btnH(i)) {
-                if (i == 0) mc.displayGuiScreen(new GuiSelectWorld(this));
+                if (i == 0) mc.displayGuiScreen(new WorldListScreen(this));
                 else if (i == 1) mc.displayGuiScreen(new ServerListScreen(this));
                 else mc.displayGuiScreen(new MenuScreen());
                 return;
