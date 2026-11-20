@@ -1,5 +1,5 @@
 /* ===== YA CLIENT launcher v2: floating glass rail, soft glow, smooth motion. Loaded after style.css and overrides it. ===== */
-:root{--bg:#15151b;--rail:#191920;--surface:rgba(255,255,255,.065);--surface2:rgba(255,255,255,.105);--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.18);--r:18px;--ease:cubic-bezier(.22,.8,.24,1);--mute:#9a9aa6;--dim:#64646f}
+:root{--bg:#25262d;--rail:#2b2c34;--surface:#2e2f38;--surface2:#383945;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.18);--r:18px;--ease:cubic-bezier(.22,.8,.24,1);--mute:#9a9aa6;--dim:#64646f}
 body{background:var(--bg)}
 .glow{position:fixed;width:620px;height:620px;border-radius:50%;filter:blur(120px);opacity:.8;pointer-events:none;z-index:0;transition:background .6s}
 .glow.g1{left:-160px;top:-200px;background:var(--glow2)}.glow.g2{right:-200px;bottom:-260px;background:var(--glow2);opacity:.35}
@@ -159,3 +159,20 @@ select:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--
 .modal{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(0,0,0,.6)}
 @media(max-width:1020px){.hm{grid-template-columns:1fr}.hx2 .hl,.hx2 .ctl{right:34px}.hx2 .pl{display:none}}
 @media(max-width:760px){.rail{width:70px}.nav{width:58px}.stts{grid-template-columns:1fr}.searchpill kbd{display:none}}
+
+/* v3: flat uniform mid-light theme (OneClient style); images only on news, with a fade */
+.glow{display:none}
+body{background:var(--bg)}
+.rail,.card,.chipsel,.sqb,.accpill,.searchpill{backdrop-filter:none;-webkit-backdrop-filter:none}
+.rail{background:var(--rail)}
+.hx2{background:var(--surface);box-shadow:none}
+.hx2 .bgi,.hx2::after,#bgBtn{display:none}
+.hx2 .hl p{color:#b4b5c0}
+.chipsel{background:var(--surface2)}
+.hx2 .bar{background:rgba(255,255,255,.1)}
+.nc{background:var(--surface)}
+.nc .im{position:relative;height:140px}
+.nc .im::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(46,47,56,0) 25%,var(--surface) 100%)}
+.nc .tx{background:none;margin-top:-34px;position:relative;z-index:1}
+.palbox{background:#2e2f38}.toast{background:#383945}.dlg{background:#2e2f38}
+.mm .mi,.qrow .ic2,.srow .im{background:var(--surface2)}
