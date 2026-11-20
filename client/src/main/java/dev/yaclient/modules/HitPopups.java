@@ -39,7 +39,7 @@ public final class HitPopups {
         Pop p = new Pop();
         p.e = e;
         p.dx = bb.minX + rnd.nextDouble() * (bb.maxX - bb.minX) - e.posX;
-        p.dy = bb.minY + (0.15 + rnd.nextDouble() * 0.8) * (bb.maxY - bb.minY) - e.posY;
+        p.dy = bb.minY + (0.5 + rnd.nextDouble() * 0.45) * (bb.maxY - bb.minY) - e.posY;
         p.dz = bb.minZ + rnd.nextDouble() * (bb.maxZ - bb.minZ) - e.posZ;
         p.born = System.currentTimeMillis();
         synchronized (pops) {
