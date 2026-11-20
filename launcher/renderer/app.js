@@ -1,7 +1,7 @@
 'use strict';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const safeImg = (u) => (/^(https:\/\/|\.\.\/assets\/[\w\/.-]+$)/i.test(u || '') ? u : '');
+const safeImg = (u) => (/^(https:\/\/|\.\.\/assets\/[\w\/.-]+$|data:image\/png;base64,[A-Za-z0-9+\/=]+$)/i.test(u || '') ? u : '');
 
 const I18N = {
   en: { launchpad: 'Launchpad', mods: 'Modules', servers: 'Servers', cosmetics: 'Cosmetics', settings: 'Settings', launch: 'LAUNCH GAME', launching: 'LAUNCHING...',
@@ -93,6 +93,7 @@ const ic = (n) => `<svg viewBox="0 0 24 24">${ICON[n]}</svg>`;
 
 let S = { lang: 'en', account: null, ram: 2048, javaPath: 'java', minimizeOnLaunch: false };
 let C = {}; let MODSTATE = {}; let MODS = []; let VERS = { versions: [], latest: {}, online: true }; let vtab = 'release'; let vq = ''; let page = 'home'; let busy = false; let cosTab = 'all';
+let srvQ = ''; let srvTab = 'all'; let srvAdd = false; let srvDir = false; let srvSel = '';
 let mq = ''; let mcat = 'all'; let profSel = ''; let PING = {};
 let logBuf = []; let status = { text: '', pct: 0, show: false };
 const t = (k) => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
@@ -103,6 +104,14 @@ Object.assign(I18N.en, {"home_sub": "Everything you need to play: your modules, 
 Object.assign(I18N.it, {"home_sub": "Tutto quello che ti serve per giocare: moduli, server e amici in un posto solo.", "version": "Versione", "profile": "Profilo", "prof_cur": "Setup attuale", "st_play": "Tempo di gioco", "st_last": "Ultima sessione", "st_mods": "Moduli attivi", "quick": "Accesso rapido", "all": "Tutti", "noServers2": "Nessun server. Aggiungine uno in Server.", "offline_s": "Offline", "now": "ora", "g_night": "Buonanotte", "g_morning": "Buongiorno", "g_afternoon": "Buon pomeriggio", "g_evening": "Buonasera", "srv_sub": "Aggiungi i tuoi server preferiti, controlla il ping ed entra con un click.", "srv_name": "Nome (facoltativo)", "srv_add": "Aggiungi server", "srv_bad": "Indirizzo non valido. Usa host o host:porta.", "srv_added": "Server aggiunto", "srv_removed": "Server rimosso", "mod_search": "Cerca moduli...", "mod_on": "Attivi", "mod_none": "Nessun risultato.", "mod_na": "Non disponibile per questa versione", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Utilità", "pre_pvp": "PvP", "pre_all": "Tutto", "pre_min": "Minimo", "prof_save": "Salva profilo", "prof_name": "Nome profilo", "prof_saved": "Profilo salvato", "prof_deleted": "Profilo eliminato", "prof_applied": "Profilo applicato", "prof_del": "Elimina", "pal_ph": "Cerca pagine, moduli, server, azioni...", "pal_pages": "Pagine", "pal_act": "Azioni", "open_store": "Apri lo store"});
 Object.assign(I18N.es, {"home_sub": "Todo lo que necesitas para jugar: módulos, servidores y amigos en un solo lugar.", "version": "Versión", "profile": "Perfil", "prof_cur": "Configuración actual", "st_play": "Tiempo jugado", "st_last": "Última sesión", "st_mods": "Módulos activos", "quick": "Acceso rápido", "all": "Todos", "noServers2": "Aún no hay servidores. Añade uno en Servidores.", "offline_s": "Sin conexión", "now": "ahora", "g_night": "Buenas noches", "g_morning": "Buenos días", "g_afternoon": "Buenas tardes", "g_evening": "Buenas noches", "srv_sub": "Añade tus servidores favoritos, mira el ping y entra con un clic.", "srv_name": "Nombre (opcional)", "srv_add": "Añadir servidor", "srv_bad": "Dirección no válida. Usa host o host:puerto.", "srv_added": "Servidor añadido", "srv_removed": "Servidor eliminado", "mod_search": "Buscar módulos...", "mod_on": "Activos", "mod_none": "Sin resultados.", "mod_na": "No disponible para esta versión", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Utilidad", "pre_pvp": "PvP", "pre_all": "Todo", "pre_min": "Mínimo", "prof_save": "Guardar perfil", "prof_name": "Nombre del perfil", "prof_saved": "Perfil guardado", "prof_deleted": "Perfil eliminado", "prof_applied": "Perfil aplicado", "prof_del": "Eliminar", "pal_ph": "Buscar páginas, módulos, servidores, acciones...", "pal_pages": "Páginas", "pal_act": "Acciones", "open_store": "Abrir tienda"});
 Object.assign(I18N.de, {"home_sub": "Alles zum Spielen an einem Ort: Module, Server und Freunde.", "version": "Version", "profile": "Profil", "prof_cur": "Aktuelles Setup", "st_play": "Spielzeit", "st_last": "Letzte Sitzung", "st_mods": "Aktive Module", "quick": "Schnellzugriff", "all": "Alle", "noServers2": "Noch keine Server. Füge einen unter Server hinzu.", "offline_s": "Offline", "now": "jetzt", "g_night": "Gute Nacht", "g_morning": "Guten Morgen", "g_afternoon": "Guten Tag", "g_evening": "Guten Abend", "srv_sub": "Füge deine Lieblingsserver hinzu, prüfe den Ping und tritt mit einem Klick bei.", "srv_name": "Name (optional)", "srv_add": "Server hinzufügen", "srv_bad": "Ungültige Adresse. Nutze Host oder Host:Port.", "srv_added": "Server hinzugefügt", "srv_removed": "Server entfernt", "mod_search": "Module suchen...", "mod_on": "Aktiv", "mod_none": "Nichts gefunden.", "mod_na": "Für diese Version nicht verfügbar", "cat_pvp": "PvP", "cat_info": "Info", "cat_utility": "Werkzeug", "pre_pvp": "PvP", "pre_all": "Alles", "pre_min": "Minimal", "prof_save": "Profil speichern", "prof_name": "Profilname", "prof_saved": "Profil gespeichert", "prof_deleted": "Profil gelöscht", "prof_applied": "Profil angewendet", "prof_del": "Löschen", "pal_ph": "Seiten, Module, Server, Aktionen suchen...", "pal_pages": "Seiten", "pal_act": "Aktionen", "open_store": "Shop öffnen"});
+Object.assign(I18N.en, {"sv_search": "Search servers", "sv_direct": "Direct connect", "sv_connect": "Connect", "sv_recent": "Recent", "sv_none": "No saved servers", "sv_none_r": "No recent servers", "sv_none_d": "Add a server, or use direct connect.", "sv_choose": "Choose a server", "sv_saved": "saved"});
+Object.assign(I18N.it, {"sv_search": "Cerca server", "sv_direct": "Connessione diretta", "sv_connect": "Connetti", "sv_recent": "Recenti", "sv_none": "Nessun server salvato", "sv_none_r": "Nessun server recente", "sv_none_d": "Aggiungi un server o usa la connessione diretta.", "sv_choose": "Scegli un server", "sv_saved": "salvati"});
+Object.assign(I18N.es, {"sv_search": "Buscar servidores", "sv_direct": "Conexión directa", "sv_connect": "Conectar", "sv_recent": "Recientes", "sv_none": "Sin servidores guardados", "sv_none_r": "Sin servidores recientes", "sv_none_d": "Añade un servidor o usa la conexión directa.", "sv_choose": "Elige un servidor", "sv_saved": "guardados"});
+Object.assign(I18N.de, {"sv_search": "Server suchen", "sv_direct": "Direktverbindung", "sv_connect": "Verbinden", "sv_recent": "Zuletzt", "sv_none": "Keine gespeicherten Server", "sv_none_r": "Keine letzten Server", "sv_none_d": "Füge einen Server hinzu oder nutze die Direktverbindung.", "sv_choose": "Server wählen", "sv_saved": "gespeichert"});
+Object.assign(I18N.en, {"as_name": "Server name", "as_addr": "Server address", "as_save": "Save", "as_hint": "Type an address to see a live preview."});
+Object.assign(I18N.it, {"as_name": "Nome del server", "as_addr": "Indirizzo del server", "as_save": "Salva", "as_hint": "Scrivi un indirizzo per vedere l'anteprima."});
+Object.assign(I18N.es, {"as_name": "Nombre del servidor", "as_addr": "Dirección del servidor", "as_save": "Guardar", "as_hint": "Escribe una dirección para ver la vista previa."});
+Object.assign(I18N.de, {"as_name": "Servername", "as_addr": "Serveradresse", "as_save": "Speichern", "as_hint": "Gib eine Adresse ein, um die Vorschau zu sehen."});
 const PAGES = ['home', 'modules', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
 const PKEY = { modules: 'mods', home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
@@ -162,14 +171,15 @@ const modOn = (m) => (MODSTATE[m.id] !== undefined ? !!MODSTATE[m.id] : !!m.def)
 const activeMods = () => MODS.filter((m) => modOk(m, S.version) && modOn(m)).length;
 const allServers = () => [...(C.servers || []).map((x) => ({ ...x, _b: 1 })), ...(S.customServers || []).map((x, i) => ({ ...x, _c: i }))];
 const srvKey = (x) => x.host + ':' + (x.port || 25565);
+const findSrv = (k) => allServers().concat(S.recentServers || []).find((y) => srvKey(y) === k);
 function pingAll() {
-  allServers().forEach((x) => {
+  allServers().concat(S.recentServers || []).forEach((x) => {
     const k = srvKey(x); if (PING[k] !== undefined) return; PING[k] = null;
     window.ya.ping(x.host, x.port || 25565).then((v) => { PING[k] = v; paintPing(); }).catch(() => { PING[k] = -1; paintPing(); });
   });
 }
 function msBadge(x) { const v = PING[srvKey(x)]; return v == null ? `<span class="ms wait">...</span>` : v < 0 ? `<span class="ms bad">${esc(t('offline_s'))}</span>` : `<span class="ms">${v} ms</span>`; }
-function paintPing() { document.querySelectorAll('[data-pk]').forEach((el) => { const x = allServers().find((y) => srvKey(y) === el.dataset.pk); if (x) el.innerHTML = msBadge(x); }); }
+function paintPing() { document.querySelectorAll('[data-pk]').forEach((el) => { const x = findSrv(el.dataset.pk); if (x) el.innerHTML = msBadge(x); }); }
 function viewHome() {
   const ads = C.ads || [];
   const nm = S.account ? S.account.name : '';
@@ -232,7 +242,7 @@ const groupOf = (id) => { const m = /^(\d+)\.(\d+)/.exec(id); if (!m) return '';
 function vLines() {
   const map = new Map();
   VERS.versions.filter((v) => v.type === 'release').forEach((v) => { const l = groupOf(v.id); if (SHOWN.indexOf(l) < 0) return; if (!map.has(l)) map.set(l, []); map.get(l).push(v); });
-  return SHOWN.filter((k) => map.has(k)).map((k) => ({ key: k, title: k === '26' ? 'Minecraft 26.x' : 'Minecraft ' + k, vs: map.get(k) }));
+  return SHOWN.filter((k) => map.has(k) && map.get(k).some((v) => isYa(v.id))).map((k) => ({ key: k, title: k === '26' ? 'Minecraft 26.x' : 'Minecraft ' + k, vs: map.get(k) }));
 }
 const HUES = [212, 150, 28, 280, 350, 190, 60, 320];
 function artStyle(l, i) {
@@ -271,7 +281,7 @@ function vPanel() {
 function vCards() {
   return vLines().map((l, i) => {
     const on = curLine().key === l.key;
-    return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" ><u style="${artStyle(l, i)}"></u><i></i><b>${esc(l.title)}</b>${l.vs.some((v) => isYa(v.id)) ? `<em>${esc(t('ya'))}</em>` : ''}</button>`;
+    return `<button class="vcard ${on ? 'on' : ''}" data-vl="${esc(l.key)}" ><u style="${artStyle(l, i)}"></u><i></i><b>${esc(l.title)}</b></button>`;
   }).join('');
 }
 function modsGrid() {
@@ -284,20 +294,71 @@ function viewVersions() {
   if (ls0.length && !ls0.some((l) => l.vs.some((v) => v.id === S.version))) { S.version = ls0[0].vs[0].id; window.ya.saveSettings({ version: S.version }); }
   return `<div class="vp2"><div class="vgrid" id="vgrid">${vCards()}</div><div class="card vpanel" id="vpanel">${vPanel()}</div></div>`;
 }
-function viewServers() {
-  const list = allServers();
-  let h = `<h1>${esc(t('servers'))}</h1><p class="sub">${esc(t('srv_sub'))}</p>
-    <div class="card sadd"><input type="text" id="saName" placeholder="${esc(t('srv_name'))}" maxlength="32" autocomplete="off"><input type="text" id="saIp" placeholder="play.example.net:25565" maxlength="80" autocomplete="off" spellcheck="false"><button class="btn hi" id="saAdd">${esc(t('srv_add'))}</button></div><div class="sl">`;
-  if (!list.length) h += `<div class="card sv ph">${esc(t('noServers'))}</div>`;
-  list.forEach((x) => {
+function svRows() {
+  const q = srvQ.trim().toLowerCase();
+  const base = srvTab === 'recent' ? (S.recentServers || []) : allServers();
+  const list = base.filter((x) => !q || (x.name + ' ' + x.host).toLowerCase().includes(q));
+  if (!list.length) return `<div class="svempty"><b>${esc(t(srvTab === 'recent' ? 'sv_none_r' : 'sv_none'))}</b><small>${esc(t('sv_none_d'))}</small>${srvTab === 'recent' ? '' : `<button class="btn hi" id="svAddT2">+ ${esc(t('srv_add'))}</button>`}</div>`;
+  return list.map((x) => {
     const im = safeImg(x.image);
-    h += `<div class="card srow"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}>${im ? '' : esc((x.name || '?')[0].toUpperCase())}</div>
-      <div class="tx"><b>${esc(x.name)}</b><small>${esc(x.description || srvKey(x))}</small></div>
-      <span data-pk="${esc(srvKey(x))}">${msBadge(x)}</span>
+    return `<div class="srow ${srvKey(x) === srvSel ? 'sel' : ''}" data-ss="${esc(srvKey(x))}"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}>${im ? '' : esc((x.name || '?')[0].toUpperCase())}</div>
+      <div class="tx"><b>${esc(x.name)}</b><small>${esc(x.description || srvKey(x))}</small></div><span data-pk="${esc(srvKey(x))}">${msBadge(x)}</span>
       <button class="btn sm hi" data-sp="${esc(srvKey(x))}" ${busy ? 'disabled' : ''}>${esc(t('play'))}</button>
       ${x._c != null ? `<button class="btn sm ghostb" data-sdel="${x._c}" aria-label="Remove">${ic('trash').replace('<svg', '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"')}</button>` : ''}</div>`;
-  });
-  return h + '</div>';
+  }).join('');
+}
+function svSide() {
+  const x = srvSel ? findSrv(srvSel) : null; const im = x && safeImg(x.image);
+  return `<div class="svsel"><div class="im" ${im ? `style="background-image:url('${esc(im)}')"` : ''}>${x ? (im ? '' : esc((x.name || '?')[0].toUpperCase())) : ic('servers')}</div>
+    <div><b>${esc(x ? x.name : t('sv_none'))}</b><small>${esc(x ? srvKey(x) : t('sv_none_d'))}</small>${x ? `<span data-pk="${esc(srvKey(x))}">${msBadge(x)}</span>` : ''}</div></div>
+    <button class="btn hi big" id="svPlay" ${x && !busy ? '' : 'disabled'}>${esc(x ? t('play') + ' ' + x.name : t('sv_choose'))}</button>
+    <div class="svcount">${(S.customServers || []).length + (C.servers || []).length} ${esc(t('sv_saved'))}</div>`;
+}
+
+// ---------- add-server dialog with live preview ----------
+function openAddServer() {
+  const m = $('#modal'); m.hidden = false;
+  m.innerHTML = `<div class="dlg addm"><div class="amh"><h3>${esc(t('srv_add'))}</h3><button class="wb" id="asX" aria-label="Close">&#10005;</button></div>
+    <div class="amg"><div class="amf"><label>${esc(t('as_name'))}</label><input type="text" id="asName" placeholder="Minecraft Server" maxlength="32" autocomplete="off">
+      <label>${esc(t('as_addr'))}</label><input type="text" id="asIp" placeholder="play.example.net" maxlength="80" autocomplete="off" spellcheck="false"><div class="err" id="asErr"></div></div>
+      <div class="amp" id="asPrev"></div></div>
+    <div class="amb"><button class="btn" id="asCancel">${esc(t('cancel'))}</button><button class="btn hi" id="asSave">${esc(t('as_save'))}</button></div></div>`;
+  let st = null, tm = 0, seq = 0;
+  const parse = () => /^([A-Za-z0-9._-]{1,253})(?::(\d{1,5}))?$/.exec(($('#asIp').value || '').trim());
+  const draw = () => {
+    const nm = ($('#asName').value || '').trim(); const p = parse();
+    const badge = st ? (st.online ? 'ONLINE' : 'OFFLINE') : '';
+    const lines = st && st.online ? (st.motd || '').split('\n').map((l) => `<div>${esc(l.trim())}</div>`).join('') : '';
+    $('#asPrev').innerHTML = `<div class="amc"><div class="amb2">${badge ? `<span class="bdg2 ${st.online ? 'on' : ''}">${badge}</span>` : ''}</div>
+      <div class="amic" ${st && st.favicon ? `style="background-image:url('${st.favicon}')"` : ''}>${st && st.favicon ? '' : ic('servers')}</div>
+      <b>${esc(nm || (p ? p[1] : 'Minecraft Server'))}</b>
+      <small>${st === 'wait' ? '...' : st && st.online ? `${st.players} online · ${st.ping} ms · ${esc(st.version)}` : st ? esc(t('offline_s')) : esc(t('as_hint'))}</small><div class="amm">${lines}</div></div>`;
+  };
+  const query = () => {
+    const p = parse(); clearTimeout(tm); st = null; draw(); if (!p) return;
+    st = 'wait'; draw(); const my = ++seq;
+    tm = setTimeout(async () => { const r = await window.ya.serverStatus(p[1], +p[2] || 25565); if (my !== seq) return; st = r; draw(); }, 450);
+  };
+  $('#asIp').oninput = query; $('#asName').oninput = draw; draw(); $('#asIp').focus();
+  const close = () => { m.hidden = true; m.innerHTML = ''; };
+  $('#asX').onclick = close; $('#asCancel').onclick = close;
+  $('#asSave').onclick = () => {
+    const p = parse(); if (!p) { $('#asErr').textContent = t('srv_bad'); return; }
+    const list = S.customServers || []; if (list.length >= 30) return;
+    const sv = { name: ($('#asName').value || '').trim() || p[1], host: p[1], port: +p[2] || 25565 };
+    if (st && st.online && st.favicon) sv.image = st.favicon;
+    list.push(sv); S.customServers = list; window.ya.saveSettings({ customServers: list });
+    close(); toast(t('srv_added')); if (page === 'servers') render();
+  };
+}
+function viewServers() {
+  const form = srvDir ? `<div class="card sadd"><input type="text" id="dcIp" placeholder="play.example.net:25565" maxlength="80" autocomplete="off" spellcheck="false"><button class="btn hi" id="svGo">${esc(t('sv_connect'))}</button></div>` : '';
+  return `<div class="sv2"><div class="svmain">
+    <div class="card svbar"><h1>${esc(t('servers'))}</h1><div class="svsearch">${ic('search').replace('<svg', '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"')}<input type="text" id="srvQ" placeholder="${esc(t('sv_search'))}" value="${esc(srvQ)}" autocomplete="off"></div>
+      <button class="btn hi" id="svAddT">+ ${esc(t('srv_add'))}</button><button class="btn" id="svDirect">${esc(t('sv_direct'))}</button></div>
+    ${form}<div class="svtabs"><button class="${srvTab === 'all' ? 'on' : ''}" data-svt="all">${esc(t('all'))}</button><button class="${srvTab === 'recent' ? 'on' : ''}" data-svt="recent">${esc(t('sv_recent'))}</button></div>
+    <div class="card svlist" id="svlist">${svRows()}</div></div>
+    <aside class="svside card" id="svside">${svSide()}</aside></div>`;
 }
 const MCATS = ['all', 'pvp', 'info', 'utility', 'on'];
 function modCards() {
@@ -608,8 +669,15 @@ function showLogin() {
   $('#lOff').onclick = async () => done(await window.ya.loginOffline($('#lName').value));
 }
 
+function pushRecent(sv) {
+  const f = allServers().find((y) => srvKey(y) === srvKey(sv)) || sv;
+  const rec = { name: f.name || sv.host, host: sv.host, port: sv.port || 25565, image: f.image };
+  S.recentServers = [rec, ...(S.recentServers || []).filter((y) => srvKey(y) !== srvKey(rec))].slice(0, 8);
+  window.ya.saveSettings({ recentServers: S.recentServers });
+}
 async function launch(server) {
   if (busy) return;
+  if (server && S.account) pushRecent(server);
   if (!S.account) { showLogin(); return; }
   busy = true; status = { text: '', pct: 2, show: true }; go('home');
   const r = await window.ya.play(server ? { server } : {});
@@ -705,7 +773,7 @@ document.addEventListener('click', async (e) => {
   if (!q) return;
   if (q.id === 'openPal') return openPal();
   if (q.dataset.qs) { const x = allServers().find((y) => srvKey(y) === q.dataset.qs); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
-  if (q.dataset.sp) { const x = allServers().find((y) => srvKey(y) === q.dataset.sp); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
+  if (q.dataset.sp) { e.stopPropagation(); const x = findSrv(q.dataset.sp); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
   if (q.dataset.sdel != null) { S.customServers = (S.customServers || []).filter((_, i) => i !== +q.dataset.sdel); window.ya.saveSettings({ customServers: S.customServers }); toast(t('srv_removed')); return render(); }
   if (q.id === 'saAdd') {
     const name = ($('#saName').value || '').trim(); let ip = ($('#saIp').value || '').trim();
@@ -713,7 +781,7 @@ document.addEventListener('click', async (e) => {
     if (!m) { toast(t('srv_bad'), 'bad'); return; }
     const list = S.customServers || []; if (list.length >= 30) return;
     list.push({ name: name || m[1], host: m[1], port: +m[2] || 25565 }); S.customServers = list;
-    window.ya.saveSettings({ customServers: list }); toast(t('srv_added')); return render();
+    window.ya.saveSettings({ customServers: list }); toast(t('srv_added')); srvAdd = false; return render();
   }
   if (q.dataset.mc) { mcat = q.dataset.mc; return render(); }
   if (q.dataset.pre) { await applyProfile((m) => PRESETS[q.dataset.pre](m)); profSel = ''; toast(t('pre_' + q.dataset.pre)); return render(); }
@@ -722,6 +790,20 @@ document.addEventListener('click', async (e) => {
     const p = (S.profiles || [])[+q.dataset.prof]; if (p) { await applyProf(p); profSel = q.dataset.prof; toast(t('prof_applied') + ': ' + p.name); render(); } return;
   }
   if (q.id === 'profNew') return saveProfPrompt();
+}, true);
+document.addEventListener('click', (e) => {
+  const q = e.target.closest('[data-ss],[data-svt],#svAddT,#svAddT2,#svDirect,#svGo,#svPlay');
+  if (!q || e.target.closest('[data-sp],[data-sdel]')) return;
+  if (q.dataset.ss) { srvSel = q.dataset.ss; document.querySelectorAll('.srow').forEach((r) => r.classList.toggle('sel', r.dataset.ss === srvSel)); $('#svside').innerHTML = svSide(); return; }
+  if (q.dataset.svt) { srvTab = q.dataset.svt; return render(); }
+  if (q.id === 'svAddT' || q.id === 'svAddT2') return openAddServer();
+  if (q.id === 'svDirect') { srvDir = !srvDir; srvAdd = false; return render(); }
+  if (q.id === 'svGo') {
+    const m = /^([A-Za-z0-9._-]{1,253})(?::(\d{1,5}))?$/.exec(($('#dcIp').value || '').trim());
+    if (!m) { toast(t('srv_bad'), 'bad'); return; }
+    srvDir = false; return launch({ host: m[1], port: +m[2] || 25565 });
+  }
+  if (q.id === 'svPlay') { const x = findSrv(srvSel); if (x) launch({ host: x.host, port: x.port || 25565 }); return; }
 }, true);
 document.addEventListener('click', async (e) => {
   if (e.target.closest('[data-pdel]')) return;
@@ -781,6 +863,7 @@ document.addEventListener('change', async (e) => {
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'frName') $('#frAdd').click(); });
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'srvQ') { srvQ = e.target.value; $('#svlist').innerHTML = svRows(); pingAll(); }
   if (e.target.id === 'mqIn') { mq = e.target.value; $('#mgrid').innerHTML = modCards(); }
   if (e.target.id === 'palIn') { palQ = e.target.value; palSel = 0; drawPal(); }
   if (e.target.id === 'sSearch') { sq = e.target.value; $('#sbody').innerHTML = settingsBody(); }

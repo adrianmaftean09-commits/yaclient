@@ -265,6 +265,33 @@ ipcMain.handle('settings', (_e, s) => { state = { ...state, ...s }; save(); retu
 ipcMain.handle('logout', () => { state.account = null; save(); return true; });
 ipcMain.handle('detect-java', () => findJava8());
 // server latency: time to open a TCP connection (what the launcher shows next to a server)
+ipcMain.handle('server-status', (_e, host, port) => new Promise((resolve) => {
+  const hs = String(host || '').slice(0, 253);
+  if (!/^[A-Za-z0-9._-]+$/.test(hs)) return resolve({ online: false });
+  const pt = Math.min(65535, +port || 25565);
+  const vi = (n) => { const b = []; do { let x = n & 127; n >>>= 7; if (n) x |= 128; b.push(x); } while (n); return Buffer.from(b); };
+  const pk = (id, body) => { const p = Buffer.concat([vi(id), body]); return Buffer.concat([vi(p.length), p]); };
+  const hb = Buffer.from(hs, 'utf8'); const pb = Buffer.alloc(2); pb.writeUInt16BE(pt);
+  const t0 = Date.now(); let buf = Buffer.alloc(0); let done = false;
+  const sock = require('net').connect({ host: hs, port: pt });
+  const end = (v) => { if (done) return; done = true; try { sock.destroy(); } catch (_) {} resolve(v); };
+  const rd = (b, o) => { let r = 0, s = 0, i = o; for (;;) { if (i >= b.length) return null; const x = b[i++]; r |= (x & 127) << s; if (!(x & 128)) break; s += 7; if (s > 35) return null; } return [r, i]; };
+  const flat = (d) => { if (d == null) return ''; if (typeof d === 'string') return d; return (d.text || '') + (d.extra || []).map(flat).join(''); };
+  sock.setTimeout(4500, () => end({ online: false }));
+  sock.on('error', () => end({ online: false }));
+  sock.on('connect', () => { sock.write(pk(0, Buffer.concat([vi(47), vi(hb.length), hb, pb, vi(1)]))); sock.write(pk(0, Buffer.alloc(0))); });
+  sock.on('data', (d) => {
+    buf = Buffer.concat([buf, d]); if (buf.length > 600000) return end({ online: false });
+    const l = rd(buf, 0); if (!l || buf.length < l[1] + l[0]) return;
+    const id = rd(buf, l[1]); const sl = id && rd(buf, id[1]); if (!sl) return end({ online: false });
+    try {
+      const j = JSON.parse(buf.slice(sl[1], sl[1] + sl[0]).toString('utf8'));
+      const motd = flat(j.description).replace(/§./g, '').slice(0, 200);
+      const fav = typeof j.favicon === 'string' && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(j.favicon) && j.favicon.length < 60000 ? j.favicon : '';
+      end({ online: true, ping: Date.now() - t0, players: j.players ? j.players.online : 0, max: j.players ? j.players.max : 0, version: j.version ? String(j.version.name).slice(0, 40) : '', motd, favicon: fav });
+    } catch (_) { end({ online: false }); }
+  });
+}));
 ipcMain.handle('ping', (_e, host, port) => new Promise((resolve) => {
   const h = String(host || '').slice(0, 253);
   if (!/^[A-Za-z0-9._-]+$/.test(h)) return resolve(-1);
