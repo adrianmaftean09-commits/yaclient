@@ -62,7 +62,8 @@ public final class HitTracker {
                 clickTarget = null;
             }
         }
-        boolean hurt = mc.thePlayer.hurtTime > 0 && mc.thePlayer.hurtTime >= NoHurtCamModule.realMax(mc.thePlayer) - 1;
+        int ht = NoHurtCamModule.hurt(mc.thePlayer);
+        boolean hurt = ht > 0 && ht >= NoHurtCamModule.realMax(mc.thePlayer) - 1;
         if (hurt && !wasHurt) { combo = 0; taken++; streak = 0; }
         if (target != null && target != lastKilled && (target.isDead || target.getHealth() <= 0f) && System.currentTimeMillis() - lastTargetTime < 4000) {
             lastKilled = target; kills++; streak++;

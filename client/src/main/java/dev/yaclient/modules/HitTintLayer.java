@@ -18,10 +18,11 @@ public class HitTintLayer implements LayerRenderer<AbstractClientPlayer> {
     public void doRenderLayer(AbstractClientPlayer p, float limbSwing, float limbSwingAmount, float partialTicks,
                               float age, float netHeadYaw, float headPitch, float scale) {
         HitColorModule m = HitColorModule.inst;
-        if (m == null || !m.enabled || p.hurtTime <= 0 || p.isInvisible()) return;
+        int ht = p == Minecraft.getMinecraft().thePlayer ? NoHurtCamModule.hurt(p) : p.hurtTime;
+        if (m == null || !m.enabled || ht <= 0 || p.isInvisible()) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (p == mc.thePlayer && !m.self.value) return;
-        float f = Math.max(0f, Math.min(1f, (p.hurtTime - partialTicks) / Math.max(1f, (float) p.maxHurtTime)));
+        float f = Math.max(0f, Math.min(1f, (ht - partialTicks) / Math.max(1f, (float) NoHurtCamModule.realMax(p))));
         float a = m.intensity.value / 100f * (0.35f + 0.65f * f);
         int rgb = Setting.Palette.color(m.color.index);
         float r = ((rgb >> 16) & 255) / 255f, g = ((rgb >> 8) & 255) / 255f, b = (rgb & 255) / 255f;

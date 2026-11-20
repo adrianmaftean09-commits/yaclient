@@ -179,6 +179,7 @@ public class YAClient implements ModInitializer {
             Minecraft m0 = Minecraft.getMinecraft();
             if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMainMenu.class) m0.displayGuiScreen(new MainMenuScreen());
             if (m0.currentScreen != null && m0.currentScreen.getClass() == GuiMultiplayer.class) m0.displayGuiScreen(new ServerListScreen(new MainMenuScreen()));
+            NoHurtCamModule.pre(m0);
             FreeLook.pre(m0);
             HotbarGuard.pre(m0);
         });
