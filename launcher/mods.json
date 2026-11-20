@@ -242,16 +242,6 @@
    "def": false
   },
   {
-   "id": "combo_coach",
-   "name": "Combo Coach",
-   "desc": "Your hit rhythm against the ideal 500 ms gap",
-   "category": "pvp",
-   "versions": [
-    "1.8.9"
-   ],
-   "def": false
-  },
-  {
    "id": "coords",
    "name": "Coordinates",
    "desc": "Your X, Y, Z position",
@@ -434,7 +424,7 @@
   {
    "id": "hit_color",
    "name": "Hit Color",
-   "desc": "Colored ring on your crosshair when you hit",
+   "desc": "Tints a player in your color when they get hit",
    "category": "pvp",
    "versions": [
     "1.8.9"
@@ -683,16 +673,6 @@
    "def": false
   },
   {
-   "id": "ping_graph",
-   "name": "Ping Graph",
-   "desc": "Ping over the last minute and server TPS",
-   "category": "info",
-   "versions": [
-    "1.8.9"
-   ],
-   "def": false
-  },
-  {
    "id": "players",
    "name": "Player Count",
    "desc": "Players currently online on the server",
@@ -875,7 +855,7 @@
   {
    "id": "team_viewer",
    "name": "Team Viewer",
-   "desc": "Health and distance of your teammates",
+   "desc": "Teammate health, distance and a green arrow above their head",
    "category": "info",
    "versions": [
     "1.8.9"

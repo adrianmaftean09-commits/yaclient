@@ -40,63 +40,61 @@ public class MainMenuScreen extends GuiScreen {
         float t = (now - opened) / 1000f;
         float fadeIn = Ui.ease((now - opened) / 500f);
 
-        // backdrop: the slowly rotating Minecraft panorama, lightly darkened (no black screen)
-        if (!MenuBackdrop.draw(width, height, (now - opened) / 1000f)) {
-            drawPanorama((now - opened) / 50f);
-            drawGradientRect(0, 0, width, height, 0x38000000, 0x70000000);
-        }
+        // backdrop: bright, soft gradient with slowly drifting color blobs
+        drawLightBackdrop(t);
 
         int gs = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
         Gfx.setScale(Math.max(1, gs));
         Gfx.fade = fadeIn;
 
-        int logo = Math.min(44, height / 6);
-        boolean wideScr = width >= 560;
-        int cardW = wideScr ? 176 : 160, plW = 130, gapC = 10;
-        int cardH = 12 + logo + 10 + 3 * BH + 2 * GAP + 10 + TH + 12;
-        int total = wideScr ? cardW + gapC + plW : cardW;
-        int leftX = wideScr ? 140 + (width - 140 - total) / 2 : (width - total) / 2;
-        int cardY = Math.max(12, (height - cardH) / 2);
-        int cx = leftX + cardW / 2;
-        int top = cardY + 12;
-        Gfx.rr(leftX, cardY, cardW, cardH, 10, 0xB0121216);
-        Gfx.rrOutline(leftX, cardY, cardW, cardH, 10, 1, 0x2EFFFFFF);
+        int logo = Math.min(38, height / 7), badge = logo + 16;
+        boolean wideScr = width >= 520;
+        int plW = 104, gapC = 34;
+        int contentH = badge + 12 + 3 * BH + 2 * GAP + 9 + TH;
+        int total = wideScr ? BW + gapC + plW : BW;
+        int leftX = wideScr ? Math.max(138, (width - total) / 2) : (width - total) / 2;
+        int top = Math.max(10, (height - contentH) / 2);
+        int cx = leftX + BW / 2;
         if (wideScr) {
-            int px = leftX + cardW + gapC;
-            Gfx.rr(px, cardY, plW, cardH, 10, 0xB0121216);
-            Gfx.rrOutline(px, cardY, plW, cardH, 10, 1, 0x2EFFFFFF);
+            int pcx = leftX + BW + gapC + plW / 2;
+            int feet = top + contentH - 20;
+            blob(pcx, feet + 2, 34f, 5f, 0x1A2238, 70);
+            MenuPlayer.draw(pcx, feet, Math.max(30, (contentH - 30) * 10 / 19), ((now - opened) % 9000L) / 9000f * 360f);
             String nm = Minecraft.getMinecraft().getSession().getUsername();
-            Gfx.textCentered(nm, px + plW / 2, cardY + cardH - 8 - Gfx.lineHeight(10, true), 10, true, Theme.TEXT);
-            MenuPlayer.draw(px + plW / 2, cardY + cardH - 30, Math.max(30, (cardH - 52) * 5 / 11), ((now - opened) % 9000L) / 9000f * 360f);
+            Gfx.textCentered(nm, pcx, feet + 9, 10, true, INK);
         }
-        float bob = (float) Math.sin(t * 1.4f) * 1.5f;
-        Logo.draw(cx - logo / 2f, top + bob, logo, logo, fadeIn);
+        // logo on a dark rounded badge (the logo has a white Y, it needs a dark base on a bright screen)
+        float bob = (float) Math.sin(t * 1.4f) * 1.2f;
+        Gfx.rr(cx - badge / 2, Math.round(top + bob), badge, badge, 12, 0xFF1A1C26);
+        Logo.draw(cx - logo / 2f, top + bob + 8, logo, logo, fadeIn);
 
         bx = cx - BW / 2;
-        by0 = top + logo + 12;
+        by0 = top + badge + 12;
         String[] labels = {Lang.t("menu.play"), Lang.t("menu.multiplayer"), Lang.t("menu.client_settings")};
         for (int i = 0; i < 3; i++) {
             int x = bx, y = btnY(i);
             boolean over = mx >= x && mx < x + BW && my >= y && my < y + BH;
             hover[i] = Ui.approach(hover[i], over ? 1f : 0f, dt, 16f);
             boolean primary = i == 2;
-            Gfx.rr(x, y, BW, BH, 7, primary ? Ui.mix(0xF0F4F4F5, 0xFFFFFFFF, hover[i]) : Ui.mix(0x90101014, 0xB0242429, hover[i]));
-            if (!primary) Gfx.rrOutline(x, y, BW, BH, 7, 1, Ui.mix(0x2EFFFFFF, 0x66FFFFFF, hover[i]));
-            int fg = primary ? 0xFF101014 : Theme.TEXT;
-            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(9, true)) / 2, 9, true, fg);
+            if (primary) Gfx.rr(x, y, BW, BH, 7, Ui.mix(0xFF1A1C26, 0xFF2D3042, hover[i]));
+            else {
+                Gfx.rr(x, y, BW, BH, 7, Ui.mix(0xE6FFFFFF, 0xFFFFFFFF, hover[i]));
+                Gfx.rrOutline(x, y, BW, BH, 7, 1, Ui.mix(0x24000000, 0x44000000, hover[i]));
+            }
+            Gfx.textCentered(labels[i], x + BW / 2, y + (BH - Gfx.lineHeight(9, true)) / 2, 9, true, primary ? 0xFFFFFFFF : INK);
         }
 
-        // icon dock: four clear tiles, big icon + label
+        // icon dock: four clear tiles, big icon
         int dockW = ICONS.length * TW + (ICONS.length - 1) * DG;
         dockX = cx - dockW / 2;
-        dockY = btnY(2) + BH + 8;
+        dockY = btnY(2) + BH + 9;
         for (int i = 0; i < ICONS.length; i++) {
             int x = dockX + i * (TW + DG);
             boolean over = mx >= x && mx < x + TW && my >= dockY && my < dockY + TH;
             dock[i] = Ui.approach(dock[i], over ? 1f : 0f, dt, 16f);
-            Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0x90101014, 0xC0303036, dock[i]));
-            Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, dock[i]));
-            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + (TH - 16) / 2, 16, Ui.mix(0xFFD8D8DC, Theme.TEXT, dock[i]));
+            Gfx.rr(x, dockY, TW, TH, 8, Ui.mix(0xD8FFFFFF, 0xFFFFFFFF, dock[i]));
+            Gfx.rrOutline(x, dockY, TW, TH, 8, 1, Ui.mix(0x22000000, 0x44000000, dock[i]));
+            Gfx.icon(ICONS[i], x + (TW - 16) / 2, dockY + (TH - 16) / 2, 16, Ui.mix(0xFF3A3F52, INK, dock[i]));
         }
 
         // news card (bottom left): banner + title, opens the changelog sheet
@@ -104,27 +102,50 @@ public class MainMenuScreen extends GuiScreen {
         ny = height - 20 - 8 - nh;
         boolean nOver = mx >= nx && mx < nx + nw && my >= ny && my < ny + nh;
         newsHover = Ui.approach(newsHover, nOver ? 1f : 0f, dt, 16f);
-        Gfx.rr(nx, ny, nw, nh, 8, Ui.mix(0xB0101014, 0xD0242429, newsHover));
+        Gfx.rr(nx, ny, nw, nh, 8, Ui.mix(0xE6FFFFFF, 0xFFFFFFFF, newsHover));
         int artH = Math.round((nw - 8) / NewsArt.ASPECT);
         NewsArt.draw(nx + 4, ny + 4, nw - 8, artH, fadeIn);
-        Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x38FFFFFF, 0x80FFFFFF, newsHover));
-        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, Theme.TEXT);
-        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, Theme.MUTED);
+        Gfx.rrOutline(nx, ny, nw, nh, 8, 1, Ui.mix(0x22000000, 0x44000000, newsHover));
+        Gfx.text(Lang.t("news.card"), nx + 8, ny + 4 + artH + 5, 9, true, INK);
+        Gfx.text(Gfx.trim("Update " + NewsScreen.VERSION + " · " + Lang.t("news.open"), 7, false, nw - 14), nx + 8, ny + 4 + artH + 18, 7, false, INK2);
 
         RecentServers.draw(mx, my, height);
-        for (int i = 0; i < ModPresets.NAMES.length; i++) {
-            int x = width - 10 - (ModPresets.NAMES.length - i) * 46 + 4, y = 8;
-            boolean over = mx >= x && mx < x + 42 && my >= y && my < y + 14;
-            Gfx.rr(x, y, 42, 14, 6, over ? 0xC0242429 : 0xA0101014);
-            Gfx.rrOutline(x, y, 42, 14, 6, 1, over ? 0x66FFFFFF : 0x2EFFFFFF);
-            Gfx.textCentered(ModPresets.NAMES[i], x + 21, y + (14 - Gfx.lineHeight(8, true)) / 2, 8, true, Theme.TEXT);
-        }
-        if (System.currentTimeMillis() < ModPresets.messageUntil) Gfx.text(ModPresets.message, width - 10 - Gfx.width(ModPresets.message, 8, false), 26, 8, false, Theme.MUTED);
-        Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, Theme.DIM);
+        Gfx.text("CLIENT 1.8.9", 8, height - 14, 10, false, INK2);
         String acc = Minecraft.getMinecraft().getSession().getUsername();
-        Gfx.text(acc, width - Gfx.width(acc, 10, false) - 8, height - 14, 10, false, Theme.MUTED);
+        Gfx.text(acc, width - Gfx.width(acc, 10, false) - 8, height - 14, 10, false, INK2);
         Gfx.fade = 1f;
         FriendToast.render();
+    }
+
+    static final int INK = 0xFF1A1C26, INK2 = 0xFF5B6272;
+
+    /** Soft radial blob (an ellipse of color fading to transparent), alpha 0..255 at the center. */
+    private static void blob(float cx, float cy, float rx, float ry, int rgb, int alpha) {
+        Tessellator t = Tessellator.getInstance();
+        WorldRenderer wr = t.getWorldRenderer();
+        int r = (rgb >> 16) & 255, g = (rgb >> 8) & 255, b = rgb & 255;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.disableAlpha();
+        wr.begin(6, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(cx, cy, 0).color(r, g, b, alpha).endVertex();
+        for (int i = 0; i <= 32; i++) {
+            double a = i * Math.PI * 2 / 32;
+            wr.pos(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, 0).color(r, g, b, 0).endVertex();
+        }
+        t.draw();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
+
+    private void drawLightBackdrop(float t) {
+        drawGradientRect(0, 0, width, height, 0xFFEEF3FC, 0xFFD5E0F4);
+        float w = width, h = height;
+        blob(w * 0.82f + (float) Math.sin(t * 0.21f) * 18f, h * 0.18f, w * 0.55f, h * 0.75f, 0x7FA2FF, 120);
+        blob(w * 0.12f + (float) Math.cos(t * 0.17f) * 16f, h * 0.88f, w * 0.5f, h * 0.7f, 0xC9A4FF, 95);
+        blob(w * 0.52f + (float) Math.sin(t * 0.13f) * 22f, h * 0.55f, w * 0.38f, h * 0.55f, 0xFFFFFF, 150);
+        blob(w * 0.95f, h * 0.95f, w * 0.3f, h * 0.45f, 0xFF9A9A, 55);
     }
 
     /** The vanilla title panorama (same technique as the original menu), rendered at the screen's aspect. */
@@ -189,10 +210,6 @@ public class MainMenuScreen extends GuiScreen {
         if (button != 0) return;
         Minecraft mc = Minecraft.getMinecraft();
         if (RecentServers.click(mx, my, height, this)) return;
-        for (int i = 0; i < ModPresets.NAMES.length; i++) {
-            int x = width - 10 - (ModPresets.NAMES.length - i) * 46 + 4;
-            if (mx >= x && mx < x + 42 && my >= 8 && my < 22) { ModPresets.apply(i); return; }
-        }
         if (mx >= nx && mx < nx + nw && my >= ny && my < ny + nh) { mc.displayGuiScreen(new NewsScreen(this)); return; }
         for (int i = 0; i < 3; i++) {
             int y = btnY(i);

@@ -67,10 +67,8 @@ public class YAClient implements ModInitializer {
         MODULES.add(new ClipModule());
         MODULES.add(new PerspectiveLockModule());
         MODULES.add(new ChatTweaksModule());
-        MODULES.add(new PingGraphModule());
         MODULES.add(new AutoReconnectModule());
         MODULES.add(new ReplayBufferModule());
-        MODULES.add(new ComboCoachModule());
         MODULES.add(new CalloutsModule());
         MODULES.add(new TeamViewerModule());
         MODULES.add(new FreeLookModule());
@@ -78,6 +76,7 @@ public class YAClient implements ModInitializer {
         MODULES.add(new SmoothShiftModule());
         MODULES.add(new BlockOutlineModule());
         BlockOutlineModule.register();
+        TeamViewerModule.register();
         CustomSky.register();
         dev.yaclient.modules.HitPopups.register();
         MODULES.add(new FullbrightModule());

@@ -53,6 +53,7 @@ public final class CosmeticsInstaller {
                     if (list.get(k) instanceof LayerCape) list.set(k, new CapeGuard((LayerRenderer) list.get(k)));
                 }
                 list.add(new CosmeticLayer(rp));
+                list.add(new dev.yaclient.modules.HitTintLayer(rp));
             }
             done = true;
         } catch (Throwable t) {

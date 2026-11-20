@@ -85,6 +85,13 @@ final class MenuPlayer {
         GlStateManager.disableCull();
         mc.getTextureManager().bindTexture(loc);
         float s = 0.0625F;
+        // the outer layers keep a constructor offset until the renderer copies the base parts onto them
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedHead, m.bipedHeadwear);
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedBody, m.bipedBodyWear);
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedRightArm, m.bipedRightArmwear);
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedLeftArm, m.bipedLeftArmwear);
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedRightLeg, m.bipedRightLegwear);
+        net.minecraft.client.model.ModelBase.copyModelAngles(m.bipedLeftLeg, m.bipedLeftLegwear);
         m.bipedHead.render(s);
         m.bipedHeadwear.render(s);
         m.bipedBody.render(s);
