@@ -125,7 +125,7 @@ var SETS={beta:{n:'Beta Tester Bundle',d:'Cape, wings, bandana and pet. Free for
 var CATS=[['cape','Cloaks'],['wings','Wings'],['bandana','Bandanas'],['pet','Pets'],['bundle','Bundles'],['partner','Partner']];
 var COL={sakura:'#ff86b6',shinobi:'#8c6cff',kitsune:'#ff9b3d',santa:'#ff4040',frost:'#6ec6ff',clown:'#ffd21f',luck:'#3ddc6a',x:'#c9cdd8',mono:'#e4e4e8',beta:'#e10600',qlux:'#9fd8ff'};function ph(id){return COL[P[id].set]?'/b/i/'+id+'.jpg':''}
 var PAGES=['sakura','shinobi','kitsune','santa','frost','clown','luck','mono','beta','qlux'],cat=(new URLSearchParams(location.search).get('c')==='bundle'?'bundle':'cape'),worn=[],thumbs={},has3d=window.YA3D&&YA3D.ok(),view=null;
-var K=function(){return window.YAplusOn?0.3:1},R=function(x){return Math.round(x*100)/100};
+var K=function(){return window.YAplusOn?0.5:1},R=function(x){return Math.round(x*100)/100};
 var priceOf=function(id){return P[id].set==='beta'?0:R(PR.item*K())};
 function total(list){var t=0;['mono','qlux','sakura','shinobi','kitsune','santa','frost','clown','luck'].forEach(function(st){var m=list.filter(function(i){return P[i].set===st}).length;t+=m===4?SETS[st].price:m*PR.item});t+=list.filter(function(i){return P[i].set==='x'}).length*PR.item;return R(t*K())}
 function snapOpts(id){var c=P[id].cat;return c==='wings'?{yaw:.35,dist:5.2,target:[0,1.15,0]}:c==='cape'?{yaw:.5,dist:3.7,target:[0,.95,0]}:c==='bandana'?{yaw:.55,dist:2.3,target:[0,1.78,0]}:{yaw:.5,dist:2.4,target:[-.4,1.55,0]}}
@@ -152,7 +152,7 @@ function toggle(id){var s=P[id].slot,i=worn.indexOf(id);if(i>=0){worn.splice(i,1
 function orderFor(ids){
  var t=total(ids),m=ids.length===4&&ids.every(function(i){return P[i].set!=='beta'&&P[i].set===P[ids[0]].set})?4:0,free=!t;
  var title=ids.length===4&&ids.every(function(i){return P[i].set===P[ids[0]].set})?SETS[P[ids[0]].set].n:(ids.length===1?P[ids[0]].n:'Custom cosmetics');
- return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -70% applied ('+window.YAplusName+')']:[]),total:t,ids:ids.join(',')}}
+ return {title:title,lines:ids.map(function(i){return P[i].n+' · '+(priceOf(i)?eur(priceOf(i)):'Free')}).concat(m===4?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -50% applied ('+window.YAplusName+')']:[]),total:t,ids:ids.join(',')}}
 document.addEventListener('yaplus',function(e){var b=document.getElementById('plusbar2');if(b){b.className='plusbar'+(e.detail&&e.detail.on?' on':'');b.querySelector('span').textContent=e.detail&&e.detail.on?'YA Plus active for '+e.detail.name+': -70% on everything, already applied below.':'Enter your Minecraft name under the 3D character to check your YA Plus discount.'}render()});
 document.addEventListener('click',function(e){
  var t=e.target.closest('[data-buy],[data-c],[data-rm],.pc,#getw,#clr');if(!t)return;

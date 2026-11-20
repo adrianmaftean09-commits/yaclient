@@ -118,10 +118,21 @@ async function getJson(url) {
 }
 async function loadPlayer(env, uuid) {
   const v = (await env.DB.get('p:' + uuid, { type: 'json', cacheTtl: 30 })) || { owned: [], equipped: {} };
+  v._tmp = [];
+  // Plus monthly bundle: owned only while Plus is active (virtual ownership, never saved)
+  if (plusActive(v) && v.plusBundle && v.plusBundle.until > Date.now() && BUNDLES[v.plusBundle.id]) {
+    for (const i of BUNDLES[v.plusBundle.id].items) if (!v.owned.includes(i)) { v.owned.push(i); v._tmp.push(i); }
+  }
   if (env.BETA_OPEN === '1') v.owned = Object.keys(ITEMS);   // open beta: everyone owns everything
   return v;
 }
-const savePlayer = (env, uuid, p) => env.DB.put('p:' + uuid, JSON.stringify(p));
+function savePlayer(env, uuid, p) {
+  const o = Object.assign({}, p);
+  if (p._tmp && p._tmp.length) o.owned = p.owned.filter((x) => !p._tmp.includes(x));
+  delete o._tmp;
+  return env.DB.put('p:' + uuid, JSON.stringify(o));
+}
+const pickRandom = (arr) => arr[crypto.getRandomValues(new Uint32Array(1))[0] % arr.length];
 async function applyGrant(env, uuid, f) {
       if (f.item === 'staff') {   // staff logo: only the admin panel can set it
         const p0 = await loadPlayer(env, uuid);
@@ -133,9 +144,25 @@ async function applyGrant(env, uuid, f) {
         const p0 = await loadPlayer(env, uuid);
         const days = Math.max(1, Math.min(3650, parseInt(f.days || '30', 10) || 30));
         if (f.revoke === '1') p0.plusUntil = 0;
-        else p0.plusUntil = Math.max(Date.now(), p0.plusUntil || 0) + days * 86400000;
+        else {
+          const wasActive = plusActive(p0);
+          p0.plusUntil = Math.max(Date.now(), p0.plusUntil || 0) + days * 86400000;
+          // perk 1: one random store cosmetic, kept forever (given once)
+          if (!p0.plusGift) {
+            const pool = Object.keys(ITEMS).filter((i) => ITEMS[i].price === 'Exclusive' && !p0.owned.includes(i));
+            if (pool.length) { p0.plusGift = pickRandom(pool); p0.owned.push(p0.plusGift); }
+          }
+          // perk 2: one random bundle for as long as Plus lasts (a new one each time Plus starts again, same one when extending)
+          if (!wasActive || !p0.plusBundle || !BUNDLES[p0.plusBundle.id]) {
+            const pool = Object.keys(BUNDLES).filter((b) => BUNDLES[b].price === 'Exclusive' && BUNDLES[b].items.some((i) => !p0.owned.includes(i)));
+            const prev = p0.plusBundle && p0.plusBundle.id;
+            const pool2 = pool.filter((b) => b !== prev);
+            const id = pickRandom(pool2.length ? pool2 : pool);
+            if (id) p0.plusBundle = { id, until: p0.plusUntil };
+          } else p0.plusBundle.until = p0.plusUntil;
+        }
         await savePlayer(env, uuid, p0);
-        return { status: 200, body: { ok: 1, uuid, plus_until: new Date(p0.plusUntil).toISOString() } };
+        return { status: 200, body: { ok: 1, uuid, plus_until: new Date(p0.plusUntil).toISOString(), gift: p0.plusGift || '', bundle: p0.plusBundle ? p0.plusBundle.id : '' } };
       }
       let items = f.item === '*' ? Object.keys(ITEMS) : String(f.item || '').split(',').filter(Boolean);
       items = items.flatMap((i) => (BUNDLES[i] ? BUNDLES[i].items : [i]));
@@ -174,7 +201,7 @@ function orderCents(items, plusOn) {
     t += m === 4 ? PRICE[st] : m * PRICE.item;
   }
   for (const i of left) if (EXTRA_IDS.includes(i)) t += PRICE.item;
-  return Math.round(t * (plusOn ? 0.3 : 1) * 100);
+  return Math.round(t * (plusOn ? 0.5 : 1) * 100);
 }
 async function stripeCheckout(env, request, url, f) {
   if (!env.STRIPE_SECRET) return send(501, { error: 'not_configured' });

@@ -16,7 +16,7 @@
 <div class="cartdr" id="cartdr"><div class="cd"><div class="ch"><b>Your cart</b><button id="cx" aria-label="Close">×</button></div><div id="cl"></div><div class="cf"><div class="ct"><span>Total</span><b id="ctot">-</b></div><button class="btn pri block" id="cbuy">Checkout</button><button class="btn block" id="cclr" style="margin-top:10px">Empty cart</button></div></div></div>
 <footer><div class="wrap"><div>© YA CLIENT · Not affiliated with Mojang or Microsoft.</div><div class="fl"><a href="/changelogs">Changelogs</a><a href="/store">Store</a><a href="/plus">YA Plus</a><a href="#" data-dc>Discord</a></div></div></footer><script src="/config.js"></script><script src="/cosdata.js?v=21"></script><script src="/soon.js"></script><script src="/site.js?v=21"></script><script src="/geo.js?v=21"></script><script src="/cos3d.js?v=21"></script><script>
 (function(){
-var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math.round(x*100)/100},K=function(){return window.YAplusOn?.3:1};
+var Y=window.YA,PR=Y.prices||{item:3},eur=window.YAeur,R=function(x){return Math.round(x*100)/100},K=function(){return window.YAplusOn?.5:1};
 var B=window.YA_B;
 var id=(new URLSearchParams(location.search).get('i')||location.hash.slice(1)||'').toLowerCase();
 if((window.YA.hidden||[]).some(function(h){return id===h||id.indexOf(h+'_')===0}))location.replace('/store');
@@ -36,7 +36,7 @@ var cart=[];try{cart=JSON.parse(localStorage.getItem('ya_cart')||'[]').filter(fu
 function save(){try{localStorage.setItem('ya_cart',JSON.stringify(cart))}catch(e){}}
 function cartTotal(list){var t=0;Object.keys(B).forEach(function(k){if(k==='x')return;var m=list.filter(function(i){return SETOF[i]===k}).length;t+=m===4?setPrice(k):m*itemPrice(k)});t+=list.filter(function(i){return SETOF[i]==='x'}).length*itemPrice('x');return R(t*K())}
 function orderFor(list,title){var f=K(),t=cartTotal(list),full=Object.keys(B).some(function(k){return k!=='x'&&list.filter(function(i){return SETOF[i]===k}).length===4});
- return {title:title||(list.length===1?ITEM[list[0]].n:'Custom cosmetics'),lines:list.map(function(i){return ITEM[i].n}).concat(full?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -70% applied ('+window.YAplusName+')']:[]),total:t,ids:list.join(',')}}
+ return {title:title||(list.length===1?ITEM[list[0]].n:'Custom cosmetics'),lines:list.map(function(i){return ITEM[i].n}).concat(full?['Bundle discount applied']:[],window.YAplusOn?['YA Plus -50% applied ('+window.YAplusName+')']:[]),total:t,ids:list.join(',')}}
 function drawCart(){var n=cart.length;document.getElementById('cn').textContent=n;document.getElementById('cartfab').className='cartfab'+(n?' on':'');
  document.getElementById('cl').innerHTML=n?cart.map(function(i){return '<div class="cr"><span>'+ITEM[i].n+'<em>'+B[ITEM[i].s].n+'</em></span><button data-rm="'+i+'" aria-label="Remove">×</button></div>'}).join(''):'<p class="ce">Your cart is empty.</p>';
  document.getElementById('ctot').textContent=n?eur(cartTotal(cart)):'-';document.getElementById('cbuy').disabled=!n;

@@ -1,7 +1,7 @@
 (function(){
 var bar=document.getElementById('plusbar2');if(!bar)return;
 bar.className='plusbar';
-bar.innerHTML='<div><b>YA Plus members: -70% on the whole shop</b><span>Enter your Minecraft name to check your YA Plus discount.</span></div>'+
+bar.innerHTML='<div><b>YA Plus members: -50% on the whole shop</b><span>Enter your Minecraft name to check your YA Plus discount.</span></div>'+
  '<form class="pbf" autocomplete="off"><input type="text" maxlength="16" placeholder="Your Minecraft name" spellcheck="false" aria-label="Minecraft name"><button class="btn" type="submit">Check</button></form><a class="btn" href="/plus">See YA Plus →</a>';
 var inp=bar.querySelector('input'),key='ya_skin_name';
 try{inp.value=localStorage.getItem(key)||''}catch(e){}

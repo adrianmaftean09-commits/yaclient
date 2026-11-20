@@ -279,7 +279,7 @@
         btn.disabled = false;
         var okSkin = !!(im && scene.setSkin(im));
         if (okSkin) { try { localStorage.setItem(key, name); } catch (e) {} } else scene.clearSkin();
-        plusCheck(name, function (on) { msg.textContent = (okSkin ? 'Wearing the skin of ' + name : 'Skin not found for "' + name + '"') + (on ? ' · YA Plus active: -70% on the shop' : ''); });
+        plusCheck(name, function (on) { msg.textContent = (okSkin ? 'Wearing the skin of ' + name : 'Skin not found for "' + name + '"') + (on ? ' · YA Plus active: -50% on the shop' : ''); });
       });
     }
     box.addEventListener('submit', function (e) { e.preventDefault(); go(inp.value); });
