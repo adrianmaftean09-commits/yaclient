@@ -9,9 +9,9 @@ public class BiomeModule extends PillModule {
     protected String text() {
         if (mc == null || mc.theWorld == null || mc.thePlayer == null) return "";
         BlockPos pos = new BlockPos((int) Math.floor(mc.thePlayer.posX), 64, (int) Math.floor(mc.thePlayer.posZ));
-        return mc.theWorld.getBiomeGenForCoords(pos).biomeName;
+        return "Biome: " + mc.theWorld.getBiomeGenForCoords(pos).biomeName;
     }
 
     @Override
-    protected String sample() { return "Plains"; }
+    protected String sample() { return "Biome: Plains"; }
 }

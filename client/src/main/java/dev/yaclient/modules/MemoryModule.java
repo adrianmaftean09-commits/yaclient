@@ -13,7 +13,7 @@ public class MemoryModule extends PillModule {
         Runtime rt = Runtime.getRuntime();
         long used = (rt.totalMemory() - rt.freeMemory()) / 1048576L;
         long max = rt.maxMemory() / 1048576L;
-        String pre = label.value ? "RAM " : "";
+        String pre = label.value ? "Memory: " : "";
         if (mode.index == 1) return pre + used + " MB";
         if (mode.index == 2) return pre + (used * 100L / Math.max(1L, max)) + "%";
         return pre + used + "/" + max + " MB";

@@ -112,13 +112,14 @@ Object.assign(I18N.en, {"as_name": "Server name", "as_addr": "Server address", "
 Object.assign(I18N.it, {"as_name": "Nome del server", "as_addr": "Indirizzo del server", "as_save": "Salva", "as_hint": "Scrivi un indirizzo per vedere l'anteprima."});
 Object.assign(I18N.es, {"as_name": "Nombre del servidor", "as_addr": "Dirección del servidor", "as_save": "Guardar", "as_hint": "Escribe una dirección para ver la vista previa."});
 Object.assign(I18N.de, {"as_name": "Servername", "as_addr": "Serveradresse", "as_save": "Speichern", "as_hint": "Gib eine Adresse ein, um die Vorschau zu sehen."});
+Object.assign(I18N.en, { acc_short: 'Account' }); Object.assign(I18N.it, { acc_short: 'Account' }); Object.assign(I18N.es, { acc_short: 'Cuenta' }); Object.assign(I18N.de, { acc_short: 'Konto' });
 const PAGES = ['home', 'modules', 'versions', 'servers', 'friends', 'cosmetics', 'plus', 'console', 'settings'];
 const PKEY = { modules: 'mods', home: 'launchpad', versions: 'versions', servers: 'servers', friends: 'friends_nav', cosmetics: 'cosmetics', console: 'console', settings: 'settings', plus: 'plus_nav' };
 
 function renderNav() {
   $('#nav').innerHTML = PAGES.map((p) => `<button class="nav ${p === page ? 'on' : ''} ${p === 'plus' ? 'star' : ''}" data-p="${p}">${ic(p)}<em>${esc(t(PKEY[p]))}</em>${p === 'friends' && FR.data && FR.data.incoming.length ? `<b class="bdg">${FR.data.incoming.length}</b>` : ''}</button>`).join('');
   $('#accIcon').innerHTML = ic('user');
-  $('#accLbl').textContent = S.account ? t('switchAcc') : t('signIn');
+  $('#accLbl').textContent = S.account ? t('acc_short') : t('signIn');
   $('#accPill').innerHTML = S.account ? `<img class="face" data-ini="${esc(S.account.name[0].toUpperCase())}" src="https://minotar.net/helm/${encodeURIComponent(S.account.name)}/48.png" alt="">${esc(S.account.name)}` : esc(t('signIn'));
   $('#ver').textContent = (isYa(S.version) ? 'YA CLIENT ' : '') + (S.version || '');
   document.body.classList.toggle('plus', plusOn());

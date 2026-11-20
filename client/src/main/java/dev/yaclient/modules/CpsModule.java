@@ -35,6 +35,6 @@ public class CpsModule extends PillModule {
     protected String text() {
         String[] seps = {" | ", " / ", " - ", "  "};
         String sp = seps[sep.index];
-        return count(left) + (right_.value ? sp + count(right) : "") + (label.value ? " CPS" : "");
+        return (label.value ? "CPS: " : "") + count(left) + (right_.value ? sp + count(right) : "");
     }
 }

@@ -8,9 +8,9 @@ public class SessionTimeModule extends PillModule {
     @Override
     protected String text() {
         long s = (System.currentTimeMillis() - START) / 1000L;
-        return String.format(java.util.Locale.ROOT, "Session %d:%02d:%02d", s / 3600, (s / 60) % 60, s % 60);
+        return String.format(java.util.Locale.ROOT, "Time Played: %02d:%02d:%02d", s / 3600, (s / 60) % 60, s % 60);
     }
 
     @Override
-    protected String sample() { return "Session 0:42:10"; }
+    protected String sample() { return "Time Played: 00:42:10"; }
 }

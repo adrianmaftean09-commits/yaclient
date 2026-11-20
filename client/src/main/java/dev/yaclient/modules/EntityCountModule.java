@@ -6,9 +6,9 @@ public class EntityCountModule extends PillModule {
     @Override
     protected String text() {
         if (mc == null || mc.theWorld == null) return "";
-        return "Entities " + mc.theWorld.loadedEntityList.size();
+        return "Entities: " + mc.theWorld.loadedEntityList.size();
     }
 
     @Override
-    protected String sample() { return "Entities 128"; }
+    protected String sample() { return "Entities: 128"; }
 }

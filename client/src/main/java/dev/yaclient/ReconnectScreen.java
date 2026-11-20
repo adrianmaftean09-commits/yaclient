@@ -42,7 +42,7 @@ public class ReconnectScreen extends GuiScreen {
             if (sd == null) { cancelled = true; return; }
             AutoReconnectModule.tries++;
             Minecraft mc = Minecraft.getMinecraft();
-            mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(new MainMenuScreen()), mc, new ServerData(sd.serverName, sd.serverIP, false)));
+            mc.displayGuiScreen(new GuiConnecting(new ServerListScreen(new MainMenuScreen()), mc, new ServerData(sd.serverName, sd.serverIP, false)));
         }
     }
 

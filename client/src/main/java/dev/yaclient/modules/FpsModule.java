@@ -11,7 +11,7 @@ public class FpsModule extends PillModule {
     public FpsModule() { super("fps", Category.INFO, true, 0.008f, 0.012f); }
 
     @Override
-    protected String text() { return Minecraft.getDebugFPS() + (label.value ? " FPS" : ""); }
+    protected String text() { return (label.value ? "FPS: " : "") + Minecraft.getDebugFPS(); }
 
     @Override
     protected int autoColor() {

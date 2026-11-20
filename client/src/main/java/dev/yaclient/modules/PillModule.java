@@ -8,10 +8,10 @@ import dev.yaclient.Ui;
 /** HUD element that shows one line of text in a rounded pill, with a full set of look options. */
 public abstract class PillModule extends HudModule {
     protected final Setting.Bool background = add("style", new Setting.Bool("bg", true));
-    protected final Setting.Num bgOpacity = add("style", new Setting.Num("bg_opacity", 0f, 100f, 5f, 72f, "%"));
-    protected final Setting.Choice bgColor = add("style", new Setting.Choice("bg_color", 0, "dark", "black", "navy", "wine", "accent"));
-    protected final Setting.Num radius = add("style", new Setting.Num("radius", 0f, 10f, 1f, 6f, ""));
-    protected final Setting.Bool border = add("style", new Setting.Bool("border", true));
+    protected final Setting.Num bgOpacity = add("style", new Setting.Num("bg_opacity", 0f, 100f, 5f, 62f, "%"));
+    protected final Setting.Choice bgColor = add("style", new Setting.Choice("bg_color", 1, "dark", "black", "navy", "wine", "accent"));
+    protected final Setting.Num radius = add("style", new Setting.Num("radius", 0f, 10f, 1f, 4f, ""));
+    protected final Setting.Bool border = add("style", new Setting.Bool("border", false));
     protected final Setting.Palette borderColor = add("style", new Setting.Palette("border_color", 0));
     protected final Setting.Palette textColor = add("colors", new Setting.Palette("text_color", 0));
     protected final Setting.Bool shadow = add("text", new Setting.Bool("shadow", false));

@@ -6,9 +6,9 @@ public class DayCounterModule extends PillModule {
     @Override
     protected String text() {
         if (mc == null || mc.theWorld == null) return "";
-        return "Day " + (mc.theWorld.getWorldTime() / 24000L + 1L);
+        return "Day: " + (mc.theWorld.getWorldTime() / 24000L + 1L);
     }
 
     @Override
-    protected String sample() { return "Day 12"; }
+    protected String sample() { return "Day: 12"; }
 }

@@ -16,11 +16,11 @@ public class ServerAddressModule extends PillModule {
         if (mc == null || mc.theWorld == null) return "";
         if (mc.getCurrentServerData() == null) return "Singleplayer";
         if (StreamerModeModule.hideIp()) return "hidden";
-        return mc.getCurrentServerData().serverIP;
+        return "IP: " + mc.getCurrentServerData().serverIP;
     }
 
     @Override
-    protected String sample() { return "play.example.net"; }
+    protected String sample() { return "IP: play.example.net"; }
 
     @Override protected boolean iconOn() { return showIcon.value; }
     @Override protected int iconPx() { return Math.round(iconSize.value); }

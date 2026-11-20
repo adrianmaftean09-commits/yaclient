@@ -121,6 +121,19 @@ public class YAClient implements ModInitializer {
         MODULES.add(new VoidAlertModule());
         MODULES.add(new GappleTimerModule());
         MODULES.add(new PotionAlertModule());
+        MODULES.add(new ClickCounterModule());
+        MODULES.add(new CustomTextModule());
+        MODULES.add(new FacingModule());
+        MODULES.add(new GameTimeModule());
+        MODULES.add(new SaturationModule());
+        MODULES.add(new WeatherModule());
+        MODULES.add(new BlockPlaceModule());
+        MODULES.add(new PlayerHeadModule());
+        MODULES.add(new MouseStrokesModule());
+        MODULES.add(new ShapeModule());
+        MODULES.add(new ItemLoreModule());
+        MODULES.add(new ItemTrackerModule());
+        MODULES.add(new PlayerPreviewModule());
 
         // no Plus-only mods any more (kept empty on purpose)
         java.util.Set<String> plusMods = new java.util.HashSet<String>(java.util.Arrays.asList(

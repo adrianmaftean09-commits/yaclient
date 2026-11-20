@@ -15,7 +15,7 @@ public class PingModule extends PillModule {
         if (mc == null || mc.thePlayer == null || mc.getNetHandler() == null) return "";
         NetworkPlayerInfo info = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
         last = info == null ? -1 : info.getResponseTime();
-        return info == null ? "--" + (label.value ? " ms" : "") : info.getResponseTime() + (label.value ? " ms" : "");
+        return (label.value ? "Ping: " : "") + (info == null ? "--" : info.getResponseTime() + "ms");
     }
 
     @Override
@@ -25,5 +25,5 @@ public class PingModule extends PillModule {
     }
 
     @Override
-    protected String sample() { return "42" + (label.value ? " ms" : ""); }
+    protected String sample() { return (label.value ? "Ping: " : "") + "42ms"; }
 }

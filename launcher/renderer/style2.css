@@ -260,3 +260,5 @@ body.noanim *,body.noanim *::before,body.noanim *::after{animation:none!importan
 .amb{display:flex;justify-content:flex-end;gap:10px}
 @media(max-width:700px){.amg{grid-template-columns:1fr}}
 .dlg.addm .amb .btn{width:auto;min-width:120px;flex:none}.svlist .srow .btn.sm{margin-left:0}
+
+.rail-end .nav em,.nav em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px}

@@ -23,7 +23,7 @@ public class ReachModule extends PillModule {
 
     @Override
     protected String text() {
-        if (System.currentTimeMillis() - lastTime < 1500) return String.format(Locale.ROOT, "Reach %.2f", last);
-        return "Reach --";
+        if (System.currentTimeMillis() - lastTime < 1500) return String.format(Locale.ROOT, "Reach: %.2f blocks", last);
+        return "Reach: --";
     }
 }

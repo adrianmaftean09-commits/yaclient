@@ -7,9 +7,9 @@ public class ComboModule extends PillModule {
     @Override
     protected String text() {
         int c = HitTracker.combo();
-        return c > 0 ? "Combo " + c : "";
+        return c > 0 ? "Combo: " + c + (c == 1 ? " hit" : " hits") : "";
     }
 
     @Override
-    protected String sample() { return "Combo 4"; }
+    protected String sample() { return "Combo: 4 hits"; }
 }

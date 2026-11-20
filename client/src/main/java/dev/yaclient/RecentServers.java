@@ -66,6 +66,9 @@ public final class RecentServers {
         }
     }
 
+    /** The last servers you joined, newest first. */
+    public static List<String> recent() { if (!loaded) load(); return new ArrayList<String>(list); }
+
     private static int top(int height) { return height - 20 - 8 - 82 - 10 - list.size() * RH - 14; }
 
     public static void draw(int mx, int my, int height) {
