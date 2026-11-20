@@ -51,10 +51,10 @@ public class MainMenuScreen extends GuiScreen {
         int top = Math.max(10, (height - contentH) / 2);
         int cx = width / 2;
 
-        // the player: in the free space on the right, a little left of its middle, with only a soft floor shadow
+        // the player: in the free space on the right, toward its right side, with only a soft floor shadow
         if (wideScr) {
             int rightStart = cx + BW / 2 + 20;
-            int pcx = rightStart + (width - 16 - rightStart) * 35 / 100;
+            int pcx = rightStart + (width - 16 - rightStart) * 72 / 100;
             int feet = top + contentH - 24;
             int ps = Math.max(30, (contentH - 40) * 10 / 19);
             MenuBg.blob(pcx, feet + 2, 46f, 8f, 0x1A2238, 75);
