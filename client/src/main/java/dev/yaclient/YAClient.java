@@ -215,10 +215,13 @@ public class YAClient implements ModInitializer {
             RecentServers.tick(mc);
             FreeLook.post(mc);
             for (Module m : MODULES) {
+                final Module mm = m;
                 m.bind();
-                m.onAlwaysTick();
-                if (m.enabled && m.locked()) { m.enabled = false; m.onToggle(); }
-                if (m.enabled) m.onTick();
+                m.guard(new Runnable() { public void run() {
+                    mm.onAlwaysTick();
+                    if (mm.enabled && mm.locked()) { mm.enabled = false; mm.onToggle(); }
+                    if (mm.enabled) mm.onTick();
+                } });
             }
 
             boolean down = Keyboard.isKeyDown(MENU_KEY);

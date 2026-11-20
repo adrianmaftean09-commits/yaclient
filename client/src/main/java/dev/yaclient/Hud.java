@@ -58,14 +58,15 @@ public final class Hud {
         Gfx.fade = 1f;
         for (Module m : YAClient.MODULES) {
             if (!m.enabled) continue;
+            final Module mm = m;
             m.bind();
             Gfx.setScale(gs);
-            m.onRender();
+            m.guard(new Runnable() { public void run() { mm.onRender(); } });
         }
         int sw = sr.getScaledWidth(), sh = sr.getScaledHeight();
         for (int i = 0, n = YAClient.MODULES.size(); i < n; i++) {
             Module m = YAClient.MODULES.get(i);
-            if (m.enabled && m instanceof HudModule) ((HudModule) m).renderHud(false, sw, sh, gs);
+            if (m.enabled && m instanceof HudModule) { final HudModule hm = (HudModule) m; final int fsw = sw, fsh = sh, fgs = gs; m.guard(new Runnable() { public void run() { hm.renderHud(false, fsw, fsh, fgs); } }); }
         }
     }
 

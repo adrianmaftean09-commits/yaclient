@@ -84,6 +84,17 @@ public abstract class Module {
 
     public void onToggle() {}
 
+    private int failures;
+
+    /** Runs one of this module's callbacks so a bug in one mod can never break the game or the other mods. */
+    public final void guard(Runnable r) {
+        try { r.run(); failures = 0; }
+        catch (Throwable t) {
+            if (failures == 0) System.out.println("[YA CLIENT] module " + id + " error: " + t);
+            if (++failures >= 200) { enabled = false; failures = 0; System.out.println("[YA CLIENT] module " + id + " disabled after repeated errors"); }
+        }
+    }
+
     /** Called every tick while the module is enabled. */
     public void onTick() {}
 
