@@ -18,18 +18,39 @@ final class MenuBg {
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(w, 0, 0).color(0xEC, 0xF0, 0xF8, 255).endVertex();
-        wr.pos(0, 0, 0).color(0xF7, 0xF9, 0xFC, 255).endVertex();
-        wr.pos(0, h, 0).color(0xE6, 0xEB, 0xF4, 255).endVertex();
-        wr.pos(w, h, 0).color(0xD9, 0xE0, 0xEE, 255).endVertex();
+        wr.pos(w, 0, 0).color(0xE8, 0xED, 0xF6, 255).endVertex();
+        wr.pos(0, 0, 0).color(0xF6, 0xF8, 0xFB, 255).endVertex();
+        wr.pos(0, h, 0).color(0xE4, 0xEA, 0xF4, 255).endVertex();
+        wr.pos(w, h, 0).color(0xD3, 0xDB, 0xEA, 255).endVertex();
         tess.draw();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
-        // restrained: one cool glow top right, a faint warm one bottom left, a white lift behind the menu
-        blob(w * 0.88f + (float) Math.sin(t * 0.15f) * 10f, h * 0.05f, w * 0.55f, h * 0.8f, 0x8FB0F0, 70);
-        blob(w * 0.05f, h * 1.0f, w * 0.45f, h * 0.7f, 0xE2B8C8, 45);
-        blob(w * 0.50f, h * 0.48f, w * 0.34f, h * 0.55f, 0xFFFFFF, 160);
-        dots(w, h);
+        // cool glow top left, a hint of the brand red bottom right
+        blob(w * 0.05f, h * 0.0f, w * 0.5f, h * 0.8f, 0x7FA6F5, 60);
+        blob(w * 0.98f, h * 1.02f, w * 0.45f, h * 0.7f, 0xE10600, 26);
+        // two slow diagonal light panels
+        float d = (float) Math.sin(t * 0.12f) * w * 0.02f;
+        band(w * 0.40f + d, w * 0.70f + d, w * 0.30f + d, w * 0.00f + d, w, h, 70);
+        band(w * 0.78f - d, w * 1.00f - d, w * 0.82f - d, w * 0.52f - d, w, h, 46);
+        band(w * 0.00f + d, w * 0.16f + d, w * -0.10f + d, w * -0.26f + d, w, h, 40);
+    }
+
+    /** A translucent white diagonal panel: top edge x0..x1, bottom edge x3..x2. */
+    static void band(float x0, float x1, float x2, float x3, int w, int h, int alpha) {
+        Tessellator tess = Tessellator.getInstance();
+        WorldRenderer wr = tess.getWorldRenderer();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.disableAlpha();
+        wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(x1, 0, 0).color(255, 255, 255, alpha).endVertex();
+        wr.pos(x0, 0, 0).color(255, 255, 255, alpha).endVertex();
+        wr.pos(x3, h, 0).color(255, 255, 255, 0).endVertex();
+        wr.pos(x2, h, 0).color(255, 255, 255, 0).endVertex();
+        tess.draw();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
     }
 
     /** A faint dot grid over the backdrop: gives the flat gradient some structure. */
