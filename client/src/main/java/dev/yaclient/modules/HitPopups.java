@@ -101,7 +101,7 @@ public final class HitPopups {
                     int alpha = (int) (255 * (k < 0.6f ? 1f : 1f - (k - 0.6f) / 0.4f));
                     if (alpha < 6) continue;
                     String s = String.format(Locale.ROOT, "%.1f", Math.max(0f, p.e.getHealth()) / 2f) + " ♥";
-                    float sc = (float) (0.022 * Math.max(0.9, Math.min(3.0, dist / 5.0)));
+                    float sc = (float) (0.032 * Math.max(1.0, Math.min(3.0, dist / 5.0)));
                     GlStateManager.pushMatrix();
                     GlStateManager.translate((float) x, (float) y, (float) z);
                     GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0f, 1f, 0f);
