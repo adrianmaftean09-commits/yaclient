@@ -55,9 +55,17 @@ public class TeamViewerModule extends Module {
         return 1f;
     }
 
+    // World pass: only remember where the arrows go and the camera matrices. The arrows themselves are drawn later,
+    // on top of the finished frame (sky, clouds and weather are drawn after the entities and used to hide them).
+    private final java.nio.FloatBuffer mv = org.lwjgl.BufferUtils.createFloatBuffer(16), pr = org.lwjgl.BufferUtils.createFloatBuffer(16), win = org.lwjgl.BufferUtils.createFloatBuffer(3);
+    private final java.nio.IntBuffer vp = org.lwjgl.BufferUtils.createIntBuffer(16);
+    private final List<double[]> spots = new ArrayList<double[]>();
+    private long spotsAt;
+
     private void drawArrows(Object event) {
         if (!enabled) return;
         Minecraft m = Minecraft.getMinecraft();
+        spots.clear();
         if (m == null || m.theWorld == null || m.thePlayer == null || m.gameSettings.hideGUI) return;
         Entity v = m.getRenderViewEntity();
         if (v == null) return;
@@ -68,56 +76,79 @@ public class TeamViewerModule extends Module {
             double vx = v.lastTickPosX + (v.posX - v.lastTickPosX) * pt;
             double vy = v.lastTickPosY + (v.posY - v.lastTickPosY) * pt;
             double vz = v.lastTickPosZ + (v.posZ - v.lastTickPosZ) * pt;
-            float yaw = m.getRenderManager().playerViewY, pitch = m.getRenderManager().playerViewX;
-            GlStateManager.pushMatrix();
-            GlStateManager.disableTexture2D();
-            GlStateManager.disableLighting();
-            GlStateManager.disableCull();
-            GlStateManager.disableDepth();
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             for (EntityPlayer p : l) {
                 if (p.isInvisible() || p.isDead) continue;
                 double x = p.lastTickPosX + (p.posX - p.lastTickPosX) * pt - vx;
                 double y = p.lastTickPosY + (p.posY - p.lastTickPosY) * pt - vy + p.height + 0.75 + Math.sin(System.currentTimeMillis() / 260.0) * 0.06;
                 double z = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * pt - vz;
-                float dist = (float) Math.sqrt(x * x + y * y + z * z);
-                float sc = 0.42f * Math.max(1f, dist / 8f);
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(x, y, z);
-                GlStateManager.rotate(-yaw, 0f, 1f, 0f);
-                GlStateManager.rotate(pitch, 1f, 0f, 0f);
-                GlStateManager.scale(sc, sc, sc);
-                downArrow(0x34D27B, 235);
-                GlStateManager.popMatrix();
+                spots.add(new double[] { x, y, z });
             }
-            GlStateManager.enableDepth();
-            GlStateManager.enableCull();
-            GlStateManager.disableBlend();
-            GlStateManager.enableTexture2D();
-            GlStateManager.popMatrix();
-        } catch (Throwable ignored) { }
+            mv.clear(); pr.clear(); vp.clear();
+            org.lwjgl.opengl.GL11.glGetFloat(org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX, mv);
+            org.lwjgl.opengl.GL11.glGetFloat(org.lwjgl.opengl.GL11.GL_PROJECTION_MATRIX, pr);
+            org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL11.GL_VIEWPORT, vp);
+            spotsAt = System.currentTimeMillis();
+        } catch (Throwable t) { spots.clear(); }
     }
 
-    /** A plain arrow pointing down: shaft on top, head below. Unit is about one block wide. */
-    private static void downArrow(int rgb, int a) {
+    /** Draws the arrows flat on the screen, after the whole world (so nothing can cover them). */
+    @Override
+    public void onRender() {
+        if (spots.isEmpty() || System.currentTimeMillis() - spotsAt > 200 || mc.currentScreen != null) return;
+        int gs = new net.minecraft.client.gui.ScaledResolution(mc).getScaleFactor();
+        int ph = mc.displayHeight;
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.disableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        try {
+            // camera up vector in world space = second row of the model view matrix
+            float ux = mv.get(1), uy = mv.get(5), uz = mv.get(9);
+            for (double[] s : new ArrayList<double[]>(spots)) {
+                mv.rewind(); pr.rewind(); vp.rewind(); win.clear();
+                if (!org.lwjgl.util.glu.GLU.gluProject((float) s[0], (float) s[1], (float) s[2], mv, pr, vp, win)) continue;
+                float sx = win.get(0), sy = win.get(1), sz = win.get(2);
+                if (sz <= 0f || sz >= 1f) continue;   // behind the camera
+                win.clear(); mv.rewind(); pr.rewind(); vp.rewind();
+                if (!org.lwjgl.util.glu.GLU.gluProject((float) s[0] + ux, (float) s[1] + uy, (float) s[2] + uz, mv, pr, vp, win)) continue;
+                float ppb = (float) Math.hypot(win.get(0) - sx, win.get(1) - sy);   // pixels per block at that distance
+                double dist = Math.sqrt(s[0] * s[0] + s[1] * s[1] + s[2] * s[2]);
+                float sc = 0.42f * Math.max(1f, (float) dist / 8f);
+                float u = sc * ppb / gs;   // size of one arrow unit in GUI pixels
+                if (u < 2f) u = 2f;
+                downArrow2d(sx / gs, (ph - sy) / gs, u, 0x34D27B, 235);
+            }
+        } catch (Throwable ignored) { }
+        GlStateManager.enableDepth();
+        GlStateManager.enableCull();
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1f, 1f, 1f, 1f);
+        GlStateManager.popMatrix();
+    }
+
+    /** The same arrow as before, flat: shaft on top, head below. (ax, ay) is its base point, u the size of one unit. */
+    private static void downArrow2d(float ax, float ay, float u, int rgb, int a) {
         int r = (rgb >> 16) & 255, g = (rgb >> 8) & 255, b = rgb & 255;
         Tessellator t = Tessellator.getInstance();
         WorldRenderer w = t.getWorldRenderer();
-        // dark outline (slightly larger), then the green shape
         for (int pass = 0; pass < 2; pass++) {
             float o = pass == 0 ? 0.08f : 0f;
             int cr = pass == 0 ? 0 : r, cg = pass == 0 ? 0 : g, cb = pass == 0 ? 0 : b, ca = pass == 0 ? a / 2 : a;
             w.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            w.pos(-0.16 - o, 1.0 + o, 0).color(cr, cg, cb, ca).endVertex();
-            w.pos(-0.16 - o, 0.45, 0).color(cr, cg, cb, ca).endVertex();
-            w.pos(0.16 + o, 0.45, 0).color(cr, cg, cb, ca).endVertex();
-            w.pos(0.16 + o, 1.0 + o, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax + (-0.16 - o) * u, ay - (1.0 + o) * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax + (-0.16 - o) * u, ay - 0.45 * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax + (0.16 + o) * u, ay - 0.45 * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax + (0.16 + o) * u, ay - (1.0 + o) * u, 0).color(cr, cg, cb, ca).endVertex();
             t.draw();
-            w.begin(4, DefaultVertexFormats.POSITION_COLOR);
-            w.pos(-0.42 - o, 0.45, 0).color(cr, cg, cb, ca).endVertex();
-            w.pos(0, -0.05 - o, 0).color(cr, cg, cb, ca).endVertex();
-            w.pos(0.42 + o, 0.45, 0).color(cr, cg, cb, ca).endVertex();
+            w.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            w.pos(ax + (-0.42 - o) * u, ay - 0.45 * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax, ay + (0.05 + o) * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax, ay + (0.05 + o) * u, 0).color(cr, cg, cb, ca).endVertex();
+            w.pos(ax + (0.42 + o) * u, ay - 0.45 * u, 0).color(cr, cg, cb, ca).endVertex();
             t.draw();
         }
     }
