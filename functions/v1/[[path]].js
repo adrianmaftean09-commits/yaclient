@@ -101,6 +101,12 @@ const BUNDLES = {
   luck: { price: 'Exclusive', items: ['luck_cape', 'luck_wings', 'luck_bandana', 'luck_pet'] }
 };
 const SLOTS = ['cape', 'wings', 'bandana', 'pet'];
+// UUID that a cracked server gives a name (md5 of "OfflinePlayer:<name>"): premium players are seen under it on such servers
+async function offlineUuid(name) {
+  const b = new Uint8Array(await crypto.subtle.digest('MD5', new TextEncoder().encode('OfflinePlayer:' + name)));
+  b[6] = (b[6] & 0x0f) | 0x30; b[8] = (b[8] & 0x3f) | 0x80;
+  return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
 const norm = (u) => String(u || '').replace(/-/g, '').toLowerCase();
 
 function send(code, obj) {
@@ -388,6 +394,12 @@ export async function onRequest({ request, env }) {
           if (pend && pend.length) { for (const g of pend) await applyGrant(env, id, g); await env.DB.delete('g:' + low); }
         } catch (_) { }
       }
+      if (f.offline !== '1') {   // premium player on a cracked server: others see him under the offline UUID of his name -> point it to his real account
+        try {
+          const ou = await offlineUuid(String(check.name));
+          if (ou !== uuid0 && !(await env.DB.get('k:' + ou)) && (await env.DB.get('al:' + ou)) !== uuid0) await env.DB.put('al:' + ou, uuid0);
+        } catch (_) { }
+      }
       if (f.offline === '1') {   // non-premium (SP) players: separate list for the admin only (never mixed with premium names, no cosmetics by name)
         try {
           const id = norm(check.id), low = String(check.name).toLowerCase();
@@ -429,7 +441,8 @@ export async function onRequest({ request, env }) {
     }
     const m = url.pathname.match(/^\/v1\/players\/([0-9a-fA-F-]{32,36})$/);
     if (request.method === 'GET' && m) {
-      const pid = norm(m[1]);
+      let pid = norm(m[1]);
+      try { pid = (await env.DB.get('al:' + pid)) || pid; } catch (_) { }
       const out = equippedMap(await loadPlayer(env, pid));
       out.client = (await env.DB.get('c:' + pid)) ? '1' : '0';   // shown as a logo in the tab list
       return send(200, out);

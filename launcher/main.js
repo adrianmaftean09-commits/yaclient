@@ -321,10 +321,24 @@ ipcMain.handle('mods-set', (_e, id, on) => {
   return true;
 });
 
+// Non-premium players get the same UUID a cracked server gives them (md5 of "OfflinePlayer:<name>"), so other YA CLIENT players
+// can find their logo and cosmetics, and the identity stays the same on every launch.
+function offlineUuid(name) {
+  const b = require('crypto').createHash('md5').update('OfflinePlayer:' + name, 'utf8').digest();
+  b[6] = (b[6] & 0x0f) | 0x30; b[8] = (b[8] & 0x3f) | 0x80;
+  const h = b.toString('hex');
+  return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+}
+function fixOfflineUuid() {
+  const a = state.account;
+  if (a && a.type === 'offline' && a.auth && a.name) a.auth.uuid = offlineUuid(a.name);
+}
+
 ipcMain.handle('login-offline', (_e, name) => {
   const n = String(name || '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 16);
   if (n.length < 3) return { error: 'name_short' };
   state.account = { type: 'offline', name: n, auth: Authenticator.getAuth(n) };
+  fixOfflineUuid();
   save();
   return { name: n, type: 'offline' };
 });
@@ -567,7 +581,7 @@ ipcMain.handle('play', async (_e, opts) => {
     });
 
     const launchOpts = {
-      authorization: state.account.auth,
+      authorization: (fixOfflineUuid(), state.account.auth),
       root: gameDir,
       javaPath,
       version: fabric ? { number: version, type: versionType(version), custom: fabric.id } : { number: version, type: versionType(version) },
