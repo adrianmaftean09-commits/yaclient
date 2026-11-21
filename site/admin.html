@@ -85,7 +85,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--s2)}
 <div class="panel"><h3>Recent actions <button class="btn sm" id="log-clear">Clear</button></h3><div class="log" id="log"><div>No actions yet in this session.</div></div></div></div></section>
 
 <section id="p-pl" class="hide"><div class="top"><div><h2>Players</h2><p>Search by name, open a player to manage cosmetics, YA Plus and device lock.</p></div></div>
-<div class="panel"><div class="row"><input class="grow" id="q" placeholder="Search by Minecraft name (start of the name)" autocomplete="off"><button class="btn pri" id="q-go">Search</button></div></div>
+<div class="panel"><div class="row"><input class="grow" id="q" placeholder="Search by Minecraft name (start of the name)" autocomplete="off"><button class="btn pri" id="q-go">Search</button></div><div class="row" style="margin-top:10px"><label class="muted" style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="q-sp"> Show non-premium (SP) players instead</label></div></div>
 <div class="panel" id="plist"><div class="muted">Loading...</div></div>
 <div class="panel hide" id="pd"></div></section>
 
@@ -149,11 +149,11 @@ function grant(o,msg){return post("/v1/admin/grant",o).then(function(d){if(d.ok)
 
 /* players */
 var cursor="";
-function loadPlayers(more){var q=$("q").value.trim();api("/v1/admin/players?q="+encodeURIComponent(q)+(more&&cursor?"&cursor="+encodeURIComponent(cursor):"")).then(function(d){cursor=d.cursor||"";var rows=(d.players||[]).map(function(n){return"<tr class='click' data-n='"+esc(n)+"'><td>"+esc(n)+"</td><td class='muted' style='text-align:right'>Open</td></tr>"}).join("");
+function loadPlayers(more){var q=$("q").value.trim();api("/v1/admin/players?q="+encodeURIComponent(q)+($("q-sp").checked?"&sp=1":"")+(more&&cursor?"&cursor="+encodeURIComponent(cursor):"")).then(function(d){cursor=d.cursor||"";var rows=(d.players||[]).map(function(n){return"<tr class='click' data-n='"+esc(n)+"'><td>"+esc(n)+"</td><td class='muted' style='text-align:right'>Open</td></tr>"}).join("");
  if(!more)$("plist").innerHTML=rows?"<table><tr><th>Name (lowercase)</th><th></th></tr>"+rows+"</table>":"<div class='muted'>No player found. Players appear here after they open YA CLIENT or the launcher once.</div>";else{var t=$("plist").querySelector("table");if(t)t.insertAdjacentHTML("beforeend",rows)}
  if(cursor){var m=$("more");if(m)m.remove();$("plist").insertAdjacentHTML("beforeend","<div style='margin-top:12px'><button class='btn' id='more'>Load more</button></div>");$("more").onclick=function(){loadPlayers(true)}}
  $("plist").querySelectorAll("tr.click").forEach(function(r){r.onclick=function(){openPlayer(r.dataset.n)}})}).catch(function(){toast("Could not load players",false)})}
-$("q-go").onclick=function(){loadPlayers(false)};$("q").onkeydown=function(e){if(e.key==="Enter")loadPlayers(false)};
+$("q-go").onclick=function(){loadPlayers(false)};$("q-sp").onchange=function(){loadPlayers(false)};$("q").onkeydown=function(e){if(e.key==="Enter")loadPlayers(false)};
 function owns(p,b){return SLOTS.every(function(s){return p.owned.indexOf(pre(b)+"_"+s)>=0})}
 function openPlayer(name,uuid){api("/v1/admin/player?"+(uuid?"uuid="+encodeURIComponent(uuid):"name="+encodeURIComponent(name))).then(function(p){var box=$("pd");box.classList.remove("hide");if(!p.found){box.innerHTML="<h3>"+esc(name)+"</h3><div class='muted'>Unknown player.</div>";return}
  var owned=BUNDLES.filter(function(b){return owns(p,b)}),loose=p.owned.filter(function(i){return!BUNDLES.some(function(b){return owns(p,b)&&i.indexOf(pre(b)+"_")===0})});

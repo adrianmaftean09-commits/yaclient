@@ -388,6 +388,13 @@ export async function onRequest({ request, env }) {
           if (pend && pend.length) { for (const g of pend) await applyGrant(env, id, g); await env.DB.delete('g:' + low); }
         } catch (_) { }
       }
+      if (f.offline === '1') {   // non-premium (SP) players: separate list for the admin only (never mixed with premium names, no cosmetics by name)
+        try {
+          const id = norm(check.id), low = String(check.name).toLowerCase();
+          if ((await env.DB.get('sn:' + id)) !== check.name) await env.DB.put('sn:' + id, check.name);
+          if ((await env.DB.get('sp:' + low)) !== id) await env.DB.put('sp:' + low, id);
+        } catch (_) { }
+      }
       return send(200, { token, uuid: norm(check.id) });
     }
     if (route === 'GET /v1/me') {
@@ -475,15 +482,16 @@ export async function onRequest({ request, env }) {
       const what = url.pathname.split('/').pop();
       const count = async (prefix) => { let n = 0, cur, pages = 0; do { const r = await env.DB.list({ prefix, cursor: cur, limit: 1000 }); n += r.keys.length; cur = r.list_complete ? null : r.cursor; pages++; } while (cur && pages < 5); return { n, more: !!cur }; };
       if (what === 'overview') {
-        const [reg, linked, online] = await Promise.all([count('n:'), count('k:'), count('o:')]);
+        const [reg, linked, online, sp] = await Promise.all([count('n:'), count('k:'), count('o:'), count('sp:')]);
         let kv = 'ok';
         try { await env.DB.put('selftest', String(Date.now()), { expirationTtl: 60 }); await env.DB.get('selftest'); } catch (e) { kv = 'FAIL'; }
-        return J({ registered: reg, linked, online, kv, beta_open: env.BETA_OPEN === '1', items: Object.keys(ITEMS).length, bundles: Object.keys(BUNDLES), time: new Date().toISOString() });
+        return J({ registered: reg, linked, online, sp, kv, beta_open: env.BETA_OPEN === '1', items: Object.keys(ITEMS).length, bundles: Object.keys(BUNDLES), time: new Date().toISOString() });
       }
       if (what === 'players') {
         const q = String(url.searchParams.get('q') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-        const r = await env.DB.list({ prefix: 'n:' + q, cursor: url.searchParams.get('cursor') || undefined, limit: 50 });
-        return J({ players: r.keys.map((k) => k.name.slice(2)), cursor: r.list_complete ? '' : r.cursor });
+        const pf = url.searchParams.get('sp') === '1' ? 'sp:' : 'n:';
+        const r = await env.DB.list({ prefix: pf + q, cursor: url.searchParams.get('cursor') || undefined, limit: 50 });
+        return J({ players: r.keys.map((k) => k.name.slice(pf.length)), cursor: r.list_complete ? '' : r.cursor });
       }
       if (what === 'online') {
         const r = await env.DB.list({ prefix: 'o:', limit: 40 });
@@ -492,12 +500,13 @@ export async function onRequest({ request, env }) {
           const id = k.name.slice(2), pr = await presenceOf(env, id);
           if (!pr) continue;
           const f = await getF(env, id);
-          out.push({ uuid: id, name: f.name || id.slice(0, 8), where: pr });
+          const spn = f.name ? '' : await env.DB.get('sn:' + id);
+          out.push({ uuid: id, name: f.name || (spn ? spn + ' (SP)' : id.slice(0, 8)), where: pr });
         }
         return J({ online: out });
       }
       const nm = String(url.searchParams.get('name') || '').trim().toLowerCase();
-      const uuid = norm(url.searchParams.get('uuid')) || (nm ? (await env.DB.get('n:' + nm)) || '' : '');
+      const uuid = norm(url.searchParams.get('uuid')) || (nm ? (await env.DB.get('n:' + nm)) || (await env.DB.get('sp:' + nm)) || '' : '');
       if (!uuid) return J({ found: false });
       const p = await loadPlayer(env, uuid), f = await getF(env, uuid);
       const pr = await presenceOf(env, uuid);
