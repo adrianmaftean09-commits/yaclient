@@ -81,6 +81,16 @@ public class MotionBlurModule extends Module {
     @Override
     public void onTick() {
         if (mc.theWorld == null || mc.entityRenderer == null) return;
+        // Blur only the world: with a menu open (inventory, chat, mod menu...) the shader also smeared the player
+        // preview in the inventory, so the skin looked bent. It is switched off while a screen is open and loaded
+        // again, with a clean previous frame, when the screen closes.
+        if (mc.currentScreen != null) {
+            if (applied) {
+                if (mc.entityRenderer.isShaderActive()) mc.entityRenderer.stopUseShader();
+                applied = false;
+            }
+            return;
+        }
         if (!mc.entityRenderer.isShaderActive()) {
             loadShader(mc.entityRenderer, new ResourceLocation("shaders/post/phosphor.json"));
             applied = true;
